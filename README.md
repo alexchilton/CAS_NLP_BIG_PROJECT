@@ -17,10 +17,11 @@ An AI-powered Dungeon Master assistant using Retrieval Augmented Generation (RAG
 - Python 3.8 or higher
 - pip (Python package manager)
 - The following data files in the project root:
-  - `spells.txt`
-  - `all_spells.txt` (optional)
-  - `extracted_monsters.txt`
-  - `extracted_classes.txt`
+  - `spells.txt` - Spell descriptions
+  - `all_spells.txt` - Spell/class associations
+  - `extracted_monsters.txt` - Monster stat blocks
+  - `extracted_classes.txt` - Class features
+  - `Dungeons Dragons 5e Players Handbook.pdf` - For race extraction (optional)
 
 ### Installation Steps
 
@@ -49,10 +50,11 @@ If this prints `✓ All dependencies installed`, you're ready!
 
 ### Running the System
 
-The system has three main components:
+The system has four main components:
 1. **Initialize RAG Database** - Load D&D content
 2. **Test Searches** - Verify the system works
 3. **Create Characters** - Interactive character builder
+4. **Play with AI GM** - RAG-enhanced D&D sessions
 
 #### Step 1: Initialize the RAG Database
 
@@ -63,10 +65,11 @@ python initialize_rag.py
 ```
 
 **What this does:**
-- Parses spells from `spells.txt` (~86 spells)
+- Parses spells from `spells.txt` + `all_spells.txt` (~86 spells → 250+ chunks)
 - Parses monsters from `extracted_monsters.txt` (~332 monsters)
-- Parses classes from `extracted_classes.txt` (~5 classes)
-- Creates 4 ChromaDB collections
+- Parses classes from `extracted_classes.txt` (~12 classes)
+- Extracts races from Player's Handbook PDF pages 18-46 (~9 races → 18 chunks)
+- Creates 4 ChromaDB collections with **name-weighted chunks**
 - Generates embeddings for semantic search
 - Shows statistics
 
@@ -74,9 +77,11 @@ python initialize_rag.py
 ```
 🎲 D&D RAG SYSTEM INITIALIZATION
 ...
-✅ Total: 423 chunks loaded into ChromaDB
+✅ Total: 600+ chunks loaded into ChromaDB
 🎉 Initialization complete!
 ```
+
+**Key Feature:** Each entity name appears 2-3× in its chunk for better exact-match retrieval!
 
 **Time:** ~30 seconds on first run (downloads embedding model), ~5 seconds on subsequent runs
 
@@ -89,23 +94,44 @@ python initialize_rag.py --only monsters,classes  # Load specific collections
 
 #### Step 2: Verify System is Working
 
-Run the test suite to verify searches work:
-
+**Option A: Comprehensive Test Suite** (recommended)
 ```bash
-python test_rag_search.py
+python test_all_collections.py
 ```
 
-**What this tests:**
-- ✅ Spell searches ("fireball spell", "cure wounds", etc.)
-- ✅ Monster searches ("goblin", "dragon fire breath", etc.)
-- ✅ Class searches ("wizard spellcasting", "fighter extra attack", etc.)
-- ✅ Cross-collection searches ("fire damage" across all content)
+Runs 26+ automated tests validating:
+- ✅ Name weighting (exact matches rank first)
+- ✅ Semantic search (related concepts found)
+- ✅ Metadata extraction (CR, level, abilities, etc.)
+- ✅ All 4 collections operational
+- ✅ Cross-collection search
 
 **Expected output:**
 ```
-🧪 D&D RAG SEARCH TEST SUITE
+🧪 D&D RAG SYSTEM - COMPREHENSIVE TEST SUITE
 ...
-✅ TEST SUITE COMPLETE
+✅ PASSED: 26/26 (100.0%)
+🎉 ALL TESTS PASSED!
+```
+
+**Option B: Manual Testing**
+```bash
+python test_spell_search.py
+```
+
+Shows detailed search results for spells, monsters, classes, and races.
+
+**Option C: Interactive Query Tool** (most fun!)
+```bash
+python query_rag.py
+```
+
+Interactive CLI to explore the RAG system:
+```
+🎲 Query: fireball
+🎲 Query: /monster dragon
+🎲 Query: /spell healing
+🎲 Query: /stats
 ```
 
 If all tests pass, your RAG system is fully operational! 🎉
@@ -168,7 +194,70 @@ Sage | Neutral Good
 - Automatic spell selection for casters
 - Export to JSON for use in other tools
 
-#### Step 4: Run Interactive Searches (Optional)
+#### Step 4: Play D&D with AI Game Master
+
+Run an interactive D&D session with RAG-enhanced AI GM:
+
+```bash
+python run_gm_dialogue.py
+```
+
+**Prerequisites:**
+- Install Ollama: https://ollama.ai
+- Download RPG model: `ollama pull hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M`
+
+**What this does:**
+- Interactive D&D game session with AI Dungeon Master
+- RAG-powered rule lookups in real-time
+- GM searches ChromaDB for spells, monsters, classes when relevant
+- Conversation history and context management
+- Commands for scene setting, history review, and more
+
+**Example session:**
+```
+🎲 D&D GAME MASTER - RAG-Enhanced AI Dungeon Master
+Model: hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M
+
+Type /help for commands or just start playing!
+======================================================================
+
+🎲 You: I cast fireball at the goblins
+
+🎭 GM: Roll for your attack! The spell requires a DC 15 Dexterity saving
+throw from each goblin. Roll 8d6 for fire damage. Each goblin in the
+20-foot radius must make their save - on a success, they take half damage.
+
+🎲 You: I investigate the room
+
+🎭 GM: Make an Investigation check (roll d20 + INT modifier). I'll set
+the DC based on what you're looking for...
+```
+
+**Available Commands:**
+```
+/help           - Show available commands
+/context <text> - Set the current scene/context
+/history        - Show conversation history
+/rag <query>    - Test RAG search (see what the GM knows)
+/save <file>    - Save session to JSON
+/quit           - Exit the game
+```
+
+**How It Works:**
+1. Player enters action or question
+2. GM searches ChromaDB for relevant spells/monsters/rules
+3. RAG results are injected into the LLM prompt
+4. AI GM generates response using accurate D&D 5e rules
+5. Response is shown to player with proper mechanics
+
+**Tips:**
+- Be specific: "I cast fireball" vs "I attack"
+- The GM will ask for dice rolls when needed
+- Use `/context` to set the scene for better immersion
+- Use `/rag` to check if the GM has specific rule information
+- The system works best with clear, action-oriented inputs
+
+#### Step 5: Run Interactive Searches (Optional)
 
 Test your own queries:
 
@@ -214,21 +303,48 @@ python initialize_rag.py --clear
 
 The first run downloads ~80MB of models. This is normal. Subsequent runs are much faster.
 
+#### "Ollama not found" when running GM dialogue
+
+**Install Ollama:**
+```bash
+# Visit https://ollama.ai and download for your platform
+# Or use package manager:
+# macOS: brew install ollama
+# Linux: curl https://ollama.ai/install.sh | sh
+```
+
+**Download the RPG model:**
+```bash
+ollama pull hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M
+```
+
+**Verify installation:**
+```bash
+ollama list
+```
+
+You should see the Qwen3-4B-RPG model in the list.
+
 ### What's Working Now
 
 ✅ **Semantic Search**: Find D&D content by meaning
-✅ **86 Spells**: Fireball, Cure Wounds, Magic Missile, etc.
-✅ **332 Monsters**: Goblins, Dragons, Orcs, etc.
-✅ **5 Classes**: Wizard, Fighter, Cleric, etc.
-✅ **Cross-Collection**: Search all content at once
+✅ **250+ Spell Chunks**: 86 spells with multiple chunk types (full, quick_ref, by_class)
+✅ **332 Monsters**: With CR, type extraction, and name weighting
+✅ **12 Classes**: Wizard, Fighter, Cleric, Rogue, Barbarian, Bard, Druid, Monk, Paladin, Ranger, Sorcerer, Warlock
+✅ **18 Race Chunks**: 9 core races (Dragonborn, Dwarf, Elf, Gnome, Half-Elf, Halfling, Half-Orc, Human, Tiefling)
+✅ **Name-Weighted Retrieval**: Entity names appear 2-3× per chunk for accurate exact-match search
+✅ **Cross-Collection Search**: Search all content types at once
 ✅ **ChromaDB**: Persistent vector database
+✅ **Interactive Query Tool**: Command-line interface for exploring the RAG system
+✅ **Comprehensive Tests**: 26+ automated tests validating all functionality
 ✅ **Character Creator**: Interactive character builder with RAG integration
+✅ **AI Game Master**: RAG-enhanced dialogue system with Ollama
 
 ### What's Coming Soon
 
-⏳ **GM Dialogue System**: RAG-enhanced Ollama integration
-⏳ **Query Interface**: Smart entity recognition
-⏳ **Race Data**: Complete race traits and subraces
+⏳ **Subrace Support**: High Elf, Mountain Dwarf, etc. with specific abilities
+⏳ **Multi-Character Party**: Create and manage groups of characters
+⏳ **Advanced Filtering**: Search by CR range, spell level, class, etc.
 
 ## 📁 Project Structure
 
@@ -240,14 +356,19 @@ The first run downloads ~80MB of models. This is normal. Subsequent runs are muc
 │   │   ├── base_parser.py   # Parser framework
 │   │   ├── base_chunker.py  # Chunking utilities
 │   │   └── chroma_manager.py # Database interface
-│   ├── parsers/             # Content parsers (TBD)
+│   ├── parsers/             # Content parsers
+│   │   └── spell_parser.py  # Spell parser with name weighting ⭐
 │   └── systems/             # High-level systems
-│       └── character_creator.py # Interactive character builder ⭐
+│       ├── character_creator.py # Interactive character builder
+│       └── gm_dialogue.py   # RAG-enhanced AI Game Master
 │
 ├── chromadb/                # Vector database (created on init)
 ├── initialize_rag.py        # Main initialization script ⭐
-├── test_rag_search.py       # Test search functionality ⭐
-├── create_character.py      # Character creator launcher ⭐
+├── query_rag.py             # Interactive query CLI ⭐ NEW!
+├── test_all_collections.py  # Comprehensive test suite ⭐ NEW!
+├── test_spell_search.py     # Manual search testing
+├── create_character.py      # Character creator launcher
+├── run_gm_dialogue.py       # AI GM dialogue launcher
 ├── plan_progress.md         # Development progress tracking
 └── requirements.txt         # Python dependencies
 ```
@@ -273,12 +394,27 @@ Edit `dnd_rag_system/config/settings.py` to customize:
 
 ## 📊 Collections
 
-The system creates 4 ChromaDB collections:
+The system creates 4 ChromaDB collections with **name-weighted retrieval**:
 
-1. **dnd_spells** - D&D 5e spells with mechanics
-2. **dnd_monsters** - Monster stats and abilities
-3. **dnd_classes** - Class features by level
-4. **dnd_races** - Race traits and subraces (TBD)
+1. **dnd_spells** (~250 chunks)
+   - Multiple chunk types per spell: full_spell, quick_reference, by_class
+   - Metadata: level, school, casting_time, range, components, duration, classes
+   - Name appears 2-3× for better exact-match retrieval
+
+2. **dnd_monsters** (~332 chunks)
+   - Full stat blocks with weighted names
+   - Metadata: challenge_rating, monster_type (e.g., "Large dragon")
+   - Tagged by type: dragon, undead, beast, etc.
+
+3. **dnd_classes** (~12 chunks)
+   - Class features and descriptions
+   - Name-weighted for accurate class searches
+   - Metadata: class name, content_type
+
+4. **dnd_races** (~18 chunks)
+   - 2 chunks per race: description + traits
+   - Metadata: ability_increases, size, speed, darkvision, languages
+   - Extracted from Player's Handbook PDF
 
 ## 🧪 Development Status
 
@@ -293,16 +429,18 @@ The system creates 4 ChromaDB collections:
 - Test search functionality
 - Basic loaders for spells, monsters, classes
 
-### ⏳ Phase 3: Systems Layer (In Progress)
+### ✅ Phase 3: Systems Layer (Complete)
 - ✅ Character creation system with RAG integration
-- ⏳ Query interface with entity recognition
-- ⏳ RAG-enhanced GM dialogue system
+- ✅ RAG-enhanced GM dialogue system with Ollama
+- ✅ Interactive query interface (`query_rag.py`)
 
-### ⏳ Phase 4: Polish & Testing
-- Comprehensive unit tests
-- Integration tests
-- Performance benchmarks
-- Documentation
+### ✅ Phase 4: Polish & Testing (Complete)
+- ✅ Comprehensive test suite with 26+ automated tests
+- ✅ Name-weighted retrieval for all entity types
+- ✅ Multiple chunk types per entity
+- ✅ Race data extraction from PDF
+- ✅ Interactive query tool
+- ✅ Full documentation
 
 ## 🎮 Usage Examples
 

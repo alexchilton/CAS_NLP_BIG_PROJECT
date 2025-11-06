@@ -416,11 +416,17 @@ class SpellChunker(BaseChunker):
         return chunks
 
     def _create_full_spell_chunk(self, parsed_content: ParsedContent) -> Chunk:
-        """Create full spell description chunk."""
+        """Create full spell description chunk with weighted spell name."""
         meta = parsed_content.metadata
 
+        # IMPROVEMENT: Add spell name multiple times at the start for better retrieval
+        # This increases the weight of the spell name in embeddings
+        spell_name = meta['name']
+        name_weight = f"SPELL: {spell_name}\n{spell_name}\n"
+
         content_parts = [
-            f"**{meta['name']}**",
+            name_weight,  # Spell name appears multiple times for weighting
+            f"**{spell_name}**",
             f"Level {meta['level']} {meta['school']}",
             f"**Casting Time:** {meta['casting_time']}",
             f"**Range:** {meta['range']}",
@@ -431,7 +437,7 @@ class SpellChunker(BaseChunker):
         ]
 
         if meta.get('classes'):
-            content_parts.insert(2, f"**Classes:** {', '.join(meta['classes'])}")
+            content_parts.insert(3, f"**Classes:** {', '.join(meta['classes'])}")
 
         content = "\n".join(content_parts)
 
@@ -455,10 +461,13 @@ class SpellChunker(BaseChunker):
         )
 
     def _create_quick_reference_chunk(self, parsed_content: ParsedContent) -> Chunk:
-        """Create quick reference chunk with just mechanics."""
+        """Create quick reference chunk with just mechanics and weighted spell name."""
         meta = parsed_content.metadata
 
-        content = f"**{meta['name']}** - Level {meta['level']} {meta['school']}\n"
+        # IMPROVEMENT: Repeat spell name for better matching
+        spell_name = meta['name']
+        content = f"SPELL: {spell_name}\n{spell_name}\n\n"
+        content += f"**{spell_name}** - Level {meta['level']} {meta['school']}\n"
         content += f"Cast: {meta['casting_time']} | Range: {meta['range']} | "
         content += f"Components: {meta['components']} | Duration: {meta['duration']}\n"
 
@@ -474,11 +483,14 @@ class SpellChunker(BaseChunker):
         )
 
     def _create_class_chunk(self, parsed_content: ParsedContent, class_name: str) -> Chunk:
-        """Create class-specific spell chunk."""
+        """Create class-specific spell chunk with weighted spell name."""
         meta = parsed_content.metadata.copy()
         meta['for_class'] = class_name
 
-        content = f"**{class_name} Spell: {meta['name']}** (Level {meta['level']})\n"
+        # IMPROVEMENT: Include spell name for better retrieval
+        spell_name = meta['name']
+        content = f"SPELL: {spell_name}\n"
+        content += f"**{class_name} Spell: {spell_name}** (Level {meta['level']})\n"
         content += f"{meta['school']} | {meta['casting_time']} | {meta['range']}\n\n"
         content += parsed_content.raw_text[:300] + "..."  # Truncate for class-specific
 
