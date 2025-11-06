@@ -49,6 +49,11 @@ If this prints `✓ All dependencies installed`, you're ready!
 
 ### Running the System
 
+The system has three main components:
+1. **Initialize RAG Database** - Load D&D content
+2. **Test Searches** - Verify the system works
+3. **Create Characters** - Interactive character builder
+
 #### Step 1: Initialize the RAG Database
 
 Load all D&D content into ChromaDB:
@@ -105,7 +110,65 @@ python test_rag_search.py
 
 If all tests pass, your RAG system is fully operational! 🎉
 
-#### Step 3: Run Interactive Searches (Optional)
+#### Step 3: Create Your D&D Character
+
+Run the interactive character creator:
+
+```bash
+python create_character.py
+```
+
+**What this does:**
+- Interactive character creation wizard
+- Choose name, race, and class
+- RAG-powered lookups for race traits and class features
+- Generate ability scores (standard array, roll, or point buy)
+- Calculate HP, AC, and modifiers
+- Select starting equipment
+- Choose starting spells (for spellcasters)
+- Display complete character sheet
+- Option to save character to JSON file
+
+**Example workflow:**
+```
+🎲 D&D CHARACTER CREATOR
+Let's create your D&D character!
+
+What is your character's name? Gandalf
+
+STEP 1: Choose Your Race
+  1. Human
+  2. Elf
+  3. Dwarf
+  ...
+
+STEP 2: Choose Your Class
+  1. Fighter
+  2. Wizard
+  3. Cleric
+  ...
+
+STEP 3: Ability Scores
+  1. Standard Array (15, 14, 13, 12, 10, 8)
+  2. Roll 4d6, drop lowest
+  3. Point Buy
+
+... [continues through equipment and spells]
+
+🎉 CHARACTER CREATION COMPLETE!
+Gandalf
+Human Wizard, Level 1
+Sage | Neutral Good
+...
+```
+
+**Features:**
+- RAG integration shows race/class information from the knowledge base
+- Smart equipment selection based on class
+- Automatic spell selection for casters
+- Export to JSON for use in other tools
+
+#### Step 4: Run Interactive Searches (Optional)
 
 Test your own queries:
 
@@ -159,20 +222,13 @@ The first run downloads ~80MB of models. This is normal. Subsequent runs are muc
 ✅ **5 Classes**: Wizard, Fighter, Cleric, etc.
 ✅ **Cross-Collection**: Search all content at once
 ✅ **ChromaDB**: Persistent vector database
+✅ **Character Creator**: Interactive character builder with RAG integration
 
 ### What's Coming Soon
 
 ⏳ **GM Dialogue System**: RAG-enhanced Ollama integration
-⏳ **Character Creator**: Interactive character building
 ⏳ **Query Interface**: Smart entity recognition
-
-### Next: Run GM Dialogue (Coming Soon)
-
-```bash
-python run_gm_dialogue.py
-```
-
-Will allow interactive D&D sessions with AI GM that knows all the rules!
+⏳ **Race Data**: Complete race traits and subraces
 
 ## 📁 Project Structure
 
@@ -185,11 +241,13 @@ Will allow interactive D&D sessions with AI GM that knows all the rules!
 │   │   ├── base_chunker.py  # Chunking utilities
 │   │   └── chroma_manager.py # Database interface
 │   ├── parsers/             # Content parsers (TBD)
-│   └── systems/             # GM dialogue, character creator (TBD)
+│   └── systems/             # High-level systems
+│       └── character_creator.py # Interactive character builder ⭐
 │
 ├── chromadb/                # Vector database (created on init)
 ├── initialize_rag.py        # Main initialization script ⭐
 ├── test_rag_search.py       # Test search functionality ⭐
+├── create_character.py      # Character creator launcher ⭐
 ├── plan_progress.md         # Development progress tracking
 └── requirements.txt         # Python dependencies
 ```
@@ -236,9 +294,9 @@ The system creates 4 ChromaDB collections:
 - Basic loaders for spells, monsters, classes
 
 ### ⏳ Phase 3: Systems Layer (In Progress)
-- Query interface with entity recognition
-- RAG-enhanced GM dialogue system
-- Character creation system
+- ✅ Character creation system with RAG integration
+- ⏳ Query interface with entity recognition
+- ⏳ RAG-enhanced GM dialogue system
 
 ### ⏳ Phase 4: Polish & Testing
 - Comprehensive unit tests
