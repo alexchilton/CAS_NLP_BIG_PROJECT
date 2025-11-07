@@ -172,6 +172,15 @@ class SpellParser(TextParser):
             return ""
 
         # Fix common OCR errors
+        # Note: Order matters - fix specific patterns before general ones
+        text = re.sub(r'(\d+)(st|nd|rd|th)-/evel', r'\1\2-level', text, flags=re.IGNORECASE)  # Fix /evel -> level
+        text = re.sub(r'(\d+)(st|nd|rd|th)-leve[Il1]', r'\1\2-level', text, flags=re.IGNORECASE)  # Fix leveI/leve1
+        text = re.sub(r'\bevoeation\b', 'evocation', text, flags=re.IGNORECASE)  # evoeation -> evocation
+        text = re.sub(r'\bdivinatian\b', 'divination', text, flags=re.IGNORECASE)  # divinatian -> divination
+        text = re.sub(r'\beonjuration\b', 'conjuration', text, flags=re.IGNORECASE)  # eonjuration -> conjuration
+        text = re.sub(r'\billusion\b', 'illusion', text, flags=re.IGNORECASE)  # iIlusion -> illusion
+        text = re.sub(r'\btransmutation\b', 'transmutation', text, flags=re.IGNORECASE)  # Fix transmutation
+
         ocr_fixes = {
             r'\blevel\b': 'level',  # Ensure 'level' not 'leveI'
             r'\bcall\b': 'call',    # Ensure 'call' not 'caIl'
