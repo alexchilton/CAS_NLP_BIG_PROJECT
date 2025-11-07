@@ -241,24 +241,29 @@ def load_classes(db_manager: ChromaDBManager, clear: bool = False):
 
 
 def _split_class_blocks(content: str) -> Dict[str, str]:
-    """Split content by class names."""
+    """Split content by class names at start of line (section headers)."""
     class_blocks = {}
 
     for i, class_name in enumerate(settings.DND_CLASSES):
-        # Find this class
-        pattern = rf'\b{class_name.upper()}\b'
-        matches = list(re.finditer(pattern, content, re.IGNORECASE))
+        # FIXED: Look for class name at the beginning of a line (^)
+        # This finds the detailed section header, not mentions in the table
+        pattern = rf'^{class_name.upper()}$'
+        matches = list(re.finditer(pattern, content, re.MULTILINE))
 
         if matches:
             start = matches[0].start()
-            # Find end (next class or end of text)
+            # Find end (next class section or end of text)
             end = len(content)
-            for next_class in settings.DND_CLASSES[i+1:]:
-                next_pattern = rf'\b{next_class.upper()}\b'
-                next_matches = re.search(next_pattern, content[start+100:], re.IGNORECASE)
-                if next_matches:
-                    end = start + 100 + next_matches.start()
-                    break
+
+            # Look for ANY other class name on its own line after this one
+            for next_class in settings.DND_CLASSES:
+                if next_class == class_name:
+                    continue
+                next_pattern = rf'^{next_class.upper()}$'
+                next_match = re.search(next_pattern, content[start+10:], re.MULTILINE)
+                if next_match:
+                    candidate_end = start + 10 + next_match.start()
+                    end = min(end, candidate_end)
 
             class_content = content[start:end].strip()
             if len(class_content) > 500:  # Substantial content
