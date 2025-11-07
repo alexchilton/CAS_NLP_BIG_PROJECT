@@ -173,12 +173,23 @@ class SpellParser(TextParser):
 
         # Fix common OCR errors
         # Note: Order matters - fix specific patterns before general ones
+
+        # Fix digit OCR errors in spell levels (must come first!)
+        text = re.sub(r'\bIst[-./ ]*evel', '1st-level', text, flags=re.IGNORECASE)  # Ist -> 1st
+        text = re.sub(r'\bZnd[-./ ]*evel', '2nd-level', text, flags=re.IGNORECASE)  # Znd -> 2nd
+        text = re.sub(r'\b[O0]th[-./ ]*evel', '0th-level', text, flags=re.IGNORECASE)  # 0th -> 0th
+
+        # Fix various level/evel patterns
         text = re.sub(r'(\d+)(st|nd|rd|th)-/evel', r'\1\2-level', text, flags=re.IGNORECASE)  # Fix /evel -> level
+        text = re.sub(r'(\d+)(st|nd|rd|th)[-.]*[/ ]*evel', r'\1\2-level', text, flags=re.IGNORECASE)  # Fix ./evel, -/evel, etc.
         text = re.sub(r'(\d+)(st|nd|rd|th)-leve[Il1]', r'\1\2-level', text, flags=re.IGNORECASE)  # Fix leveI/leve1
+
+        # Fix school names
         text = re.sub(r'\bevoeation\b', 'evocation', text, flags=re.IGNORECASE)  # evoeation -> evocation
         text = re.sub(r'\bdivinatian\b', 'divination', text, flags=re.IGNORECASE)  # divinatian -> divination
         text = re.sub(r'\beonjuration\b', 'conjuration', text, flags=re.IGNORECASE)  # eonjuration -> conjuration
         text = re.sub(r'\billusion\b', 'illusion', text, flags=re.IGNORECASE)  # iIlusion -> illusion
+        text = re.sub(r'\biI1usion\b', 'illusion', text, flags=re.IGNORECASE)  # iI1usion -> illusion
         text = re.sub(r'\btransmutation\b', 'transmutation', text, flags=re.IGNORECASE)  # Fix transmutation
 
         ocr_fixes = {
