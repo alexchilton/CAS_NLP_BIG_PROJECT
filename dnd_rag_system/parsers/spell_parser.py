@@ -190,11 +190,12 @@ class SpellParser(TextParser):
         # Fix missing spaces after periods
         text = re.sub(r'\.([A-Z])', r'. \1', text)
 
-        # Fix excessive whitespace
-        text = re.sub(r'\s+', ' ', text)
-
         # Fix line breaks in middle of words (common OCR issue)
         text = re.sub(r'(\w)-\s+(\w)', r'\1\2', text)
+
+        # Fix excessive whitespace on same line (preserve newlines!)
+        text = re.sub(r'[ \t]+', ' ', text)  # Only collapse spaces/tabs, NOT newlines
+        text = re.sub(r'\n\n+', '\n\n', text)  # Collapse multiple blank lines to 2 newlines max
 
         return text.strip()
 
@@ -203,11 +204,17 @@ class SpellParser(TextParser):
         Split text into individual spell blocks.
 
         Spells typically start with NAME in caps/title case followed by level/school.
+        Handles formats like:
+        - "ACID SPLASH\nConjuration cantrip"
+        - "Aid\n2nd-level abjuration"
+        - "ALARM\n1st-level abjuration (ritual)"
         """
-        # Pattern: SPELL NAME\nLevel + school
-        pattern = r'([A-Z][A-Z\s\'\-]+)\n([A-Za-z]+(?:\s+\d+[a-z]{2}-level)?\s+[a-z]+)'
+        # Pattern to match spell name followed by school/level line
+        # Spell name: Starts with uppercase, can have uppercase letters, spaces, apostrophes, hyphens
+        # School/level: Contains either "cantrip" or "Xth-level" followed by a school name
+        pattern = r'^([A-Z][A-Z\s\'\-]*[A-Z]|[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s*\n\s*([A-Za-z]+\s+cantrip|\d+[a-z]{2}-level\s+[a-z]+)'
 
-        matches = list(re.finditer(pattern, text))
+        matches = list(re.finditer(pattern, text, re.MULTILINE))
         blocks = []
 
         for i, match in enumerate(matches):
