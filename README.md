@@ -196,66 +196,188 @@ Sage | Neutral Good
 
 #### Step 4: Play D&D with AI Game Master
 
-Run an interactive D&D session with RAG-enhanced AI GM:
-
-```bash
-python run_gm_dialogue.py
-```
-
 **Prerequisites:**
 - Install Ollama: https://ollama.ai
 - Download RPG model: `ollama pull hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M`
 
-**What this does:**
-- Interactive D&D game session with AI Dungeon Master
-- RAG-powered rule lookups in real-time
-- GM searches ChromaDB for spells, monsters, classes when relevant
-- Conversation history and context management
-- Commands for scene setting, history review, and more
+You have **two ways** to play:
 
-**Example session:**
+---
+
+### Option A: 🌐 Web Interface (Gradio) **⭐ RECOMMENDED**
+
+Launch the web UI for the best experience:
+
+```bash
+python app_gradio.py
 ```
-🎲 D&D GAME MASTER - RAG-Enhanced AI Dungeon Master
+
+Then open http://localhost:7860 in your browser.
+
+**Features:**
+- 🎭 **Pre-made Characters**: Play as Thorin Stormshield (Dwarf Fighter) or Elara Moonwhisper (Elf Wizard)
+- 💬 **Chat Interface**: Clean conversation view with the AI GM
+- 📊 **Character Sheet**: Live character stats displayed in sidebar
+- ⚡ **Quick Commands**: Built-in buttons for common actions
+- 🎲 **RAG Search**: Test spell/monster lookups directly in the UI
+
+**Quick Start:**
+1. Select a character from dropdown (Thorin or Elara)
+2. Click "Load Character"
+3. Type your action in the chat box
+4. The GM responds with RAG-enhanced D&D rules!
+
+**Example Actions:**
+```
+# As Thorin (Fighter):
+I draw my longsword and look for enemies
+I attack with my weapon
+/stats
+
+# As Elara (Wizard):
+I cast Magic Missile at the goblin
+I look through my spellbook
+/rag Magic Missile
+```
+
+---
+
+### Option B: 💻 Command Line Interface
+
+For terminal lovers, use the CLI version:
+
+```bash
+python play_with_character.py
+```
+
+**Character Selection:**
+```
+1. Create new character (full interactive creation)
+2. Load existing character (from JSON file)
+3. Use test character (quick start with Thorin)
+```
+
+**Available Characters:**
+
+**Thorin Stormshield** - Level 3 Dwarf Fighter
+- HP: 28 | AC: 18 | Proficiency: +2
+- STR 16 (+3) | DEX 12 (+1) | CON 16 (+3)
+- Equipment: Longsword, Shield, Plate Armor
+- Perfect for: Melee combat, tanking, straightforward gameplay
+
+**Elara Moonwhisper** - Level 2 Elf Wizard
+- HP: 14 | AC: 12 | Proficiency: +2
+- INT 17 (+3) | DEX 14 (+2) | CON 12 (+1)
+- Spells: Fire Bolt, Mage Hand, Magic Missile, Shield
+- Equipment: Quarterstaff, Spellbook, Component Pouch
+- Perfect for: Spellcasting, strategic gameplay, testing RAG
+
+**Example Session:**
+```
+🎲 D&D GAME SESSION - Playing as Elara Moonwhisper
+======================================================================
+Character: Elara Moonwhisper (Elf Wizard)
 Model: hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M
 
-Type /help for commands or just start playing!
+Type /help for commands or start playing!
 ======================================================================
 
-🎲 You: I cast fireball at the goblins
+🎲 Elara Moonwhisper: I look around the tavern
 
-🎭 GM: Roll for your attack! The spell requires a DC 15 Dexterity saving
-throw from each goblin. Roll 8d6 for fire damage. Each goblin in the
-20-foot radius must make their save - on a success, they take half damage.
+🎭 GM: The tavern is dimly lit by flickering torches. You notice a group
+of rough-looking adventurers in the corner, and a hooded figure sitting
+alone by the fireplace...
 
-🎲 You: I investigate the room
+🎲 Elara Moonwhisper: /stats
 
-🎭 GM: Make an Investigation check (roll d20 + INT modifier). I'll set
-the DC based on what you're looking for...
+📊 Elara Moonwhisper | HP: 14 | AC: 12 | Prof: +2
+   STR -1 | DEX +2 | CON +1 | INT +3 | WIS +1 | CHA +0
 ```
 
-**Available Commands:**
+---
+
+### 🎮 Commands Reference
+
+**Character Commands:**
 ```
-/help           - Show available commands
-/context <text> - Set the current scene/context
+/character      - Show full character sheet
+/stats          - Quick stats view (HP, AC, modifiers)
+/context        - View current scene and character context
+```
+
+**RAG Commands:**
+```
+/rag <query>    - Search D&D knowledge base
+                  Examples:
+                  /rag Magic Missile    - Look up spell details
+                  /rag Goblin          - Look up monster stats
+                  /rag Fighter         - Look up class features
+                  /rag Elf             - Look up race traits
+```
+
+**Session Commands:**
+```
+/help           - Show all available commands
 /history        - Show conversation history
-/rag <query>    - Test RAG search (see what the GM knows)
 /save <file>    - Save session to JSON
 /quit           - Exit the game
 ```
 
-**How It Works:**
-1. Player enters action or question
-2. GM searches ChromaDB for relevant spells/monsters/rules
-3. RAG results are injected into the LLM prompt
-4. AI GM generates response using accurate D&D 5e rules
-5. Response is shown to player with proper mechanics
+---
 
-**Tips:**
-- Be specific: "I cast fireball" vs "I attack"
-- The GM will ask for dice rolls when needed
-- Use `/context` to set the scene for better immersion
-- Use `/rag` to check if the GM has specific rule information
-- The system works best with clear, action-oriented inputs
+### 💡 How It Works
+
+**Character-Aware Gameplay:**
+1. Select or create a character (Thorin, Elara, or custom)
+2. Character stats, spells, and equipment are passed to the GM
+3. GM knows YOUR character and references it in responses
+
+**RAG Integration:**
+1. You type an action (e.g., "I cast Magic Missile")
+2. System searches ChromaDB for relevant spells/monsters/rules
+3. RAG results are injected into the AI GM's context
+4. GM generates response using accurate D&D 5e rules
+5. Response references your character's abilities
+
+**Example RAG Flow:**
+```
+Input: "I cast Magic Missile at the goblin"
+  ↓
+RAG Search: Finds "Magic Missile" spell
+  ↓
+Context: "Elara (Wizard) has Magic Missile in spell list"
+  ↓
+Context: "Magic Missile: 1st-level, 3 darts, 1d4+1 force damage each"
+  ↓
+AI GM Response: Uses accurate spell mechanics + your character's stats
+```
+
+---
+
+### 🎯 Gameplay Tips
+
+**For Best Results:**
+- **Be Specific**: "I cast Fire Bolt at the closest goblin" vs "I attack"
+- **Use RAG**: Test `/rag <spell>` before casting to see what the GM knows
+- **Check Context**: Use `/context` to see what the GM knows about your character
+- **View Stats**: Use `/stats` during combat to remember your modifiers
+- **Roleplay**: The GM responds to narrative actions ("I cautiously enter the room")
+
+**Testing Spells with Elara:**
+```
+/rag Magic Missile     # See full spell description
+I cast Magic Missile   # GM should apply 1st-level spell rules
+/rag Fireball         # Search for a spell Elara doesn't know
+I cast Fireball       # GM behavior (should it allow this?)
+```
+
+**Combat with Thorin:**
+```
+/stats                      # Check your attack bonus
+I attack with my longsword # GM will ask for d20 roll
+I use my shield             # GM applies AC bonus
+I use Second Wind          # GM applies fighter class feature
+```
 
 #### Step 5: Run Interactive Searches (Optional)
 
@@ -364,8 +486,10 @@ You should see the Qwen3-4B-RPG model in the list.
 │
 ├── chromadb/                # Vector database (created on init)
 ├── initialize_rag.py        # Main initialization script ⭐
-├── query_rag.py             # Interactive query CLI ⭐ NEW!
-├── test_all_collections.py  # Comprehensive test suite ⭐ NEW!
+├── app_gradio.py            # Gradio web UI ⭐ NEW!
+├── play_with_character.py  # Character-aware gameplay CLI ⭐ NEW!
+├── query_rag.py             # Interactive query CLI ⭐
+├── test_all_collections.py  # Comprehensive test suite ⭐
 ├── test_spell_search.py     # Manual search testing
 ├── create_character.py      # Character creator launcher
 ├── run_gm_dialogue.py       # AI GM dialogue launcher

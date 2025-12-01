@@ -17,6 +17,7 @@
 | **Phase 5: GM Dialogue** | ✅ Complete | 2/2 | RAG-enhanced AI GM working |
 | **Phase 6: Character Creation** | ✅ Complete | 2/2 | Full character creator with RAG |
 | **Phase 7: Testing & Validation** | ✅ Complete | 3/3 | 26+ comprehensive tests passing |
+| **Phase 8: Game Mechanics Engine** | 🚧 In Progress | 0/5 | Character-aware gameplay enhancements |
 
 **Legend**: ✅ Complete | 🚧 In Progress | ⏳ Pending | ❌ Blocked
 
@@ -223,6 +224,97 @@ python query_rag.py --monster "dragon" # Search monsters
 
 ---
 
+## 🎮 Phase 8: Game Mechanics Engine 🚧 IN PROGRESS
+
+**Goal**: Transform AI from rule-maker to narrator by implementing programmatic game mechanics
+
+### ✅ 8.0 Character-Aware Dialogue System **⭐ NEW!**
+**File**: `play_with_character.py`
+- [x] Load or create characters for gameplay
+- [x] Character context passed to GM (stats, equipment, spells)
+- [x] Three character modes: Create new, Load JSON, Quick test
+- [x] Commands: `/character`, `/stats`, `/context` for character info
+- [x] Fixed tokenizer warning suppression
+- [x] Dynamic character support (not hardcoded to one character)
+- [x] Proper first/second person context ("The player is X" → AI uses "you")
+- [x] Integration testing completed (Dec 1, 2024)
+
+### 🚧 8.1 Spell System Enhancement
+**File**: `play_with_character.py` (to be refactored)
+- [ ] Programmatic spell validation (check if player owns spell)
+- [ ] Spell slot tracking by level (1st: 3 slots, 2nd: 2 slots, etc.)
+- [ ] Auto-decrement slots when casting
+- [ ] Rest mechanic to restore slots
+- [ ] Spell lookup from RAG before AI narration
+
+### 🚧 8.2 Combat Mechanics
+**Status**: ⏳ Pending
+- [ ] HP tracking and damage application
+- [ ] Attack roll automation (d20 + modifiers)
+- [ ] Damage roll automation (weapon dice + STR/DEX)
+- [ ] AC checks (hit/miss determination)
+- [ ] Death saves and unconsciousness
+
+### 🚧 8.3 Turn & Initiative System
+**Status**: ⏳ Pending
+- [ ] Initiative roller (d20 + DEX modifier)
+- [ ] Turn order tracking
+- [ ] Action economy (action, bonus action, movement, reaction)
+- [ ] Combat state management
+
+### 🚧 8.4 Inventory System
+**Status**: ⏳ Pending
+- [ ] Add/remove items programmatically
+- [ ] Equipment weight tracking
+- [ ] Item usage validation
+- [ ] Gold/currency management
+
+### 🚧 8.5 Integration & Testing
+**Status**: ⏳ Pending
+- [ ] Test spell casting flow end-to-end
+- [ ] Test combat scenarios
+- [ ] Test inventory management
+- [ ] Update documentation
+
+---
+
+## 🏗️ Phase 8 Architecture Notes
+
+### Option B: Hybrid AI + Rules Engine (SELECTED)
+
+**Problem**: AI is unreliable at following D&D rules consistently
+- Ignores spells player casts
+- Allows spells player doesn't know
+- Doesn't track resources (HP, spell slots)
+- Makes up mechanics on the fly
+
+**Solution**: Intercept player actions BEFORE AI sees them
+
+**Flow**:
+1. **Player Input**: "I cast Magic Missile at the goblin"
+2. **Rules Engine** (Python code):
+   - Parse: Detect spell casting intent
+   - Validate: Check if player owns "Magic Missile" ✓
+   - Validate: Check if player has 1st-level spell slot ✓
+   - Retrieve: Get spell details from RAG (3 darts, 1d4+1 each)
+   - Roll: 3d4+3 = 11 damage (programmatically)
+   - Deduct: Spell slot consumed
+   - Update: Target HP reduced by 11
+3. **AI Prompt**: "You successfully cast Magic Missile dealing 11 force damage to the goblin. The goblin now has 5 HP remaining. Describe the magical missiles striking the goblin."
+4. **AI Response**: (Just narrates the flavor, mechanics already handled)
+
+**Benefits**:
+- AI becomes a **narrator**, not a **rules engine**
+- Mechanics are deterministic and accurate
+- AI can focus on storytelling
+- Players can trust the rules
+
+**Alternatives Rejected**:
+- **Option A** (Pure AI): Too unreliable, tested and failed
+- **Option C** (Post-process AI): Too hard to fix bad outputs
+
+---
+
 ## 📦 Supporting Files ✅ COMPLETE
 
 ### ✅ Dependencies
@@ -295,10 +387,20 @@ python query_rag.py --monster "dragon" # Search monsters
 5. ✅ **Interactive Query Tool** - New CLI for exploring the RAG system
 6. ✅ **Comprehensive Tests** - 26+ automated tests validating all functionality
 
-### Known Issues
-- None currently
+### Known Issues (Phase 8 Discovery - Dec 1, 2024)
+- **AI Unreliability**: Pure AI approach fails to consistently enforce D&D rules
+  - Ignores valid spell casts (Magic Missile cast was turned into melee combat)
+  - Allows invalid spells (Let Elara cast Fireball, which she doesn't know)
+  - No resource tracking (spell slots, HP, gold)
+- **Solution**: Moving to Hybrid Architecture (Option B) with programmatic rules engine
 
-### Future Enhancements
+### Current Work (Phase 8)
+- 🚧 **Spell Validation System**: Programmatically check spell ownership before AI generation
+- 🚧 **Resource Tracking**: HP, spell slots, inventory management
+- 🚧 **Combat Mechanics**: Attack/damage rolls, initiative, turn tracking
+- 🚧 **Rules Engine**: Intercept player actions, apply mechanics, then AI narrates
+
+### Future Enhancements (Post-Phase 8)
 - ⏳ **Subrace Support**: High Elf, Mountain Dwarf, etc. with specific abilities
 - ⏳ **Advanced Filtering**: Search by CR range, spell level range, class, type
 - ⏳ **Web UI**: Web interface for GM dialogue
@@ -318,7 +420,10 @@ python query_rag.py --monster "dragon" # Search monsters
 | 2024-11-06 15:00 | Phase 3-6 complete (initialization, query, GM, character creator) |
 | 2024-11-06 18:00 | **Major upgrades**: Name weighting, race extraction, comprehensive tests |
 | 2024-11-06 20:00 | **Phase 7 complete**: All tests passing, documentation updated |
-| 2024-11-06 21:00 | **PROJECT COMPLETE** - Production ready! |
+| 2024-11-06 21:00 | **V1.0 COMPLETE** - Production ready! |
+| 2024-12-01 18:00 | **Phase 8 started**: Character-aware dialogue system created |
+| 2024-12-01 19:00 | Testing reveals AI reliability issues with game mechanics |
+| 2024-12-01 19:30 | **Architecture decision**: Option B (Hybrid Rules Engine) selected |
 
 ---
 
@@ -354,9 +459,15 @@ python query_rag.py --monster "dragon" # Search monsters
 
 ---
 
-**Status**: ✅ **PRODUCTION READY**
-**Next Steps**: Deploy, gather user feedback, plan Phase 8 enhancements
+**Status**: 🚧 **V2.0 IN DEVELOPMENT** (Phase 8: Game Mechanics Engine)
+**Current Focus**: Implementing hybrid AI + Rules Engine architecture
+**Next Steps**:
+1. Spell validation system
+2. Spell slot tracking
+3. HP and damage mechanics
+4. Combat turn system
+5. Inventory management
 
 ---
 
-**Last Updated**: November 6, 2024 21:00
+**Last Updated**: December 1, 2024 19:30
