@@ -279,7 +279,8 @@ with gr.Blocks(title="D&D RAG Game Master") as demo:
                 height=500,
                 label="Game Master",
                 show_label=True,
-                avatar_images=(None, "🎭")
+                avatar_images=(None, "🎭"),
+                type="messages"  # Gradio 6.x requires this for dict format
             )
 
             with gr.Row():
