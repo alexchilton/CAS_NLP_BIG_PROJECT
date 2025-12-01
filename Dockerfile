@@ -15,8 +15,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # The .dockerignore file will exclude specified files and directories
 COPY . .
 
-# Install Ollama so the application can call it
-RUN apt-get update && apt-get install -y curl && curl -fsSL https://ollama.com/install.sh | sh
+# Only install Ollama if not on Hugging Face Spaces
+# HF Spaces will use the Inference API instead
+RUN if [ -z "$SPACE_ID" ]; then \
+        apt-get update && apt-get install -y curl && curl -fsSL https://ollama.com/install.sh | sh; \
+    fi
 
 # Run the ingestion script to populate the ChromaDB vector store
 # This step pre-builds the database so the app starts ready

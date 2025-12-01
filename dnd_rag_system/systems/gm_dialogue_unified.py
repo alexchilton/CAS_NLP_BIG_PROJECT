@@ -1,11 +1,11 @@
 """
 D&D Game Master Dialogue System - Unified Version
 
-RAG-enhanced AI Dungeon Master that works with both:
+RAG-enhanced AI Dungeon Master that automatically detects environment:
+- Hugging Face Inference API (when running on HF Spaces)
 - Local Ollama (for local development)
-- Hugging Face Inference API (for HF Spaces)
 
-Set USE_HF_API=true environment variable to use HF Inference API.
+Auto-detection based on SPACE_ID, SPACE_AUTHOR_NAME, or HF_SPACE environment variables.
 """
 
 import sys
@@ -20,6 +20,16 @@ from dataclasses import dataclass, field
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.config import settings
+
+
+def is_huggingface_space() -> bool:
+    """Check if running on Hugging Face Spaces."""
+    return (
+        os.getenv("SPACE_ID") is not None or
+        os.getenv("SPACE_AUTHOR_NAME") is not None or
+        os.getenv("HF_SPACE") is not None or
+        os.getenv("USE_HF_API", "false").lower() == "true"  # Manual override
+    )
 
 
 @dataclass
@@ -51,36 +61,45 @@ class GameMaster:
     """
     RAG-Enhanced AI Game Master - Unified Version.
 
-    Supports both local Ollama and HF Inference API.
-    Uses the same model: Chun121/Qwen3-4B-RPG-Roleplay-V2
+    Automatically uses:
+    - HF Inference API on Hugging Face Spaces
+    - Ollama for local development
     """
 
-    def __init__(self, db_manager: ChromaDBManager, hf_token: str = None):
+    def __init__(self, db_manager: ChromaDBManager, hf_token: str = None, model_name: str = None):
         """
         Initialize Game Master.
 
         Args:
             db_manager: ChromaDBManager instance
-            hf_token: Hugging Face API token (optional, for HF API mode)
+            hf_token: Hugging Face API token (optional, will use env var)
+            model_name: Model name override (optional)
         """
         self.db = db_manager
         self.session = GameSession()
 
-        # Detect mode
-        self.use_hf_api = os.getenv("USE_HF_API", "false").lower() == "true"
+        # Auto-detect environment
+        self.use_hf_api = is_huggingface_space()
 
         if self.use_hf_api:
-            print("🌐 Using Hugging Face Inference API mode")
-            from huggingface_hub import InferenceClient
+            print("🤗 Using Hugging Face Inference API mode")
+            try:
+                from huggingface_hub import InferenceClient
+            except ImportError:
+                raise ImportError("huggingface_hub is required for HF Spaces. Install with: pip install huggingface_hub")
+
             self.hf_token = hf_token or os.getenv("HF_TOKEN")
-            # Use the same model from HF
-            self.model_name = "Chun121/Qwen3-4B-RPG-Roleplay-V2"
+            # Use the same RPG roleplay model as local Ollama for consistency
+            self.model_name = model_name or "Chun121/Qwen3-4B-RPG-Roleplay-V2"
             self.client = InferenceClient(token=self.hf_token)
+            print(f"   Model: {self.model_name}")
         else:
-            print("🖥️  Using local Ollama mode")
+            print("🦙 Using local Ollama mode")
             # Local Ollama model
-            self.model_name = settings.OLLAMA_MODEL_NAME
+            self.model_name = model_name or settings.OLLAMA_MODEL_NAME
+            self.client = None
             self._verify_ollama()
+            print(f"   Model: {self.model_name}")
 
     def _verify_ollama(self):
         """Check if Ollama is installed and model is available (local mode only)."""
@@ -246,7 +265,7 @@ GM RESPONSE:"""
 
         return prompt
 
-    def _query_ollama(self, prompt: str, timeout: int = 30) -> str:
+    def _query_ollama(self, prompt: str, timeout: int = 120) -> str:
         """
         Send prompt to Ollama and get response (local mode).
 
@@ -281,7 +300,7 @@ GM RESPONSE:"""
         except Exception as e:
             raise Exception(f"Ollama query failed: {e}")
 
-    def _query_hf(self, prompt: str, timeout: int = 30) -> str:
+    def _query_hf(self, prompt: str, timeout: int = 60) -> str:
         """
         Send prompt to Hugging Face Inference API and get response (HF mode).
 

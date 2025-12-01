@@ -4,11 +4,11 @@ This guide explains how to deploy your D&D RAG Game Master to Hugging Face Space
 
 ## 🎯 Overview
 
-The app now supports **BOTH** local Ollama and Hugging Face Inference API:
-- **Local Mode** (default): Uses Ollama with `hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M`
-- **HF Spaces Mode**: Uses HF Inference API with `Chun121/Qwen3-4B-RPG-Roleplay-V2`
+The app **automatically detects** its environment and uses the optimal backend:
+- **Local Mode** (auto-detected): Uses Ollama with `hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M` (quantized)
+- **HF Spaces Mode** (auto-detected): Uses HF Inference API with `Chun121/Qwen3-4B-RPG-Roleplay-V2` (full model)
 
-The same model is used in both modes for consistency!
+**Same RPG-optimized model in both modes!** The app detects HF Spaces by checking for `SPACE_ID`, `SPACE_AUTHOR_NAME`, or `HF_SPACE` environment variables.
 
 ## 📦 Step 1: Prepare Files
 
@@ -40,16 +40,16 @@ dnd_rag_system/                 # Entire package
    - **Space hardware**: CPU basic (free tier works!)
    - **Visibility**: Public or Private
 
-## ⚙️ Step 3: Configure Environment Variables
+## ⚙️ Step 3: Configure Environment Variables (Optional)
 
-In your Space settings, add these **Secrets**:
+The app **auto-detects** HF Spaces, so you only need to set:
 
-1. **`USE_HF_API`** = `true`
-   - This enables HF Inference API mode
-
-2. **`HF_TOKEN`** = Your HF token
+1. **`HF_TOKEN`** (Optional) = Your HF token
    - Get from: https://huggingface.co/settings/tokens
-   - Needs "Read" permissions
+   - Only needed if using private models
+   - The RPG model (Chun121/Qwen3-4B-RPG-Roleplay-V2) is public
+
+**Note:** No need to set `USE_HF_API` - it's detected automatically!
 
 ## 📁 Step 4: Upload Files
 
@@ -89,7 +89,8 @@ git push
 2. Check logs for:
    ```
    🎲 Initializing D&D RAG System...
-   🌐 Using Hugging Face Inference API mode
+   🤗 Using Hugging Face Inference API mode
+      Model: Chun121/Qwen3-4B-RPG-Roleplay-V2
    ```
 3. Test the interface:
    - Load a character
@@ -98,32 +99,38 @@ git push
 
 ## 🏠 Running Locally vs HF Spaces
 
-### Local (Ollama):
+### Local (Ollama) - Auto-detected:
 ```bash
 # No environment variables needed
-python3 app.py
-# Uses Ollama by default
+python3 app_gradio.py
+# Automatically uses Ollama
 ```
 
-### Local (Test HF Mode):
+### Local (Test HF Mode) - Manual override:
 ```bash
 export USE_HF_API=true
 export HF_TOKEN=your_token_here
-python3 app.py
-# Uses HF API locally (for testing before deployment)
+python3 app_gradio.py
+# Manually enables HF API mode for testing
 ```
 
-### HF Spaces:
-- Automatically uses HF API when `USE_HF_API=true` is set in Space secrets
-- No Ollama needed!
+### HF Spaces - Auto-detected:
+- **Automatically** detects HF Spaces environment
+- Uses HF Inference API without any configuration
+- Skips Ollama installation in Docker (faster builds!)
+- No manual env vars needed!
 
 ## 📊 Model Information
 
-**Model Used:** `Chun121/Qwen3-4B-RPG-Roleplay-V2`
-- **Local**: Via Ollama `hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M`
-- **HF Spaces**: Via Inference API `Chun121/Qwen3-4B-RPG-Roleplay-V2`
-- **Size**: 4B parameters, quantized to Q4_K_M for Ollama
-- **Optimized for**: D&D roleplay and narrative generation
+**Model Used:** `Chun121/Qwen3-4B-RPG-Roleplay-V2` (same model everywhere!)
+- **Local Ollama**: `hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M` (quantized to Q4_K_M)
+- **HF Spaces**: `Chun121/Qwen3-4B-RPG-Roleplay-V2` (full precision model)
+
+**Benefits of using the same model:**
+- **Consistent behavior** across local and cloud environments
+- **RPG-optimized** - specifically fine-tuned for D&D roleplay and narrative
+- **Better on HF Spaces** - full precision vs quantized version
+- **Faster inference** via HF's optimized infrastructure
 
 ## 🐛 Troubleshooting
 
@@ -133,8 +140,10 @@ python3 app.py
 - Check build logs for errors
 
 ### "HF_TOKEN not found" error:
-- Add `HF_TOKEN` to Space secrets
-- Make sure `USE_HF_API=true` is set
+- Only needed for private models
+- The RPG model (Chun121/Qwen3-4B-RPG-Roleplay-V2) should be public
+- Check model visibility at: https://huggingface.co/Chun121/Qwen3-4B-RPG-Roleplay-V2
+- If private, add `HF_TOKEN` to Space secrets
 
 ### ChromaDB errors:
 - Ensure entire `chromadb/` folder is uploaded
@@ -156,7 +165,9 @@ python3 app.py
 1. **Free tier works!** CPU basic is enough for this app
 2. **Keep ChromaDB small**: Current 85MB is fine
 3. **Monitor usage**: HF Inference API has rate limits on free tier
-4. **Test locally first**: Use `USE_HF_API=true` locally before deploying
+4. **Auto-detection**: No need to configure env vars - it just works!
+5. **Same RPG model everywhere**: Consistent D&D gameplay experience
+6. **Better quality on HF Spaces**: Full precision vs quantized local version
 
 ## 📚 Resources
 

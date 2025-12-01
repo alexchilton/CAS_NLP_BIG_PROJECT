@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.systems.character_creator import Character
-from dnd_rag_system.systems.gm_dialogue import GameMaster
+from dnd_rag_system.systems.gm_dialogue_unified import GameMaster
 
 
 # Initialize system
@@ -229,7 +229,10 @@ Otherwise, just type your action and press Enter!"""
             {"role": "assistant", "content": response}
         ]
     except Exception as e:
-        error_msg = f"Error: {str(e)}\n\nMake sure Ollama is running and the model is installed:\n`ollama pull hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M`"
+        error_msg = f"Error: {str(e)}"
+        # Only add Ollama instructions if running locally
+        if not (os.getenv("SPACE_ID") or os.getenv("SPACE_AUTHOR_NAME") or os.getenv("HF_SPACE")):
+            error_msg += "\n\nMake sure Ollama is running and the model is installed:\n`ollama pull hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M`"
         return history + [
             {"role": "user", "content": message},
             {"role": "assistant", "content": error_msg}
@@ -308,7 +311,7 @@ with gr.Blocks(title="D&D RAG Game Master") as demo:
     - `/rag Goblin` - Look up monster stats
     - `/rag Fighter` - Look up class features
 
-    **Powered by:** ChromaDB RAG + Ollama (Qwen3-4B-RPG-Roleplay-V2)
+    **Powered by:** ChromaDB RAG + AI Language Model (Auto-detected: Ollama locally, HF Inference API on Spaces)
     """)
 
     # Event handlers
