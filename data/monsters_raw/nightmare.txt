@@ -1,0 +1,66 @@
+NIGHTMARE
+are treated as evil-aligned for the purpose of overcoming damage
+reduction. Its natural weapons are treated as magic weapons for At first glance, this creature looks like a large, powerful horse with a jet-
+the purpose of overcoming damage reduction. black coat. A closer look, however, reveals its true nature. Flames wreathe
+Disease (Ex): Demon fever—bite, Fortitude DC 18, incubation its steely hooves, trail from its flared nostrils, and smolder in the depths of
+period 1 day, damage 1d6 Con. Each day after the first, on a failed its dark eyes.
+save, an afflicted creature must immediately succeed on another
+DC 18 Fortitude save or take 1 point of Constitution drain. The Nightmares are proud equine creatures with hearts as black and
+save DC is Constitution based. evil as the dark abysses from which they come. They dwell on the
+Spell-Like Abilities: At will—detect chaos, detect evil, detect good, plane of Hades.
+detect law, detect magic, magic missile, polymorph (self only), ray of A nightmare is a wild and restless creature. It roams the world
+enfeeblement(DC 12), sleep (DC 12).Caster level 8th. A night hag doing evil and haunting the dreams of all who dare cross it.
+can use etherealness at will (caster level 16th) so long as it possesses Although it has no wings, the creature can fly with great speed. It
+itsheartstone (see below). The save DCs are Charisma-based. seldom allows anyone to ride it, but particularly powerful and evil
+Dream Haunting (Su): Night hags can visit the dreams of creatures have been known to make mounts of nightmares.
+chaotic or evil individuals by using a special periapt known as a A nightmare is about the size of a light war horse.
+heartstone to become ethereal, then hovering over the creature.
+Once a hag invades someone’s dreams, it rides on the victim’s back COMBAT
+until dawn. The sleeper suffers from tormenting dreams and takes A nightmare does battle by biting with its viperish fangs and kick-
+1 point of Constitution drain upon awakening. Only another ethe- ing with its powerful legs. A nightmare can fight while carrying a
+real being can stop these nocturnal intrusions, by confronting and rider, but the rider cannot also fight unless he or she succeeds on
+defeating the night hag. a Ride check.
+Nightmare Nightmare, Cauchemar
+LargeOutsider(Evil,Extraplanar) HugeOutsider(Evil,Extraplanar)
+HitDice: 6d8+18(45hp) 15d8+105(172hp)
+Initiative: +6 +6
+Speed: 40ft.(8squares),fly90ft.(good) 40ft.(8squares),fly90ft.(good)
+ArmorClass: 24(–1size,+2Dex,+13natural), 26(–2size,+2Dex,+16natural),
+touch11,flat-footed22 touch10,flat-footed24
+BaseAttack/Grapple: +6/+14 +15/+33
+Attack: Hoof+9melee(1d8+4plus1d4fire) Hoof+23melee(2d6+10plus1d4fire)
+FullAttack: 2hooves+9melee(1d8+4plus1d4fire)and 2hooves+23melee(2d6+10plus1d4fire)and
+bite+4melee(1d8+2) bite+18melee(2d6+5)
+Space/Reach: 10ft./5ft. 15ft./10ft.
+SpecialAttacks: Flaminghooves,smoke Flaminghooves,smoke
+SpecialQualities: Astralprojection,darkvision60ft.,etherealness Astralprojection,darkvision60ft.,etherealness
+Saves: Fort+8,Ref+7,Will+6 Fort+16,Ref+11,Will+10
+Abilities: Str18,Dex15,Con16, Str31,Dex14,Con24,
+Int13,Wis13,Cha12 Int16,Wis12,Cha12
+Skills: Concentration+12,Diplomacy+3, Bluff+19,Concentration+25,Diplomacy+5,
+Intimidate+10,Knowledge(theplanes) Disguise+1(+3acting),Intimidate+21,Knowledge(arcana)+21,
++10,Listen+12,MoveSilently+11, Knowledge(theplanes)+21,Listen+21,MoveSilently+20,
+Search+10,SenseMotive+10, Search+21,SenseMotive+19,Spot+21,
+Spot+12,Survival+10(+12onotherplanes Survival+19(+21onotherplanesandfollowingtracks)
+andfollowingtracks)
+Feats: Alertness,ImprovedInitiative,Run Alertness,Cleave,ImprovedInitiative,
+PowerAttack,Run,Track
+Environment: GrayWasteofHades GrayWasteofHades
+Organization: Solitary Solitary
+ChallengeRating: 5 11
+Treasure: None None
+194 Alignment: Alwaysneutralevil Alwaysneutralevil
+Advancement: 7–10HD(Large);11–18HD(Huge) —
+LevelAdjustment: +4(cohort) +4(cohort)
+
+A nightmare’s natural weapons, as well as any weapons it wields, merely a daylight spell), they take a –4 penalty on all attack rolls,
+are treated as evil-aligned for the purpose of overcoming damage saving throws, and skill checks.
+reduction. Desecrating Aura (Su): All nightshades give off a 20-foot-
+Flaming Hooves (Su): A blow from a nightmare’s hooves sets radius emanation of utter desecration, imbuing their surround-
+combustible materials alight. ings with negative energy. This ability works much like a desecrate
+Smoke (Su): During the spell, except that the nightshade’s evil is so great that it is treated as
+excitement of battle, a the shrine of an evil power. All undead within 20 feet of the
+nightmare snorts and nightshade (including the creature itself ) gain a +2 profane
+neighs with rage. This bonus on attack rolls, damage rolls, and saving throws, and
+snorting fills a 15- +2 hit points per HD. (The nightshade Hit Dice, attack, and
+foot cone with a hot, save entries given here include these profane

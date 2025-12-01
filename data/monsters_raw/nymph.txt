@@ -1,0 +1,46 @@
+NYMPH
+Hit Dice: 17d12+34 (144 hp)
+Initiative: +8 Medium Fey
+Speed: 20 ft. (4 squares), fly 60 ft. (good) Hit Dice: 6d6+6 (27 hp)
+Armor Class: 30 (–2 size, +4 Dex, +18 natural) touch 12, Initiative: +3
+flat-footed 26 Speed: 30 ft. (6 squares), swim 20 ft.
+Base Attack/Grapple: +8/+28 Armor Class: 17 (+3 Dex, +4 deflection), touch 17, flat-footed 14
+Attack: Bite +18 melee (2d6+17/19–20 plus magic drain) Base Attack/Grapple: +3/+3
+Full Attack: Bite +18 melee (2d6+17/19–20 plus magic drain) Attack: Dagger +6 melee (1d4/19–20)
+Space/Reach: 15 ft./10 ft. Full Attack: Dagger +6 melee (1d4/19–20)
+Special Attacks: Desecrating aura, magic drain, spell-like abili- Space/Reach: 5 ft./5 ft.
+ties, summon undead Special Attacks: Blinding beauty, spells, spell-like abilities, stun-
+Special Qualities: Aversion to daylight, damage reduction ning glance
+15/silver and magic, darkvision 60 ft., immunity to cold, spell Special Qualities: Damage reduction 10/cold iron, low-light
+resistance 27, telepathy 100 ft., undead traits vision, unearthly grace, wild empathy
+Saves: Fort +9, Ref +11, Will +17 Saves: Fort +7, Ref +12, Will +12
+Abilities: Str 31, Dex 18, Con —, Int 18, Wis 20, Cha 18 Abilities: Str 10, Dex 17, Con 12, Int 16, Wis 17, Cha 19
+Skills: Concentration +24, Diplomacy +6, Hide +16*, Listen +25, Skills: Concentration +10, Diplomacy +6, Escape Artist +12,
+Move Silently +24, Search +24, Sense Motive +25, Spellcraft Handle Animal +13, Heal +12, Hide +12, Listen +12, Move
++24, Spot +25, Survival +5 (+7 following tracks) Silently +12, Ride +5, Sense Motive +12, Spot +12, Swim +8,
+Feats: Combat Reflexes, Dodge, Flyby Attack, Great Fortitude, Use Rope +3 (+5 with bindings)
+Improved Critical (bite), Improved Initiative Feats: Combat Casting, Dodge, Weapon Finesse
+Environment: Plane of Shadow Environment: Temperate forests
+Organization: Solitary, pair, or flock (3–6) Organization: Solitary
+Challenge Rating: 14 Challenge Rating: 7
+Treasure: Standard Treasure: Standard
+Alignment: Always chaotic evil Alignment: Usually chaotic good
+Advancement: 18–25 HD (Huge); 26–34 HD (Gargantuan) Advancement: 7–12 HD (Medium) 197
+Level Adjustment: — Level Adjustment: +7
+
+This being’s beauty exceeds mere words; she is captivating and dangerous must succeed on a DC 17 Fortitude save or be stunned for 2d4
+because of the emotions she inspires. She has long, copper hair, perfect rounds. The save DC is Charisma-based.
+skin, large eyes, and long, swept-back ears. Unearthly Grace (Su): A nymph adds her Charisma modifier
+as a bonus on all her saving throws, and as a deflection bonus to
+Nymphs are nature’s embodiment of physical beauty, and the her Armor Class. (The statistics block already reflects these
+guardians of the sacred places of the wild. They are so unbear- bonuses).
+ably lovely that even a glimpse of one can blind an onlooker. Wild Empathy (Ex): This power works like the druid’s wild
+Nymphs hate evil and any who would despoil the wilds for any empathy class feature, except that a nymph has a +6 racial bonus
+reason. on the check.
+A nymph’s demeanor is wild and mercurial. Like nature itself, Skills: A nymph has a +8 racial bonus on any Swim check to
+she embodies both great beauty and fearsome danger. She perform some special action or avoid a hazard. She can always
+can be kind and graceful to mortals who revere the choose to take 10 on a Swim check, even if distracted or
+wild places of the world, but is also quick to endangered. She can use the run action while swim-
+ERGO strike against mortals who take more than ming, provided she swims in a straight line.
+they need or who treat nature thought-
+lessly. Animals of all types flock to a

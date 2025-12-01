@@ -1,0 +1,183 @@
+VAMPIRE
+day it can use neutralize poison (DC 21, caster level 8th) with a
+touch of its horn. The save DC is Charisma-based. Forever anchored to their coffins and the unholy earth of their
+Wild Empathy (Ex): This power works like the druid’s wild graves, these nocturnal predators scheme constantly to strengthen
+empathy class feature, except that a unicorn has a +6 racial bonus themselves and fill the world with their foul progeny.
+on the check. Vampires appear just as they did in life, although their features
+Skills: Unicorns have a +4 racial bonus on Move Silently are often hardened and feral, with the predatory look of wolves.
+checks. Like liches, they often embrace finery and decadence and may
+*Unicorns have a +3 competence bonus on Survival checks assume the guise of nobility. Despite their human appearance,
+within the boundaries of their forest. vampires can be easily recognized, for they cast no shadows and
+throw no reflections in mirrors.
+CELESTIAL CHARGER Vampires speak any languages they knew in life.
+A celestial unicorn is a champion for good, the fierce enemy of
+evil beings that would destroy woodlands and their inhabitants. It SAMPLE VAMPIRE
+is a dedicated follower of Ehlonna. This sinister-looking warrior has pale skin, haunting red eyes, and a feral
+The celestial charger described here is an 8 HD celestial cast to his features. He wears chain armor and holds a spiked chain in his
+unicorn with seven levels of cleric. clawed hands.
+Combat This example uses a 5th-level human fighter as the base creature.
+The save DC for this celestial charger’s neutralize poison ability (DC
+20) is adjusted for its greater Hit Dice and altered Charisma score. Vampire, 5th-Level Human Fighter
+A celestial charger’s natural weapons are treated as magic weap- Medium Undead (Augmented Humanoid)
+ons for the purpose of overcoming damage reduction. Hit Dice: 5d12 (32 hp)
+Smite Evil (Su): Once per day a celestial charger can make a Initiative: +7
+normal melee attack to deal 15 points of extra damage against an Speed: 30 ft. (6 squares)
+evil foe. Armor Class: 23 (+3 Dex, +6 natural, +4 masterwork chain
+Cleric Spells Prepared (6/7/6/5/4; save DC 18 + spell level): 0— shirt), touch 13, flat-footed 20
+detect magic, detect poison (2), light, virtue (2); 1st—bless (2), calm ani- Base Attack/Grapple: +5/+11
+mals*, obscuring mist, remove fear, sanctuary, shield of faith; 2nd—aid* Attack: Slam +11 melee (1d6+9 plus energy drain) or +1 spiked
+(2), animal messenger, lesser restoration, remove paralysis, shield other; chain +13 melee (2d4+12) or masterwork shortbow +9 ranged
+3rd—prayer, protection from energy, remove curse, searing light (2); (1d6/×3)
+250 4th—air walk, divine power, holy smite*, restoration. Full Attack: Slam +11 melee (1d6+9 plus energy drain) or +1
+*Domain spell. Domains: Animal and Good. spiked chain +13 melee (2d4+12) or masterwork shortbow +9
+ranged (1d6/×3)
+
+Space/Reach: 5 ft./5 ft. (10 ft. with spiked chain) plain sight, improved evasion, purity of body, resistance to
+Special Attacks: Blood drain, children of the night, create cold 10 and electricity 10, shadow jump 20 ft., slow fall 40 ft.,
+spawn, dominate, energy drain spider climb, still mind, uncanny dodge (Dex bonus to AC),
+Special Qualities: Alternate form, damage reduction 10/silver undead traits, vampire weaknesses, wholeness of body
+and magic, darkvision 60 ft., fast healing 5, gaseous form, Saves: Fort +7, Ref +16, Will +13
+resistance to cold 10 and electricity 10, spider climb, undead Abilities: Str 20, Dex 19, Con —, Int 12, Wis 22, Cha 12
+traits, vampire weaknesses Skills: Balance +22, Bluff +9, Climb +9, Hide +28, Jump +23,
+Saves: Fort +4, Ref +6, Will +4 Listen +16, Move Silently +28, Perform (wind instruments) +7,
+Abilities: Str 22, Dex 17, Con —, Int 12, Wis 16, Cha 12 Search +9, Sense Motive +14, Spot +16, Tumble +22
+Skills: Bluff +9, Climb +10, Hide +10, Listen +17, Move Silently Feats: Alertness, Blind-Fight, Combat Reflexes, Deflect ArrowsB,
++10, Ride +11, Search +9, Sense Motive +11, Spot +17 Dodge, Improved Initiative, Improved DisarmB, Lightning
+Feats: AlertnessB, Blind-Fight, Combat ReflexesB, DodgeB, Exotic Reflexes, Mobility, Spring Attack, Stunning FistB
+Weapon Proficiency (spiked chain), Improved InitiativeB, Environment: Temperate forests VAMPIRE
+Lightning ReflexesB, Mobility, Power Attack, Weapon Focus Organization: Solitary
+(spiked chain), Weapon Specialization (spiked chain) Challenge Rating: 15
+Environment: Temperate plains Treasure: Double standard
+Organization: Solitary Alignment: Always evil (any)
+Challenge Rating: 7 Advancement: By character class
+Treasure: Double standard Level Adjustment: +8
+Alignment: Always evil (any)
+Advancement: By character class Combat
+Level Adjustment: +5 This vampire’s unarmed strikes are treated as magic weapons for
+the purpose of overcoming damage reduction.
+Combat The DC is 17 for the Will save against this vampire’s domination
+This vampire’s slam attack is treated as a magic weapon for the pur- ability, and for the Fortitude save to remove a negative level caused
+pose of overcoming damage reduction. by its energy drain.
+The DC is 13 for the Will save against this vampire’s domination Flurry of Blows (Ex): Use the full attack action to make one
+ability, and for the Fortitude save to remove a negative level caused extra attack per round with an unarmed strike or a special monk
+by its energy drain. weapon at her highest base attack, making the extra attack either
+Possessions: +1 spiked chain, masterwork chain shirt, potion of haste. with her +2 keen kama or unarmed.
+Ki Strike (Su): Deal damage to
+SAMPLE ELITE VAMPIRE creatures with damage reduc-
+This example uses a half-elf 9th-level tion using unarmed strike as
+monk/4th-level shadowdancer as the Vampires though with a magic weapon.
+base creature. Shadow Illusion (Sp): Create
+visual illusions from shadows
+Elite Vampire, 13th-Level Half-Elf as silent image once per day.
+Monk/Shadowdancer Summon Shadow (Sp): Summon
+Medium Undead (Augmented Humanoid) one shadow companion, which
+Hit Dice: 13d12 (90 hp) cannot be turned, rebuked, or com-
+Initiative: +8 manded by others. If the shadow
+Speed: 60 ft. (12 squares) is destroyed or dismissed, the
+Armor Class: 32 (+4 Dex, +6 natural, shadowdancer must succeed
++6 Wis, +1 intrinsic, bracers of on a DC 15 Fortitude save or
+armor +3, ring of protection +2), lose 800 XP (400 XP on a suc-
+touch 23, flat-footed 32 cessful save). A new shadow
+Base Attack/Grapple: +9/+14 cannot be summoned for a
+Attack: Unarmed strike +14 melee year and a day.
+(1d10+5 plus energy drain) or +2 Half-Elf Traits (Ex): Immu-
+keen kama +16 melee (1d6+7) or +1 nity to sleep spells and effects; +2
+frost sling +14 ranged (1d4+1 plus 1d6 racial bonus on saves against
+cold) enchantment spells or effects; low-
+Full Attack: Unarmed strike +14/+14/+9 light vision (can see twice as far as a
+melee (1d10+5 plus energy drain) or +2 human in low-light conditions); +1
+keen kama +16/+16/+11 melee racial bonus on Listen, Spot, and
+(1d6+7) or +1 frost sling +14 Search checks (already fig-
+ranged (1d4+1 plus 1d6 cold) ured into the statistics given
+Space/Reach: 5 ft./5 ft. here); +2 racial bonus on Diplomacy
+Special Attacks: Blood drain, children and Gather Information checks.
+of the night, create spawn, domi- Hide in Plain Sight (Su): Can use the
+nate, energy drain, flurry of blows, Hide skill even while being observed as long
+ki strike (magic), shadow illusion, as within 10 feet of a shadow.
+summon shadow Improved Evasion (Ex): If the vampire makes
+Special Qualities: Alternate a successful Reflex saving throw against an attack
+form, damage reduction 10/silver and that normally deals half damage on a successful save, 251
+magic, darkvision 60 ft., fast healing 5, she instead takes no damage. In addition, she takes
+gaseous form, half-elf traits, hide in only half damage on a failed save.
+
+Purity of Body (Ex): Immunity to all diseases except for magi- action. (If the base creature is not terrestrial, this power might
+cal diseases such as mummy rot and lycanthropy. summon other creatures of similar power.) These creatures arrive
+Shadow Jump (Sp): Travel instantaneously between shadows as a in 2d6 rounds and serve the vampire for up to 1 hour.
+dimension door spell, up to 20 feet per day. Dominate (Su): A vampire can crush an opponent’s will just by
+Slow Fall (Ex): A monk within arm’s reach of a wall takes looking onto his or her eyes. This is similar to a gaze attack, except
+damage as if the fall were 40 feet shorter than it actually is. that the vampire must use a standard action, and those merely
+Still Mind (Ex): +2 bonus on saves against enchantment spells looking at it are not affected. Anyone the vampire targets must
+and effects. succeed on a Will save or fall instantly under the vampire’s influ-
+Wholeness of Body (Su): Cure up to 18 hit points of her own ence as though by a dominate person spell (caster level 12th). The
+wounds each day. ability has a range of 30 feet.
+Possessions: +2 keen kama, +1 frost sling, 10 +1 sling bullets, ring of pro- Create Spawn (Su): A humanoid or monstrous humanoid slain by
+tection +2, bracers of armor +3, periapt of Wisdom +4. a vampire’s energy drain rises as a vampire spawn (see the Vampire
+ERIPMAV Spawn entry, page 253) 1d4 days after burial.
+CREATING A VAMPIRE If the vampire instead drains the victim’s Constitution to 0 or
+“Vampire” is an acquired template that can be added to any lower, the victim returns as a spawn if it had 4 or less HD and as a
+humanoid or monstrous humanoid creature (referred to hereafter vampire if it had 5 or more HD. In either case, the new vampire or
+as the base creature). spawn is under the command of the vampire that created it and
+A vampire uses all the base creature’s statistics and special abili- remains enslaved until its master’s destruction. At any given time
+ties except as noted here. a vampire may have enslaved spawn totaling no more than twice
+Size and Type: The creature’s type changes to undead (aug- its own Hit Dice; any spawn it creates that would exceed this limit
+mented humanoid or monstrous humanoid). Do not recalculate are created as free-willed vampires or vampire spawn. A vampire
+base attack bonus, saves, or skill points. Size is unchanged. that is enslaved may create and enslave spawn of its own, so a
+Hit Dice: Increase all current and future Hit Dice to d12s. master vampire can control a number of lesser vampires in this
+Speed: Same as the base creature. If the base creature has a fashion. A vampire may voluntarily free an enslaved spawn in or-
+swim speed, the vampire retains the ability to swim and is not vul- der to enslave a new spawn, but once freed, a vampire or vampire
+nerable to immersion in running water (see below). spawn cannot be enslaved again.
+Armor Class: The base creature’s natural armor bonus im- Energy Drain (Su): Living creatures hit by a vampire’s slam attack
+proves by +6. (or any other natural weapon the vampire might possess) gain two
+Attack: A vampire retains all the attacks of the base creature negative levels. For each negative level bewtowed, the vampire
+and also gains a slam attack if it didn’t already have one. If the base gains 5 temporary hit points. A vampire can use its energy drain
+creature can use weapons, the vampire retains this ability. A crea- ability once per round.
+ture with natural weapons retains those natural weapons. A vam- Special Qualities: A vampire retains all the special qualities of
+pire fighting without weapons uses either its slam attack or its pri- the base creature and gains those described below.
+mary natural weapon (if it has any). A vampire armed with a Alternate Form (Su): A vampire can assume the shape of a bat,
+weapon uses its slam or a weapon, as it desires. dire bat, wolf, or dire wolf as a standard action. This ability is simi-
+Full Attack: A vampire fighting without weapons uses either its lar to a polymorph spell cast by a 12th-level character, except that
+slam attack (see above) or its natural weapons (if it has any). If armed the vampire does not regain hit points for changing form and
+with a weapon, it usually uses the weapon as its primary attack along must choose from among the forms mentioned here. While in its
+with a slam or other natural weapon as a natural secondary attack. alternate form, the vampire loses its natural slam attack and domi-
+Damage: Vampires have slam attacks. If the base creature does nate ability, but it gains the natural weapons and extraordinary
+not have this attack form, use the appropriate damage value from special attacks of its new form. It can remain in that form until it
+the table below according to the vampire’s size. Creatures that assumes another or until the next sunrise. (If the base creature is
+have other kinds of natural weapons retain their old damage not terrestrial, this power might allow other forms.)
+values or use the appropriate value from the table below, Damage Reduction (Su): A vampire has damage reduction
+whichever is better. 10/silver and magic. A vampire’s natural weapons are treated as
+Size Damage magic weapons for the purpose of overcoming damage reduction.
+Fine 1 Fast Healing (Ex): A vampire heals 5 points of damage each
+Diminutive 1d2 round so long as it has at least 1 hit point. If reduced to 0 hit points
+Tiny 1d3 in combat, it automatically assumes gaseous form and attempts to
+Small 1d4 escape. It must reach its coffin home within 2 hours or be utterly
+Medium 1d6 destroyed. (It can travel up to nine miles in 2 hours.) Any addi-
+Large 1d8 tional damage dealt to a vampire forced into gaseous form has no
+Huge 2d6 effect. Once at rest in its coffin, a vampire is helpless. It regains 1
+Gargantuan 2d8 hit point after 1 hour, then is no longer helpless and resumes heal-
+Colossal 4d6 ing at the rate of 5 hit points per round.
+Special Attacks: A vampire retains all the special attacks of Gaseous Form (Su): As a standard action, a vampire can assume
+the base creature and gains those described below. Saves have a gaseous form at will as the spell (caster level 5th), but it can remain
+DC of 10 + 1/2 vampire’s HD + vampire’s Cha modifier unless gaseous indefinitely and has a fly speed of 20 feet with perfect
+noted otherwise. maneuverability.
+Blood Drain (Ex): A vampire can suck blood from a living victim Resistances (Ex): A vampire has resistance to cold 10 and electric-
+with its fangs by making a successful grapple check. If it pins the ity 10.
+foe, it drains blood, dealing 1d4 points of Constitution drain each Spider Climb (Ex): A vampire can climb sheer surfaces as though
+round the pin is maintained. On each such successful attack, the with a spider climb spell.
+vampire gains 5 temporary hit points. Turn Resistance (Ex): A vampire has +4 turn resistance.
+252 Children of the Night (Su): Vampires command the lesser crea- Abilities: Increase from the base creature as follows: Str +6,
+tures of the world and once per day can call forth 1d6+1 rat Dex +4, Int +2, Wis +2, Cha +4. As an undead creature, a vampire
+swarms, 1d4+1 bat swarms, or a pack of 3d6 wolves as a standard has no Constitution score.
+
+Skills: Vampires have a +8 racial bonus on Bluff, Hide, Listen, Vampire Characters
+Move Silently, Search, Sense Motive, and Spot checks. Otherwise Vampires are always evil, which causes characters of certain
+same as the base creature. classes to lose some class abilities, as noted in Chapter 3 of the
+Feats: Vampires gain Alertness, Combat Reflexes, Dodge, Player’s Handbook. In addition, certain classes take additional
+Improved Initiative, and Lightning Reflexes, assuming the base penalties.
+creature meets the prerequisites and doesn’t already have these Clerics: Vampire clerics lose their ability to turn undead but
+feats. gain the ability to rebuke undead. This ability does not affect the
+Environment: Any, usually same as base creature. vampire’s controller or any other vampires that a master controls.
+Organization: Solitary, pair, gang (3–5), or troupe (1–2 plus A vampire cleric has access to two of the following domains:
+2–5 vampire spawn) Chaos, Destruction, Evil, or Trickery.
+Challenge Rating: Same as the base creature +2. Sorcerers and Wizards: Vampire sorcerers and wizards retain
+Treasure: Double standard. their class abilities, but if a character has a familiar other than a rat
+Alignment: Always evil (any). or bat, the link between them is broken, and the familiar shuns its VAMPIRE

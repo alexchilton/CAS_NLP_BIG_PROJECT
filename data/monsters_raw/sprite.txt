@@ -1,0 +1,68 @@
+SPRITE
+GRIG Speed: 20 ft. (4 squares), swim 30 ft.
+Tiny Fey Armor Class: 14 (+1 size, +3 Dex), touch 14, flat-footed 11
+Hit Dice: 1/2 d6+1 (2 hp) Base Attack/Grapple: +0/–6
+Initiative: +4 Attack: Short sword +4 melee
+Speed: 20 ft. (4 squares), fly 40 ft. (poor) Nixie (1d4–2/19–20) or light crossbow +4
+Armor Class: 18 (+2 size, +4 Dex, +2 natu- ranged (1d6/19–20)
+ral), touch 16, flat-footed 16 Full Attack: Short sword +4 melee
+Base Attack/Grapple: +0/–11 (1d4–2/19–20) or light crossbow +4
+Attack: Short sword +6 melee ranged (1d6/19–20)
+(1d3–3/19–20) or longbow +6 ranged Space/Reach: 5 ft./5 ft..
+(1d4–3/×3) Special Attacks: Charm person
+Full Attack: Short sword +6 melee Special Qualities: Amphibious,
+(1d3–3/19–20) or longbow +6 ranged damage reduction 5/cold iron, low-light
+(1d4–3/×3) vision, spell resistance 16, water breathing,
+Space/Reach: 2-1/2 ft./0 ft. wild empathy
+Special Attacks: Spell-like abilities, fiddle Saves: Fort +0, Ref +5, Will +3
+Special Qualities: Damage reduction 5/cold Abilities: Str 7, Dex 16, Con 11,
+iron, low-light vision, spell resistance 17 Int 12, Wis 13, Cha 18
+Saves: Fort +1, Ref +6, Will +3 Skills: Bluff +8, Craft (any one) +5,
+Abilities: Str 5, Dex 18, Con 13, Int 10, Escape Artist +6, Handle Animal +8,
+Wis 13, Cha 14 Hide +7*, Listen +6, Perform (sing) +7,
+Skills: Craft (any one) +4, Escape Artist +8, Search +3, Sense Motive +5, Spot +6,
+Hide +16, Jump +3, Listen +3, Move Swim +6
+Silently +8*, Perform (string instru- Feats: DodgeB, Weapon Finesse
+ments) +6, Search +2, Spot +3 Environment: Temperate aquatic
+Feats: DodgeB, Weapon Finesse Organization: Gang (2–4), band
+Environment: Temperate forests (6–11), or tribe (20–80)
+Organization: Gang (2–4), band (6–11), or Challenge Rating: 1
+tribe (20–80) Treasure: No coins; 50% goods (metal or
+Challenge Rating: 1 Grig Pixie stone only); 50% items (no scrolls)
+Treasure: No coins; 50% goods; 50% items Alignment: Always neutral
+Alignment: Always neutral good Advancement: 2–3 HD (Small)
+Advancement: 1–3 HD (Tiny) Level Adjustment: +3
+Level Adjustment: +3
+This being looks something like a small elf. It has green skin, webbed
+This tiny being has a humanoid head, torso, and arms, with the wings, fingers and toes, pointed ears, and wide silver eyes.
+antennae, and legs of a cricket.
+Nixies are aquatic sprites who dwell in and protect pristine ponds
+Grigs are mischievous and lighthearted. They have no fear of and lakes. They are even more reclusive than most fey and tend to
+larger creatures and delight in playing tricks on them. Favorite treat intruders with suspicion and hostility.
+pranks include stealing food, collapsing tents, and using ventrilo- Most nixies are slim and comely, with lightly scaled, pale green
+quism to make objects talk. skin and dark green hair. Females often twine shells and pearl
+Grigs can leap great distances. They have light blue skin, forest- strings in their hair and dress in wraps woven from colorful sea-
+green hair, and brown hairy legs, and usually wear tunics or weed. Males wear loincloths of the same materials. Nixies prefer
+brightly colored vests with buttons made from tiny gems. not to leave their lakes.
+A grig stands 1-1/2 feet tall and weighs about 1 pound. A nixie stands about 4 feet tall and weighs about 45 pounds.
+Grigs speak Sylvan. Some also speak Common. Nixies speak Aquan and Sylvan. Some also speak Common.
+Combat Combat
+Grigs are fierce by sprite standards, attacking opponents fearlessly Nixies rely on their charm person ability to deter enemies, entering
+with bow and dagger. combat only to protect themselves and their territory.
+Spell-Like Abilities: 3/day—disguise self, entangle (DC 13), Charm Person (Sp): A nixie can use charm person three times per 235
+invisibility (self only), pyrotechnics (DC 14), ventriloquism (DC 13). day as the spell (caster level 4th). Those affected must succeed on
+Caster level 9th. The save DCs are Charisma-based. a DC 15 Will save or be charmed for 24 hours. Most charmed crea-
+
+tures are used to perform heavy labor, guard duty, and other oner- Combat
+ous tasks for the nixie community. Shortly before the effect wears The normally carefree pixies ferociously attack evil creatures and
+off, the nixie escorts the charmed creature away and orders it to unwanted intruders. They take full advantage of their invisibility
+keep walking. The save DC is Charisma-based. and other abilities to harass and drive away opponents.
+Amphibious (Ex): Although nixies are aquatic, they can sur- Greater Invisibility (Su): A pixie remains invisible even when
+vive indefinitely on land. it attacks. This ability is constant, but the pixie can suppress or re-
+Water Breathing (Sp): Once per day a nixie can use water breath- sume it as a free action.
+ing as the spell (caster level 12th). Nixies usually bestow this effect Spell-Like Abilities: 1/day—lesser confusion (DC 14), dancing
+on those they have charmed. lights, detect chaos, detect good, detect evil, detect law, detect thoughts (DC
+Wild Empathy (Ex): This ability works like the druid’s wild 15), dispel magic, entangle (DC 14), permanent image (DC 19; visual
+empathy class feature, except that a nixie has a +6 racial bonus on and auditory elements only), polymorph (self only). Caster level
+the check. 8th. The save DCs are Charisma-based.
+Skills: A nixie has a +8 racial bonus on any Swim check to per- One pixie in ten can use Otto’s irresistible dance (caster level 8th)

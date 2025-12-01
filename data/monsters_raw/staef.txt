@@ -1,0 +1,15 @@
+STAEF
+If a creature of Large size or larger hovers within 20 feet of the the same round that it uses a quickened spell-like ability. The crea-
+SLLIKS ground in an area with lots of loose debris, the draft from its wings ture may use only one quickened spell-like ability per round.
+creates a hemispherical cloud with a radius of 60 feet. The winds The creature can only select a spell-like ability duplicating a
+so generated can snuff torches, small campfires, exposed lanterns, spell with a level less than or equal to half its caster level (round
+and other small, open flames of nonmagical origin. Clear vision down) –4. For a summary, see the table below. For example, a crea-
+within the cloud is limited to 10 feet. Creatures have concealment ture that uses its spell-like abilities as a 15th-level caster can only
+at 15 to 20 feet (20% miss chance). At 25 feet or more, creatures quicken spell-like abilities duplicating spells of 3rd level or lower.
+have total concealment (50% miss chance, and opponents cannot In addition, a spell-like ability that duplicates a spell with a casting
+use sight to locate the creature). time greater than 1 full round cannot be quickened.
+Those caught in the cloud must succeed on a Concentration Normal: Normally the use of a spell-like ability requires a standard
+check (DC 10 + 1/2 creature’s HD) to cast a spell. action and provokes an attack of opportunity unless noted otherwise.
+Normal: Without this feat, a creature must keep moving while Special: This feat can be taken multiple times. Each time it is
+flying unless it has perfect maneuverability. taken, the creature can apply it to a different one of its spell-like
+abilities.

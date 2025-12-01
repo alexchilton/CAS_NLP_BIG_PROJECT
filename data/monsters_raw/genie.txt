@@ -1,0 +1,69 @@
+GENIE
+they meet.
+EFREETI The efreet are ruled by a grand
+Large Outsider (Extra- sultan who makes his home in
+planar, Fire) the City of Brass. He is advised by
+Hit Dice: 10d8+20 (65 hp) a variety of beys, amirs, and
+Initiative: +7 maliks concerning ac-
+Speed: 20 ft. (4 squares), fly tions on the plane,
+40 ft. (perfect) and by six great
+Armor Class: 18 (–1 size, +3 Dex, +6 pashas who
+natural), touch 12, flat-footed 15 deal with
+Base Attack/Grapple: +10/+20 efr eet
+Attack: Slam +15 melee (1d8+6 business
+plus 1d6 fire) on the Ma-
+Full Attack: 2 Djinni terial Plane.
+slams +15 The City of
+melee (1d8+6 Brass is a huge
+plus 1d6 fire) citadel that is
+Space/Reach: 10 ft./ home to the majority
+10 ft. of efreet. It hovers in the
+Special Attacks: Change Efreeti hot regions of the plane
+size, heat, spell-like abili- and is bordered by seas
+ties and lakes of glowing
+Special Qualities: magma. The city
+Darkvision 60 ft., sits upon a hemi-
+immunity to fire, sphere of glowing
+plane shift, brass some 40
+telepathy 100 miles in diame-
+ft., vulnerabil- ter. From the
+ity to cold upper towers
+Saves: Fort +9, rise the min-
+Ref +10, arets of the
+Will +9 great bastion of
+Abilities: Str 23, the sultan’s
+Dex 17, Con 14, palace, which
+Int 12, Wis 15, is said to hold
+Cha 15 vast riches.
+Skills: Bluff +15, Craft The city’s
+(any one) +14, Concentration popula-
++15, Diplomacy +6, Disguise tion far
++2 (+4 acting), Intimidate +17, outnumbers
+Listen +15, Move Silently +16, that of any of
+Sense Motive +15, Spellcraft +14, the great cities of the
+Spot +15 Material Plane.
+Feats: Combat Casting, Combat Reflexes, An efreeti stands about 12 feet
+Dodge, Improved InitiativeB, Quicken Spell- tall and weighs about 2,000 pounds.
+Like Ability (scorching ray) Efreet speak Auran, Common, Ignan, and Infernal.
+Environment: Elemental Plane of Fire
+Organization: Solitary, company (2–4), or band (6–15) Combat
+Challenge Rating: 8 Efreet love to mislead, befuddle, and confuse their foes. They do so
+Treasure: Standard coins; double goods; standard items for enjoyment as well as a battle tactic.
+Alignment: Always lawful evil Change Size (Sp): Twice per day, an efreeti can magically change
+Advancement: 11–15 HD (Large); 16–30 HD (Huge) a creature’s size. This works just like an enlarge person or reduce 115
+Level Adjustment: — person spell (the efreeti chooses when using the ability), except
+that the ability can work on the efreeti. A DC 13 Fortitude save
+
+negates the effect. The save DC is Charisma-based. This is the up fight, they use flight and invisibility to regroup and maneuver to
+equivalent of a 2nd-level spell. a more advantageous position.
+Heat (Ex): An efreeti’s red-hot body deals 1d6 points of extra Change Size (Sp): Twice per day, a janni can magically change a
+fire damage whenever it hits in melee, or in each round it main- creature’s size. This works just like an enlarge person or reduce person
+tains a hold when grappling. spell (the janni chooses when using the ability), except that the
+Spell-Like Abilities: At will—detect magic, produce flame, ability can work on the janni. A DC 13 Fortitude save negates the
+pyrotechnics (DC 14), scorching ray (1 ray only); 3/day—invisibility, effect. The save DC is Charisma-based. This is the equivalent of a
+wall of fire (DC 16); 1/day—grant up to three wishes (to nongenies 2nd-level spell.
+only), gaseous form, permanent image (DC 18), polymorph (self only). Spell-Like Abilities: 3/day—invisibility (self only), speak with
+Caster level 12th. The save DCs are Charisma-based. animals. Caster level 12th. Once per day a janni can create food and
+water (caster level 7th) and can use ethereal jaunt (caster level 12th)
+JANNI for 1 hour. The save DCs are Charisma-based.
+Medium Outsider (Native) Elemental Endurance (Ex): Jann can survive on the Elemen-

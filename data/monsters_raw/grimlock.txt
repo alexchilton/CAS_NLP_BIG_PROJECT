@@ -1,0 +1,35 @@
+GRIMLOCK
+Griffons are powerful, majestic creatures with the characteris-
+tics of both lions and eagles. They hunt all manner of prey but Medium Monstrous Humanoid
+favor the flesh of horses above all else. Hit Dice: 2d8+2 (11 hp)
+From nose to tail, an adult griffon can measure as much as 8 Initiative: +1
+feet. Neither males nor females are endowed with a mane. A pair Speed: 30 ft. (6 squares)
+of broad, golden wings emerge from the creature’s back and span Armor Class: 15 (+1 Dex, +4 natural), touch 11, flat-footed 14
+25 feet or more. A griffon weighs about 500 pounds. Base Attack/Grapple: +2/+4
+Griffons make their homes in high places, swooping down Attack: Battleaxe +4 melee (1d8+3/×3)
+with a shrill, eaglelike cry to attack their prey. Although both Full Attack: Battleaxe +4 melee (1d8+3/×3)
+aggressive and territorial, they are also intelligent enough to Space/Reach: 5 ft./5 ft.
+avoid obviously powerful enemies. They almost always attack Special Attacks: —
+KCOLMIRGsretaW
+horses, however, and any who attempt to protect horses from a Special Qualities: Blindsight 40 ft., immunities, scent
+hungry griffon often end up on the menu themselves. Saves: Fort +1, Ref +4, Will +2
+A griffon cannot speak, but understands Common. Abilities: Str 15, Dex 13, Con 13, Int 10, Wis 8, Cha 6
+Skills: Climb +4, Hide +3*, Listen +5, Spot +3
+COMBAT Feats: Alertness, TrackB
+Griffons prefer to pounce on their prey, either diving to the attack Environment: Underground
+or leaping from above. Organization:Gang (2–4), pack (10–20), tribe (10–60 plus 1
+Pounce (Ex): If a griffon dives upon or charges a foe, it can leader of 3rd–5th level per 10 adults), or cult (10–80 plus 1
+make a full attack, including two rake attacks. leader of 3rd–5th level per 10 adults and 1 mind flayer or
+Rake (Ex): Attack bonus +8 melee, damage 1d6+2. medusa)
+Skills: Griffons have a +4 racial bonus on Jump and Spot Challenge Rating: 1
+checks. Treasure: Standard coins; standard goods (gems only); standard
+items
+TRAINING A GRIFFON Alignment: Often neutral evil
+Although intelligent, a griffon requires training before it can bear a Advancement: By character class
+rider in combat. To be trained, a griffon must have a friendly atti- Level Adjustment: +2
+tude toward the trainer (this can be achieved through a successful
+Diplomacy check). Training a friendly griffon requires six weeks of This muscular humanoid is about as tall as a human. It has thick, gray,
+work and a DC 25 Handle Animal check. Riding a griffon requires scaly skin and blank, eyeless eye sockets.
+an exotic saddle. A griffon can fight while carrying a rider, but the
+rider cannot also attack unless he or she succeeds on a Ride check. Grimlocks are natives of the deep places beneath the earth but
+Griffon eggs are worth 3,500 gp apiece on the open market, come to the surface to raid for slaves and pillage. While there,

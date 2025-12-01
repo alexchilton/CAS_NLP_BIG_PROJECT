@@ -1,0 +1,202 @@
+MONSTERS RANKED BY CHALLENGE RATINGS
+Bat . . . . . . . . . . . . . . . . . . . 1/10 Githzerai . . . . . . . . . . . . . . . . . 1 Shark, Large . . . . . . . . . . . . . . 2 Barghest . . . . . . . . . . . . . . . . . 4
+Toad. . . . . . . . . . . . . . . . . . 1/10 Gnoll. . . . . . . . . . . . . . . . . . . . 1 Shocker lizard . . . . . . . . . . . . . 2 Bear, brown. . . . . . . . . . . . . . . 4
+Gnome, svirfneblin . . . . . . . . . 1 Skeleton, owlbear . . . . . . . . . . 2 Bear, polar. . . . . . . . . . . . . . . . 4
+Monstrous centipede,
+Grig (sprite) . . . . . . . . . . . . . . 1 Skum . . . . . . . . . . . . . . . . . . . 2 Carrion crawler . . . . . . . . . . . . 4
+Tiny . . . . . . . . . . . . . . . . . 1/8
+Grimlock . . . . . . . . . . . . . . . . . 1 Snake, constrictor . . . . . . . . . . 2 Celestial lion . . . . . . . . . . . . . . 4
+Rat. . . . . . . . . . . . . . . . . . . . 1/8
+Homunculus. . . . . . . . . . . . . . 1 Snake, Large viper. . . . . . . . . . 2 Crocodile, giant. . . . . . . . . . . . 4
+Donkey . . . . . . . . . . . . . . . . 1/6 Horse, heavy . . . . . . . . . . . . . . 1 Thoqqua . . . . . . . . . . . . . . . . . 2 Dire boar. . . . . . . . . . . . . . . . . 4
+Lizard . . . . . . . . . . . . . . . . . 1/6 Horse, light. . . . . . . . . . . . . . . 1 Triton . . . . . . . . . . . . . . . . . . . 2 Dire wolverine. . . . . . . . . . . . . 4
+Monkey . . . . . . . . . . . . . . . . 1/6 Horse, light war . . . . . . . . . . . 1 Vargouille . . . . . . . . . . . . . . . . 2 Displacer beast . . . . . . . . . . . . 4
+Raven . . . . . . . . . . . . . . . . . 1/6 Hyena . . . . . . . . . . . . . . . . . . . 1 Wererat (lycanthrope) . . . . . . . 2 Gargoyle . . . . . . . . . . . . . . . . . 4
+Cat. . . . . . . . . . . . . . . . . . . . 1/4 Krenshar . . . . . . . . . . . . . . . . . 1 Wolverine . . . . . . . . . . . . . . . . 2 Giant stag beetle. . . . . . . . . . . 4
+Kobold. . . . . . . . . . . . . . . . . 1/4 Lemure (devil) . . . . . . . . . . . . 1 Worg . . . . . . . . . . . . . . . . . . . . 2 Gray ooze . . . . . . . . . . . . . . . . 4
+Monstrous centipede, Lizardfolk . . . . . . . . . . . . . . . . 1 Zombie, bugbear . . . . . . . . . . 2 Griffon . . . . . . . . . . . . . . . . . . 4
+Small. . . . . . . . . . . . . . . . 1/4 Manta ray . . . . . . . . . . . . . . . . 1 Allip . . . . . . . . . . . . . . . . . . . . 3 Harpy . . . . . . . . . . . . . . . . . . . 4
+Monstrous scorpion, Tiny . . 1/4 Monstrous centipede, Animated object, Large. . . . . . 3 Hydra, five-headed . . . . . . . . . 4
+Monstrous spider, Tiny . . . . 1/4 Large . . . . . . . . . . . . . . . . . 1 Ankheg . . . . . . . . . . . . . . . . . . 3 Janni (genie) . . . . . . . . . . . . . . 4
+Owl . . . . . . . . . . . . . . . . . . . 1/4 Monstrous scorpion, Arrowhawk, juvenile . . . . . . . . 3 Mimic . . . . . . . . . . . . . . . . . . . 4
+Pony . . . . . . . . . . . . . . . . . . 1/4 Medium . . . . . . . . . . . . . . . 1 Assassin vine . . . . . . . . . . . . . 3 Minotaur. . . . . . . . . . . . . . . . . 4
+Weasel . . . . . . . . . . . . . . . . . 1/4 Monstrous spider, Centaur . . . . . . . . . . . . . . . . . . 3 Otyugh . . . . . . . . . . . . . . . . . . 4
+Zombie, kobold . . . . . . . . . . 1/4 Medium . . . . . . . . . . . . . . . 1 Cockatrice . . . . . . . . . . . . . . . . 3 Owlbear . . . . . . . . . . . . . . . . . 4
+Mule . . . . . . . . . . . . . . . . . . . . 1 Pixie (sprite) . . . . . . . . . . . . . . 4
+Dire rat . . . . . . . . . . . . . . . . 1/3 Deinonychus (dinosaur) . . . . . 3
+Nixie (sprite). . . . . . . . . . . . . . 1 Rhinoceros . . . . . . . . . . . . . . . 4
+Dog . . . . . . . . . . . . . . . . . . . 1/3 Derro . . . . . . . . . . . . . . . . . . . 3
+Octopus . . . . . . . . . . . . . . . . . 1 Sea cat . . . . . . . . . . . . . . . . . . 4
+Giant fire beetle. . . . . . . . . . 1/3 Dire ape . . . . . . . . . . . . . . . . . 3
+Pseudodragon. . . . . . . . . . . . . 1 Sea hag . . . . . . . . . . . . . . . . . . 4
+Goblin . . . . . . . . . . . . . . . . . 1/3 Dire wolf . . . . . . . . . . . . . . . . . 3
+Shark, Medium . . . . . . . . . . . . 1 Shark, Huge . . . . . . . . . . . . . . 4
+Hawk . . . . . . . . . . . . . . . . . . 1/3 Doppelganger . . . . . . . . . . . . . 3
+Shrieker (fungus) . . . . . . . . . . 1 Skeleton, chimera . . . . . . . . . . 4
+Skeleton, human warrior . . . 1/3 Dryad . . . . . . . . . . . . . . . . . . . 3
+Skeleton, wolf . . . . . . . . . . . . . 1 Swarm, Centipede. . . . . . . . . . 4
+Snake, Tiny viper . . . . . . . . . 1/3 Eagle, giant . . . . . . . . . . . . . . . 3
+Snake, Medium viper . . . . . . . 1 Tiger . . . . . . . . . . . . . . . . . . . . 4
+Elemental, Medium (any) . . . . 3
+Aasimar (planetouched) . . . 1/2 Spider swarm . . . . . . . . . . . . . 1 Vampire spawn . . . . . . . . . . . . 4
+Ethereal filcher . . . . . . . . . . . . 3
+Animated object, Tiny . . . . . 1/2 Squid . . . . . . . . . . . . . . . . . . . 1 Wereboar (lycanthrope) . . . . . 4
+Ethereal marauder . . . . . . . . . 3
+Baboon . . . . . . . . . . . . . . . . 1/2 Troglodyte . . . . . . . . . . . . . . . . 1 Zombie, minotaur. . . . . . . . . . 4
+Ettercap. . . . . . . . . . . . . . . . . . 3
+Badger . . . . . . . . . . . . . . . . . 1/2 Wolf . . . . . . . . . . . . . . . . . . . . 1 Zombie, wyvern . . . . . . . . . . . 4
+Formian, warrior . . . . . . . . . . . 3
+Dwarf (any but duergar) . . . 1/2 Zombie, troglodyte . . . . . . . . . 1
+Gelatinous cube (ooze) . . . . . 3 Achaierai . . . . . . . . . . . . . . . . . 5
+Eagle . . . . . . . . . . . . . . . . . . 1/2
+Animated object, Medium . . . 2 Ghast . . . . . . . . . . . . . . . . . . . 3 Animated object, Huge. . . . . . 5
+Elf (any but drow) . . . . . . . . 1/2
+Ape . . . . . . . . . . . . . . . . . . . . . 2 Giant praying mantis . . . . . . . 3 Arrowhawk, adult . . . . . . . . . . 5
+Fiendish dire rat . . . . . . . . . 1/2
+Archon, lantern . . . . . . . . . . . . 2 Giant wasp . . . . . . . . . . . . . . . 3 Barghest, greater. . . . . . . . . . . 5
+Formian worker . . . . . . . . . . 1/2
+Azer . . . . . . . . . . . . . . . . . . . . 2 Grick . . . . . . . . . . . . . . . . . . . . 3 Basilisk . . . . . . . . . . . . . . . . . . 5
+Gnome
+Bat swarm. . . . . . . . . . . . . . . . 2 Hell hound . . . . . . . . . . . . . . . 3 Bearded devil (barbazu) . . . . . 5
+(any but svirfneblin) . . . . 1/2
+Bear, black. . . . . . . . . . . . . . . . 2 Howler . . . . . . . . . . . . . . . . . . 3 Cloaker . . . . . . . . . . . . . . . . . . 5
+Halfling (any) . . . . . . . . . . . 1/2
+Bison. . . . . . . . . . . . . . . . . . . . 2 Lion. . . . . . . . . . . . . . . . . . . . . 3 Dire lion . . . . . . . . . . . . . . . . . 5
+Hobgoblin . . . . . . . . . . . . . . 1/2
+Blink dog. . . . . . . . . . . . . . . . . 2 Locust swarm . . . . . . . . . . . . . 3 Djinni (genie) . . . . . . . . . . . . . 5
+Locathah . . . . . . . . . . . . . . . 1/2
+Boar . . . . . . . . . . . . . . . . . . . . 2 Magmin . . . . . . . . . . . . . . . . . 3 Elemental, Large (any) . . . . . . 5
+Merfolk . . . . . . . . . . . . . . . . 1/2
+Bugbear . . . . . . . . . . . . . . . . . 2 Mephit (any) . . . . . . . . . . . . . . 3 Gibbering mouther . . . . . . . . . 5
+Monstrous centipede,
+Cheetah. . . . . . . . . . . . . . . . . . 2 Monstrous scorpion, Large. . . 3 Green hag . . . . . . . . . . . . . . . . 5
+Medium. . . . . . . . . . . . . . . 1/2
+Choker . . . . . . . . . . . . . . . . . . 2 Ogre . . . . . . . . . . . . . . . . . . . . 3 Hieracosphinx. . . . . . . . . . . . . 5
+Monstrous scorpion, Small . 1/2
+Crocodile. . . . . . . . . . . . . . . . . 2 Ogre, merrow . . . . . . . . . . . . . 3 Hydra, six-headed . . . . . . . . . . 5
+Monstrous spider, Small . . . 1/2
+Devil, imp . . . . . . . . . . . . . . . . 2 Owl, giant . . . . . . . . . . . . . . . . 3 Manticore . . . . . . . . . . . . . . . . 5
+Orc . . . . . . . . . . . . . . . . . . . 1/2
+Dire badger. . . . . . . . . . . . . . . 2 Pegasus . . . . . . . . . . . . . . . . . 3 Monstrous spider, Huge. . . . . 5
+Pony, war . . . . . . . . . . . . . . . 1/2
+Dire bat. . . . . . . . . . . . . . . . . . 2 Phantom fungus . . . . . . . . . . . 3 Mummy . . . . . . . . . . . . . . . . . 5
+Porpoise . . . . . . . . . . . . . . . 1/2
+Dire weasel . . . . . . . . . . . . . . . 2 Rust monster . . . . . . . . . . . . . 3 Nightmare . . . . . . . . . . . . . . . 5
+Snake, Small viper . . . . . . . . 1/2
+Dretch (demon) . . . . . . . . . . . 2 Salamander, flamebrother. . . . 3 Ochre jelly (ooze) . . . . . . . . . . 5
+Stirge . . . . . . . . . . . . . . . . . . 1/2
+Giant ant, queen . . . . . . . . . . . 2 Shadow . . . . . . . . . . . . . . . . . . 3 Orca . . . . . . . . . . . . . . . . . . . . 5
+Tiefling (planetouched) . . . . 1/2
+Giant ant, soldier . . . . . . . . . . 2 Skeleton, troll . . . . . . . . . . . . . 3 Phase spider . . . . . . . . . . . . . . 5
+Zombie, human commoner 1/2
+Giant bombardier beetle. . . . . 2 Snake, Huge viper. . . . . . . . . . 3 Rast. . . . . . . . . . . . . . . . . . . . . 5
+Animated object, Small. . . . . . 1 Hippogriff . . . . . . . . . . . . . . . . 2 Tojanida, juvenile . . . . . . . . . . 3 Ravid. . . . . . . . . . . . . . . . . . . . 5
+Camel . . . . . . . . . . . . . . . . . . . 1 Horse, heavy war . . . . . . . . . . 2 Unicorn. . . . . . . . . . . . . . . . . . 3 Shadow mastiff . . . . . . . . . . . . 5
+Darkmantle . . . . . . . . . . . . . . . 1 Kuo-toa . . . . . . . . . . . . . . . . . . 2 Violet fungus. . . . . . . . . . . . . . 3 Skeleton, ettin. . . . . . . . . . . . . 5
+Dog, riding . . . . . . . . . . . . . . . 1 Leopard. . . . . . . . . . . . . . . . . . 2 Werewolf (lycanthrope). . . . . . 3 Snake, giant constrictor . . . . . 5
+Dwarf, duergar . . . . . . . . . . . . 1 Lizard, monitor . . . . . . . . . . . . 2 Wight . . . . . . . . . . . . . . . . . . . 3 Spider eater. . . . . . . . . . . . . . . 5
+Elemental, Small (any) . . . . . . 1 Monstrous centipede, Huge . . 2 Xorn, minor . . . . . . . . . . . . . . 3 Pixie (with Otto’s Irresistible
+Elf, drow . . . . . . . . . . . . . . . . . 1 Monstrous spider, Large. . . . . 2 Yeth hound . . . . . . . . . . . . . . . 3 Dance) (sprite) . . . . . . . . . . . 5
+Ghoul . . . . . . . . . . . . . . . . . . . 1 Quasit (demon) . . . . . . . . . . . 2 Yuan-ti, pureblood . . . . . . . . . 3 Tojanida, adult . . . . . . . . . . . . 5
+318 Giant ant, worker . . . . . . . . . . 1 Rat swarm. . . . . . . . . . . . . . . . 2 Zombie, ogre . . . . . . . . . . . . . 3 Troll. . . . . . . . . . . . . . . . . . . . . 5
+Giant bee . . . . . . . . . . . . . . . . 1 Sahuagin. . . . . . . . . . . . . . . . . 2 Troll, scrag . . . . . . . . . . . . . . . 5
+Aranea. . . . . . . . . . . . . . . . . . . 4
+Githyanki. . . . . . . . . . . . . . . . . 1 Satyr . . . . . . . . . . . . . . . . . . . . 2 Werebear (lycanthrope). . . . . . 5
+Archon, hound . . . . . . . . . . . . 4
+
+Weretiger (lycanthrope) . . . . . 5 Giant, hill . . . . . . . . . . . . . . . . 7 Tyrannosaurus (dinosaur). . . . 8 Half-dragon celestial
+Winter wolf . . . . . . . . . . . . . . . 5 Golem, flesh . . . . . . . . . . . . . . 7 Xorn, elder . . . . . . . . . . . . . . . 8 lammasu . . . . . . . . . . . . . 11
+Wraith . . . . . . . . . . . . . . . . . . . 5 Hellcat (devil) . . . . . . . . . . . . . 7 Harpy archer . . . . . . . . . . . . . 11
+Androsphinx . . . . . . . . . . . . . . 9
+Yuan-ti, halfblood . . . . . . . . . . 5 Hydra, eight-headed . . . . . . . . 7 Hill giant dire wereboar
+Avoral (guardinal) . . . . . . . . . . 9
+Zombie, umber hulk . . . . . . . . 5 Hydra, six-headed cryo-. . . . . . 7 (lycanthrope) . . . . . . . . . . . 11
+Bone devil (osyluth) . . . . . . . . 9
+Hydra, six-headed pyro- . . . . . 7 Hezrou (demon). . . . . . . . . . 11
+Annis (hag). . . . . . . . . . . . . . . 6 Delver . . . . . . . . . . . . . . . . . . . 9
+Invisible stalker. . . . . . . . . . . . 7 Hydra, ten-headed cryo- . . . . 11
+Baleen whale. . . . . . . . . . . . . . 6 Dire shark . . . . . . . . . . . . . . . . 9
+Lillend . . . . . . . . . . . . . . . . . . . 7 Hydra, ten-headed pyro- . . . . 11
+Belker . . . . . . . . . . . . . . . . . . . 6 Dragon turtle . . . . . . . . . . . . . 9
+Medusa. . . . . . . . . . . . . . . . . . 7 Hydra, twelve-headed . . . . . . 11
+Bralani (eladrin) . . . . . . . . . . . 6 Elemental, greater (any) . . . . . 9
+Monstrous scorpion, Huge. . . 7 Monstrous spider, Colossal . 11
+Chain devil (kyton) . . . . . . . . . 6 Giant, frost . . . . . . . . . . . . . . . 9
+Naga, water. . . . . . . . . . . . . . . 7 Retriever (demon). . . . . . . . . 11
+Demon, babau . . . . . . . . . . . . 6 Giant, elder stone . . . . . . . . . . 9
+Nymph . . . . . . . . . . . . . . . . . . 7 Troll hunter . . . . . . . . . . . . . . 11
+Digester . . . . . . . . . . . . . . . . . 6 Half-fiend, 7th-level
+Ogre barbarian . . . . . . . . . . . . 7 Wraith, dread . . . . . . . . . . . . 11
+Megaraptor (dinosaur) . . . . . . 6 human cleric . . . . . . . . . . . . 9
+Phasm. . . . . . . . . . . . . . . . . . . 7
+Ettin . . . . . . . . . . . . . . . . . . . . 6 Hydra, eight-headed cryo-. . . . 9 Basilisk, Abyssal greater . . . . 12
+Remorhaz . . . . . . . . . . . . . . . . 7
+Gauth (beholder) . . . . . . . . . . 6 Hydra, eight-headed pyro- . . . 9 Black pudding, elder (ooze) . 12
+Skeleton, cloud giant . . . . . . . 7
+Girallon. . . . . . . . . . . . . . . . . . 6 Hydra, ten-headed . . . . . . . . . 9 Displacer beast pack lord . . . 12
+Slaad, red . . . . . . . . . . . . . . . . 7
+Half-black dragon, 4th-level Monstrous centipede, Frost worm . . . . . . . . . . . . . . 12
+Spectre . . . . . . . . . . . . . . . . . . 7
+human fighter . . . . . . . . . . . . 6 Colossal . . . . . . . . . . . . . . . 9 Hydra, eleven-headed cryo-. . 12
+Succubus (demon) . . . . . . . . . 7
+Hydra, five-headed cryo- . . . . . 6 Naga, spirit . . . . . . . . . . . . . . . 9 Hydra, eleven-headed pyro- . 12
+Umber hulk. . . . . . . . . . . . . . . 7
+Hydra, five-headed pyro-. . . . . 6 Nessian warhound Kolyarut (inevitable) . . . . . . . 12
+Vampire, 5th-level
+Hydra, seven-headed . . . . . . . 6 (hell hound) . . . . . . . . . . . . 9 Kraken. . . . . . . . . . . . . . . . . . 12
+human fighter . . . . . . . . . . . . 7
+Lamia . . . . . . . . . . . . . . . . . . . 6 Night hag . . . . . . . . . . . . . . . . 9 Leonal (guardinal) . . . . . . . . 12
+Yuan-ti, abomination. . . . . . . . 7
+Monstrous centipede, Roc . . . . . . . . . . . . . . . . . . . . . 9 Monstrous scorpion,
+Gargantuan. . . . . . . . . . . . . . 6 Arrowhawk, elder . . . . . . . . . . 8 Slaad, green . . . . . . . . . . . . . . 9 Colossal . . . . . . . . . . . . . . 12
+Salamander, average . . . . . . . . 6 Athach. . . . . . . . . . . . . . . . . . . 8 Squid, giant. . . . . . . . . . . . . . . 9 Purple worm . . . . . . . . . . . . . 12
+Shambling mound . . . . . . . . . 6 Behir . . . . . . . . . . . . . . . . . . . . 8 Tojanida, elder . . . . . . . . . . . . 9 Roper . . . . . . . . . . . . . . . . . . 12
+Skeleton, Bodak . . . . . . . . . . . . . . . . . . . 8 Triceratops (dinosaur) . . . . . . 9
+Beholder . . . . . . . . . . . . . . . . 13
+advanced megaraptor. . . . . 6 Destrachan . . . . . . . . . . . . . . . 8 Vrock (demon) . . . . . . . . . . . . 9
+Celestial charger (unicorn) . . 13
+Tendriculos . . . . . . . . . . . . . . . 6 Dire tiger. . . . . . . . . . . . . . . . . 8 Yrthak . . . . . . . . . . . . . . . . . . . 9
+Ghaele (eladrin) . . . . . . . . . . 13
+Will-o’-wisp . . . . . . . . . . . . . . . 6 Djinni noble (genie) . . . . . . . . 8 Zelekhut (inevitable). . . . . . . . 9
+Glabrezu (demon) . . . . . . . . 13
+Wyvern . . . . . . . . . . . . . . . . . . 6 Efreeti (genie) . . . . . . . . . . . . . 8
+Animated object, Colossal . . 10 Giant, storm . . . . . . . . . . . . . 13
+Xill. . . . . . . . . . . . . . . . . . . . . . 6 Erinyes (devil) . . . . . . . . . . . . . 8
+Bebilith (demon). . . . . . . . . . 10 Golem, iron. . . . . . . . . . . . . . 13
+Xorn, average . . . . . . . . . . . . . 6 Giant, stone . . . . . . . . . . . . . . 8
+Couatl . . . . . . . . . . . . . . . . . . 10 Hydra, twelve-headed cryo- . . 13
+Zombie, gray render . . . . . . . . 6 Gorgon . . . . . . . . . . . . . . . . . . 8
+Formian, myrmarch . . . . . . . 10 Hydra, twelve-headed pyro-. . 13
+Gray render. . . . . . . . . . . . . . . 8
+Aboleth . . . . . . . . . . . . . . . . . . 7 Giant, fire . . . . . . . . . . . . . . . 10 Ice devil (gelugon) . . . . . . . . 13
+Gynosphinx . . . . . . . . . . . . . . . 8
+Animated object, Golem, clay . . . . . . . . . . . . . . 10 Lich, 11th-level
+Hellwasp swarm . . . . . . . . . . . 8
+Gargantuan . . . . . . . . . . . . 7 Hydra, eleven-headed . . . . . . 10 human wizard. . . . . . . . . . 13
+Hydra, nine-headed . . . . . . . . 8
+Black pudding (ooze) . . . . . . . 7 Hydra, nine-headed cryo- . . . 10 Mummy lord . . . . . . . . . . . . . 13
+Hydra, seven-headed cryo- . . . 8
+Bulette . . . . . . . . . . . . . . . . . . 7 Hydra, nine-headed pyro- . . . 10 Slaad, death . . . . . . . . . . . . . 13
+Hydra, seven-headed pyro- . . . 8
+Cachalot whale . . . . . . . . . . . . 7 Monstrous scorpion,
+Lammasu . . . . . . . . . . . . . . . . 8 Archon, trumpet . . . . . . . . . . 14
+Chaos beast . . . . . . . . . . . . . . 7 Gargantuan. . . . . . . . . . . . . 10
+Mind flayer . . . . . . . . . . . . . . . 8 Astral deva (angel) . . . . . . . . 14
+Chimera . . . . . . . . . . . . . . . . . 7 Naga, guardian . . . . . . . . . . . 10
+Mohrg. . . . . . . . . . . . . . . . . . . 8 Nalfeshnee (demon). . . . . . . 14
+Chuul . . . . . . . . . . . . . . . . . . . 7 Rakshasa. . . . . . . . . . . . . . . . 10
+Monstrous spider, Nightwing (nightshade) . . . . 14
+Criosphinx. . . . . . . . . . . . . . . . 7 Salamander, noble . . . . . . . . 10
+Gargantuan . . . . . . . . . . . . 8 Umber hulk, truly horrid . . . . 14
+Dire bear. . . . . . . . . . . . . . . . . 7 Slaad, gray . . . . . . . . . . . . . . 10
+Naga, dark . . . . . . . . . . . . . . . 8 Werewolf lord (lycanthrope) . 14
+Dragonne . . . . . . . . . . . . . . . . 7
+Drider . . . . . . . . . . . . . . . . . . . 7 Octopus, giant . . . . . . . . . . . . 8 Barbed devil (hamatula) . . . . 11 Marut (inevitable) . . . . . . . . . 15
+Elasmosaurus (dinosaur) . . . . 7 Ogre mage . . . . . . . . . . . . . . . 8 Cauchemar (nightmare) . . . . 11 Vampire, half-elf
+Elemental, Huge (any) . . . . . . 7 Shield guardian. . . . . . . . . . . . 8 Devourer . . . . . . . . . . . . . . . . 11 Mnk 9/Shd 4. . . . . . . . . . . 15
+Skeleton, young adult Elemental, elder (any). . . . . . 11
+Elephant . . . . . . . . . . . . . . . . . 7 red dragon . . . . . . . . . . . . . . 8 Giant, cloud . . . . . . . . . . . . . 11 Archon, hound hero . . . . . . . 16
+Formian, taskmaster . . . . . . . . 7 Shadow, greater . . . . . . . . . . . 8 Golem, stone . . . . . . . . . . . . 11 Horned devil (cornugon) . . . 16
+Ghost, Slaad, blue . . . . . . . . . . . . . . . 8 Half-celestial, 9th-level Golem, greater stone . . . . . . 16
+5th-level human fighter . . . 7 Treant . . . . . . . . . . . . . . . . . . . 8 human paladin . . . . . . . . . 11 Nightwalker (nightshade) . . . 16
+Planetar (angel) . . . . . . . . . . 16

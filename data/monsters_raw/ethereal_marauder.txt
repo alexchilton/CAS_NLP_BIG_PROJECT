@@ -1,0 +1,12 @@
+ETHEREAL MARAUDER
+their lairs with all manner of refuse. They prefer secluded, inac-
+cessible spots, such as the bottom of an abandoned well or mine Medium Magical Beast (Extraplanar)
+shaft, an alpine cave, or the basement of a ruined building. Hit Dice: 2d10 (11 hp)
+Ethereal filchers do not speak. Initiative: +5
+COMBAT Speed: 40 ft. (8 squares)
+An ethereal filcher prowls about, using its ethereal jaunt ability to Armor Class: 14 (+1 Dex, +3 natural), touch 11, flat-footed 13
+move about unseen (and often through solid objects). Upon locat- Base Attack/Grapple: +2/+4
+ing a likely mark, it shifts to the Material Plane, attempting to Attack: Bite +4 melee (1d6+3)
+catch its victim unaware. The creature attempts to seize an item, Full Attack: Bite +4 melee (1d6+3)
+then retreats quickly back to the Ethereal Plane. It is not above Space/Reach: 5 ft./5 ft.
+delivering a bite to distract its target. Once it secures a trinket, it Special Attacks: — MARAUDER

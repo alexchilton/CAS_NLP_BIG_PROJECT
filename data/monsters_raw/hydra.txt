@@ -1,0 +1,54 @@
+HYDRA
+low-lightvision,scent low-lightvision,scent low-lightvision,scent
+Saves: Fort+11,Ref+7,Will+4 Fort+11,Ref+7,Will+5 Fort+12,Ref+8,Will+3
+Abilities: Str19,Dex12,Con20, Str21,Dex12,Con20, Str21,Dex12,Con20,
+Int2,Wis10,Cha9 Int2,Wis10,Cha9 Int2,Wis10,Cha9
+Skills: Listen+7,Spot+8,Swim+12 Listen+8,Spot+8,Swim+13 Listen+8,Spot+9,Swim+13
+Feats: CombatReflexesB,IronWill, Blind-Fight,CombatReflexesB,Iron Blind-Fight,CombatReflexesB,Iron
+Toughness,WeaponFocus(bite) Will,Toughness,WeaponFocus(bite) Will,Toughness,WeaponFocus(bite)
+Environment: Temperatemarshes Temperatemarshes Temperatemarshes
+(Pyro:Warmmarshes) (Pyro:Warmmarshes) (Pyro:Warmmarshes)
+(Cryo:Coldmarshes) (Cryo:Coldmarshes) (Cryo:Coldmarshes)
+Organization: Solitary Solitary Solitary
+ChallengeRating: 7(normal);9(pyro-orcryo-) 8(normal);10(pyro-orcryo-) 9(normal);11(pyro-orcryo-)
+Treasure: 1/10coins;50 goods;50 items 1/10coins;50 goods;50 items 1/10coins;50 goods;50 items
+Alignment: Usuallyneutral Usuallyneutral Usuallyneutral
+Advancement: — — —
+LevelAdjustment: — — —
+Eleven-HeadedHydra Twelve-HeadedHydra
+HugeMagicalBeast HugeMagicalBeast
+HitDice: 11d10+58(118hp) 12d10+63(129hp)
+Initiative: +1 +1
+Speed: 20ft.(4squares),swim20ft. 20ft.(4squares),swim20ft.
+ArmorClass: 21(–2size,+1Dex,+12natural), 22(–2size,+1Dex,+13natural),
+touch9,flat-footed20 touch9,flat-footed21
+BaseAttack/Grapple:+11/+25 +12/+26
+Attack: 11bites+16melee(1d10+6) 12bites+17melee(2d8+6)
+FullAttack: 11bites+16melee(1d10+6) 12bites+17melee(2d8+6)
+Space/Reach: 15ft./10ft. 15ft./10ft.
+SpecialAttacks: — —
+SpecialQualities: Darkvision60ft.,fasthealing21, Darkvision60ft.,fasthealing22,
+low-lightvision,scent low-lightvision,scent
+Saves: Fort+12,Ref+8,Will+5 Fort+13,Ref+9,Will+6
+Abilities: Str23,Dex12,Con20,Int2,Wis10,Cha9 Str23,Dex12,Con20,Int2,Wis10,Cha9
+Skills: Listen+9,Spot+9,Swim+14 Listen+9,Spot+10,Swim+14
+Feats: Blind-Fight,CombatReflexesB, Blind-Fight,CombatReflexesB,ImprovedNatural
+IronWill,Toughness,WeaponFocus(bite) Attack(bite),IronWill,Toughness,WeaponFocus(bite)
+Environment: Temperatemarshes Temperatemarshes
+(Pyro:Warmmarshes) (Pyro:Warmmarshes)
+(Cryo:Coldmarshes) (Cryo:Coldmarshes)
+Organization: Solitary Solitary
+ChallengeRating: 10(normal);12(pyro-orcryo-) 11(normal);13(pyro-orcryo-)
+Treasure: 1/10coins;50 goods;50 items 1/10coins;50 goods;50 items
+Alignment: Usuallyneutral Usuallyneutral
+Advancement: — —
+LevelAdjustment: — —
+Fire attacks cannot prevent a pyrohydra’s stump from growing wide, and 20 feet long. All heads breathe once every 1d4 rounds.
+new heads (since a pyrohydra has immunity to fire), but 5 points Each jet deals 3d6 points of cold damage per head. A successful
+of cold damage does. Reflex save halves the damage. The save DC is 10 + 1/2 hydra’s
+original number of heads + hydra’s Con modifier.
+CRYOHYDRA Cold attacks cannot prevent a cryohydra’s stump from growing 157
+Huge Magical Beast (Cold) new heads (since a cryohydra has immunity to cold), but 5 points
+These purplish hydras can breathe jets of frost 10 feet high, 10 feet of fire damage does.
+
+sion. Inevitables tend to stick out in a crowd while they’re in

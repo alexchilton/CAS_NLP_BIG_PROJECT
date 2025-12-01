@@ -1,0 +1,51 @@
+CHUUL
+thralls of beholders or mind flayers. by
+Large Aberration (Aquatic) A chuul is about 8 feet long and weighs 650 pounds. D.
+Knutson
+Hit Dice: 11d8+44 (93 hp) Chuuls speak Common (or Undercommon, for the under-
+Initiative: +7 ground variety).
+Speed: 30 ft. (6 squares), swim 20 ft.
+Armor Class: 22 (–1 size, +3 Dex, +10 natural), touch 12, COMBAT
+flat-footed 19 A chuul prefers to wait by the shore, submerged in murky water,
+Base Attack/Grapple: +8/+17 until it hears nearby prey (in or out of the water) that it can attack
+Attack: Claw +12 melee (2d6+5) with surprise.
+Full Attack: 2 claws +12 melee (2d6+5) A chuul grabs with its claws and constricts its foe, then passes
+Space/Reach: 10 ft./5 ft. the opponent to its paralytic tentacles. It tries to
+Special Attacks: Constrict 3d6+5, improved grab, paralytic always have one claw free, so if it faces a large
+tentacles number of opponents, it drops a paralyzed or
+Special Qualities: Amphibious, darkvision 60 ft., dead victim and continues attempting to
+immunity to poison grab, constrict, and paralyze the rest.
+Saves: Fort +7, Ref +6, Will +9 Constrict (Ex): On a successful grapple
+Abilities: Str 20, Dex 16, Con 18, Int 10, Wis 14, check, a chuul deals 3d6+5 points of
+Cha 5 damage.
+Skills: Hide +13, Listen +11, Spot Improved Grab (Ex): To use this
++11, Swim +13 ability, a chuul must hit with a
+Feats: Alertness, Blind-Fight, claw attack. It can then attempt
+Combat Reflexes, to start a grapple as a free
+Improved Initiative action without provok-
+Environment: Temperate ing an attack of opportu-
+marshes nity. If it wins the grap-
+Organization: Solitary, ple check, it establishes a
+pair, or pack (3–5) hold and can constrict or
+Challenge Rating: 7 on its next turn transfer a
+Treasure: 1/10th coins; 50% grabbed opponent to its
+goods; standard items tentacles.
+Alignment: Usually chaotic evil Paralytic Tentacles (Ex): 35
+Advancement: 12–16 HD (Large); 17–33 HD (Huge) Chuul A chuul can transfer grabbed
+Level Adjustment: — victims from a claw to its ten-
+
+tacles as a move action. The tentacles grapple with the same A cloaker has a wingspan of about 8 feet. It weighs about 100
+strength as the claw but deal no damage. However, they exude a pounds.
+paralytic secretion. Anyone held in the tentacles must succeed on a Cloakers speak Undercommon.
+DC 19 Fortitude save each round on the chuul’s turn or be para-
+lyzed for 6 rounds. The save DC is Constitution-based. While held COMBAT
+in the tentacles, paralyzed or not, a victim automatically takes Cloakers usually lie still, watching and listening for prey. If
+1d8+2 points of damage each round from the creature’s mandibles. facing a single opponent, a cloaker uses its engulf attack.
+Amphibious (Ex): Although chuuls are aquatic, they can sur- Against multiple foes, it lashes with its tail in concert with its
+vive indefinitely on land. moan and shadow shift abilities to reduce the opposition’s num-
+Skills: A chuul has a +8 racial bonus on any Swim check to per- bers, then engulfs a survivor. Multiple cloakers usually split up,
+form some special action or avoid a hazard. It can always choose to leaving one or two behind to use special abilities while the rest
+take 10 on a Swim check, even if distracted or endangered. It can use make melee attacks.
+REKAOLCdoowkcoL the run action while swimming, provided it swims in a straight line. Moan (Ex): A cloaker can emit a dangerous subsonic moan as a
+standard action. By changing the frequency, the cloaker can cause
+one of four effects. Cloakers are immune to these sonic, mind-

@@ -1,0 +1,20 @@
+# Ignore Git and IDE specific files
+.git/
+.idea/
+.claude/
+.qodo/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore Jupyter Notebooks - not needed for production
+*.ipynb
+
+# Ignore the local chromadb instance, as it will be rebuilt inside the container
+chromadb/
+
+# Ignore environment files
+.env
+venv/
+*.env

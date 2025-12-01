@@ -1,0 +1,211 @@
+GLABREZU
+Huge Outsider (Chaotic, Extraplanar, Evil, Tanar’ri)
+Hit Dice: 12d8+120 (174 hp) Hezrou
+Initiative: +0
+Speed: 40 ft. (8 squares)
+Armor Class: 27 (–2 size, +19 natural) touch 8,
+flat-footed 27
+Base Attack/Grapple: +12/+30
+Attack: Pincers +20 melee (2d8+10)
+Full Attack: 2 pincers +20 melee (2d8+10)
+and 2 claws +18 melee (1d6+5) and bite
++18 melee (1d8+5)
+Space/Reach: 15 ft./15 ft.
+Special Attacks: Improved grab, spell-like
+abilities, summon tanar’ri
+Special Qualities: Damage reduction
+10/good, darkvision 60 ft., immunity to
+electricity and poison, resistance to acid
+10, cold 10, and fire 10, spell resistance 21,
+telepathy 100 ft., true seeing
+Saves: Fort +18, Ref +8, Will +11
+Abilities: Str 31, Dex 10, Con 31, Int 16, Wis
+16, Cha 20
+Skills: Bluff +22, Concentration +25,
+Diplomacy +9, Disguise +5 (+7
+acting), Intimidate +24, Knowledge
+(any two) +18, Listen +26, Move
+Silently +18, Search +18, Sense
+Motive +18, Spellcraft +18, Spot +26,
+Survival +3 (+5 following tracks)
+Feats: Cleave, Great Cleave, Multiattack, Persuasive,
+Power Attack
+Environment: Infinite Layers of the Abyss Babau 43
+Organization: Solitary or troupe (1 glabrezu, 1 Dretch
+succubus, and 2–5 vrocks)
+
+Improved Grab (Ex): To use this ability, a glabrezu must hit a stench can take effect as quickly as possible. They enter most battles
+Medium or smaller opponent with a pincer attack. It can then by using blasphemy, and follow it with an occasional chaos hammer or
+attempt to start a grapple as a free action without provoking an unholy blight, depending on the alignment of their opponents.
+attack of opportunity. A hezrou’s natural weapons, as well as any weapons it wields, are
+Spell-Like Abilities: At will—chaos hammer (DC 19), confusion treated as chaotic-aligned and evil-aligned for the purpose of over-
+(DC 19), dispel magic, mirror image, reverse gravity (DC 22), greater coming damage reduction.
+teleport (self plus 50 pounds of objects only), unholy blight (DC 19); Improved Grab (Ex): To use this ability, a hezrou must hit with
+1/day—power word stun. Caster level 14th. The save DCs are both claw attacks. It can then attempt to start a grapple as a free
+Charisma-based. action without provoking an attack of opportunity.
+Once per month, a glabrezu can fulfill a wish for a mortal hu- Spell-Like Abilities: At will—chaos hammer (DC 18), greater
+manoid. The demon can use this ability to offer a mortal whatever teleport (self plus 50 pounds of objects only), unholy blight (DC 18);
+he or she desires—but unless the wish is used to create pain and 3/day—blasphemy (DC 21), gaseous form. Caster level 13th. The save
+NOMED suffering in the world, the glabrezu demands either terrible evil DCs are Charisma-based.
+acts or great sacrifice as compensation. Stench (Ex): A hezrou’s skin produces a foul-smelling, toxic
+Summon Tanar’ri (Sp): Once per day a glabrezu can attempt to liquid whenever it fights. Any living creature (except other demons)
+summon 4d10 dretches or 1d2 vrocks with a 50% chance of suc- within 10 feet must succeed on a DC 24 Fortitude save or be nause-
+cess, or another glabrezu with a 20% chance of success. This ability ated for as long as it remains within the affected area and for 1d4
+is the equivalent of a 4th-level spell. rounds afterward. Creatures that successfully save are sickened for as
+True Seeing (Su): Glabrezu continuously use true seeing as the long as they remain in the area. A creature that successfully saves
+spell (caster level 14th). cannot be affected again by the same hezrou’s stench for 24 hours. A
+Skills: Glabrezu have a +8 racial bonus on Listen and Spot checks. delay poison or neutralize poison spell removes either condition from
+one creature. Creatures that have immunity to poison are unaffected,
+HEZROU and creatures resistant to poison receive their normal bonus on their
+Large Outsider (Chaotic, Extraplanar, Evil, Tanar’ri) saving throws.. The save DC is Constitution-based.
+Hit Dice: 10d8+93 (138 hp) Summon Tanar’ri (Sp): Once per day a hezrou can attempt to
+Initiative: +0 summon 4d10 dretches or another hezrou with a 35% chance of
+Speed: 30 ft. (6 squares) success. This ability is the equivalent of a 4th-level spell.
+Armor Class: 23 (–1 size, +14 natural) touch 9, flat-footed 23 Skills: Hezrous have a +8 racial bonus on Listen and Spot checks.
+Base Attack/Grapple: +10/+19
+Attack: Bite +14 melee (4d4+5) MARILITH
+Full Attack: Bite +14 melee (4d4+5) and 2 claws +9 melee (1d8+2) Large Outsider (Chaotic, Extraplanar, Evil, Tanar’ri)
+Space/Reach: 10 ft./10 ft. Hit Dice: 16d8+144 (216 hp)
+Special Attacks: Spell-like abilities, stench, improved grab, Initiative: +4
+summon tanar’ri Speed: 40 ft. (8 squares)
+Special Qualities: Damage reduction 10/good, darkvision 60 ft., Armor Class: 29 (–1 size, +4 Dex, +16 natural), touch 13,
+immunity to electricity and poison, resistance to acid 10, cold flat-footed 25
+10, and fire 10, spell resistance 19, telepathy 100 ft. Base Attack/Grapple: +16/+29
+Saves: Fort +16, Ref +7, Will +9 Attack: Longsword +25 melee (2d6+9/19–20) or slam +24 melee
+Abilities: Str 21, Dex 10, Con 29, Int 14, Wis 14, Cha 18 (1d8+9) or tail slap +24 melee (4d6+9)
+Skills: Climb +18, Concentration +22, Hide +13, Escape Artist Full Attack: Primary longsword +25/+20/+15/+10 melee
++13, Intimidate +17, Listen +23, Move Silently +13, Search +15, (2d6+9/19–20) and 5 longswords +25 melee (2d6+4/19–20)
+Spellcraft +15, Spot +23, Survival +2 (+4 following tracks), Use and tail slap +22 melee (4d6+4); or 6 slams +24 melee (1d8+9)
+Rope +0 (+2 with bindings) and tail slap +22 melee (4d6+4)
+Feats: Blind-Fight, Cleave, Power Attack, Toughness Space/Reach: 10 ft./10 ft.
+Environment: Infinite Layers of the Abyss Special Attacks: Constrict 4d6+13, improved grab, spell-like
+Organization: Solitary or gang (2–4) abilities, summon tanar’ri
+Challenge Rating: 11 Special Qualities: Damage reduction 10/good and cold iron,
+Treasure: Standard darkvision 60 ft., immunity to electricity and poison, resist-
+Alignment: Always chaotic evil ance to acid 10, cold 10, and fire 10, spell resistance 25, telepa-
+Advancement: 11–15 HD (Large); 16–30 HD (Huge) thy 100 ft.
+Level Adjustment: +9 Saves: Fort +19, Ref +14, Will +14
+Abilities: Str 29, Dex 19, Con 29, Int 18, Wis 18, Cha 24
+This creature looks like a massive, roughly humanoid toad with arms in Skills: Bluff +26, Concentration +28, Diplomacy +30, Disguise +7
+place of forelegs. Its wide mouth has rows of blunt, powerful teeth, and (+9 acting), Hide +19, Intimidate +28, Listen +31, Move
+long spines run down the length of its back. Silently +23, Search 23, Sense Motive +23, Spellcraft +23 (+25
+scrolls), Spot +31, Survival +4 (+6 following tracks), Use Magic
+Hezrous are demonic sergeants, overseeing the formation of ar- Device +26 (+28 scrolls)
+mies and commanding units in battle. They don’t have the schem- Feats: Combat Expertise, Combat Reflexes, Multiattack, Multi-
+ing instincts of the more powerful demons, but hezrous are cun- weapon Fighting, Power Attack, Weapon Focus (longsword)
+ning in battle. Environment: Infinite Layers of the Abyss
+A hezrou can walk both upright and on all fours, but it always Organization: Solitary or pair
+fights standing up Challenge Rating: 17
+A hezrou is about 8 feet tall and weighs about 750 pounds. Treasure: Standard coins; double goods; standard items, plus 1d4
+magic weapons
+44 Combat Alignment: Always chaotic evil
+Hezrous enjoy melee combat even more than vrocks do. They Advancement: 17–20 HD (Large); 21–48 HD (Huge)
+eagerly press an attack deep into the heart of enemy forces, so their Level Adjustment: —
+
+This large, otherworldly entity appears to be an attractive female human long as it remains in the coils and for 2d4 rounds thereafter. The
+with six arms—at least from her head to her waist. From the waist down, save DC is Strength-based.
+the creature has the body of a massive snake with green, scaly coils. Improved Grab (Ex): To use this ability, a marilith must hit
+with its tail slap attack. It can then attempt to start a grapple as a
+Mariliths are generals and tacticians, often rivaling balors in sheer free action without provoking an attack of opportunity. If it suc-
+brilliance and cunning. Some also serve as chief lieutenants for ceeds on the grapple check, it can constrict.
+major demon royalty. Spell-Like Abilities: At will—align weapon, blade barrier (DC
+A marilith usually holds a longsword in each of its six hands and 23), magic weapon, project image (DC 23), polymorph, see invisibility,
+wears many bangles and jewels. telekinesis (DC 22), greater teleport (self plus 50 pounds of objects
+A marilith stands about 9 feet tall and measures about 20 feet only), unholy aura (DC 25). Caster level 16th. The save DCs are
+from head to tip of tail. It weighs about 4,000 pounds. Charisma-based.
+Summon Tanar’ri (Sp): Once per day a marilith can attempt to
+Combat summon 4d10 dretches, 1d4 hezrou, or one nalfeshnee with a DEMON
+Though mariliths thrive on grand strategy and army-level tactics, 50% chance of success, or one glabrezu or another marilith with
+they love physical combat and never pass up an opportunity to a 20% chance of success. This ability is the equivalent of a 5th-
+fight. Each of a marilith’s six arms can wield a weapon, and the level spell.
+creature gets an additional three weapon attacks with its primary True Seeing (Su): Mariliths continuously use this ability, as the
+arm. Mariliths seldom rush headlong into battle, however, prefer- spell (caster level 16th).
+ring to hang back and size up the situation first. They always seek Skills: Mariliths have a +8 racial bonus on Listen and Spot
+to gain the best possible advantage from the local terrain, obsta- checks.
+cles, and any vulnerability or weakness in their opponents. Feats: In combination with its natural abilities, a marilith’s Mul-
+A marilith’s natural weapons, as well as any weapons it wields, tiweapon Fighting feat allows it to attack with all its arms at no
+are treated as chaotic-aligned and evil-aligned for the purpose of penalty.
+overcoming damage reduction.
+Constrict (Ex): A marilith deals 4d6+13 points of damage with NALFESHNEE
+a successful grapple check. The con- Huge Outsider (Chaotic, Extraplanar, Evil,Tanar’ri)
+stricted creature must succeed on a DC Hit Dice: 14d8+112 (175 hp)
+27 Fortitude save or lose con- Initiative: +1
+sciousness for as Speed: 30 ft. (6 squares), fly 40 ft. (poor)
+Armor Class: 27 (–2 size, +1 Dex, +18 natural) touch 9,
+Nalfeshnee flat-footed 26
+Base Attack/Grapple: +14/+29
+Attack: Bite +20 melee (2d8+7)
+Full Attack: Bite +20 melee (2d8+7) and 2 claws +17
+melee (1d8+3)
+Space/Reach: 15 ft./15 ft.
+Special Attacks: Smite, spell-like abilities, summon
+tanar’ri
+Special Qualities: Damage reduction 10/good,
+darkvision 60 ft., immunity to electricity and
+poison, resistance to acid 10, cold 10, and fire
+10, spell resistance 22, telepathy 100 ft., true
+seeing
+Quasit Saves: Fort +17, Ref +10, Will +15
+Abilities: Str 25, Dex 13, Con 27, Int 22,
+Wis 22, Cha 20
+Skills: Bluff +22, Concentration +25, Diplomacy +26, Disguise
++5 (+7 acting), Hide +10, Intimidate +22, Knowledge
+(arcana) +23, Listen +31, Move Silently +18, Search
++23, Sense Motive +23, Spellcraft +25 (+27 scrolls),
+Spot +31, Survival +6 (+8 following tracks), Use
+Magic Device +22 (+24 scrolls)
+Feats: Cleave, Improved Bull Rush, Multiattack,
+Power Attack, Weapon Focus (bite)
+Environment: Infinite Layers of the Abyss
+Organization: Solitary or troupe (1 nalfeshnee,
+1 hezrou, and 2–5 vrocks)
+Challenge Rating: 14
+Treasure: Standard coins; double goods; stan-
+dard items
+Alignment: Always chaotic evil
+Advancement: 15–20 HD (Huge); 21–42 HD
+(Gargantuan)
+Level Adjustment: —
+45
+Succubus
+
+This creature is a grotesque blending of an ape and a corpulent boar. It Treasure: None
+stands on its hind legs, rising to more than three times the height of a Alignment: Always chaotic evil
+human. It has a pair of feathered wings that seem ridiculously small Advancement: 4–6 HD (Tiny)
+compared to the rest of its body. Level Adjustment: — (Improved Familiar)
+These enormous demons await the arrival of doomed souls A tiny humanoid-shaped creature with spiky horns and bat wings hovers
+into the Abyss, where the nalfeshnees can judge them. Of nearby. Its hands and feet are long and slender, with long, claw-tipped
+course, nalfeshnees relish the chance to begin the punishment digits. Warts or pustules cover its greenish skin.
+of the damned.
+A nalfeshnee can fly despite its small wings. Quasits are insidious demons from the Abyss. They are often
+A nalfeshnee is more than 20 feet tall and weighs 8,000 pounds. found serving chaotic evil spellcasters as counselors and spies.
+In its natural form, a quasit stands about 1-1/2 feet tall and
+NOMED Combat weighs about 8 pounds.
+When fulfilling their duties in the underworld, nalfeshnees usu- Quasits speak Common and Abyssal.
+ally disdain combat as being beneath them. Given the opportu-
+nity, they succumb to blood lust and do battle. They disable oppo- Combat
+nents with their smite ability and slaughter them while they can’t Although quasits thirst for victory and power as other demons do,
+fight back. they are cowards at heart. They typically attack from ambush,
+A nalfeshnee’s natural weapons, as well as any weapons it using their alternate form ability and invisibility to get within
+wields, are treated as chaotic-aligned and evil-aligned for the pur- reach, then try to scuttle away. When retreating, they use their
+pose of overcoming damage reduction. cause fear ability to deter pursuit.
+Smite (Su): Three times per day a nalfeshnee can create a A quasit’s natural weapons, as well as any weapons it wields, are
+nimbus of unholy light. When the demon triggers the ability, rain- treated as chaotic-aligned and evil-aligned for the purpose of over-
+bow-colored beams play around its body. One round later they coming damage reduction.
+burst in a 60-foot radius. Any creature within this area must suc- Poison (Ex): Injury, Fortitude DC 13, initial damage 1d4 Dex,
+ceed on a DC 22 Will save or be dazed for 1d10 rounds as visions of secondary damage 2d4 Dex. The save DC is Constitution-based
+its worst fears hound it. The creature receives its full Dexterity and and includes a +2 racial bonus.
+shield bonuses to AC if attacked but can take no actions. Other Spell-Like Abilities: Atwill—detect good, detect magic, and invis-
+demons are immune to this effect. The save DC is Charisma-based. ibility (self only); 1/day—cause fear (as the spell, except that its area
+Spell-Like Abilities: At will—call lightning (DC 18), feeblemind is a 30-foot radius from the quasit, save DC 11). Caster level 6th.
+(DC 20), greater dispel magic, slow (DC 18), greater teleport (self plus The save DCs are Charisma-based.
+50 pounds of objects only), unholy aura (DC 23). Caster level 12th. Once per week a quasit can use commune to ask six questions.
+The save DCs are Charisma-based. The ability otherwise works as the spell (caster level 12th).
+Summon Tanar’ri (Sp): Twice per day a nalfeshnee can attempt to Alternate Form (Su): A quasit can assume other forms at will
+summon 1d4 vrocks, 1d4 hezrous, or one glabrezu with a 50% as a standard action. This ability functions as a polymorph spell cast
+chance of success, or another nalfeshnee with a 20% chance of suc- on itself (caster level 12th), except that a quasit does not regain hit
+cess. This ability is the equivalent of a 5th-level spell. points for changing form, and any individual quasit can assume
+True Seeing (Su): Nalfeshnees continuously use true seeing, as only one or two forms no larger than Medium. Common forms
+the spell (caster level 14th). include bat, monstrous centipede, toad, and wolf. A quasit in alter-
+Skills: Nalfeshnees have a +8 racial bonus on Listen and Spot nate form loses its poison attack.
+checks.

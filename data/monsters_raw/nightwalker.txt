@@ -1,0 +1,12 @@
+NIGHTWALKER
+This creature looks like an immense worm covered with plates of dead
+black, chitinous armor. Its toothy maw is wider than a human is tall, and Huge Undead (Extraplanar)
+its teeth and gullet are black, too. Hit Dice: 21d12+42 (178 hp)
+Initiative: +6
+A nightcrawler is a massive behemoth similar to a purple worm, Speed: 40 ft (8 squares)., fly 20 ft. (poor)
+though utterly black in color. Armor Class: 32 (–2 size, +2 Dex, +22 natural), touch 10,
+A nightcrawler measures about 7 feet in diameter and is 100 feet flat-footed 30
+long from its toothy maw to the tip of its stinging tail. It weighs Base Attack/Grapple: +10/+34
+about 55,000 pounds. Attack: Slam +24 melee (2d6+16)
+Full Attack: 2 slams +24 melee (2d6+16)
+Combat Space/Reach: 15 ft./15 ft.

@@ -1,0 +1,135 @@
+LYCANTHROPE
+FullAttack: Longsword+3melee(1d8+1/19–20)orBite+5melee(1d6+3) 2claws+4melee(1d4+2)and
+lightcrossbow+2ranged(1d8/19–20) bite+0melee(1d6+1)
+Space/Reach: 5ft./5ft. 5ft./5ft. 5ft./5ft.
+SpecialAttacks: — Curseoflycanthropy,trip Curseoflycanthropy
+SpecialQualities: Alternateform,wolfempathy, Alternateform,wolfempathy, Alternateform,wolfempathy,
+low-lightvision,scent damagereduction10/silver, damagereduction10/silver,
+low-lightvision,scent low-lightvision,scent
+Saves: Fort+6,Ref+3,Will+2 Fort+8,Ref+5,Will+2 Fort+8Ref+5,Will+2
+Abilities: Str13,Dex11,Con12, Str15,Dex15,Con16, Str15,Dex15,Con16,
+Int10,Wis11,Cha8 Int10,Wis11,Cha8 Int10,Wis11,Cha8
+Skills: HandleAnimal+1,Hide+1,Listen+1, HandleAnimal+1,Hide+6,Listen+1, HandleAnimal+1,Hide+6,
+MoveSilently+2,Spot+1,Survival+2 MoveSilently+6,Spot+1,Survival+2* Listen+1,MoveSilently+6,
+Spot+1,Survival+2*
+Feats: ImprovedInitiative,IronWillB, (sameashumanform) (sameashumanform)
+Stealthy,TrackB,WeaponFocus(bite)
+Environment: Temperateforests Temperateforests Temperateforests
+Organization: Solitary,pair,pack(6–10),or (sameashumanform) (sameashumanform)
+troupe(2–5plus5–8wolves)
+ChallengeRating: 3 3 3
+Treasure: Standard Standard Standard
+Alignment: Alwayschaoticevil Alwayschaoticevil Alwayschaoticevil
+Advancement: Bycharacterclass Bycharacterclass Bycharacterclass
+LevelAdjustment: +3 +3 +3
+Dire wereboars in giant form look much like normal hill giants, ture of the animal type (referred to hereafter as the base animal).
+though slightly stockier, and with coarser, stiffer hair and stiff. This animal can be any predator, scavenger, or omnivore whose
+size is within one size category of the base creature’s size (Small,
+The dire wereboar described here is based on a hill giant and natu- Medium, or Large for a Medium base creature). Lycanthropes can
+ral lycanthrope with normal ability scores for a hill giant. also adopt a hybrid shape that combines features of the base crea-
+ture and the base animal. A lycanthrope’s hybrid form is the same
+Combat size as the base animal or the base creature, whichever is larger.
+Dire wereboars anger quickly. They usually begin a battle in giant A lycanthrope uses either the base creature’s or the base animal’s
+form, then switch to hybrid form to take advantage of their im- statistics and special abilities in addition to those described here.
+mense strength in that shape. They like to use their Improved Bull Hit Dice and Hit Points: Same as the base creature plus those
+Rush and Improved Sunder feats to shove opponents around and of the base animal. To calculate total hit points, apply Constitution
+smash their weapons and shields. modifiers according to the score the lycanthrope has in each form.
+Alternate Form (Su): A dire wereboar can assume a bipedal For example, a human commoner with a Constitution score of 11
+hybrid form or the form of a dire boar. as a human and a Constitution score of 15 as a wolf has 1d4 plus
+Boar Empathy (Ex): Communicate with boars and dire boars, 2d8+4 hit points.
+and +4 racial bonus on Charisma-based checks against boars and Speed: Same as the base creature or base animal, depending on
+dire boars. which form the lycanthrope is using. Hybrids use the base crea-
+Curse of Lycanthropy (Su): Any humanoid or giant hit by a ture’s speed.
+dire wereboar’s bite attack in animal or hybrid form must succeed Armor Class: The base creature’s natural armor bonus increases
+on a DC 15 Fortitude save or contract lycanthropy. by +2 in all forms. In hybrid form, the lycanthrope’s natural armor
+Ferocity (Ex): A dire wereboar is such a tenacious combatant that bonus is equal to the natural armor bonus of the base animal or the
+it continues to fight without penalty even while disabled or dying. base creature, whichever is better.
+Base Attack/Grapple: Add the base attack bonus for the base
+CREATING A LYCANTHROPE animal to the base attack bonus for the base creature. The lycan-
+“Lycanthrope” is a template that can be added to any humanoid or thrope’s grapple bonus uses its attack bonus and modifiers for
+giant (referred to hereafter as the base creature). The lycanthrope Strength and size depending on the lycanthrope’s form.
+template can be inherited (for natural lycanthropes) or acquired (for Attacks: Same as the base creature or base animal, depending
+afflicted lycanthropes). Becoming a lycanthrope is very much like on which form the lycanthrope is using. A lycanthrope in hybrid
+multiclassing as an animal and gaining the appropriate Hit Dice. form gains two claw attacks and a bite attack as natural weapons.
+Size and Type: The base creature’s type does not change, but the These weapons deal damage based on the hybrid form’s size. A hy- 175
+creature gains the shapechanger subtype. The lycanthrope takes on brid may attack with a weapon and a bite, or may attack with its
+the characteristics of some type of carnivorous or omnivorous crea- natural weapons. The bite attack of a hybrid is a secondary attack.
+
+Werewolf Lord, Human Form Werewolf Lord, Dire Wolf Form Werewolf Lord, Hybrid Form
+Medium Humanoid Large Humanoid Large Humanoid
+(Human, Shapechanger) (Human, Shapechanger) (Human, Shapechanger)
+Hit Dice: 10d10+20 plus 6d8+30 (132 hp) 10d10+20 plus 6d8+30 (132 hp) 10d10+20 plus 6d8+30 (132 hp)
+Initiative: +2 +4 +4
+Speed : 30 ft. (6 squares) 40 ft. (8 squares) 30 ft. (6 squares)
+Armor Class: 26 (+2 Dex, +3 natural, +6 +2 mithral 19 (–1 size, +4 Dex, +6 natural), 19 (–1 size, +4 Dex, +6 natural),
+chain shirt, +5 +3 heavy shield) touch 13, flat-footed 15 touch 13, flat-footed 15
+touch 12, flat-footed 24
+Base Attack/Grapple: +14/+18 +14/+29 +14/+27
+EPORHTNACYL Attack: +2 bastard sword+21 melee Bite +25 melee (2d6+16/19–20) Claw +24 melee (1d6+11) or
+(1d10+8/17–20) or masterwork +2 bastard sword +27 melee
+composite longbow (+4 Str bonus) (2d8+15/17–20)
++17 ranged (1d8+4/×3)
+Full Attack: +2 bastard sword +21/+16/+11 melee Bite +25 melee (2d6+16/19–20) 2 claws +24 melee (1d6+11) and
+(1d10+8/17–20) or masterwork bite +20 melee (2d6+5/19–20); or
+composite longbow (+4 Str bonus) +2 bastard sword+27/+22/+17
++17/+12/+7ranged (1d8+4/×3) melee (2d8+15/17–20) and
+bite +20 melee (2d6+5/19–20)
+Space/Reach: 5 ft./5 ft. 10 ft./5 ft. 10 ft./10 ft.
+Special Attacks: — Curse of lycanthropy, trip Curse of lycanthropy
+Special Qualities: Alternate form, wolf empathy, Alternate form, wolf empathy, Alternate form, wolf empathy,
+low-light vision, scent damage reduction 10/silver, damage reduction 10/silver,
+low-light vision, scent low-light vision, scent
+Saves: Fort +16, Ref +12, Will +13 Fort +17, Ref +12, Will +11 Fort +17, Ref +12, Will +11
+Abilities: Str 18, Dex 14, Con 14 Str 32, Dex 18, Con 20 Str 32, Dex 18, Con 20
+Int 10, Wis 12, Cha 12 Int 10, Wis 12, Cha 12 Int 10, Wis 12, Cha 12
+Skills: Handle Animal +4, Hide +6, Listen +9, Handle Animal +4, Hide +6, Listen +9, Handle Animal +4, Hide +6,
+Move Silently +8, Spot +13, Move Silently +12, Spot +13, Listen +9, Move Silently +12,
+Survival +5 Survival +5* Spot +13, Survival +5*
+Feats: Alertness, Cleave, Combat Reflexes, (same as human form) (same as human form)
+Exotic Weapon Proficiency (bastard
+Sword), Improved Critical (bastard sword),
+Improved Critical (bite), Improved Natural
+Armor, Improved Natural Attack (bite),
+Iron WillB, Power Attack, Run, Stealthy,
+TrackB, Weapon Focus (bastard sword),
+Weapon Focus (bite), Weapon
+Specialization (bastard sword)
+Environment: Temperate forests Temperate forests Temperate forests
+Organization: Solitary, pair, or pack (1–2 werewolf (same as human form) (same as human form)
+lords plus 2–4 werewolves plus
+5–8 wolves)
+Challenge Rating: 14 14 14
+Treasure: Standard Standard Standard
+Alignment: Always chaotic evil Always chaotic evil Always chaotic evil
+Advancement: By character class By character class By character class
+Level Adjustment: +3 +3 +3
+Hybrid Size Claw Bite example, a hill giant bitten by a wererat), the victim cannot con-
+Small 1d3 1d4 tract lycanthropy from that lycanthrope. Afflicted lycanthropes
+Medium 1d4 1d6 cannot pass on the curse of lycanthropy.
+Large 1d6 1d8 Special Qualities:A lycanthrope retains all the special quali-
+Huge 2d4 2d6 ties of the base creature and the base animal, and also gains those
+Damage: Same as the base creature or base animal, depending described below.
+on which form the lycanthrope is in. Alternate Form (Su): A lycanthrope can shift into animal form as
+Special Attacks: A lycanthrope retains the special attacks of though using the polymorphspell on itself, though its gear is not
+the base creature or base animal, depending on which form it is affected, it does not regain hit points for changing form, and only
+using, and also gains the special attacks described below. the specific animal form indicated for the lycanthrope can be
+A lycanthrope’s hybrid form does not gain any special attacks of assumed. It does not assume the ability scores of the animal, but
+the base animal. A lycanthrope spellcaster cannot cast spells with instead adds the animal’s physical ability score modifiers to its
+verbal, somatic, or material components while in animal form, or own ability scores. A lycanthrope also can assume a bipedal hybrid
+spells with verbal components while in hybrid form. form with prehensile hands and animalistic features.
+Curse of Lycanthropy (Su):Any humanoid or giant hit by a natural Changing to or from animal or hybrid form is a standard action.
+176 lycanthrope’s bite attack in animal or hybrid form must succeed A slain lycanthrope reverts to its humanoid form, although it
+on a DC 15 Fortitude save or contract lycanthropy. If the victim’s remains dead. Separated body parts retain their animal form, how-
+size is not within one size category of the lycanthrope (for ever. Afflicted lycanthropes find this ability difficult to control
+
+(see Lycanthropy as an Affliction, below), but natural lycanthropes minimum 1) per Hit Die of its animal form, as if it had multiclassed
+have full control over this power. into the animal type. (Animal is never its first Hit Die, though, and
+Damage Reduction (Ex): An afflicted lycanthrope in animal or it does not gain quadruple skill points for any animal Hit Die.) Any
+hybrid form has damage reduction 5/silver. A natural lycanthrope skill given in the animal’s description is a class skill for the lycan-
+in animal or hybrid form has damage reduction 10/silver. thrope’s animal levels. In any form, a lycanthrope also has any racial
+Lycanthropic Empathy (Ex):In any form, lycanthropes can com- skill bonuses of the base creature and of the base animal, although
+municate and empathize with normal or dire animals of their conditional skill bonuses, such as a weretiger’s camouflage bonus
+animal form. This gives them a +4 racial bonus on checks when on Hide checks, only apply in the associated form.
+influencing the animal’s attitude and allows the communication Feats:Add the base animal’s feats to the base creature’s. If this
+of simple concepts and (if the animal is friendly) commands, such results in a lycanthrope having the same feat twice, the lycanthrope
+as “friend,” “foe,” “flee,” and “attack.” gains no additional benefit unless the feat normally can be taken

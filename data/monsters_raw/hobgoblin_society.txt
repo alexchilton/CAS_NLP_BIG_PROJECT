@@ -1,0 +1,45 @@
+HOBGOBLIN SOCIETY
+skin, feral eyes, and a
+flat nose and chin. Hobgoblins are a military breed: They live for war and believe
+strongly in strength and martial prowess as the most desirable
+Hobgoblins are larger qualities for individuals and leaders alike. A hobgoblin leader is
+cousins of goblins. They are likely to be the biggest and strongest in the group, maintaining
+far more aggressive and authority by enforcing strict discipline. Hobgoblins are often
+organized than their leaders among tribes of goblins and orcs, whom they bully and 153
+smaller relatives and wage a perpetual treat as inferiors. Hobgoblin mercenaries sometimes enter the
+war with other humanoids, particularly elves. service of wealthy evil humanoids.
+
+Hobgoblin society is organized into tribal bands, each intensely This creature has a vaguely humanoid form. It stands about 18 inches tall
+jealous of its reputation and status. Meetings between rival bands and has wings spanning about 2 feet. Its skin looks rough and warty, and
+are likely to erupt in violence if the troops are not restrained. Only it has a mouth full of needlelike teeth.
+an exceptionally powerful leader can force them to cooperate for
+any length of time. Each band has a distinctive battle standard that A homunculus is a miniature servant created by a wizard. These
+it carries into combat to inspire, rally, and signal the troops. Hob- creatures are weak combatants but make effective spies, messen-
+goblin gangs and warbands are almost exclusively male. Bands and gers, and scouts.
+tribes include females who help with defense. Noncombatant hob- A homunculus’s creator determines its precise features.
+goblins are children too young to fight effectively. Homunculi are little more than tools designed to carry out
+These creatures usually make lairs in places that either boast assigned tasks. They are extensions of their creators, sharing the
+SULUCNUMOH natural defenses or can be fortified. Cavern complexes, dungeons, same alignment and basic nature. A homunculus cannot speak,
+ruins, and forests are among their favorites. Typical lair defenses but the process of creating one links it telepathically with its cre-
+include ditches, fences, gates, guard towers, pit traps, and crude ator. It knows what its master knows and can convey to him or her
+catapults or ballistas. everything it sees and hears, out to a distance of 1,500 feet. A
+Most hobgoblins revere Maglubiyet, who is also the patron homunculus never travels beyond this range willingly, though it
+deity of goblins. can be removed forcibly. If this occurs, the creature does every-
+thing in its power to regain contact with its master. An attack that
+HOBGOBLIN CHARACTERS destroys a homunculus deals 2d10 points of damage to its master.
+Hobgoblin leaders tend to be fighters or fighter/rogues. Hobgob- If the creature’s master is slain, the homunculus also dies, and its
+lin clerics worship Maglubiyet. A hobgoblin cleric has access to body swiftly melts away into a pool of ichor.
+two of the following domains: Evil, Destruction, or Trickery. Most
+hobgoblin spellcasters, however, are adepts. Hobgoblin adepts COMBAT
+favor spells that deal damage. Homunculi land on their victims and bite with their venomous
+Hobgoblin characters possess the following racial traits. fangs.
+— +2 Dexterity, +2 Constitution. Poison (Ex): Injury, Fortitude DC 13, initial damage sleep for 1
+—A hobgoblin’s base land speed is 30 feet. minute, secondary damage sleep for another 5d6 minutes. The
+—Darkvision out to 60 feet. save DC is Constitution-based and includes a +2 racial bonus.
+— +4 racial bonus on Move Silently checks.
+—Automatic Languages: Common, Goblin. Bonus Languages: CONSTRUCTION
+Draconic, Dwarven, Infernal, Giant, Orc. A homunculus is shaped from a mixture of clay, ashes, mandrake
+—Favored Class: Fighter. root, spring water, and one pint of the creator’s own blood. The
+—Level adjustment +1. materials cost 50 gp. The creature’s master may assemble the body
+or hire someone else to do the job. Creating the body requires a
+DC 12 Craft (sculpting) check or a DC 12 Craft (pottery) check.

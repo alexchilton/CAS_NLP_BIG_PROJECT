@@ -1,0 +1,19 @@
+FEATS
+skill points equal to (4 + Int modifier) at each HD, so an undead crea-
+All monsters have a number of feats equal to 1 + (1 per 3 HD). ture with an Intelligence score of 15 (Int modifier +2) could simply 301
+Monsters must meet the prerequisites for feats, just as characters select six skills at maximum rank.
+pqqrs
+must. If your creature concept begs for a feat for which the crea-
+
+ADVANCEMENT PC of their level. Include a fighter, rogue, cleric, and wizard if pos-
+This entry provides a measure of how tough the creature can get if sible. You can use copies of your players’ characters for this, but if
+you decide to increase its Hit Dice. In general, a creature should your PCs are unusual, your results will be skewed.
+be able to have up to three times its original Hit Dice (that is, a 3 2. Create a representative encounter for the monster that uses
+HD creature should be able to advance up to 9 HD). two of the creatures (two monsters of CR X is an appropriate
+Most creatures will get larger if you add a lot of Hit Dice, so you encounter for four PCs of level X+2). For simple monsters, a room
+should pick a break point at which the creature’s size changes. For and a door should suffice, but if your monster is built to ambush
+example, the Advancement entry for a Large plant creature with 3 parties or make good use of a particular terrain, you should proba-
+Hit Dice might read: 4–5 HD (Large); 6–9 HD (Huge). See Table bly check the monster in the sort of environment you expect to
+5–1 for guidelines on size and Hit Dice. use when you employ the monster in a real game session.
+Some monster types don’t have obvious break points between 3. Allow the PCs to begin the encounter with spells or effects
+:5 size categories. In these cases, you probably want to set the break whose duration is measured at 10 minutes per level or longer in

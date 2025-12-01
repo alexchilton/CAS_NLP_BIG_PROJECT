@@ -1,0 +1,158 @@
+GOLEM
+noted below. 5/adamantine, darkvision 60 ft., immunity to magic, low-light
+Amove earth spell drives Iron golem vision
+the golem back 120 feet and Saves: Fort +3, Ref +2, Will +3
+deals 3d12 points of damage Abilities: Str 21, Dex 9, Con —, Int —, Wis 11, Cha 1
+to it. Skills: —
+Adisintegrate spell slows Feats: —
+the golem (as the slow Environment: Any
+spell) for 1d6 rounds Organization:Solitary or gang (2–4)
+and deals 1d12 points Challenge Rating: 7
+of damage. Treasure: None
+An earth uake Alignment: Always neutral
+spell cast directly Advancement: 10–18 HD (Large); 19–27
+at a clay golem stops HD (Huge)
+it from moving on its Level Adjustment: —
+next turn and deals
+5d10 points of dam- This automaton looks as though it was
+age. The golem gets constructed from a grisly assortment of
+no saving throw decaying human body parts, stitched
+against any of these and bolted together into a form taller
+effects. than a living man. It smells faintly of
+Any magical attack freshly dug earth and dead flesh.
+against a clay golem
+that deals acid damage A flesh golem is a ghoulish collec-
+heals 1 point of damage tion of stolen humanoid body
+for every 3 points of parts, stitched together into a
+damage it would other- single composite form.
+wise deal. If the amount No natural animal will-
+of healing would cause ingly tracks a flesh golem.
+the golem to exceed its The golem wears whatever
+full normal hit points, it gains clothing its creator de-
+any excess as temporary hit points. Flesh golem sires, usually just a ragged
+For example, a clay golem hit by pair of trousers. It has no
+the breath weapon of a black possessions and no weapons. It stands
+dragon heals 7 points of dam- 8 feet tall and weighs almost 500
+age if the attack would have pounds.
+dealt 22 points of damage. A A flesh golem golem cannot speak,
+clay golem golem gets no although it can emit a hoarse roar of
+saving throw against magi- sorts. It walks and moves with a
+cal attacks that deal acid stiff-jointed gait, as if not in
+damage. complete control of its
+Haste (Su): After body.
+it has engaged in at
+least 1 round of combat, a Combat
+clay golem can haste itself once per day as a free action. The effect Flesh golems often fare poorly in combat thanks to their fairly low
+lasts 3 rounds and is otherwise the same as the spell. Armor Class, though they can easily crush foes that lack adaman-
+tine weaponry. A flesh golem supported by an ally that can launch
+Construction electricity attacks is fearsome indeed.
+A clay golem’s body must be sculpted from a single block of clay Berserk (Ex): When a flesh golem enters combat, there is a
+weighing at least 1,000 pounds, treated with rare oils and powders cumulative 1% chance each round that its elemental spirit breaks
+worth 1,500 gp. Creating the body requires a DC 15 Craft (sculpt- free and the golem goes berserk. The uncontrolled golem goes on
+ing) check or a DC 15 Craft (pottery) check. a rampage, attacking the nearest living creature or smashing some
+CL 11th; Craft Construct (see page 303), animate objects, com- object smaller than itself if no creature is within reach, then 135
+mune, resurrection, caster must be at least 11th level;Price 40,000 moving on to spread more destruction. The golem’s creator, if
+gp; Cost 21,500 gp + 1,540 XP. within 60 feet, can try to regain control by speaking firmly and
+
+persuasively to the golem, which requires a DC 19 Charisma Attack: Slam +23 melee (2d10+11)
+check. It takes 1 minute of inactivity by the golem to reset the Full Attack: 2 slams +23 melee (2d10+11)
+golem’s berserk chance to 0%. Space/Reach: 10 ft./10 ft.
+Immunity to Magic (Ex): A flesh golem is immune to any Special Attacks: Breath weapon
+spell or spell-like ability that allows spell resistance. In addition, Special Qualities: Construct traits, damage reduction 15/adaman-
+certain spells and effects function differently against the creature, tine, darkvision 60 ft., immunity to magic, low-light vision
+as noted below. Saves: Fort +6, Ref +5, Will +6
+A magical attack that deals cold or fire damage slows a flesh Abilities: Str 33, Dex 9, Con —, Int —, Wis 11, Cha 1
+golem (as the slow spell) for 2d6 rounds, with no saving throw. Skills: —
+A magical attack that deals electricity damage breaks any slow Feats: —
+effect on the golem and heals 1 point of damage for every 3 points Environment: Any
+of damage the attack would otherwise deal. If the amount of heal- Organization:Solitary or gang (2–4)
+MELOG ing would cause the golem to exceed its full normal hit points, it Challenge Rating: 13
+gains any excess as temporary hit points. For example, a flesh Treasure: None
+golem hit by a lightning bolt heals 3 points of damage if the attack Alignment: Always neutral
+would have dealt 11 points of damage. A flesh golem golem gets Advancement: 19–24 HD (Large); 25–54 HD (Huge)
+no saving throw against attacks that deal electricity damage. Level Adjustment: —
+Construction This metallic automaton is twice the height of a normal human and
+The pieces of a flesh golem must come from normal human resembles an armored giant.
+corpses that have not decayed significantly. Assembly requires a
+minimum of six different bodies—one for each limb, the torso This golem has a humanoid body made from iron.
+(including head), and the brain. In some cases, more bodies may An iron golem can be fashioned in any manner, just like a stone
+be necessary. Special unguents and bindings worth 500 gp are also golem (see below), although it almost always displays armor of
+required. Note that creating a flesh golem requires casting a spell some sort. Its features are much smoother than those of a stone
+with the evil descriptor. golem. Iron golems sometimes carry a short sword in one hand.
+Assembling the body requires a DC 13 Craft (leatherworking) An iron golem is 12 feet tall and weighs about 5,000 pounds.
+check or a DC 13 Heal check. An iron golem cannot speak or make any vocal noise, nor does
+CL 8th; Craft Construct (see page 303), animate dead, bull’s it have any distinguishable odor. It moves with a ponderous but
+strength, geas Quest, limited wish, caster must be at least 8th level; smooth gait. Each step causes the floor to tremble unless it is on a
+Price 20,000 gp; Cost 10,500 gp + 780 XP. thick, solid foundation.
+IRON GOLEM Combat
+Large Construct Iron golems are mighty combatants. They strike with deadly accu-
+Hit Dice: 18d10+30 (129 hp) racy and incredible force. Their bodies are nearly invulnerable but
+Initiative: –1 can be reduced to piles of rubbish by rust monsters.
+Speed: 20 ft. (4 squares) Breath Weapon (Su): 10-foot cube, cloud of poisonous gas last-
+Armor Class: 30 (–1 size, –1 Dex, +22 natural) touch 8, ing 1 round, free action once every 1d4+1 rounds; initial damage
+flat-footed 30 1d4 Con, secondary damage 3d4 Con, Fortitude DC 19 negates.
+Base Attack/Grapple: +12/+28 The save DC is Constitution-based.
+Stone Golem GreaterStoneGolem
+LargeConstruct HugeConstruct
+HitDice: 14d10+30(107hp) 42d10+40(271hp)
+Initiative: –1 –2
+Speed: 20ft.(4squares) 20ft.(4squares)
+ArmorClass: 26(–1size,–1Dex,+18natural), 27(–2size,–2Dex,+21natural),
+touch8,flat-footed26 touch6,flat-footed27
+BaseAttack/Grapple: +10/+23 +31/+52
+Attack: Slam+18melee(2d10+9) Slam+42melee(4d8+13)
+FullAttack: 2slams+18melee(2d10+9) 2slams+42melee(4d8+13)
+Space/Reach: 10ft(4squares)./10ft. 15ft./15ft.
+SpecialAttacks: Slow Slow
+SpecialQualities: Constructtraits,damagereduction10/adamantine, Constructtraits,damagereduction10/adamantine,
+darkvision60ft.,immunitytomagic,low-lightvision darkvision60ft.,immunitytomagic,low-lightvision
+Saves: Fort+4,Ref+3,Will+4 Fort+14,Ref+12,Will+14
+Abilities: Str29,Dex9,Con—, Str37,Dex7,Con—,
+Int—,Wis11,Cha1 Int—,Wis11,Cha1
+Skills: — —
+Feats: — —
+Environment: Any Any
+Organization: Solitaryorgang(2–4) Solitaryorgang(2–4)
+ChallengeRating: 11 16
+Treasure: None None
+136 Alignment: Alwaysneutral Alwaysneutral
+Advancement: 15–21HD(Large);22–42(Huge) —
+LevelAdjustment: — —
+
+Immunity to Magic (Ex): An iron golem is immune to any spell, as a free action once every 2 rounds. The effect has a range of
+spell or spell-like ability that allows spell resistance. In addition, 10 feet and a duration of 7 rounds, requiring a DC 17 Will save to
+certain spells and effects function differently against the creature, negate. The save DC is Constitution-based.
+as noted below. Immunity to Magic (Ex): A stone golem is immune to any
+A magical attack that deals electricity damage slows an iron spell or spell-like ability that allows spell resistance. In addition,
+golem (as the slow spell) for 3 rounds, with no saving throw. certain spells and effects function differently against the creature,
+A magical attack that deals fire damage breaks any slow effect on as noted below.
+the golem and heals 1 point of damage for each 3 points of damage Atransmute rock to mud spell slows a stone golem (as the slow
+the attack would otherwise deal. If the amount of healing would spell) for 2d6 rounds, with no saving throw, while transmute mud to
+cause the golem to exceed its full normal hit points, it gains any rock heals all of its lost hit points.
+excess as temporary hit points. For example, an iron golem hit by Astone to flesh spell does not actually change the golem’s struc-
+afireball gains back 6 hit points if the damage total is 18 points. An ture but negates its damage reduction and immunity to magic for
+iron golem gets no saving throw against fire effects. 1 full round. GORGON
+An iron golem is affected normally by rust attacks, such as that
+of a rust monster or a rusting grasp spell. Construction
+A stone golem’s body is chiseled from a single block of hard stone,
+Construction such as granite, weighing at least 3,000 pounds. The stone must be
+An iron golem’s body is sculpted from 5,000 pounds of pure iron, of exceptional quality, and costs 5,000 gp. Assembling the body
+smelted with rare tinctures and admixtures costing at least 10,000 requires a DC 17 Craft (sculpting) check or a DC 17 Craft (stone-
+gp. Assembling the body requires a DC 20 Craft (armorsmithing) masonry) check.
+check or a DC 20 Craft (weaponsmithing) check. CL 14th; Craft Construct (see page 303), antimagic field,
+CL 16th; Craft Construct (see page 303), cloudkill, geas uest, lim- geas Quest, symbol of stunning, caster must be at least 14th level;
+ited wish, polymorph any object, caster must be at least 16th level; Price 90,000 gp; Cost 50,000 gp + 3,400 XP.
+Price 150,000 gp; Cost 80,000 gp + 5,600 XP.
+Greater Stone Golem
+STONE GOLEM A greater stone golem is a colossus of granite, the largest and most
+This automaton has been cut from stone. It is half again as tall as a fearsome stone golem commonly created. These immensely pow-
+normal human and resembles a roughly chiseled statue of a soldier. erful constructs are most often used to guard royal tombs, magical
+armories, and similar places of ancient power.
+This golem has a humanoid body made from stone. A greater stone golem is 18 feet tall and weighs around 32,000
+A stone golem is 9 feet tall and weighs around 2,000 pounds. Its pounds. It resembles a typical stone golem in all respects, except
+body is frequently stylized to suit its creator. For example, it might that the Will save DC is 31 against its slow ability.
+look like it is wearing armor, with a particular symbol carved on CL 14th; Craft Construct (see page 303), antimagic field,
+the breastplate, or have designs worked into the stone of its limbs. geas Quest, symbol of stunning, caster must be at least 14th level;
+Price 196,000 gp; Cost 105,000 gp + 7,640 XP.
+Combat
+Stone golems are formidable opponents,

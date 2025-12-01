@@ -1,0 +1,80 @@
+PSEUDODRAGON
+Feats: Weapon Focus (rapier)
+Environment: Temperate plains Tiny Dragon
+Organization: Solitary, pair, or gang (3–4) Hit Dice: 2d12+2 (15 hp)
+Challenge Rating: 1/2 Initiative: +2
+Treasure: Standard Speed: 15 ft. (3 squares), fly 60 ft. (good)
+Alignment: Usually evil (any) Armor Class: 18 (+2 size, +2 Dex, +4 natural), touch 14,
+Advancement: By character class flat-footed 16
+Level Adjustment: +1 Base Attack/Grapple: +2/–8
+Attack: Sting +4 melee (1d3–2 plus poison)
+NOGARGODUESP This being looks like a human, but it has a faintly disturbing demeanor Full Attack: Sting +4 melee (1d3–2 plus poison) and bite –1
+about it and a wicked gleam in its eyes. Short horns sprout from its fore- melee (1)
+head. Space/Reach: 2-1/2 ft./0 ft. (5 ft. with tail)
+Special Attacks: Poison
+Twisted, devious, and untrustworthy, tieflings more often than Special Qualities: Blindsense 60 ft., darkvision 60 ft., immunity
+not follow their inherent tendencies and heed the call to evil. A to sleep and paralysis, low-light vision, spell resistance 19,
+few defy their nature, but still must fight against popular opinion telepathy 60 ft.
+(if their nature is known) or the feeling of otherworldly “wrong- Saves: Fort +4, Ref +5, Will +4
+ness” that seems to follow them wherever they go. Abilities: Str 6, Dex 15, Con 13, Int 10, Wis 12, Cha 10
+Aside from a demeanor that many find disturbing, many Skills: Diplomacy +2, Hide +20*, Listen +7, Search +6, Sense
+tieflings are indistinguishable from humans. Others have small Motive +7, Spot +7, Survival +1 (+3 following tracks)
+horns, pointed teeth, red eyes, a whiff of brimstone about them, or Feats: Weapon Finesse
+even cloven feet. No two tieflings are the same. Environment: Temperate forests
+In most human societies, tieflings maintain a low profile, oper- Organization: Solitary, pair, or clutch (3–5)
+ating as thieves, assassins, or spies. Occasionally one rises to a posi- Challenge Rating: 1
+tion of power, but when its nature is revealed it quickly becomes Treasure: None
+an outcast. Alignment: Always neutral good
+Advancement: 3–4 HD (Tiny)
+Combat Level Adjustment: +3
+Tieflings are sneaky, subtle, and
+generally conniv- This creature resembles a miniature red dragon, slightly smaller than a
+ing. They prefer to housecat. It is red-brown in color rather than deep red. It has fine
+strike from ambush Pseudodragon scales and sharp horns and teeth. Its tail is about twice as long
+and usually avoid a fair as its body, barbed, and very flexible.
+fight if they can.
+Darkness (Sp): A tiefling can Pseudodragons are tiny, playful
+use darkness once per day (caster members of the dragon family.
+level equal to class levels). A pseudodragon has a body
+Skills: A tiefling has a +2 racial about 1 foot long, with a 2-
+bonus on Bluff and Hide checks. foot tail. It weights about
+7 pounds.
+The tiefling warrior presented here A pseudodragon
+had the following ability scores can communicate
+before racial adjustments: telepathically
+Str 13, Dex 11, Con 12, and can also vo-
+Int 10, Wis 9, Cha 8. calize animal
+noises, such
+Tieflings as as a rasping
+Characters purr (pleasure),
+Tiefling characters pos- a hiss (unpleas-
+sess the following ant surprise), a
+racial traits. chirp (desire), or
+— +2 Dexterity, +2 Intelli- a growl (anger).
+gence, –2 Charisma.
+—Medium size.
+—A tiefling’s base land speed is 30 feet.
+—Darkvision out to 60 feet. COMBAT
+—Racial Skills: Tieflings have a +2 racial bonus on Bluff and A pseudodragon can deliver a vicious bite, but its principal
+Hide checks. weapon is its sting-equipped tail.
+—Racial Feats: A tiefling gains feats according to its class levels. Poison (Ex): Injury, Fortitude DC 14, initial damage sleep for 1
+—Special Attacks (see above): Darkness. minute, secondary damage sleep for 1d3 hours. The save DC is
+—Special Qualities (see above): Resistance to cold 5, electricity Constitution-based and includes a +2 racial bonus.
+5, and fire 5. Blindsense (Ex): A pseudodragon can locate creatures within
+—Automatic Languages: Common, Infernal. Bonus Languages: 60 feet by nonvisual means (mostly hearing and scent, but also by
+210 Draconic, Dwarven, Elven, Gnome, Goblin, Halfling, Orc. noticing vibration and other environmental clues). Opponents
+—Favored Class: Rogue. the pseudodragon can’t actually see still have total concealment
+—Level adjustment +1. against the pseudodragon.
+
+Telepathy (Su): Pseudodragons can communicate telepathi- These massive scavengers attempt to consume any organic mate-
+cally with creatures that speak Common or Sylvan, provided they rial they find. Purple worms are feared for swallowing their prey
+are within 60 feet. whole: Entire groups of adventurers have vanished down their
+Skills: Pseudodragons have a chameleonlike ability that grants gullets, one member after the other.
+them a +4 racial bonus on Hide checks. *In forests or overgrown The body of a mature purple worm is 5 feet in diameter and 80
+areas, this bonus improves to +8. feet long, weighing about 40,000 pounds. The creature has a poi-
+sonous stinger in its tail.
+PSEUDODRAGON COMPANIONS A purple worm consumes great quantities of dirt and rock when
+A pseudodragon may very rarely seek humanoid companionship. tunneling. Its gizzard may hold gems and other acid-resistant
+It stalks a candidate silently for days, reading his or her thoughts items. In mineral-rich areas, purple worm castings might contain
+and judging his or her deeds. If it finds the candidate promising, unrefined ores.
+the pseudodragon presents itself as a potential companion and ob-

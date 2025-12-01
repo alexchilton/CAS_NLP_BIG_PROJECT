@@ -1,0 +1,42 @@
+GHOUL
+fested ghost can be harmed only by other incorporeal crea-
+tures, magic weapons, or spells, with a 50% chance to ignore This foul creature appears more or less humanoid, but has mottled,
+any damage from a corporeal source. A manifested ghost can decaying flesh drawn tight across clearly visible bones. It is mostly hair-
+pass through solid objects at will, and its own attacks pass less and has a carnivore’s sharp teeth. Its eyes burn like hot coals in their
+through armor. A manifested ghost always moves silently. sunken sockets.
+A manifested ghost can strike with its touch attack or with a
+ghost touch weapon (see Ghostly Equipment, below). A mani- Ghouls haunt graveyards, battlefields, and other places rich with
+fested ghost remains partially on the Ethereal Plane, where is it the carrion they hunger for. These terrible creatures lurk wherever
+not incorporeal. A manifested ghost can be attacked by opponents the stench of death hangs heavy, ready to devour the unwary.
+on either the Material Plane or the Ethereal Plane. The ghost’s Ghouls are said to be created upon the death of a living man or
+incorporeality helps protect it from foes on the Material Plane, but woman who savored the taste of the flesh of people. This assertion
+not from foes on the Ethereal Plane. may or may not be true, but it does explain the disgusting behavior
+When a spellcasting ghost is not manifested and is on the Ethe- of these anthropophagous undead. Some believe that anyone of
+real Plane, its spells cannot affect targets on the Material Plane, exceptional debauchery and wickedness runs the risk of becoming
+but they work normally against ethereal targets. When a spellcast- a ghoul. The transformation from living beings into fell things of
+ing ghost manifests, its spells continue to affect ethereal targets the night has warped their minds, making them cunning and feral.
+and can affect targets on the Material Plane normally unless the Ghouls speak the languages they spoke in life (usually
+spells rely on touch. A manifested ghost’s touch spells don’t work Common).
+on nonethereal targets.
+A ghost has two home planes, the Material Plane and the COMBAT
+Ethereal Plane. It is not considered extraplanar when on either Ghouls try to attack with surprise whenever possible. They strike
+of these planes. from behind tombstones and burst from shallow graves.
+Telekinesis (Su): A ghost can use telekinesis as a standard action Ghoul Fever (Su): Disease—bite, Fortitude DC 12, incubation
+(caster level 12th or equal to the ghost’s HD, whichever is higher). period 1 day, damage 1d3 Con and 1d3 Dex. The save DC is
+When a ghost uses this power, it must wait 1d4 rounds before Charisma-based.
+using it again. An afflicted humanoid who dies of ghoul fever rises as a ghoul
+Special Qualities: A ghost has all the special qualities of the at the next midnight. A humanoid who becomes a ghoul in this
+base creature as well as those described below. way retains none of the abilities it possessed in life. It is not under
+Rejuvenation (Su): In most cases, it’s difficult to destroy a the control of any other ghouls, but it hungers for the flesh of the
+ghost through simple combat: The “destroyed” spirit will often living and behaves like a normal ghoul in all respects. A humanoid
+restore itself in 2d4 days. Even the most powerful spells are usu- of 4 Hit Dice or more rises as a ghast, not a ghoul.
+ally only temporary solutions. A ghost that would otherwise be Paralysis (Ex): Those hit by a ghoul’s bite or claw attack must
+118 destroyed returns to its old haunts with a successful level check succeed on a DC 12 Fortitude save or be paralyzed for 1d4+1
+(1d20 + ghost’s HD) against DC 16. As a rule, the only way to get rounds. Elves have immunity to this paralysis. The save DC is
+rid of a ghost for sure is to determine the reason for its exis- Charisma-based.
+
+LACEDON cannot be affected again by the same ghast’s stench for 24 hours. A
+These cousins of the ghoul have the aquatic subtype. They lurk delay poison orneutralize poison spell removes the effect from a sick-
+near hidden reefs or other places where ships are likely to meet ened creature. Creatures with immunity to poison are unaffected,
+their end. They have a base land speed of 30 feet and a swim and creatures resistant to poison receive their normal bonus on
+speed of 30 feet and are found only in aquatic environments. their saving throws. The save DC is Charisma-based.

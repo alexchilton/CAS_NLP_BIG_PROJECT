@@ -1,0 +1,67 @@
+ELF
+effects that affect elves as their elf ancestors Destruction, Evil, or Trickery.
+are, and they can Drow usually coat their arrows
+use magic items that with a potent venom.
+are only usable by elves. Drow Poison (Ex): An opponent
+—Automatic Languages: hit by a drow’s poisoned
+Common, Elven. Bonus Lan- weapon must succeed on a
+guages: Any (other than secret lan- DC 13 Fortitude save or fall
+guages, such as Druidic). unconscious. After 1 minute,
+—Favored Class: Any. When the subject must succeed on
+determining whether a multiclass another DC 13 Fortitude save
+half-elf takes an experience point or remain unconscious for 2d4
+penalty for multiclassing, her hours. A typical drow carries
+highest-level class does not 1d4–1 doses of drow knock-
+count. out poison. Drow typically
+coat arrows and crossbow
+Aquatic Elf bolts with this poison, but it
+This humanoid is slender and can also be applied to a melee
+slightly shorter than a human. weapon. Note that drow have
+It has pale, greenish silver skin no special ability to apply
+and emerald green hair. Its ears poison without risking being
+are pointed, and its fingers and poisoned themselves. Since this
+toes are partially webbed. poison is not a magical effect,
+drow and other elves are sus-
+Also called sea elves, ceptible to it.
+these creatures are water- Drow Traits (Ex): These
+breathing cousins to traits are in addition to
+land-dwelling elves. the high elf traits, except
+They cavort amid the where noted.
+waves and the ocean — +2 Intelligence, +2
+depths with allies such as Charisma.
+dolphins and whales. —Darkvision out to 120
+Aquatic elves fight underwater feet. This trait replaces the high
+with tridents, spears, and nets. elf’s low-light vision.
+Many aquatic elves revere Deep —Spell resistance equal to 11 + class levels.
+Sashelas, an undersea god of knowl- — +2 racial bonus on Will saves against spells and spell-like
+edge and beauty. abilities.
+Aquatic Elf Traits (Ex): These traits are in addition to the high —Spell-Like Abilities: Drow can use the following spell-like abili-
+elf traits, except where noted. ties once per day: dancing lights, darkness, faerie fire. Caster level equals
+— +2 Dexterity, –2 Intelligence. These adjustments replace the the drow’s class levels.
+high elf’s ability score adjustments. —Weapon Proficiency: A drow is automatically proficient with
+—An aquatic elf has the aquatic subtype. the hand crossbow, the rapier, and the short sword. This trait
+—An aquatic elf has a swim speed of 40 feet. replaces the high elf’s weapon proficiency.
+—Gills: Aquatic elves can survive out of the water for 1 hour —Automatic Languages: Common, Elven, Undercommon.
+per point of Constitution (after that, refer to the suffocation rules Bonus Languages: Abyssal, Aquan, Draconic, Drow Sign Language,
+on page 304 of the Dungeon Master’s Guide). Gnome, Goblin, Kuo-toan. This trait replaces the high elf’s auto-
+—Superior Low-Light Vision: Aquatic elves can see four times matic and bonus languages.
+as far as a human in starlight, moonlight, torchlight, and similar —Light Blindness: Abrupt exposure to bright light (such as
+conditions of low illumination. This trait replaces the high elf ’s sunlight or a daylight spell) blinds drow for 1 round. On subse-
+low-light vision. quent rounds, they are dazzled as long as they remain in the
+—Favored Class: Fighter. This trait replaces the high elf ’s affected area.
+favored class. —Favored Class: Wizard (male) or cleric (female). This trait 103
+replaces the high elf’s favored class.
+—Level adjustment +2.
+
+The drow warrior presented here had the following ability scores clothing of animal skins and basic plant weaves. Though other
+before racial adjustments: Str 13, Dex 11, Con 12, Int 10, Wis 9, elves consider them savages, they contend that they are the
+Cha 8. true elves, for the rest have lost their primal elven essence in
+Challenge Rating: Drow with levels in NPC classes have a CR needing to build. Nomadic and rugged, wild elves favor the
+equal to their character level. Drow with levels in PC classes have sorcerer class rather than wizard, although many are barbar-
+a CR equal to their character level +1. ians as well.
+Wild Elf Traits (Ex): These traits are in addition to the high elf
+Gray Elf traits, except where noted.
+This humanoid is slender and nearly as tall as a human. It is pale- — +2 Dexterity, –2 Intelligence. These adjustments replace the
+skinned and dark-haired, with pointed ears. high elf’s ability score adjustments.
+—Favored Class: Sorcerer. This trait replaces the high elf ’s
+Gray elves are the most noble and regal of all elves. Taller and favored class.

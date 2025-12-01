@@ -1,0 +1,41 @@
+DRAGON, TRUE
+attack roll. (Many dragons choose the Multiattack feat to lessen
+True dragons are winged, reptilelike creatures of ancient lineage. this penalty to –2).
+They are known and feared for their size, physical prowess, and Wing: The dragon can slam opponents with its wings, even
+magical abilities. The oldest dragons are among the most powerful when flying. Wing attacks deal the indicated damage plus 1/2 the
+creatures in the world. dragon’s Strength bonus (round down) and are treated as second-
+The known varieties of true dragons (as opposed to other crea- ary attacks.
+tures that have the dragon type) fall into two broad categories: Tail Slap: The dragon can slap one opponent each round with
+chromatic and metallic. The chromatic dragons are black, blue, its tail. A tail slap deals the indicated damage plus 1-1/2 times the
+green, red, and white; they are all evil and extremely fierce. The dragon’s Strength bonus (round down) and is treated as a second-
+metallic dragons are brass, bronze, copper, gold, and silver; they ary attack.
+are all good, usually noble, and highly respected by the wise. Crush (Ex): This special attack allows a flying or jumping
+All true dragons gain more abilities and greater power as they dragon of at least Huge size to land on opponents as a standard
+age. (Other creatures that have the dragon type do not.) They action, using its whole body to crush them. Crush attacks are
+range in length from several feet upon hatching to more than 100 effective only against opponents three or more size categories
+feet after attaining the status of great wyrm. The size of a particu- smaller than the dragon (though it can attempt normal overrun or
+lar dragon varies according to age and variety. grapple attacks against larger opponents).
+Though they are fearsome predators, dragons scavenge when A crush attack affects as many creatures as can fit under the
+necessary and can eat almost anything if they are hungry enough. dragon’s body. Creatures in the affected area must succeed on a
+A dragon’s metabolism operates like a highly efficient furnace and Reflex save (DC equal to that of the dragon’s breath weapon) or be
+can metabolize even inorganic material. Some dragons have pinned, automatically taking bludgeoning damage during the next
+developed a taste for such fare. round unless the dragon moves off them. If the dragon chooses to
+Although goals and ideals vary among varieties, all dragons maintain the pin, treat it as a normal grapple attack. Pinned oppo-
+are covetous. They like to hoard wealth, collecting mounds of nents take damage from the crush each round if they don’t escape.
+coins and gathering as many gems, jewels, and magic items as A crush attack deals the indicated damage plus 1-1/2 times the
+68 possible. Those with large hoards are loath to leave them for dragon’s Strength bonus (round down).
+long, venturing out of their lairs only to patrol the immediate Tail Sweep (Ex): This special attack allows a dragon of at least
+area or to get food. For dragons, there is no such thing as Gargantuan size to sweep with its tail as a standard action. The
+
+Dragon Space/Reach, Attacks, and Damage
+1 Tail 1 Tail
+Size Space/Reach* 1 Bite 2 Claws 2 Wings Slap 1 Crush Sweep
+Tiny 2-1/2 ft./0 ft. (5 ft. with bite) 1d4 1d3 — — — —
+Small 5 ft./5 ft. 1d6 1d4 — — — —
+Medium 5 ft./5 ft. 1d8 1d6 1d4 — — —
+Large 10 ft./5 ft. (10 ft. with bite) 2d6 1d8 1d6 1d8 — —
+Huge 15 ft./10 ft. (15 ft. with bite) 2d8 2d6 1d8 2d6 2d8 —
+Gargantuan 20 ft./15 ft. (20 ft. with bite) 4d6 2d8 2d6 2d8 4d6 2d6
+Colossal 30 ft./20 ft. (30 ft. with bite) 4d8 4d6 2d8 4d6 4d8 2d8
+*A dragon’s bite attack has reach as if the creature were one size category larger. All other attacks are made with the standard reach for the
+dragon’s size.

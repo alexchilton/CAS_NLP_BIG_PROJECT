@@ -1,0 +1,49 @@
+N
+Initiative: +2
+MUMMY LORD Speed: 40 ft. (8 squares) A G
+Unusually powerful or evil Armor Class: 14 (–1 size, +2 A
+individuals preserved as Dex, +3 natural), touch 11,
+mummies sometimes flat-footed 12
+rise as greater mummies Base Attack/Grapple: +6/+12
+after death. A mummy Attack: Sting +7 melee
+lord resembles its lesser (2d4+2 plus poison)
+fellows, but often wears Full Attack: Sting +7 melee
+or carries equipment it (2d4+2 plus poison) and bite
+used in life—ancient +2 melee (1d4+1)
+bronze armor, a rune- Space/Reach: 10 ft./5 ft.
+marked sword, or a magic Special Attacks: Poison,
+staff. spells
+Mummy lords are often Special Qualities: Darkvision
+potent spellcasters. They are 60 ft., detect thoughts, guarded
+found as guardians of the thoughts, immunity to
+tombs of high lords, poison, resistance to charm
+priests, and mages. Most Saves: Fort +5, Ref +7,
+are sworn to defend for Will +8
+eternity the resting place Abilities: Str 14, Dex 15, Con
+of those whom they 14, Int 16, Wis 15, Cha 17
+served in life, but in some Skills: Bluff +9, Concen-
+cases a mummy lord’s unliv- tration +13, Diplomacy +7,
+ing state is the result of a terri- Disguise +5 (+7 acting),
+ble curse or rite designed to Intimidate +5, Listen +11,
+punish treason, infidelity, or crimes Sense Motive +8, Spellcraft
+of an even more abhorrent nature. A +12, Spot +11
+mummy lord of this sort is usually Feats: Alertness, Combat Casting,
+imprisoned in a tomb that is never Dodge, Eschew MaterialsB, Lightning
+meant to be opened again. Reflexes
+Despair (Su): The save DC against this Environment: Temperate hills
+mummy lord’s despair is 17. Organization: Solitary or nest (2–4)
+Mummy Rot (Su): The save DC against this Mummy lord Challenge Rating: 8
+mummy lord’s mummy rot is 17. Treasure: Standard
+Typical Cleric Spells Prepared (6/7/6/5/5/4; save DC 15 + spell Alignment: Usually lawful evil
+level): 0—detect magic (2), guidance, read magic, resistance, virtue; Advancement: 10–13 HD (Large); 14–27 HD (Huge)
+1st—bane, command, deathwatch, divine favor, doom, sanctuary*, shield Level Adjustment: —
+of faith; 2nd—bull’s strength, death knell*, hold person, resist energy,
+silence, spiritual weapon; 3rd—animate dead*, deeper darkness, dispel This snakelike creature has a deep purple body covered in fine scales,
+magic, invisibility purge, searing light; 4th—air walk, dismissal, divine making it look rather like a great eel. Its tail ends in a barbed stinger. Its
+power, giant vermin, spell immunity*; 5th—insect plague, slay living*, head resembles an eel’s but has a humanlike visage.
+spell resistance, symbol of pain.
+*Domain Spell. Domains: Death and Protection. Dark nagas are infamous plotters and schemers. They often form
+Possessions: +2 half-plate armor, cloak of resistance +2, ring of minor alliances with other evil creatures so as to more efficiently gather
+elemental resistance (fire), brooch of shielding. (Different mummy prey and wealth.
+lords may have different possessions.) Dark nagas speak Common and Infernal.
+Combat

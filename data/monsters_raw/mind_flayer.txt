@@ -1,0 +1,64 @@
+MIND FLAYER
+Special Attacks: Adhesive, crush
+Special Qualities: Darkvision 60 ft., immunity to acid, mimic This strange humanoid-shaped being stands about as tall as a human. Its
+shape flesh is rubbery and greenish-mauve, glistening with slime. The creature’s
+Saves: Fort +5, Ref +5, Will +6 head looks rather like a four-tentacled octopus, made all the more horri-
+Abilities: Str 19, Dex 12, Con 17, Int 10, Wis 13, Cha 10 ble by a pair of bloated white eyes.
+Skills: Climb +9, Disguise +13, Listen +8, Spot +8
+Feats: Alertness, Lightning Reflexes, Weapon Focus (slam) Mind flayers, also called illithids, are so insidious, diabolical, and
+Environment: Underground powerful that all denizens of the dark fear them. They bend others
+Organization:Solitary to their will and shatter enemies’ minds.
+Challenge Rating: 4 A mind flayer’s mouth, a revolting thing shaped like a
+Treasure: 1/10th coins; 50% lamprey’s maw, constantly drips an oily slime when it is
+goods; 50% items Mimic not siphoning out the brains of living prey.
+Alignment: Usually neutral In addition to being highly intelli-
+Advancement: 8–10 HD gent, wholly evil, and terribly
+(Large); 11–21 HD (Huge) sadistic, mind flayers are
+Level Adjustment: — utterly self-serving. If an
+encounter turns against the
+What originally appeared to be creature, it flees at once,
+an object now shows signs of caring nothing for the
+organic life as the creature fate of its companions or
+sprouts a lashing pseudopod. servitors.
+A mind flayer is about
+The mimic is a strange and the same height and
+deadly creature that can weight as a human.
+change its pigmentation Mind flayers speak Under-
+and shape. It uses this ability to common but prefer to commu-
+186 lure hapless victims close enough to nicate telepathically.
+slay them.
+
+COMBAT Mindflayer only if it can somehow reach the foe’s head.
+Mind flayers like to fight from a distance, If a mind flayer begins its turn with at least
+using their psionic abilities, particularly one tentacle attached, it can try to attach its
+mind blast. If pressed into melee combat, a remaining tentacles with a single grapple check.
+mind flayer lashes its enemies with the The opponent can escape with a single successful
+tentacles ringing its mouth. grapple check or an Escape Artist check, but the
+Mind Blast (Sp): This psionic attack mind flayer gets a +2 circumstance bonus for
+is a cone 60 feet long. Anyone caught in every tentacle that was attached at the beginning
+this cone must succeed on a DC 17 Will of the opponent’s turn.
+save or be stunned for 3d4 rounds. Mind Extract (Ex): A mind flayer that begins
+flayers often hunt using this power and its turn with all four tentacles attached
+then drag off one or two of their and that makes a successful grapple MINDFLAYER
+stunned victims to feed upon. The check automatically extracts the opponent’s
+save DC is Charisma-based. This brain, instantly killing that creature. This
+ability is the equivalent of a 4th- power is useless against constructs, elemen-
+level spell. tals, oozes, plants, and undead. It is not
+Psionics (Sp): At will—charm instantly fatal to foes with multiple heads, such
+monster (DC 17), detect thoughts (DC as ettins and hydras.
+15), levitate, plane shift, suggestion (DC
+16). Effective caster level 8th. The MIND FLAYER SORCERER
+save DCs are Charisma-based. While many mind flayers train as wizards and
+Improved Grab (Ex): To use grow mighty in the arcane arts along that
+this ability, a mind flayer must hit a disciplined path, some of the most fear-
+Small, Medium, or Large creature some of the illithids are sorcerers, whose
+with its tentacle attack. It can mastery of magic seems almost instinctual.
+then attempt to start a grapple
+as a free action without pro- Combat
+voking an attack of opportunity. The save DCs for this mind flayer sorcerer’s
+If it wins the grapple check, it mind blast (DC 21) and its psionics (charm mon-
+establishes a hold and attaches ster DC 21, detect thoughts DC 19, suggestion DC
+the tentacle to the opponent’s 20) are adjusted for its higher Charisma score.
+head. A mind flayer can grab The mind flayer sorcerer uses its spells to Illus.
+a Huge or larger creature, but protect itself from attack (greater invisibil-
+by

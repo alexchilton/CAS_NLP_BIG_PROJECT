@@ -1,0 +1,54 @@
+SLAAD
+darkvision 60 ft., fast healing 5, immunity to sonic, resistance +24, Intimidate +22, Jump +23, Knowledge (any two) +22,
+to acid 5, cold 5, electricity 5, and fire 5 Listen +22, Move Silently +24, Search +22, Spot +22, Survival
+Saves: Fort +12, Ref +10, Will +9 +12 (+14 when tracking), Use Rope +6 (+8 with bindings)
+Abilities: Str 19, Dex 17, Con 21, Int 14, Wis 14, Cha 14 Feats: Cleave, Great Cleave, Improved Initiative, Improved
+Skills: Climb +17, Concentration +15, Hide +16, Jump +17, Sunder, Multiattack, Power Attack
+Knowledge (arcana) +15, Listen +15, Move Silently +16, Search Environment: Ever-Changing Chaos of Limbo
++15, Spellcraft +17, Spot +15, Survival +5 (+7 following tracks) Organization:Solitary or pair
+Feats: Multiattack, Improved Initiative, Weapon Focus (claw), Challenge Rating: 13
+item creation feat (any one) Treasure: Double standard
+Environment: Ever-Changing Chaos of Limbo Alignment: Usually chaotic evil
+Organization:Solitary or pair Advancement: 16–22 HD (Medium); 23–45 HD (Large)
+Challenge Rating: 10 Level Adjustment: —
+Treasure: Double standard
+Alignment: Usually chaotic neutral Lean and quick-looking, this humanoid resembles a two-legged frog. Its
+Advancement: 11–15 HD (Medium); 16–30 HD (Large) skin is a dappled gray color, and its fingers are long and clawed. It stands
+Level Adjustment: +6 as tall as a human.
+Lean and quick-looking, this humanoid resembles a two-legged frog. Its Death slaadi are grays that undergo some mysterious ritual that
+skin is a dappled gray color, and its fingers are long and clawed. It stands transforms them into veritable killing machines. Although they
+as tall as a human. have spell-like abilities like gray slaadi, death slaadi focus more on
+killing than on magical power. They look exactly like gray slaadi.
+A green slaad that survives for more than a century retreats into All slaadi obey the command of a death slaad, out of fear more
+isolation for at least a year. It returns as a smaller, leaner gray slaad than anything else. Death slaadi represent a corruption of pure
+and devotes most of its time and attention to magical study. Gray chaos by evil rather than true exemplars of it.
+slaadi enjoy crafting magic items to further their own power.
+Combat
+Combat Although its prowess with its natural weapons is fearsome, a death
+Gray slaadi prefer to fight from a distance, using their spell-like slaad enjoys wielding a magic weapon if available.
+abilities, although they don’t shy away from melee. Stun (Ex): Three times per day, a death slaad can attempt to
+Spell-Like Abilities: At will—chaos hammer (DC 16), deeper stun its opponent on an attack with one of its natural weapons. If
+darkness, detect magic, identify, invisibility, lightning bolt (DC 15), magic the opponent fails a DC 21 Fortitude save, it is stunned for 1 round
+circle against law, see invisibility, shatter (DC 14); 3/day—animate in addition to taking normal damage from the attack. The save DC
+objects, dispel law (DC 17), fly; 1/day—power word stun. Caster level is Wisdom-based.
+10th. The save DCs are Charisma-based. Spell-Like Abilities: At will—animate objects, chaos hammer
+Change Shape (Su): A gray slaad can assume any humanoid (DC 18), deeper darkness, detect magic, dispel law (DC 19), fear (DC 18),
+form as a standard action. In humanoid form, a gray slaad cannot finger of death (DC 21), fireball (DC 17), fly, identify, invisibility, magic
+use its natural weapons (although a slaad can equip itself with circle against law, see invisibility, shatter (DC 16); 3/day—circle of death
+weapons and armor appropriate to its appearance). A gray slaad re- (DC 20), cloak of chaos (DC 22), word of chaos (DC 21);1/day—implo-
+mains in one form until it chooses to assume a new one. A change sion(DC 23), power word blind. Caster level 15th. The save DCs are
+in form cannot be dispelled, but the slaad reverts to its natural Charisma-based.
+form when killed. A true seeing spell reveals its natural form. Change Shape (Su): A death slaad can assume any humanoid
+Summon Slaad(Sp): Twice per day a gray slaad can attempt to form as a standard action. In humanoid form, a death slaad cannot
+summon 1–2 red slaadi or 1 blue slaad with a 60% chance of suc- use its natural weapons (although a slaad can equip itself with
+cess, or 1 green slaad with a 40% chance of success. This ability is weapons and armor appropriate to its appearance). A death slaad
+the equivalent of a 5th-level spell. remains in one form until it chooses to assume a new one. A
+change in form cannot be dispelled, but the slaad reverts to its nat-
+DEATH SLAAD ural form when killed. A true seeing spell reveals its natural form.
+Medium Outsider (Chaotic, Extraplanar) Summon Slaad(Sp): Twice per day a death slaad can attempt to
+Hit Dice: 15d8+75 (142 hp) summon 1–2 red or blue slaadi with a 60% chance of success, or
+Initiative: +10 1–2 green slaadi with a 40% chance of success. This ability is the
+Speed: 30 ft. (6 squares) equivalent of a 6th-level spell.
+231
+
+Sunlight Powerlessness (Ex): Spectres are powerless in natu-

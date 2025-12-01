@@ -1,0 +1,69 @@
+SKILLS
+afflicted lycanthrope can control his shape. A natural lycanthrope
+does not need this skill, since it has full control over its shape. CRAFT CONSTRUCT [ITEM CREATION] FEATS
+Check (Involuntary Change): An afflicted character must The creature can create golems and other magic automatons that
+make a check at moonrise each night of the full moon to resist obey its orders. AND
+involuntarily assuming animal form. An injured character must Prerequisites: Craft Magic Arms and Armor, Craft Wondrous
+6:
+also check for an involuntary change after accumulating enough Item.
+damage to reduce his hit points by one-quarter and again after Benefit: A creature with this feat can create any construct
+each additional one-quarter lost. whose prerequisites it meets. Enchanting a construct takes one
+Involuntary Change Control Shape DC day for each 1,000 gp in its market price. To enchant a construct, a
+Resist involuntary change 25 spellcaster must spend 1/25 the item’s price in XP and use up raw
+On a failed check, the character must remain in animal form until materials costing half of this price (see the Golem, Homunculus,
+the next dawn, when he automatically returns to his base form. A and Shield Guardian monster entries for details).
+character aware of his condition may make one attempt to return A creature with this feat can repair constructs that have taken
+to humanoid form (see below), but if he fails, he remains in animal damage. In one day of work, the creature can repair up to 20 points
+form until the next dawn. of damage by expending 50 gp per point of damage repaired.
+Retry (Involuntary Change): Check to resist an involuntary A newly created construct has average hit points for its Hit
+change once each time a triggering event occurs. Dice.
+Check (Voluntary Change): In addition, an afflicted lycan- EMPOWER SPELL-LIKE ABILITY [GENERAL]
+thrope aware of his condition may attempt to use this skill volun- The creature can use a spell-like ability with greater effect than
+tarily in order to change to animal form, assume hybrid form, or normal.
+return to humanoid form, regardless of the state of the moon or Prerequisite: Spell-like ability at caster level 6th or higher.
+whether he has been injured. Benefit: Choose one of the creature’s spell-like abilities, subject
+Involuntary Change Control Shape DC to the restrictions below. The creature can use that ability as an
+Return to humanoid form (full moon*) 25 empowered spell-like ability three times per day (or less, if the
+Return to humanoid form (not full moon) 20 ability is normally usable only once or twice per day).
+Assume hybrid form 15 When a creature uses an empowered spell-like ability, all vari-
+Voluntary change to animal form (full moon) 15 able, numeric effects of the spell-like ability are increased by one-
+Voluntary change to animal form (not full moon) 20 half. An empowered spell-like ability does half again as much
+* For game purposes, the full moon lasts three days every month. damage as normal, cures half again as many hit points, affects half
+Retry (Voluntary Change): A character can retry voluntary again as many targets, and so on as appropriate. For example, a
+changes to animal form or hybrid form as often as he likes. Each night hag’s empowered magic missile deals 1-1/2 times normal
+attempt is a standard action. However, on a failed check to return damage (roll 1d4+1 and multiply the result by 1-1/2 for each mis-
+to humanoid form, the character must remain in animal or hybrid sile). Saving throws and opposed rolls (such as the one made when
+form until the next dawn, when he automatically returns to a character casts dispel magic) are not affected. Spell-like abilities
+humanoid form. without random variables are not affected.
+Special: An afflicted lycanthrope cannot attempt a voluntary The creature can only select a spell-like ability duplicating a
+change until it becomes aware of its condition (see Lycanthropy as spell with a level less than or equal to half its caster level (round
+an Affliction, page 178). down) –2. For a summary, see the table in the description of the
+Quicken Spell-Like Ability feat. For example, a creature that uses
+ABILITY FOCUS [GENERAL] its spell-like abilities as a 13th-level caster can only empower spell-
+Choose one of the creature’s special attacks. This attack becomes like abilities duplicating spells of 4th level or lower.
+more potent than normal. Special: This feat can be taken multiple times. Each time it is
+Prerequisite: Special attack. taken, the creature can apply it to a different one of its spell-like
+Benefit: Add +2 to the DC for all saving throws against the spe- abilites.
+cial attack on which the creature focuses.
+Special: A creature can gain this feat multiple times. Its effects FLYBY ATTACK [GENERAL]
+do not stack. Each time the creature takes the feat, it applies to a The creature can attack on the wing.
+different special attack. Prerequisite: Fly speed.
+Benefit: When flying, the creature can take a move action
+AWESOME BLOW [GENERAL, FIGHTER] (including a dive) and another standard action at any point during
+The creature can choose to deliver blows that send its smaller the move. The creature cannot take a second move action during a
+opponents flying like bowling pins. round when it makes a flyby attack. 303
+Prerequisites: Str 25, Power Attack, Improved Bull Rush, size Normal: Without this feat, the creature takes a standard action
+Large or larger. either before or after its move.
+
+HOVER [GENERAL] Special: This feat replaces the Two-Weapon Fighting feat for
+The creature can come to a halt in midair. creatures with more than two arms.
+Prerequisite: Fly speed.
+Benefit: When flying, the creature can halt its forward motion QUICKEN SPELL-LIKE ABILITY [GENERAL]
+and hover in place as a move action. It can then fly in any direc- The creature can employ a spell-like ability with a moment’s thought.
+tion, including straight down or straight up, at half speed, regard- Prerequisite: Spell-like ability at caster level 10th or higher.
+less of its maneuverability. Benefit: Choose one of the creature’s spell-like abilities, subject
+If a creature begins its turn hovering, it can hover in place for to the restrictions described below. The creature can use that abil-
+the turn and take a full-round action. A hovering creature cannot ity as a quickened spell-like ability three times per day (or less, if
+make wing attacks, but it can attack with all other limbs and the ability is normally usable only once or twice per day).
+appendages it could use in a full attack. The creature can instead Using a quickened spell-like ability is a free action that does not
+:6 use a breath weapon or cast a spell instead of making physical provoke an attack of opportunity. The creature can perform an-

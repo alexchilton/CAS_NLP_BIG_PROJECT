@@ -1,0 +1,52 @@
+DESTRACHAN
+Level Adjustment: — (+2 if sane)
+Large Aberration
+A small, stocky dwarflike creature in studded leather armor titters and Hit Dice: 8d8+24 (60 hp)
+mumbles to himself. His skin is a pale blue-white color, and his bulbous Initiative: +5
+white eyes have no irises or pupils. His hair is coarse and white, and a long Speed: 30 ft. (6 squares)
+mustache droops past his chin. Armor Class: 18 (–1 size, +1 Dex, +8 natural), touch 10,
+flat-footed 17
+Derro are degenerate and evil creatures of the underground, cre- Base Attack/Grapple: +6/+14
+ated from dwarf and human stock by some nameless deity of dark- Attack: Claw +9 melee (1d6+4)
+ness and madness. Incredibly cruel and murderously insane, they Full Attack: 2 claws +9 melee (1d6+4)
+enjoy taking slaves and torturing surface dwellers (especially Space/Reach: 10 ft./5 ft.
+humans) to death. Special Attacks: Destructive harmonics
+Derro are afflicted by a form of racial madness, which most often Special Qualities: Blindsight 100 ft., immunities, protection
+manifests as delusions of grandeur coupled with an overpower- from sonics
+ing urge to inflict torment on other creatures. Derro are capable Saves: Fort +5, Ref +5, Will +10
+of holding their murderous impulses in check for short periods of Abilities: Str 18, Dex 12, Con 16, Int 12, Wis 18, Cha 12
+time in order to cooperate with creatures of other races, but such Skills: Hide +8, Listen +25, Move Silently +7, Survival +9
+arrangements rarely last more than a few weeks. Of course, no Feats: Dodge, Improved Initiative, Lightning Reflexes
+derro is capable of recognizing that he is out of his mind. Environment: Underground
+Organization: Solitary or pack (3–5)
+COMBAT Challenge Rating: 8
+Derro are stealthy and bloodthirsty. They like to carefully arrange Treasure: None
+cruel traps and deadly ambushes, and strike savagely from hiding. Alignment: Usually neutral evil
+They delight in taking captives who can be tortured to death later, Advancement: 9–16 HD (Large); 17–24 HD (Huge)
+and favor traps and poisons that disable without killing. Level Adjustment: —
+Madness (Ex): Derro use their Charisma modifier on Will
+saves instead of their Wisdom modifier, and have immunity to The creature shambles forward on thick, taloned legs. Vaguely reptilian in
+confusion and insanity effects. A derro cannot be restored to sanity form, its large, stooped frame ends in a mostly featureless head dominated
+by any means short of a miracle or wish spell. by large ear structures and a gaping, toothless mouth.
+*The racial madness of the derro provides a +6 bonus to their
+Charisma scores and a –6 penalty to their Wisdom scores. A The dungeon-dwelling destrachan looks like some bizarre, nonin-
+derro restored to sanity gains 6 points of Wisdom and loses 6 telligent beast, but it’s an incredibly evil and crafty sadist.
+points of Charisma. A destrachan has a pair of complex, three-part ears that it can
+Poison Use (Ex): Derro typically carry 2d4 doses of greenblood adjust to be more or less sensitive to various sounds. It is blind,
+oil or Medium monstrous spider venom (see Poison, page 296 of yet hunts with a sense of hearing more precise than most crea- 49
+the Dungeon Master’s Guide), applying it to their crossbow bolts. tures’ sight.
+Derro are not at risk of poisoning themselves when handling From its tubular mouth a destrachan emits carefully focused har-
+
+monics, producing sonic energy so powerful it can shatter a points of damage to all within the area (Reflex DC 15 half ).
+stone wall. So skilled is a destrachan at controlling the sounds it Nerves: A destrachan can focus its harmonics to knock out foes
+emits that it can choose what type of material to affect with rather than slay them. This attack deals 6d6 points of nonlethal
+its attack. damage to all within the area (Reflex DC 15 half ).
+Destrachans feed on death and misery. They haunt inhabited un- Material: When using this form of harmonics, a destrachan
+derground complexes, spreading woe for evil’s own sake. They can chooses wood, stone, metal, or glass. All objects made of that mate-
+blast their way through stone well enough to travel beneath the rial within the area must succeed on a DC 15 Fortitude save or
+surface as they wish. Sometimes a destrachan subdues its victims shatter. Objects (or portions of objects) that have up to 30 hit
+and brings them back to its lair for torture and imprisonment. points are potentially affected by this attack.
+No living thing would ever willingly ally itself with this mon- Blindsight (Ex): A destrachan can use hearing to ascertain all
+ster, although sometimes undead or evil outsiders accompany a foes within 100 feet as a sighted creature would.
+destrachan as it attacks and slays other creatures. Immunities: Destrachans have immunity to gaze attacks,
+A destrachan is about 10 feet long from its mouth to the tip of visual effects, illusions, and other attack forms that rely on sight.

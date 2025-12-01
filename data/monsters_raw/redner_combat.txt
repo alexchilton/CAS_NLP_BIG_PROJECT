@@ -1,0 +1,10 @@
+REDNER COMBAT
+YARG Whenever possible, a gorgon begins an encounter by charging at COMBAT
+its opponents. A gray render attacks to kill, whether to bring down prey or to pro-
+Breath Weapon (Su): 60-foot cone, once every 1d4 rounds (but tect itself or those it has adopted. When hunting, it sometimes
+no more than five times per day), turn to stone permanently, For- attempts to hide and wait for prey to wander close.
+titude DC 19 negates. The save DC is Constitution-based. Improved Grab (Ex): To use this ability, a gray render must hit
+Trample (Ex): Reflex DC 19 half. The save DC is Strength- with its bite attack. It can then attempt to start a grapple as a free
+based. action without provoking an attack of opportunity.
+Rend (Ex): A gray render that wins a grapple check after a suc-
+cessful bite attack establishes a hold, latching onto the opponent’s

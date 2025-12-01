@@ -1,0 +1,482 @@
+AREA 10: SLAVE QUARTERS (EL 1)
+the entrances (Climb DC 20). The pit covers are pad-
+The door leading to this room is barred from the out-
+locked from the top; otherwise, they are just like the
+side but is not locked.
+doors in the rest of the outpost.
+Creatures:Seven goblin slaves (see area 4 for sta-
+Four 1st-level elf warriors are presently incarcerated
+tistics) live here in squalid conditions, but only four of
+here. (Use the statistics from page 102 in the Monster
+them are here at any given time, and they are asleep
+Manual,except that these elves have no equipment and
+unless the PCs have been very noisy. They don’t really
+2 hit points each.) They are starved nearly to death and
+mind the filth.
+in no shape to fight, but they are willing to give it a try
+Each goblin has a pile of straw and twigs for a bed.
+if the PCs insist.
+The slaves also have their own cooking pit and utensils,
+If the PCs release these captives, the local elf lord
+plus a small cache of supplies.
+offers them each a reward of 75 gp.
+Tactics:If the PCs enter this chamber, the goblins
+promptly hurl themselves at the characters’ feet and ABOUT THE AUTHOR
+beg them to have mercy on poor, abused slaves. If
+attacked, the goblins do their best to evade blows and Skip Williams has been active in the game industry
+escape from the outpost. since 1974, when he took up wargaming and roleplay-
+Development:Once the alarm is sounded, the ing while still in high school. He soon got an after-
+goblin slaves from area 4 carry out their assignments school job at TSR, Inc., the original publisher of the
+and then try to make their way here and release their D&D game, and the rest (as they say) is history. Skip is
+fellow goblins. If they manage to do so, all the goblins a codesigner of the 3rd Edition D&D game (versions
+try to slip away from the outpost, either through one 3.0 and 3.5) and the chief architect of the Monster
+the entrances or via the emergency exit in area 6. Manual. He also coauthored the FORGOTTEN REALMS
+If the PCs try to question the goblins here, the level Campaign Setting.Skip keeps busy with freelance proj-
+of cooperation they get depends on what has happened ects for several different game companies and has
+to the hobgoblins in the outpost thus far. If the goblins beenDRAGONMagazine’s Sage since 1986. When not
+believe (or know) that their hobgoblin masters have devising swift and cruel deaths for player characters,
+been defeated, they fawn on the PCs and truthfully Skip putters in his kitchen or garden (his borscht gets
+answer any questions put to them. The goblins know rave reviews).
+8
+
+Monster Manual v.3.5 Errata
+• DR X/slashing, piercing, or bludgeoning
+Errata Rule: Primary Sources
+should be (Ex)
+When you find a disagreement between two D&D rules • DR X/adamantine should be (Ex)
+sources, unless an official errata file says otherwise, the • DR X/-- should be (Ex)
+primary source is correct. One example of a
+• DR X/silver or cold iron should be (Su)
+primary/secondary source is text taking precedence over
+• DR X/magic should be (Su)
+a table entry. An individual spell description takes
+• DR X/chaotic, lawful, holy, or unholy should
+precedence when the short description in the beginning
+be (Su)
+of the spells chapter disagrees. A monster’s statistics
+block supersedes the descriptive text. Improved Natural Attack Feat
+Another example of primary vs. secondary sources You can take this feat multiple times, but each time it
+involves book and topic precedence. The Player’s applies to a different natural attack.
+Handbook, for example, gives all the rules for playing
+the game, for PC races, and the base class descriptions. Rend
+If you find something on one of those topics from the Sometimes two values are listed for rend: one on the
+Dungeon Master’s Guide or the Monster Manual that special attacks line and one in the paragraph describing
+disagrees with the Player’s Handbook, you should rend. The correct value is listed on the special attacks
+assume the Player’s Handbook is the primary source. line.
+The Dungeon Master’s Guide is the primary source for
+Weapon Finesse Feat
+topics such as magic item descriptions, special material
+Some creatures that have this feat lack the +1 base
+construction rules, and so on. The Monster Manual is
+attack bonus prerequisite. Since bonus feats do not
+the primary source for monster descriptions, templates,
+require the creature to fulfill any feat prerequisites (see
+and supernatural, extraordinary, and spell-like abilities.
+page 301 in the Monster Manual), make the Weapon
+Note: The most recent updates are shaded like this.
+Finesse feat a bonus feat and add an additional feat (see
+General Changes the table below).
+These changes are global and apply to an assortment of Alternate Form (Page 305)
+creatures.
+Make the following changes.
+Delete the second sentence of the entry.
+Damage Reduction
+Add the following text to the body of the ability
+Damage Reduction is either extraordinary (Ex) or
+description:
+supernatural (Su). Use the following guidelines if it is
+not specified.
+Weapon Finesse Bonus Feat Changes
+Creature Feat Change
+Pseudodragon Alertness +2 on Listen and Spot checks
+Sprite, Grig Stealthy +2 on Hide and Move Silently checks
+Sprite, Nixie Alertness +2 on Listen and Spot checks
+Sprite, Pixie Alertness +2 on Listen and Spot checks
+Swarm, Rat Stealthy +2 on Hide and Move Silently checks
+Vargouille Stealthy +2 on Hide and Move Silently checks
+Animals
+Badger Agile +2 on Balance and Escape Artist checks
+Cat Stealthy +2 on Hide and Move Silently checks
+Eagle Alertness +2 on Listen and Spot checks
+Hawk Alertness +2 on Listen and Spot checks
+Lizard Stealthy +2 on Hide and Move Silently checks
+Monkey Agile +2 on Balance and Escape Artist checks
+Owl Alertness +2 on Listen and Spot checks
+Rat Stealthy +2 on Hide and Move Silently checks
+Raven Alertness +2 on Listen and Spot checks
+Snake Improved Initiative +4 on Initiative checks
+Weasel Agile +2 on Balance and Escape Artist checks
+Monster Manual v.3.5 Errata 2/17/06
+Page 1
+©2006 Wizards of the Coast, Inc., a subsidiary of Hasbro, Inc. All rights reserved.
+
+A true seeing spell or ability reveals the creature’s —Any gear worn or carried by the creature that can’t be
+natural form. A creature using alternate form reverts to worn or carried in its new form instead falls to the
+its natural form when killed, but separated body parts ground in its space. If the creature changes size, any
+retain their shape. A creature cannot use alternate form gear it wears or carries that can be worn or carried in its
+to take the form of a creature with a template. new form changes size to match the new size.
+Add the following text to Line 1 of the changes: (Nonhumanoid-shaped creatures can’t wear armor
+If the new form has the aquatic subtype, the creature designed for humanoid-shaped creatures, and vice-
+gains that subtype as well. versa.) Gear returns to normal size if dropped.
+Replace Line 2 of the changes with the following text:
+Creatures
+—The creature loses the natural weapons, natural
+armor, and movement modes of its original form, as The following text amends the existing entries.
+well as any extraordinary special attacks of its original
+Angel, Astral Deva
+form not derived from class levels (such as the
+barbarian’s rage class feature). Monster Manual, page 11
+Add the following text to the end of Line 6 of the Remove “polymorph (self only)” from spell-like
+changes: abilities.
+Apply any changed physical ability score modifiers in Add the following entry:
+all appropriate areas with one exception: the creature Change Shape (Su): An astral deva can assume the
+retains the hit points of its original form despite any form of any Small or Medium humanoid.
+change to its Constitution.
+Angel, Astral Deva
+Replace Line 7 of the changes with the following text:
+Monster Manual, page 11
+— Except as described elsewhere, the creature retains
+Remove “polymorph (self only)” from spell-like
+all other game statistics of its original form, including
+abilities.
+(but not necessarily limited to) HD, hit points, skill
+Change Shape (Su): A planetar can assume the form of
+ranks, feats, base attack bonus, and base save bonuses.
+any Small or Medium humanoid.
+Add the following text to the end of the entry.
+—Any gear worn or carried by the creature that can’t be Angel, Solar
+worn or carried in its new form instead falls to the
+Monster Manual, page 12
+ground in its space. If the creature changes size, any
+Remove “polymorph (self only)” from spell-like
+gear it wears or carries that can be worn or carried in its
+abilities.
+new form changes size to match the new size.
+Add the following entry:
+(Nonhumanoid-shaped creatures can’t wear armor
+Change Shape (Su): A solar can assume the form of
+designed for humanoid-shaped creatures, and vice-
+any Small or Medium humanoid.”
+versa.) Gear returns to normal size if dropped.
+Problem: Power word stun was listed in spell-like
+Change Shape (Page 306–307) abilities as both at will and 1/day.
+Solution: It can use power word stun 1/day.
+Make the following changes.
+Delete the second sentence of the entry. Beholder and Gauth
+Add the following text to the body of the ability
+Monster Manual, page 26
+description:
+The eye ray attack is a free action. Increase its bite
+A true seeing spell or ability reveals the creature’s
+attacks by +5.
+natural form. A creature using change shape reverts to
+its natural form when killed, but separated body parts Couatl
+retain their shape. A creature cannot use change shape Monster Manual, page 37
+to take the form of a creature with a template. Remove “polymorph (self only)” from psionic abilities.
+Replace Line 2 of the changes with the following text: Add the following entry:
+—The creature loses the natural weapons and Change Shape (Su): A couatl can assume the form of
+movement modes of its original form, as well as any any Small or Medium humanoid.
+extraordinary special attacks of its original form not
+Demon, Marilith
+derived from class levels (such as the barbarian’s rage
+class feature). Monster Manual, page 45
+Replace Line 6 of the changes with the following text: Remove “polymorph (self only)” from spell-like
+— Except as described elsewhere, the creature retains abilities.
+all other game statistics of its original form, including
+Demon, Quasit
+(but not necessarily limited to) HD, hit points, skill
+Monster Manual, page 46
+ranks, feats, base attack bonus, and base save bonuses.
+Replace the text for Alternate Form with the following
+Add the following text to the end of the entry.
+text:
+Monster Manual v.3.5 Errata 2/17/06
+Page 2
+©2006 Wizards of the Coast, Inc., a subsidiary of Hasbro, Inc. All rights reserved.
+
+Alternate Form (Su): A quasit can assume another Base Attack/Grapple: +6/+15
+form at will as a standard action. Each quasit can Attack: Talons +10 melee (2d6+5)
+assume one or two forms from the following list: bat, Full Attack: Talons +10 melee (2d6+5) and 2
+Small or Medium monstrous centipede, toad, and wolf. foreclaws +5 melee (1d4+2) and bite +5 melee (1d8+2)
+Space/Reach: 10 ft./5 ft.
+Demon, Succubus
+Special Attacks: Pounce
+Monster Manual, page 48
+Special Qualities: Low-light vision, scent
+Remove “polymorph (self only)” from spell-like
+Saves: Fort +10, Ref +8, Will +4
+abilities.
+Abilities: Str 21, Dex 15, Con 21, Int 2, Wis 15, Cha 10
+Add the following entry:
+Skills: Hide +9, Jump +27, Listen +12, Spot +12,
+Change Shape (Su): A succubus can assume the form
+Survival +12
+of any Small or Medium humanoid.
+Feats: Run, Toughness, Track
+Devil, Imp Environment: Warm forests
+Organization: Solitary, pair, or pack (3–6)
+Monster Manual, page 56
+Challenge Rating: 6
+Replace the text for Alternate Form with the following
+Treasure: None
+text:
+Alignment: Always neutral
+Alternate Form (Su): An imp can assume another form
+at will as a standard action. Each imp can assume one or Advancement: 9–16 HD (Large); 17–24 HD (Huge)
+two forms from the following list: Small or Medium Level Adjustment: —
+monstrous spider, raven, rat, and boar.
+Dragon, Red
+Dinosaur, Deinonychus Monster Manual, page 77
+Monster Manual, page 60 The sample very old red dragon’s typical sorcerer spells
+Medium Animal known lists emotion. Replace it with the confusion spell.
+Hit Dice: 4d8+16 (34 hp)
+Dragon, Bronze
+Initiative: +2
+Monster Manual, page 82
+Speed: 60 ft. (12 squares)
+Delete the second sentence of Alternate Form.
+Armor Class: 17 (+2 Dex, +5 natural), touch 12, flat-
+footed 15 Juvenile Bronze Dragon
+Base Attack/Grapple: +3/+7 Monster Manual, page 82
+Attack: Talons +7 melee (1d8+4) Delete the second sentence of Alternate Form.
+Full Attack: Talons +7 melee (1d8+4) and 2 foreclaws
+Dragon, Gold
++2 melee (1d3+2) and bite +2 melee (2d4+2)
+Space/Reach: 5 ft./5 ft. Monster Manual, page 85
+Special Attacks: Pounce Delete the second sentence of Alternate Form.
+Special Qualities: Low-light vision, scent
+Adult Gold Dragon
+Saves: Fort +8, Ref +6, Will +2
+Monster Manual, page 86
+Abilities: Str 19, Dex 15, Con 19, Int 2, Wis 12, Cha 10
+Delete the second sentence of Alternate Form.
+Skills: Hide +12, Jump +26, Listen +10, Spot +10,
+Survival +10 Dragon, Silver
+Feats: Run, Track Monster Manual, page 87
+Environment: Warm forests Delete the second sentence of Alternate Form.
+Organization: Solitary, pair, or pack (3–6)
+Challenge Rating: 3 Young Adult Silver Dragon
+Treasure: None Monster Manual, page 88
+Alignment: Always neutral Delete the second sentence of Alternate Form.
+Advancement: 5–8 HD (Medium)
+Genie, Efreeti
+Level Adjustment: —
+Monster Manual, page 116
+Dinosaur, Megaraptor Remove “polymorph (self only)” from spell-like
+Monster Manual, page 60 abilities.
+Large Animal Add the following entry:
+Hit Dice: 8d8+43 (79 hp) Change Shape (Su): An efreeti can assume the form of
+Initiative: +2 any Small, Medium, or Large humanoid or giant.
+Speed: 60 ft. (12 squares)
+Gibbering Mouther
+Armor Class: 17 (–1 size, +2 Dex, +6 natural), touch
+Monster Manual, page 126
+11, flat-footed 15
+Monster Manual v.3.5 Errata 2/17/06
+Page 3
+©2006 Wizards of the Coast, Inc., a subsidiary of Hasbro, Inc. All rights reserved.
+
+The engulf ability needs additional clarification.
+Mephit, Magma
+Replace it with the following information.
+Monster Manual, page 183
+Improved Grab (Ex): To use this ability, a gibbering
+Remove first paragraph of Spell-Like Abilities entry.
+mouther must hit a Medium or smaller foe with a bite
+Add the following entry:
+attack. It can then attempt to start a grapple as a free
+action without provoking an attack of opportunity. Change Shape (Su): Once per hour, a magma mephit
+can assume the form of a pool of lava 3 feet in diameter
+Swallow Whole (Ex): The gibbering mouther can
+and 6 inches deep. The mephit’s damage reduction
+attempt to swallow a grappled opponent of Medium or
+improves to 20/magic when in this form. The mephit
+smaller size by making a successful grapple check. (The
+can’t attack while in lava form but can use other spell-
+gibbering mouther doesn’t actually “swallow” the
+like abilities. It can move at a speed of 10 feet, but it
+opponent—it engulfs it within its amorphous form—but
+can’t run. In this form the mephit can pass through
+the effect is essentially the same.) Once inside, the
+small holes or narrow openings, even mere cracks. The
+gibbering mouther can use its blood drain ability. A
+pool’s touch ignites flammable materials such as paper,
+swallowed creature can cut its way out by dealing 5
+straw, or dry wood.
+points of damage to the gibbering mouther (same AC).
+The gibbering mouther’s body can hold 1 Medium, 2
+Mind Flayer
+Small, 8 Tiny, 32 Diminutive, or 128 Fine creatures.
+Monster Manual, page 186–188
+Blood Drain (Ex): A swallowed opponent
+Add telepathy as a special quality.
+automatically takes 1d4 points of Constitution damage
+Telepathy (Su): A mind flayer can communicate
+each round.
+telepathically with any other creature within 100 ft. that
+Golem, Iron has a language.
+Monster Manual, page 137
+Night Hag
+Remove polymorph any object from list of spells
+Monster Manual, page 194
+required for construction.
+Remove “polymorph (self only)” from spell-like
+Golem, Stone abilities.
+Add the following entry:
+Monster Manual, page 137
+Change Shape (Su): A night hag can assume the form
+Problem: Prerequisite spells for constructing a stone
+of any Small or Medium humanoid.
+golem or greater stone golem given on page 137 of the
+Monster Manual don’t match those given for the stone
+Ogre, Ogre Mage
+golem manual and greater stone golem manual on page
+Monster Manual, page 200
+258 of the Dungeon Master’s Guide.
+Remove polymorph from spell-like abilities.
+Solution: The Dungeon Master’s Guide is correct. Add
+Change Shape (Su): An ogre mage can assume the
+the slow spell to the prerequisites for each of these
+form of any Small, Medium, or Large humanoid or
+golems in the Monster Manual.
+giant.
+Guardinal, Leonal
+Gelatinous Cube
+Monster Manual, page 142
+Monster Manual, page 201
+Remove “polymorph” from spell-like abilities.
+Large Ooze
+Hag Covey Hit Dice: 4d10+32 (54 hp)
+Monster Manual, page 144 Initiative: –5
+Remove “polymorph” from spell-like abilities. Speed: 15 ft. (3 squares)
+Armor Class: 4 (–1 size, –5 Dex), touch 4, flat-footed
+Lammasu 4
+Monster Manual, page 165 Base Attack/Grapple: +3/+7
+Delete the paragraph describing a breath weapon. Attack: Slam +2 melee (1d6 plus 1d6 acid)
+Full Attack: Slam +2 melee (1d6 plus 1d6 acid)
+Lycanthrope
+Space/Reach: 10 ft./5 ft.
+Monster Manual, page 176 and 178
+Special Attacks: Acid, engulf, paralysis
+Replace the first sentence of the Alternate Form entry
+Special Qualities: Blindsight 60 ft., immunity to
+with the following text:
+electricity, ooze traits, transparent
+A lycanthrope can assume the form of a specific animal
+Saves: Fort +9, Ref –4, Will –4
+(as indicated in its entry).
+Abilities: Str 10, Dex 1, Con 26, Int —, Wis 1, Cha 1
+Changing Form: Eliminate sentences 3, 4, and 5 (from
+Skills: —
+“Changing to animal or hybrid form…” to “…on a DC
+Feats: —
+15 Fortitude save.”
+Environment: Underground
+Monster Manual v.3.5 Errata 2/17/06
+Page 4
+©2006 Wizards of the Coast, Inc., a subsidiary of Hasbro, Inc. All rights reserved.
+
+Organization: Solitary
+Favored Weapon
+Challenge Rating: 3
+Annam (giants): unarmed attack
+Treasure: 1/10th coins, 50% goods (no nonmetal or
+Blibdoolpoolp (kuo-toa): pincer staff
+nonstone), 50% items (no nonmetal or nonstone)
+Callarduran Smoothhands (svirfneblin): battleaxe
+Alignment: Always neutral
+Deep Sashelas (aquatic elves): trident
+Advancement: 5–12 HD (Large); 13–24 HD (Huge)
+Diirinka (derro): dagger
+Level Adjustment: —
+Eadro (locathahs, merfolk): shortspear
+A typical gelatinous cube is 10 feet on a side and
+Grolantor (hill giants, ettins, ogres): club
+weighs about 15,000 pounds, though much larger
+Hiatea (giants, especially females): shortspear
+specimens are not unknown.
+Hruggek (bugbears): morningstar
+Phasm Iallanis (good giants): unarmed attack
+Monster Manual, page 208 Iuz: greatsword
+Delete the second sentence of the Alternate Form Kaelthiere (evil fire creatures): spear
+special quality. Kurtulmak (kobolds): spear
+Laduguer (duergar): warhammer
+Sprite, Pixie
+Laogzed (troglodytes): javelin
+Monster Manual, page 236 Lolth (driders, drow): whip
+Remove “polymorph (self only)” from spell-like Maglubiyet (goblins, hobgoblins): battleaxe
+abilities. Memnor (evil cloud giants): morningstar
+Merrshaulk (yuan-ti): longsword
+Swarms
+Panzuriel (evil sea creatures): quarterstaff
+Monster Manual, pages 237–240
+Sekolah (sahuagin): trident
+The bat swarm and spider swarm are immune to weapon
+Semuanya (lizardfolk): greatclub
+damage.
+Sixin (xill): short sword
+Hellwasp swarm has good maneuverability for its fly
+Skerrit (centaurs): shortspear
+speed.
+Skoraeus Stonebones (stone giants): warhammer
+Titan Stronmaus (storm and cloud giants): warhammer
+Surtr (fire giants): greatsword
+Monster Manual, page 243
+Thrym (frost giants): greataxe
+Remove “polymorph (humanoid forms only, duration 1
+Vaprak (ogres): greatclub
+hour)” from spell-like abilities.
+Add the following entry:
+Change Shape (Su): A titan can assume the form of
+any Small or Medium humanoid. The titan retains its
+oversized weapon special attack regardless of form.
+Vampire
+Monster Manual, page 252
+Delete the second sentence of the Alternate Form
+special quality.
+Yuan-Ti
+Monster Manual, page 263
+Delete the second sentence of the Alternate Form
+special quality.
+Zombie
+Monster Manual, page 266
+All zombies have damage reduction 5/slashing. The
+template should have the following text under Special
+Qualities.
+Damage Reduction 5/Slashing: Zombies are lumbering
+masses of flesh.
+Monstrous Deities
+Some creature entries, such as aquatic elves and
+kobolds, make reference to deities not found in the
+Player’s Handbook.
+Monster Manual v.3.5 Errata 2/17/06
+Page 5
+©2006 Wizards of the Coast, Inc., a subsidiary of Hasbro, Inc. All rights reserved.
+
+Table A–1: Monstrous Deities
+Deity Alignment Domains Typical Worshipers
+Blibdoolpoolp Chaotic evil Destruction, Evil, Water Kuo-toa
+Callarduran Smoothhands Neutral Earth, Good, Healing, Protection Svirfneblin
+Deep Sashelas Chaotic good Chaos, Good, Protection, Water Aquatic elves
+Diirinka Chaotic evil Chaos, Evil, Magic, Trickery Derro
+Eadro Neutral Animal, Protection, Water Locathahs, merfolk
+Great Mother Chaotic evil Chaos, Death, Evil, Strength Beholders
+Gruumsh Chaotic evil Chaos, Evil, Strength, War Orcs
+Hruggek Chaotic evil Chaos, Evil, Trickery, War Bugbears
+Kaelthiere Neutral evil Destruction, Evil, Fire, War (spear) Evil fire creatures
+Kurtulmak Lawful evil Evil, Law, Luck, Trickery Kobolds
+Laduguer Lawful evil Earth, Evil, Law, War Duergar
+Laogzed Chaotic evil Chaos, Death, Destruction, Evil Troglodytes
+Lolth Chaotic evil Chaos, Destruction, Evil, Trickery Driders, drow (elves)
+Maglubiyet Neutral evil Chaos, Destruction, Evil, Trickery Goblins, hobgoblins
+Merrshaulk Chaotic evil Chaos, Destruction, Evil, Plant Yuan-ti
+Panzuriel Neutral evil Destruction, Evil, War, Water Evil aquatic creatures
+Sekolah Lawful evil Evil, Law, Strength, War Sahuagin
+Semuanya Neutral Animal, Plant, Water Lizardfolk
+Shekinester Neutral Destruction, Knowledge, Magic, Protection Nagas
+Sixin Lawful evil Evil, Law, Strength, Travel Xill
+Skerrit Neutral good Animal, Healing, Plant, Sun Centaur
+Monster Manual v.3.5 Errata 2/17/06
+Page 6
+©2006 Wizards of the Coast, Inc., a subsidiary of Hasbro, Inc. All rights reserved.
+

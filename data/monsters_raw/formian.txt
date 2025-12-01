@@ -1,0 +1,5 @@
+FORMIAN
+(caster level 7th). This is a full-round action for all eight workers. wields, are treated as lawful-aligned for the purpose of overcoming
+Make Whole (Sp): Three workers together can repair an object as damage reduction.
+though using the make whole spell (caster level 7th). This is a full- Poison (Ex): Injury, Fortitude DC 14, initial and secondary
+round action for all three workers. damage 1d6 Str. The save DC is Constitution-based.

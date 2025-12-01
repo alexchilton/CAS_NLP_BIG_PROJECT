@@ -1,0 +1,63 @@
+ARDYH
+tack that is not (or PYROHYDRA
+cannot be) an at- Huge Magical Beast (Fire)
+tempt to sunder a These reddish hydras can breathe jets of fire
+head affects the 10 feet high, 10 feet wide, and 20 feet
+body. For ex- long. All heads breathe once every
+ample, area 1d4 rounds. Each jet deals 3d6
+effects deal points of fire damage per
+damage to a head. A successful Reflex
+hydra’s body, save halves the damage. The
+not to its heads. save DC is 10 + 1/2 hydra’s
+Targeted magical ef- original number of heads
+fects cannot sever a + hydra’s Con modifier.
+hydra’s heads (and
+thus must be directed
+at the body) unless they
+deal slashing damage
+and could be used
+to make sunder
+attempts.
+Five-Headed Hydra Six-Headed Hydra Seven-Headed Hydra
+Huge Magical Beast Huge Magical Beast Huge Magical Beast
+Hit Dice: 5d10+28 (55 hp) 6d10+33 (66 hp) 7d10+38 (77 hp)
+Initiative: +1 +1 +1
+Speed: 20 ft. (4 squares), swim 20 ft. 20 ft. (4 squares), swim 20 ft. 20 ft. (4 squares), swim 20 ft.
+Armor Class: 15 (–2 size, +1 Dex, +6 natural), 16 (–2 size, +1 Dex, +7 natural), 17 (–2 size, +1 Dex, +8 natural),
+touch 9, flat-footed 14 touch 9, flat-footed 15 touch 9, flat-footed 16
+Base Attack/Grapple: +5/+16 +6/+17 +7/+19
+Attack: 5 bites +6 melee (1d10+3) 6 bites +8 melee (1d10+3) 7 bites +10 melee (1d10+4)
+Full Attack: 5 bites +6 melee (1d10+3) 6 bites +8 melee (1d10+3) 7 bites +10 melee (1d10+4)
+Space/Reach: 15 ft./10 ft. 15 ft./10 ft.. 15 ft./10 ft.
+Special Attacks: — — —
+Special Qualities: Darkvision 60 ft., fast healing 15, Darkvision 60 ft., fast healing 16, Darkvision 60 ft., fast healing 17,
+low-light vision, scent low-light vision, scent low-light vision, scent
+Saves: Fort +9, Ref +5, Will +3 Fort +10, Ref +6, Will +4 Fort +10, Ref +6, Will +4
+Abilities: Str 17, Dex 12, Con 20, Str 17, Dex 12, Con 20, Str 19, Dex 12, Con 20,
+Int 2, Wis 10, Cha 9 Int 2, Wis 10, Cha 9 Int 2, Wis 10, Cha 9
+Skills: Listen +6, Spot +6, Swim +11 Listen +6, Spot +7, Swim +11 Listen +7, Spot +7, Swim +12
+Feats: Combat ReflexesB, Iron Will, Combat ReflexesB, Iron Will, Combat ReflexesB, Iron Will,
+Toughness Toughness, Weapon Focus (bite) Toughness, Weapon Focus (bite)
+Environment: Temperate marshes Temperate marshes Temperate marshes
+(Pyro: Warm marshes) (Pyro: Warm marshes) (Pyro: Warm marshes)
+(Cryo: Cold marshes) (Cryo: Cold marshes) (Cryo: Cold marshes)
+Organization: Solitary Solitary Solitary
+Challenge Rating: 4 (normal); 6 (pyro- or cryo-) 5 (normal); 7 (pyro- or cryo-) 6 (normal); 8 (pyro- or cryo-)
+Treasure: 1/10 coins; 50 goods; 50 items 1/10 coins; 50 goods; 50 items 1/10 coins; 50 goods; 50 items
+156 Alignment: Usually neutral Usually neutral Usually neutral
+Advancement: — — —
+Level Adjustment: — — —
+
+Eight-Headed Hydra Nine-HeadedHydra Ten-HeadedHydra
+HugeMagicalBeast HugeMagicalBeast HugeMagicalBeast
+HitDice: 8d10+43(87hp) 9d10+48(97hp) 10d10+53(108hp)
+Initiative: +1 +1 +1
+Speed: 20ft.(4squares),swim20ft. 20ft.(4squares),swim20ft. 20ft.(4squares),swim20ft.
+ArmorClass: 18(–2size,+1Dex,+9natural), 19(–2size,+1Dex,+10natural), 20(–2size,+1Dex,+11natural),
+touch9,flat-footed17 touch9,flat-footed18 touch9,flat-footed19
+BaseAttack/Grapple:+8/+20 +9/+22 +10/+23
+Attack: 8bites+11melee(1d10+4) 9bites+13melee(1d10+5) 10bites+14melee(1d10+5)
+FullAttack: 8bites+11melee(1d10+4) 9bites+13melee(1d10+5) 10bites+14melee(1d10+5)
+Space/Reach: 15ft./10ft. 15ft./10ft. 15ft./10ft.
+SpecialAttacks: — — —
+SpecialQualities: Darkvision60ft.,fasthealing18, Darkvision60ft.,fasthealing19, Darkvision60ft.,fasthealing20,

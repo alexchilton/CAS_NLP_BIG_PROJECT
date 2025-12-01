@@ -1,0 +1,35 @@
+TRITON
+trample 2d6+13
+Special Qualities: Damage reduction 10/slashing, low-light Medium Outsider (Native, Water)
+vision, plant traits, vulnerability to fire Hit Dice: 3d8+3 (16 hp)
+Saves: Fort +10, Ref +1, Will +7 Initiative: +0
+Abilities: Str 29, Dex 8, Con 21, Int 12, Wis 16, Cha 12 Speed: 5 ft. (1 square), swim 40 ft.
+Skills: Diplomacy +3, Hide –9*, Intimidate +6, Knowledge Armor Class: 16 (+6 natural), touch 10, flat-footed 16
+(nature) +6, Listen +8, Sense Motive +8, Spot +8, Survival +8 Base Attack/Grapple: +3/+4
+(+10 aboveground) Attack: Trident +4 melee (1d8+1) or heavy crossbow +3 ranged
+Feats: Improved Sunder, Iron Will, Power Attack (1d10/19–20)
+Environment: Temperate forests Full Attack: Trident +4 melee (1d8+1) or heavy crossbow +3
+Organization: Solitary or grove (4–7) ranged (1d10/19–20)
+Challenge Rating: 8 Space/Reach: 5 ft./5 ft. TRITON
+Treasure: Standard Special Attacks: Spell-like abilities
+Alignment: Usually neutral good Special Qualities: Darkvision 60 ft.
+Advancement: 8–16 HD (Huge); 17–21 Saves: Fort +4, Ref +3, Will +4
+HD (Gargantuan) Abilities: Str 12, Dex 10, Con 12,
+Level Adjustment: +5 Int 13, Wis 13, Cha 11
+Skills: Craft (any one) +7,
+This tall being looks much like an Diplomacy +2, Hide +6,
+animated tree. Its skin is thick and Listen +7, Move Silently +6,
+brown, with a barklike texture. Ride +6, Search +7, Sense
+Its arms are gnarled like branches, Motive +7, Spot +7, Survival +7
+and its legs look like the split trunk of (+9 following tracks), Swim +9
+a tree. Above the eyes and along the Feats: Mounted Combat,
+head are dozens of smaller branches Ride-By Attack
+from which hang great leaves. Environment: Temperate
+aquatic
+Treants combine features of trees Organization: Company
+and humans. They are peaceful by (2–5), squad (6–11), or
+nature but deadly when angered. They hate evil and the unre- band (20–80)
+strained use of fire, considering themselves guardians of the Challenge Rating: 2 Illus.
+trees. Treasure: Standard
+by
+A treant’s leaves are deep green in the spring and summer. In Alignment: Usually neutral

@@ -1,0 +1,66 @@
+TROLL
+—A troglodyte’s base land speed is 30 feet. and hunt the inhabitants until they devour every last one.
+—Darkvision out to 90 feet. Trolls walk upright but hunched forward with sagging shoul-
+—Racial Hit Dice: A troglodyte begins with two levels of hu- ders. Their gait is uneven, and when they run, their arms dangle
+manoid, which provide 2d8 Hit Dice, a base attack bonus of +1, and drag along the ground. For all this seeming awkwardness,
+and base saving throw bonuses of Fort +3, Ref +0, and Will +0. trolls are very agile.
+—Racial Skills: A troglodyte’s humanoid levels give it skill A typical adult troll stands 9 feet tall and weighs 500 pounds.
+points equal to 5 × (2 + Int modifier, minimum 1). Its class skills Females are slightly larger than males. A troll’s rubbery hide is
+are Hide and Listen. Troglodytes have a +4 racial bonus on Hide moss green, mottled green and gray, or putrid gray. The hair is usu-
+checks (+8 in rocky or underground surroundings). ally greenish black or iron gray.
+—Racial Feats: A troglodyte’s humanoid levels give it one feat. A Trolls speak Giant.
+troglodyte receives Multiattack as a bonus feat.
+— +6 natural armor bonus. COMBAT
+—Natural Weapons: 2 claws (1d4) and bite (1d4). Trolls have no fear of death: They launch themselves into combat
+—Special Attacks (see above): Stench. without hesitation, flailing wildly at the closest opponent. Even
+—Automatic Languages: Draconic. Bonus Languages: Com- when confronted with fire, they try to get around the flames and
+mon, Giant, Goblin, Orc. attack.
+—Favored Class: Cleric. Rend (Ex): If a troll hits with both claw attacks, it latches onto
+—Level adjustment +2. the opponent’s body and tears the flesh. This attack automatically
+deals an additional 2d6+9 points of damage.
+Troll TrollHunter,6th-LevelRanger
+LargeGiant LargeGiant
+HitDice: 6d8+36(63hp) 6d8+6d8+72(130hp)
+Initiative: +2 +1
+Speed: 30ft.(6squares) 30ft.(6squares)
+ArmorClass: 16(–1size,+2Dex,+5natural), 21(–1size,+1Dex,+6natural,+5 chainshirt),
+touch11,flat-footed14 touch10,flat-footed20
+BaseAttack/Grapple: +4/+14 +10/+21
+Attack: Claw+9melee(1d6+6) Claw+16melee(1d6+7)or battleaxe+17melee(2d6+8/×3)or
+javelin+10ranged(1d8+7)
+FullAttack: 2claws+9melee(1d6+6)and 2claws+16melee(1d6+7)andbite+11melee(1d6+3);or battleaxe
+bite+4melee(1d6+3) +17/+12melee(2d6+8/×3)andclaw+12melee(1d6+3)andbite+12
+(1d6+3);orjavelin+10ranged(1d8+7)
+Space/Reach: 10ft./10ft. 10ft./10ft.
+SpecialAttacks: Rend2d6+9 Rend2d6+10,spells
+SpecialQualities: Darkvision90ft.,low-lightvision, Darkvision90ft.,favoredenemyelves(+4),favoredenemyhumans(+2),
+regeneration5,scent low-lightvision,regeneration5,scent,wildempathy
+Saves: Fort+11,Ref+4,Will+3 Fort+16,Ref+8,Will+8
+Abilities: Str23,Dex14,Con23, Str25,Dex12,Con22,
+Int6,Wis9,Cha6 Int10,Wis15,Cha10
+Skills: Listen+5,Spot+6 Knowledge(nature)+6,Knowledge(dungeoneering)+6,Listen+13,
+MoveSilently+9,Search+6,Spot+13,Survival+11
+(+13above-orundergroundandfollowingtracks)
+Feats: Alertness,IronWill,Track Alertness,Cleave,EnduranceB,ImprovedNaturalArmor,
+ImprovedTwo-WeaponFightingB,IronWill,PowerAttack,TrackB,
+Two-WeaponFightingB
+Environment: Coldmountains Coldmountains
+(Scrag:Coldaquatic)
+Organization: Solitaryorgang(2–4) Solitary
+ChallengeRating: 5 11
+Treasure: Standard Standard
+Alignment: Usuallychaoticevil Usuallychaoticevil 247
+Advancement: Bycharacterclass —
+LevelAdjustment: +5 +5
+
+bonus on grapple checks, lifting and carrying limits double those
+of Medium characters.
+Troll —Space/Reach: 10 feet/10 feet.
+—A troll’s base land speed is 30 feet.
+—Darkvision out to 60 feet and low-light vision.
+—Racial Hit Dice: A troll begins with six levels of giant, which
+provide 6d8 Hit Dice, a base attack bonus of +4, and base saving
+throw bonuses of Fort +5, Ref +2, and Will +2.
+—Racial Skills: A troll’s giant levels give it skill points equal to
+9× (2 + Int modifier, minimum 1). Its class skills are
+Listen and Spot.

@@ -1,0 +1,6 @@
+SPECTRE
+ral sunlight (not merely a daylightspell) and flee from it. A spectre
+Medium Undead (Incorporeal) caught in sunlight cannot attack and can take only a single move
+Hit Dice: 7d12 (45 hp) or attack action in a round.
+Initiative: +7
+Speed: 40 ft. (8 squares), fly 80 ft. (perfect)

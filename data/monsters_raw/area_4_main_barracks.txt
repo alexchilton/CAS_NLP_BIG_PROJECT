@@ -1,0 +1,76 @@
+AREA 4: MAIN BARRACKS (EL 3)
+duty here. Each hour, one of them switches places with
+The hobgoblins eat, sleep, and relax here. Read or para-
+a guard at the nearest entrance. This arrangement helps
+phrase the following when the characters enter this area.
+keep everyone rested and fairly alert.
+DHobgoblin Warriors (2):hp 6 each; see page
+Light from two charcoal firepits bathes this long
+153 in the Monster Manual.
+hall in a feeble, ruddy glow. The air in here smells
+Tactics:These hobgoblins are charged with pre-
+strongly of smoke, seared meat, and sweaty
+venting unauthorized entry to or exit from the outpost. bodies.
+These guards overhear most activity at the entrance Low beds with log frames line the area’s north
+nearest them, but they ignore anything short of a and south walls. Along the center of the room are a
+pitched battle unless it continues for 1d4+1 rounds. If couple of tables and perhaps a dozen stools, also
+they hear fighting at the entrance, however, one goes made of logs. Two deeply scarred wooden dum-
+to help defend the warrior there, while the second mies, roughly humanoid in shape, stand against
+takes 1 round to dash to area 4, raise the alarm, and the short east wall. Someone has added big,
+pointed ears made of leather to both dummies,
+dash back here. Once that task is completed, the
+which makes them look pretty ridiculous.
+second guard also joins the fight at the entrance.
+At the west end of the north wall is a small,
+Noise of combat inside the outpost alerts the guards
+dark alcove. One wall section near the middle of
+here after 1d4+1 rounds. They do not react immedi-
+the south wall appears to be made of fitted stone,
+ately because martial noises of various kinds occur fre-
+not packed earth, like the walls in the rest of this
+quently in the outpost. Off-duty hobgoblins hold spar- complex. Set in the center of that wall section is a
+ring matches, gladiatorial fights between slaves and sturdy wooden door
+prisoners from areas 10 and 11 are staged from time to 3
+
+Six beds stand along the north wall, and nine along the Nine are standing guard in areas 1 and 2, and another
+south. (Some of the hobgoblins are obliged to share eight are out on patrols or raids at any given time.
+bunks with their comrades.) The beds are very low, and Three goblin slaves are here at all times here as well,
+their mattresses are made from canvas ticks stuffed with doing domestic chores for their hobgoblin masters.
+leaves. Each bed has a few personal items (see the Trea- DHobgoblin Warriors (6):hp 6 each; see page
+sure section, below) stored near it or under it. Also under 153 in the Monster Manual.
+each bed are a covered bucket for slops, a clay pitcher of DGoblin Slaves (3):CR 1/3; Small humanoid
+water, and one or two sets of battered eating utensils. (goblinoid); HD 1d8; hp 4; Init +1; Spd 30 ft.; AC 12,
+The hobgoblins use the firepits for cooking, and touch 12, flat-footed 11; Base Atk +0; Grp –5; Atk +0
+they usually keep the fires burning around the clock. melee (1d2–1, unarmed strike); Full Atk +0 melee
+The ceiling has a couple of small vents that let out the (1d2–1, unarmed strike); SQ darkvision 60 ft.; AL NE;
+worst of the smoke, which is so dispersed by the time it SV Fort +0, Ref +3, Will +0; Str 8, Dex 13, Con 10, Int
+reaches the surface that it’s unnoticeable. The system 10, Wis 11, Cha 9.
+isn’t very efficient, but the hobgoblins are accustomed Skills and Feats:Craft (woodworking) +1, Hide +7,
+to the smoke. A small collection of cooking utensils is Listen +2, Move Silently +7, Ride +5, Spot +2, Use
+stacked near each pit. Rope +2.
+The two wooden dummies serve as targets for Tactics: Three of the six hobgoblins in this cham-
+weapon practice. The leather ears have been added to ber are awake, and the other three are asleep. They
+make the figures look more like elves. sleep in their armor and keep their weapons handy—
+See areas 4A and 4B for details on the dark alcove either hanging from their bedframes or stashed under
+and the stone wall section. their beds. The sleepers tend to snooze through any
+Creatures:This chamber is home to twenty-three disturbance except other hobgoblins shouting for help.
+4
+hobgoblin warriors, but only six are ever here at once. It takes the sleepers a full-round action to wake up and
+
+get out of bed, and a move action to pick up their weap- in the ceiling. A few barrels of hardtack, a crate of dried
+ons. Once armed, the sleepers tend to use the tactics fruit, and several casks of ale and wine round out the
+described below. food stores.
+The three hobgoblins that are awake lose no time
+Area 4b: Well
+responding to an intruder in this area. They form a
+This area features a stone-lined shaft about 100 feet
+battle line, and one of them orders one slave to area 6,
+deep. Very cold water fills the shaft to a height of 30
+one to area 7, and the third to area 8 (a free action).
+feet. A big wooden bucket is attached to a ring on the
+Then the warriors hurl javelins at whichever targets
+west wall with an 80-foot rope. The slaves use this
+they think they have they best chance of hitting. They
+assembly to draw water from the well.
+choose foes without cover over foes with cover, and
+unarmored targets over armored ones. Against foes

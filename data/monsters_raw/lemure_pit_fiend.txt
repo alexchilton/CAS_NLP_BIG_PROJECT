@@ -1,0 +1,13 @@
+LEMURE PIT FIEND
+Medium Outsider (Baatezu, Evil, Extraplanar, Lawful) Large Outsider (Baatezu, Evil, Extraplanar, Lawful)
+Hit Dice: 2d8 (9 hp) Hit Dice: 18d8+144 (225 hp)
+Initiative: +0 Initiative: +12
+Speed: 20 ft. (4 squares) Speed: 40 ft. (8 squares), fly 60 ft. (average)
+Armor Class: 14 (+4 natural) touch 10, flat-footed 14 AC: 40 (–1 size, +8 Dex, +23 natural) touch 17, flat-footed 32
+Base Attack/Grapple: +2/+2 Base Attack/Grapple: +18/+35
+Attack: Claw +2 melee (1d4) Attack: Claw +30 melee (2d8+13)
+Full Attack: 2 claws +2 melee (1d4) Full Attack: 2 claws +30 melee (2d8+13) and 2 wings +28 melee
+Space/Reach: 5 ft./5 ft. (2d6+6) and bite +28 melee (4d6+6 plus poison plus disease)
+Special Attacks: — and tail slap +28 melee (2d8+6)
+Special Qualities: Damage reduction 5/good or silver, dark- Space/Reach: 10 ft./10 ft.
+vision 60 ft., immunity to fire and poison, mindless, resistance Special Attacks: Constrict 2d8+26, fear aura, improved grab,

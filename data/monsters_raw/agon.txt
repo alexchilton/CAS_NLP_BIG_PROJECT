@@ -1,0 +1,88 @@
+AGON
+Very Old Red Dragon: CR 21; Gargantuan dragon (fire); HD very old, ancient, wyrm, or great wyrm: solitary, pair, or family
+31d12+248, hp 449; Init +4; Spd 40 ft., fly 200 ft. (clumsy); AC 36, (1–2 and 2–5 offspring)
+touch 6, flat-footed 36; Base Atk +31; Grp +56; Atk +40 melee Challenge Ratings: Wyrmling 2; very young 3; young 4; juvenile
+(4d6+13, bite); Full Atk +40 melee (4d6+13, bite), +35 melee 6; young adult 8; adult 10; mature adult 12; old 15; very old 17;
+(2d8+6, 2 claws), +35 melee (2d6+6, 2 wings), +35 melee (2d8+19, ancient 18; wyrm 19; great wyrm 21
+tail slap); Space/Reach 20 ft./15 ft. (bite 20 ft.); SA breath weapon, Treasure: Triple standard
+crush, frightful presence, snatch, spell-like abilities, spells, tail Alignment: Always chaotic evil
+sweep; SQ damage reduction 15/magic, darkvision 120 ft., immu- Advancement: Wyrmling 4–5 HD; very young 7–8 HD; young
+nity to fire, sleep, and paralysis, low-light vision, spell resistance 25, 10–11 HD; juvenile 13–14 HD; young adult 16–17 HD; adult
+vulnerability to cold; AL CE; SV Fort +25, Ref +19, Will +25; Str 37, 19–20 HD; mature adult 22–23 HD; old 25–26 HD; very old 28–29
+Dex 10, Con 27, Int 22, Wis 23, Cha 22. HD; ancient 31–32 HD; wyrm 34–35 HD; great wyrm 37+ HD
+Skills and Feats: Appraise +31, Bluff +37, Concentration +28, Level Adjustment: Wyrmling +2; very young +3; young +3;
+Craft (trapmaking) +18, Hide +2, Intimidate +39, Jump +48, juvenile +5; others —
+Knowledge (arcana) +31, Knowledge (local) +31, Knowledge
+(religion) +31, Listen +37, Search +37, Sense Motive +37, Spell- The dragon has a beaked nose, spiny dewlaps, and a crest supported by a
+craft +39, Spot +37, Use Magic Device +22; Awesome Blow, Flyby single, back-curving spine. A crisp, faintly chemical odor accompanies the
+Attack, Cleave, Great Cleave, Improved Bull Rush, Improved Ini- dragon, whose scales glisten like snow.
+tiative, Iron Will, Lightning Reflexes, Power Attack, Snatch,
+Wingover. Among the smallest and least intelligent of dragonkind, most
+Breath Weapon (Su): 60-ft. cone, damage 18d10 fire, Reflex white dragons are simply animalistic predators. Their faces
+DC 33 half. express single-minded ferocity rather than the shrewdness of
+Crush (Ex): Area 20 ft. by 20 ft.; Medium or smaller opponents their more powerful kin.
+take 4d6+19 points of bludgeoning damage, and must succeed on The scales of a wyrmling white dragon glisten like mirrors. As
+a DC 33 Reflex save or be pinned; grapple bonus +56. the dragon ages, the sheen disappears, and by very old age, scales
+Frightful Presence (Ex): 270-ft. radius, HD 30 or less, Will DC of pale blue and light gray are mixed in with the white.
+29 negates. White dragons’ lairs are usually icy caves and deep under-
+Snatch (Ex): Grapple bonus +56; claw against creature of ground chambers that open away from the warming rays of the
+Medium or smaller for 2d8+6/round, bite against Large or smaller sun. They store all of their treasure within the lair, preferably in
+for 4d6+13/round, or 8d6+26 if the dragon does not move; caverns coated in ice, which reflect the gems. White dragons are
+snatched creature can be flung 90 ft. for 9d6 points of damage. especially fond of diamonds.
+Spell-Like Abilities: 9/day—locate object; 3/day—suggestion. Although white dragons are able to eat nearly anything, they
+Caster level 13th; save DC 16 + spell level. are very particular and will consume only food that has been
+Spells: As 13th-level sorcerer. frozen. Usually a dragon devours a creature killed by its breath
+Typical Sorcerer Spells Known (6/8/8/7/7/7/5; save DC 16 + spell weapon while the carcass is still stiff and frigid. It buries other
+level): 0—arcane mark, dancing lights, detect magic, ghost sound, guid- kills in snowbanks until they are suitably frozen.
+ance, mage hand, prestidigitation, read magic, resistance; 1st—alarm,
+White Dragons by Age
+Breath Frightful
+Base Attack/ Fort Ref Will Weapon Presence
+Age Size Hit Dice (hp) Str Dex Con Int Wis Cha Grapple Attack Save Save Save (DC) DC
+Wyrmling T 3d12+3 (22) 11 10 13 6 11 6 +3/–5 +5 +4 +3 +3 1d6 (12) —
+Very young S 6d12+6 (45) 13 10 13 6 11 6 +6/+3 +8 +6 +5 +5 2d6 (14) —
+Young M 9d12+18 (76) 15 10 15 6 11 6 +9/+11 +11 +8 +6 +6 3d6 (16) —
+Juvenile M 12d12+24 (102) 17 10 15 8 11 8 +12/+15 +15 +10 +8 +8 4d6 (18) —
+Young adult L 15d12+45 (142) 19 10 17 8 11 10 +15/+23 +18 +12 +9 +9 5d6 (20) 17
+Adult L 18d12+72 (189) 23 10 19 10 11 12 +18/+28 +23 +15 +11 +11 6d6 (23) 20
+Mature adult H 21d12+105 (241) 27 10 21 12 13 12 +21/+37 +27 +17 +12 +13 7d6 (25) 21
+Old H 24d12+120 (276) 29 10 21 12 13 12 +24/+41 +31 +19 +14 +15 8d6 (27) 23
+Very old H 27d12+162 (337) 31 10 23 14 15 14 +27/+45 +35 +21 +15 +17 9d6 (29) 25
+Ancient H 30d12+180 (375) 33 10 23 14 15 14 +30/+49 +39 +23 +17 +19 10d6 (31) 27 77
+Wyrm G 33d12+231 (445) 35 10 25 14 15 16 +33/+57 +41 +25 +18 +20 11d6 (33) 29
+Great wyrm G 36d12+288 (522) 37 10 27 18 19 18 +36/+61 +45 +28 +20 +24 12d6 (36) 32
+
+White dragons’ natural enemies are frost giants, who kill the Freezing Fog (Sp): An old or older white dragon can use this abil-
+dragons for food and armor and capture them to use as guards. ity three times per day. It is similar to a solid fog spell but also causes
+a rime of slippery ice to form on any surface the fog touches, cre-
+Combat ating the effect of a grease spell. The dragon is immune to the grease
+White dragons prefer sudden assaults, swooping down from aloft effect because of its icewalking ability. This ability is the equiva-
+or bursting from beneath water, snow, or ice. They loose their lent of a 5th-level spell.
+breath weapon, then try to knock out a single opponent with a Other Spell-Like Abilities: 3/day—fog cloud (juvenile or
+follow-up attack. older), gust of wind (adult or older), wall of ice (ancient or older);
+Breath Weapon (Su): A white dragon has one type of breath 1/day—control weather (great wyrm).
+weapon, a cone of cold. Skills: Hide, Move Silently, and Swim are considered class
+Icewalking (Ex): This ability works like the spider climb spell, skills for white dragons.
+but the surfaces the dragon climbs
+NOGARDdooW must be icy. It is Young White Dragon: CR 4; Medium dragon (cold);
+always in HD 9d12+18; hp 76; Init +4; Spd 60 ft.,
+effect. burrow 30 ft., fly 200 ft. (poor), swim 60 ft.;
+AC 18, touch 10, flat-footed 18; Base Atk
++9; Grp +11; Atk +11 melee (2d6+2,
+bite); Full Atk +11 melee (2d6+2,
+bite), +6 melee (1d6+1, 2 claws),
++6 melee (1d4+1, 2 wings); SA
+Breath weapon; SQ darkvision
+120 ft., icewalking, immunity
+to cold, sleep, and paralysis,
+low-light vision, vulnerabil-
+ity to fire; AL CE; SV Fort
++8, Ref +6, Will +6; Str 15,
+Dex 10, Con 15, Int 6, Wis
+11, Cha 6.
+Skills and Feats: Intimi-
+date +10, Listen +12, Search
++12, Spot +12; Flyby Attack, Im-
+proved Initiative, Improved Natural
+Attack (bite), Wingover.
+Breath Weapon (Su): 30-ft. cone,

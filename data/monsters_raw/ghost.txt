@@ -1,0 +1,88 @@
+GHOST
+Armor Class: 12 (+1 Dex, +1 deflection), touch 12, flat-footed 11, Armor Class: Natural armor is the same as the base creature’s
+or 21 (+1 Dex, +8 full plate, +2 heavy shield), touch 11, but applies only to ethereal encounters. When the ghost
+flat-footed 20 manifests (see below), its natural armor bonus is +0, but it
+Base Attack/Grapple: +5/+8 Ghosts gains a deflection bonus equal to its Charisma modifier or
+Attack: Incorporeal touch +6 +1, whichever is higher.
+melee or +8 against ethe- Attack: A ghost retains all the attacks
+real foes (1d6 or 1d6+3 of the base creature, al-
+against ethereal though those relying
+foes); or master- on physical contact do
+work bastard not affect creatures that
+sword +10 melee are not ethereal.
+(1d10+3/19–20); or Full Attack: A ghost
+masterwork short- retains all the attacks of
+bow +7 ranged the base creature, al-
+(1d6/×3) though those relying on
+Full Attack: physical contact do not
+Incorporeal touch affect creatures that are
++6 melee or +8 not ethereal.
+against ethereal Damage: Against ethe-
+foes (1d6 or real creatures, a ghost uses
+1d6+3 against the base creature’s damage
+ethereal foes); or values. Against non-
+masterwork ethereal creatures,
+bastard sword the ghost usually cannot
++10 melee deal physical damage at all
+(1d10+3/19–20); but can use its special
+or masterwork attacks, if any, when it mani-
+shortbow +7 fests (see below).
+ranged Special Attacks: A
+(1d6/×3) ghost retains all the spe-
+Space/Reach: 5 cial attacks of the base
+ft./5 ft. creature, although
+Special Attacks: those relying on
+Corrupting touch, malev- physical contact do
+olence, manifestation not affect nonethe-
+Special Qualities: Darkvision 60 real creatures. The
+ft., incorporeal traits, rejuvenation, +4 ghost also gains a
+turn resistance, undead traits manifestation ability plus
+Saves: Fort +4, Ref +2, Will +2 one to three other special
+Abilities: Str 16, Dex 13, Con —, Int 10, Wis 12, Cha 12 attacks as described below. The save DC
+Skills: Climb +1, Hide –1, Listen +11, Ride +9, Search +8, against a special attack is equal to 10 + 1/2 ghost’s HD + ghost’s
+Spot +11 Cha modifier unless otherwise noted.
+Feats: Blind-Fight, Cleave, Exotic Weapon Proficiency (bastard Corrupting Gaze (Su): A ghost can blast living beings with a
+sword), Improved Initiative, Power Attack, Weapon Focus glance, at a range of up to 30 feet. Creatures that meet the ghost’s
+(bastard sword) gaze must succeed on a Fortitude save or take 2d10 points of
+Environment: Temperate plains damage and 1d4 points of Charisma damage.
+Organization: Solitary, gang (2–4), or mob (7–12) Corrupting Touch (Su): A ghost that hits a living target with its
+Challenge Rating: 7 incorporeal touch attack deals 1d6 points of damage. Against ethe-
+Treasure: None real opponents, it adds its Strength modifier to attack and damage
+Alignment: Any rolls. Against nonethereal opponents, it adds its Dexterity modi-
+Level Adjustment: +5 fier to attack rolls only.
+Draining Touch (Su): A ghost that hits a living target with its 117
+The Will save DC is 16 against this ghost’s malevolence. incorporeal touch attack drains 1d4 points from any one ability
+score it selects. On each such successful attack, the ghost heals
+
+5 points of damage to itself. Against ethereal opponents, it adds its tence and set right whatever prevents it from resting in peace.
+Strength modifier to attack rolls only. Against nonethereal oppo- The exact means varies with each spirit and may require a good
+nents, it adds its Dexterity modifier to attack rolls only. deal of research.
+Frightful Moan (Su): A ghost can emit a frightful moan as a stan- Turn Resistance (Ex): A ghost has +4 turn resistance.
+dard action. All living creatures within a 30-foot spread must suc- Abilities: Same as the base creature, except that the ghost has
+ceed on a Will save or become panicked for 2d4 rounds. This is a no Constitution score, and its Charisma score increases by +4.
+sonic necromantic mind-affecting fear effect. A creature that suc- Skills: Ghosts have a +8 racial bonus on Hide, Listen, Search,
+cessfully saves against the moan cannot be affected by the same and Spot checks. Otherwise same as the base creature.
+ghost’s moan for 24 hours. Environment: Any, often as base creature.
+Horrific Appearance (Su): Any living creature within 60 feet Organization: Solitary, gang (2–4), or mob (7–12).
+that views a ghost must succeed on a Fortitude save or imme- Challenge Rating: Same as the base creature +2.
+diately take 1d4 points of Strength damage, 1d4 points of Dex- Treasure: None.
+LUOHG terity damage, and 1d4 points of Constitution damage. A crea- Alignment: Any.
+ture that successfully saves against this effect cannot be Level Adjustment: Same as the base creature +5.
+affected by the same ghost’s horrific appearance for 24 hours.
+Malevolence (Su): Once per round, an ethereal ghost can merge Ghostly Equipment
+its body with a creature on the Material Plane. This ability is When a ghost forms, all its equipment and carried items usually
+similar to a magic jar spell (caster level 10th or the ghost’s Hit become ethereal along with it. In addition, the ghost retains 2d4
+Dice, whichever is higher), except that it does not require a items that it particularly valued in life (provided they are not in
+receptacle. To use this ability, the ghost must be manifested and another creature’s possession). The equipment works normally on
+it must try move into the target’s space; moving into the target’s the Ethereal Plane but passes harmlessly through material objects
+space to use the malevolence ability does not provoke attacks of or creatures. A weapon of +1 or better magical enhancement,
+opportunity. The target can resist the attack with a successful however, can harm material creatures when the ghost manifests,
+Will save (DC 15 + ghost’s Cha modifier). A creature that suc- but any such attack has a 50% chance to fail unless the weapon is
+cessfully saves is immune to that same ghost’s malevolence for 24 a ghost touch weapon (just as magic weapons can fail to harm the
+hours, and the ghost cannot enter the target’s space. If the save ghost).
+fails, the ghost vanishes into the target’s body. The original material items remain behind, just as the ghost’s
+Manifestation (Su): Every ghost has this ability. A ghost dwells physical remains do. If another creature seizes the original, the
+on the Ethereal Plane and, as an ethereal creature, it cannot ethereal copy fades away. This loss invariably angers the ghost, who
+affect or be affected by anything in the material world. When a stops at nothing to return the item to its original resting place.
+ghost manifests, it partly enters the Material Plane and
+becomes visible but incorporeal on the Material Plane. A mani-

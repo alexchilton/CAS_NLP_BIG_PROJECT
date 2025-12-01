@@ -1,0 +1,37 @@
+GIANTS’ BAGS
+d% Item
+Most giants carry big leather shoulder sacks to hold their personal pos- 28–29 Comb or brush
+sessions. It is a common myth that giants’ bags are stuffed with gold 30–31 Cooking pot
+(always at least 1,000 gp, by some accounts). In truth, they usually hold 32–33 Container of grease or grease paint
+a few battered and smelly personal items, a supply of throwing rocks, 34–35 Drinking horn
+some less than fresh rations, and a few trinkets. However, giants some- 36–37 Bag of flour or meal (5 pounds)
+times carry magic treasures that are too small for them to use, and 38–39 Piece of fur or hide
+many adventurers find looting a giant’s bag to be worthwhile. The table 40–41 Hairpins
+below shows typical mundane items; roll d% or choose from the list. 42–47 Knife
+The number of items in a bag varies according to the giant variety (see 48–53 Knucklebones or dice
+each description). 54–57 Haunch of meat
+d% Item 58–59 Incense or dried animal dung
+01–02 Berries or fruit 60–65 100 to 200 feet of strong rope
+03–08 Bowl and spoon 66–67 Bag of salt (1 pound)
+09–10 Candles (1d6) 68–73 Shoes, sandals, or boots
+11–14 Hand-held chopper 74–76 Sewing needle
+15–16 Sticks of charcoal (1d6) or quills and ink 77–81 String or thread
+17–18 Chunk of cheese 82–86 Beads, stones, teeth, or tusks
+19–20 Chunk of wood, whittled or carved 87–93 Tinderbox (flint, steel, and tinder)
+21–23 Cup or tankard 94–96 Lump of wax
+120 24–27 Cloak 97–100 Whetstone
+pqqqqrs
+
+than 10d10 coins), and a musical instrument. A cloud giant’s pos- Special Qualities: Immunity to fire, low-light vision, rock
+sessions are usually well made and maintained. catching, vulnerability to cold
+Saves: Fort +14, Ref +4, Will +9
+Combat Abilities: Str 31, Dex 9, Con 21, Int 10, Wis 14, Cha 11
+Cloud giants fight in well-organized units, using carefully devel- Skills: Climb +9, Craft (any one) +6, Intimidate +6, Jump +9,
+oped battle plans. They prefer to fight from a position above their Spot +14
+opponents. A favorite tactic is to circle the enemies, barraging Feats: Cleave, Great Cleave, Improved Overrun, Improved
+them with rocks while the giants with magical abilities confound Sunder, Iron Will, Power Attack
+them with spells. Environment: Warm mountains
+Rock Throwing (Ex): The range increment is 140 feet for a Organization:Solitary, gang (2–5), band (6–9 plus 35% noncom-
+cloud giant’s thrown rocks. batants plus 1 adept or cleric of 1st or 2nd level), hunting/raid-
+Oversized Weapon (Ex): A cloud giant wields a great, two- ing party (6–9 plus 1 adept or sorcerer of 3rd–5th level plus
+handed morningstar (big enough for Gargantuan creatures) with- 2–4 hell hounds and 2–3 trolls or ettins), or tribe (21–30 plus 1

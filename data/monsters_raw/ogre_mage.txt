@@ -1,0 +1,10 @@
+OGRE MAGE
+looking over one’s shoulder.
+Large Giant Spell-Like Abilities: At will—darkness, invisibility; 1/day—
+Hit Dice: 5d8+15 (37 hp) charm person (DC 14), cone of cold (DC 18), gaseous form, polymorph,
+Initiative: +4 sleep(DC 14).Caster level 9th. The save DCs are Charisma-based.
+Speed: 40 ft. (8 squares), fly 40 ft. (good) Flight (Su): An ogre mage can cease or resume flight as a free
+EGAM Armor Class: 18 (–1 size, +5 natural, +4 chain shirt), touch 9, action. While using gaseous form it can fly at its normal speed and
+flat-footed 18 has perfect maneuverability.
+Base Attack/Grapple: +3/+12 Regeneration (Ex): Fire and acid deal normal damage to an
+Attack: Greatsword +7 melee (3d6+7/19–20) or longbow +2 ogre mage.

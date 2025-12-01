@@ -1,0 +1,14 @@
+TROLL HUNTER
+Some trolls, more cunning than most, are not satisfied with
+merely eating civilized beings but train to hunt them relent-
+lessly. These troll hunters are fearsome rangers who focus
+on slaying and devouring humanoid prey.
+Combat
+A troll hunter makes full use of its scent ability to
+track its favored enemies and generally prefers to
+hunt in darkness.
+The troll hunter uses its limited repertoire of spells
+to protect itself from damaging forms of energy and
+to immobilize enemies.
+Typical anger Spells Prepared (2; save DC 12 + spell
+level): 1st—entangle, resist energy.

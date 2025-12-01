@@ -1,0 +1,35 @@
+SAMPLE HALF-FIEND
+Red 30-foot cone of fire
+White 30-foot cone of cold This winged humanoid has claws, fangs, and short horns. Its eyes glow HALF-FIEND
+Brass 60-foot line of fire red, and it reeks of brimstone.
+Bronze 60-foot line of lightning
+Copper 60-foot line of acid This example uses a 7th-level human cleric of Erythnul as the base
+Gold 30-foot cone of fire creature.
+Silver 30-foot cone of cold
+Special Qualities: A half-dragon has all the special qualities of Half-Fiend 7th-Level Human Cleric
+the base creature, plus darkvision out to 60 feet and low-light Medium Outsider (Augmented Humanoid) (Native)
+vision. A half-dragon has immunity to sleep and paralysis effects, Hit Dice: 7d8+14 (49 hp)
+and an additional immunity based on its dragon variety. Initiative: +7
+Dragon Dragon Speed: 20 ft. in breastplate (4 squares), fly 20 ft. (average) in
+Variety Immunity Variety Immunity breastplate; base speed 30 ft., fly 30 ft. (average)
+Black Acid Brass Fire Armor Class: 24 (+3 Dex, +1 natural, +10 +2 breastplate and +1
+Blue Electricity Bronze Electricity heavy shield), touch 13, flat-footed 21
+Green Acid Copper Acid Base Attack/Grapple: +5/+9
+Red Fire Gold Fire Attack: +1 morningstar +11 melee (1d8+5) or claw +9 melee
+White Cold Silver Cold (1d4+4) or masterwork light crossbow +9 ranged (1d8/19–20)
+Abilities: Increase from the base creature as follows: Str +8, Full Attack: +1 morningstar +11 melee (1d8+5) and bite +4 melee
+Con +2, Int +2, Cha +2. (1d6+2); 2 claws +9 melee (1d4+4) and bite +4 melee (1d6+2);
+Skills: A half-dragon gains skill points as a dragon and has skill or masterwork light crossbow +9 ranged (1d8/19–20)
+points equal to (6 + Int modifier) × (HD + 3). Do not include Hit Space/Reach: 5 ft./5 ft.
+Dice from class levels in this calculation—the half- Special Attacks: Smite good, spells, spell-like abilities, rebuke
+dragon gains dragon skill points only for its racial undead 8/day
+Hit Dice, and gains the normal amount of skill
+points for its class levels. Treat skills from the
+base creature’s list as class skills, and other
+skills as cross-class. Half-dragon
+Environment: Same as either the base crea-
+ture or the dragon variety.
+Challenge Rating: Same as the base crea-
+ture + 2 (minimum 3).
+Alignment: Same as the dragon variety.
+Level Adjustment: Same as base creature +3.

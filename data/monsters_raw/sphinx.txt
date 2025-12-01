@@ -1,0 +1,189 @@
+SPHINX
+Armor Class: 15 (+3 Dex, +2 deflection), touch 15, flat-footed 13
+Base Attack/Grapple: +3/— Sphinxes are enigmatic creatures with great, feathery wings and
+Attack: Incorporeal touch +6 melee (1d8 plus energy drain) leonine bodies. All sphinxes are territorial, but the more intelli-
+Full Attack: Incorporeal touch +6 melee (1d8 plus energy drain) gent ones can differentiate between deliberate intrusion and tem-
+Space/Reach: 5 ft./5 ft. porary or inadvertent trespass.
+Special Attacks: Energy drain, create spawn A typical sphinx is about 10 feet long and weighs about 800
+ERTCEPS Special Qualities: Darkvision 60 ft., incorporeal traits, +2 turn pounds.
+resistance, sunlight powerlessness, undead traits, unnatural aura Sphinxes speak Sphinx, Common, and Draconic.
+Saves: Fort +2, Ref +5, Will +7
+Abilities: Str —, Dex 16, Con —, Int 14, Wis 14, Cha 15 Combat
+Skills: Hide +13, Intimidate +12, Knowledge (religion) +12, Most sphinxes fight on the ground, using their wings to help
+Listen +14, Search +12, Spot +14, Survival +2 (+4 following them pounce much as lions do. If outnumbered by earthbound
+tracks) creatures, a sphinx takes wing and attacks on the fly.
+Feats: Alertness, Blind-Fight, Improved Initiative Pounce (Ex): If a sphinx charges a foe, it can make a
+Environment: Any land and underground full attack, including two rake attacks.
+Organization:Solitary, gang (2–4), or Rake (Ex): A sphinx that pounces onto a
+swarm (6–11) creature can make two rake attacks with its
+Challenge Rating: 7 hind legs. Each sphinx’s description pro-
+Treasure: None vides its attack bonus and damage.
+Alignment: Always lawful evil
+Advancement: 8–14 HD ANDROSPHINX
+(Medium) Large Magical Beast
+Level Adjustment: — Hit Dice: 12d10+48 (114 hp)
+Initiative: +0
+This entity looks like a human, Speed: 50 ft. (10 squares), fly 80 ft.
+but with a diaphanous and faint- (poor)
+ly luminous body. Armor Class: 22 (–1 size, +13 natu-
+ral), touch 9, flat-footed 22
+Spectres are incorporeal un- Base Attack/Grapple: +12/+23
+dead often mistaken for Attack: Claw +18 melee (2d4+7)
+ghosts. They haunt the places Spectre Full Attack: 2 claws +18 melee
+where they died, retaining their (2d4+7)
+sentience but now hating all living Space/Reach: 10 ft./5 ft.
+things. Special Attacks: Pounce, rake 2d4+3, roar,
+A spectre looks much as it did in life spells
+and can be easily recognized by those who Special Qualities: Darkvision 60 ft., low-light
+knew the individual or have seen the individ- vision
+ual’s face in a painting or a drawing. In many cases, the Saves: Fort +12, Ref +8, Will +7
+evidence of a violent death is visible on its body. The chill of death Abilities: Str 25, Dex 10, Con 19, Int 16, Wis 17, Cha 17
+lingers in the air around spectres and in the places they haunt. Skills: Intimidate +17, Knowledge (any one) +18, Listen +18,
+A spectre is roughly human-sized and is weightless. Spot +18, Survival +18
+Feats: Alertness, Cleave, Great Cleave, Flyby Attack, Power
+COMBAT Attack, Track
+In close combat a spectre attacks with its numbing, life-draining Environment: Warm deserts
+touch. It makes full use of its incorporeal nature, moving through Organization:Solitary
+walls, ceilings, and floors as it attacks. Challenge Rating: 9
+Energy Drain (Su): Living creatures hit by a spectre’s incorpo- Treasure: Standard
+real touch attack gain two negative levels. The DC is 15 for the For- Alignment: Always chaotic good
+titude save to remove a negative level. The save DC is Charisma- Advancement: 13–18 HD (Large); 19–36 HD (Huge)
+based. For each such negative level bestowed, the spectre gains 5 Level Adjustment: +5 (cohort)
+temporary hit points.
+Create Spawn (Su): Any humanoid slain by a spectre becomes This creature is bigger than a riding horse and has a tawny lion body, great
+a spectre in 1d4 rounds. Spawn are under the command of the falcon wings, and a humanoid face.
+spectre that created them and remain enslaved until its death.
+They do not possess any of the abilities they had in life. These sphinxes are always male. Androsphinxes are clever and
+Unnatural Aura (Su): Animals, whether wild or domesticated, generally good-natured, but they can be savage opponents.
+can sense the unnatural presence of a spectre at a distance of 30 Though outwardly gruff and bad-tempered, androsphinxes
+feet. They do not willingly approach nearer than that and panic if have noble hearts, and are a little bit shy. They appreciate small
+232 forced to do so; they remain panicked as long as they are within courtesies, but seldom admit it, and praise makes them feel
+that range. uncomfortable.
+
+Combat Advancement: 11–15 HD (Large); 16–30 HD (Huge)
+In battle, an androsphinx rips apart enemies with its razor-sharp Level Adjustment: +3 (cohort)
+claws. It relies on its natural weapons in a fight, employing its
+spells for defense or healing. This creature is bigger than a horse and has a tawny lion body, great
+Rake (Ex): Attack bonus +18 melee, damage 2d4+3. falcon wings, and a ram’s head.
+Roar (Su): Three times per day an androsphinx can loose a
+mighty roar. The first time it does this, all creatures within 500 feet These sphinxes are always male. Neither good nor evil, they lack
+must succeed on a DC 19 Will save or be affected as though by a the intelligence of the androsphinx.
+fearspell for 2d6 rounds. Criosphinxes constantly seek gynosphinxes, but if they cannot
+If the sphinx roars a second time during the same encounter, all find one, they pursue wealth above all else. The best deal an adven-
+creatures within 250 feet must succeed on a DC 19 Fortitude save turer can hope to strike with a criosphinx is safe passage in ex-
+or be paralyzed for 1d4 rounds, and all those within 90 feet are change for all of his or her treasure.
+deafened for 2d6 rounds (no save). SPHINY
+If it roars a third time during the same encounter, all those within Combat
+250 feet must succeed on a DC 19 Fortitude save or take 2d4 points Criosphinxes
+of Strength damage for 2d4 rounds. In addition, any Medium or attack with their
+smaller creature within 90 feet must succeed on a DC 19 Forti- claws, as do their kin, but
+tude save or be thrown to the ground and take 2d8 points of they can also butt with their
+damage. The force of this roar is so great that it deals 50 points horns. They don’t cast spells and
+of damage to any stone or employ only the most simple battle tactics.
+crystalline object within Rake (Ex): Attack bonus +15 melee,
+90 feet. Magic items and damage 1d6+3.
+held or carried items can avoid
+damage with a DC 19 Reflex save. GYNOSPHINX
+Other androsphinxes are immune Large Magical Beast
+to these effects. The Hit Dice: 8d10+8 (52 hp)
+save DCs are Cha- Initiative: +5
+risma-based. Speed: 40 ft. (8 squares), fly 60 ft. (poor)
+Spells: An andro- Armor Class: 21 (–1 size, +1 Dex, +11 natural),
+sphinx casts divine touch 10, flat-footed 20
+spells as a 6th-level Base Attack/Grapple: +8/+16
+cleric from the Attack: Claw +11 melee (1d6+4)
+cleric spell list and Full Attack: 2 claws +11 melee (1d6+4)
+from the Good, Healing, Space/Reach: 10 ft./5 ft.
+and Protection domains. Special Attacks: Pounce, rake 1d6+2,
+Typical Cleric Spells Pre- spell-like abilities
+pared (5/5/5/4; save DC 13 + spell level): Special Qualities: Darkvision 60 ft.,
+0—cure minor wounds, detect magic, guidance, light, low-light vision
+resistance; 1st—divine favor, protection from evil , shield of Saves: Fort +7, Ref +7, Will +8
+faith, remove fear, summon monster I; 2nd—bull’s strength, Abilities: Str 19, Dex 12, Con 13,
+remove paralysis, resist energy, shield other , summon monster II; Gynosphinx Int 18, Wis 19, Cha 19
+3rd—cure serious wounds , daylight, invisibility purge, searing Skills: Bluff +15,
+light. Concentration +12,
+*Domain spell. Domains: Good and Healing. Diplomacy +8, Disguise +4 (+6 acting), Intimidate +13,
+Listen +17, Sense Motive +15, Spot +17
+CRIOSPHINX Feats: Combat Casting, Improved Initiative, Iron Will
+Large Magical Beast Environment: Warm deserts
+Hit Dice: 10d10+30 (85 hp) Organization:Solitary or covey (2–4)
+Initiative: +0 Challenge Rating: 8
+Speed: 30 ft. (6 squares), fly 60 ft. (poor) Treasure: Double standard
+Armor Class: 20 (–1 size, +11 natural), touch 9, flat-footed 20 Alignment: Always neutral
+Base Attack/Grapple: +10/+20 Advancement: 9–12 HD (Large); 13–24 HD (Huge)
+Attack: Gore +15 melee (2d6+6) Level Adjustment: +4 (cohort)
+Full Attack: Gore +15 melee (2d6+6) and 2 claws +10 melee
+(1d6+3) This creature is bigger than a horse and has a tawny lion body, great
+Space/Reach: 10 ft./5 ft. falcon wings, and the head of a female humanoid.
+Special Attacks: Pounce, rake 1d6+3
+Special Qualities: Darkvision 60 ft., low-light vision These sphinxes are the female counterparts of androsphinxes.
+Saves: Fort +10, Ref +7, Will +3 Gynosphinxes often are willing to bargain for treasure or ser-
+Abilities: Str 23, Dex 10, Con 17, Int 10, Wis 11, Cha 11 vice. They constantly seek out new intellectual challenges—rid-
+Skills: Intimidate +8, Listen +11, Spot +1 dles, puzzles, and other such tests delight them to no end. They
+Feats: Alertness, Cleave, Flyby Attack, Power Attack find criosphinxes and hieracosphinxes detestable.
+Environment: Warm deserts
+Organization:Solitary Combat
+Challenge Rating: 7 In close combat, gynosphinxes use their powerful claws to flay the 233
+Treasure: Standard flesh from their enemies. Despite their deadly nature, they prefer
+Alignment: Always neutral to avoid combat whenever possible.
+
+Rake (Ex): Attack bonus +11 melee, damage 1d6+2. Attack: Sting +8 melee (1d8+5 plus poison)
+Spell-Like Abilities: 3/day—clairaudience/clairvoyance, detect Full Attack: Sting +8 melee (1d8+5 plus poison) and bite +3
+magic, read magic, see invisibility; 1/day—comprehend languages, locate melee (1d8+2)
+object, dispel magic, remove curse (DC 18), legend lore. Caster level Space/Reach: 10 ft./5 ft.
+14th. The save DC is Charisma-based. Special Attacks: Implant, poison
+Once per week a gynosphinx can create a symbol of death, a Special Qualities: Darkvision 60 ft., freedom of movement, low-
+symbol of fear, asymbol of insanity, asymbol of pain, asymbol of persua- light vision, scent
+sion,asymbol of sleep, and a symbol of stunning as the spells (caster Saves: Fort +9, Ref +5, Will +2
+level 18th), except that all save DCs are 22 and each symbol re- Abilities: Str 21, Dex 13, Con 21, Int 2, Wis 12, Cha 10
+mains a maximum of one week once scribed. The save DCs are Skills: Listen +10, Spot +11
+Charisma-based. Feats: Alertness, Dodge
+Environment: Temperate forests
+HIERACOSPHINX Organization:Solitary
+REDIPS RETAEwolhctirC
+Large Magical Beast Challenge Rating: 5
+Hit Dice: 9d10+18 (67 hp) Treasure: None
+Initiative: +2 Alignment: Always neutral
+Speed: 30 ft. (6 squares), fly 90 ft. (poor) Advancement: 5–12 HD (Huge)
+Armor Class: 19 (–1 size, +2 Dex, +8 natural), touch 11, Level Adjustment: —
+flat-footed 17
+Base Attack/Grapple: +9/+18 Spider eater This beast resembles an enormous, two-legged hornet
+Attack: Bite +13 melee (1d10+5) with a pair of small forelimbs and huge bat wings.
+Full Attack: Bite +13 melee (1d10+5) and 2
+claws +8 melee (1d6+2) A spider eater has a temperament that
+Space/Reach: 10 ft./5 ft. matches its nasty appearance. Nevertheless,
+Special Attacks: Pounce, rake 1d6+2 these predators are valued as flying steeds. A com-
+Special Qualities: Darkvision 60 ft., low- pany of bandits mounted on spider eaters is fear-
+light vision some indeed. The creature gets its name from
+Saves: Fort +8, Ref +8, Will +5 its ability to shrug off webs and its habit of laying
+Abilities: Str 21, Dex 14, Con 15, Int 6, eggs in the paralyzed bodies of enormous creatures,
+Wis 15, Cha 10 often arachnids.
+Skills: Listen +10, Spot +14 A spider eater is about 10 feet long and 4 feet high,
+Feats: Alertness, Cleave, Flyby Attack, Power and has a wingspan of about 20 feet. It weighs about
+Attack 4,000 pounds.
+Environment: Warm deserts
+.C Organization:Solitary, pair, or flock (4–7) COMBAT
+yb Challenge Rating: 5 A spider eater attacks with its venomous sting and
+.sullI Treasure: None powerful mandibles. Its usual tactic is to deliver a
+Alignment: Always chaotic evil sting, then back off, hovering out of reach until the
+Advancement: 10–14 HD (Large); 15–27 HD venom takes effect. Spider eaters do not like to give up
+(Huge) their prey, and foes who harry them with spells or
+Level Adjustment: +3 (cohort) ranged attacks provoke a determined counterattack.
+Implant (Ex): Female spider eaters lay their eggs inside
+This creature is bigger than a horse and has a tawny lion body, great paralyzed creatures of Large or larger size. The young emerge
+falcon wings, and the head of a falcon. about six weeks later, literally devouring the host from inside.
+Poison (Ex): Injury, Fortitude DC 17, initial damage none, sec-
+Of all the sphinxes, only these creatures are evil at heart. They are ondary damage paralysis for 1d8+5 weeks. The save DC is Con-
+always male. They spend much of their time searching for a stitution-based.
+gynosphinx but are generally just as happy to maul someone. Freedom of Movement (Su): Spider eaters have a continuous
+freedom of movement ability as the spell (caster level 12th). When
+Combat the spider eater serves as a mount, this effect does not extend to its
+Hieracosphinxes can make short work of even the most danger- rider.
+ous opponents with their claws. They are not particularly intelli- Skills: Spider eaters have a +4 racial bonus on Listen and Spot
+gent, but are cunning enough to dive at their enemies from above checks.
+with their flying ability.
+Rake (Ex): Attack bonus +13 melee, damage 1d6+2. TRAINING A SPIDER EATER
+Skills: Hieracosphinxes have a +4 racial bonus on Spot checks. A spider eater requires training before it can bear a rider in com-
+bat. Training a spider eater requires six weeks of work and a DC 25
+Handle Animal check. Riding a spider eater requires an exotic

@@ -1,0 +1,12 @@
+MONSTERS AND CLASS LEVELS
+superior specimens of their race, bigger and more powerful than
+their run-of-the-mill fellows. If a creature acquires a character class, it follows the rules for multi-
+Templates:Both intelligent and nonintelligent creatures with an class characters described on pages 59–60 of the Player’s Handbook.
+unusual heritage (such as draconic or fiendish blood) or an inflicted The creature’s Hit Dice equal the number of class levels it has plus
+change in their essential nature (undeath or lycanthropy) may be its racial Hit Dice. For example, an ogre normally has 4 HD. If it
+modified with a template. Templates usually result in tougher mon- picks up one level of barbarian, it becomes a creature of 5 Hit Dice:
+sters with capabilities that differ from those of their common kin. 4d8 HD for its ogre levels, plus 1d12 HD for its barbarian level. A
+Each of these three methods for improving monsters is dis- creature’s “monster class” is always a favored class, and the creature
+cussed in more detail below. never takes XP penalties for having it. Additional Hit Dice gained
+from taking levels in a character class never affect a creature’s size.
+Humanoids and Class Levels:Creatures with 1 or less HD

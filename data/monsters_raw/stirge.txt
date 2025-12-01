@@ -1,0 +1,45 @@
+STIRGE
+creatures.
+These sprites love to trick misers out of their wealth. They do Tiny Magical Beast
+not covet treasure themselves but use it to taunt and frustrate Hit Dice: 1d10 (5 hp)
+greedy folk. If a victim of pixie pranks exhibits no greed or Initiative: +4
+demonstrates a good sense of humor, the tricksters may allow the Speed: 10 ft (2 squares), fly 40 ft. (average)
+individual to choose a reward from their hoard. Armor Class: 16 (+2 size, +4 Dex), touch 16, flat-footed 12
+Pixies wear bright clothing, often including a cap and shoes Base Attack/Grapple: +1/–11 (+1 when attached)
+with curled and pointed toes. Attack: Touch +7 melee (attach)
+A pixie stands about 2-1/2 feet tall and weighs about 30 pounds. Full Attack: Touch +7 melee (attach)
+236 Pixies speak Sylvan and Common, and may know other lan- Space/Reach: 2-1/2 ft./0 ft.
+guages as well. Special Attacks: Attach, blood drain
+Special Qualities: Darkvision 60 ft., low-light vision
+
+Saves: Fort +2, Ref +6, Will +1 centipede swarms, hellwasp swarms, locust swarms, rat swarms,
+Abilities: Str 3, Dex 19, Con 10, Int 1, Wis 12, Cha 6 and spider swarms are described here. The swarm’s type varies
+Skills: Hide +14, Listen +4, Spot +4 with the nature of the component creature (most are animals or
+Feats: Alertness, Weapon Finesse B vermin), but all swarms have the swarm subtype.
+Environment: Warm marshes A swarm of Tiny creatures consists of 300 nonflying creatures or
+Organization:Colony (2–4), flock (5–8), or storm (9–14) 1,000 flying creatures. A swarm of Diminutive creatures consists
+Challenge Rating: 1/2 of 1,500 nonflying creatures or 5,000 flying creatures. A swarm of
+Treasure: None Fine creatures consists of 10,000 creatures, whether they are flying
+Alignment: Always neutral or not. Swarms of nonflying creatures include many more crea-
+Advancement: — tures than could normally fit in a 10-foot square based on their
+Level Adjustment: — normal space, because creatures in a swarm are packed tightly
+together and generally crawl over each other and their prey when
+This nasty-looking creature seems to be a cross between a bat and a giant moving or attacking. Larger swarms are represented by multiples SWARM
+mosquito. It has membranous bat wings, a short furry body, eight jointed of single swarms. A large swarm is completely shapeable, though
+legs that end in sharp pincers, and a needlelike proboscis. it usually remains contiguous.
+Stirges are batlike creatures that feed on the blood of living beings. COMBAT
+While just one In order to attack, a single swarm moves into opponents’ spaces,
+poses little danger which provokes an attack of opportunity. It can occupy the same
+to most adventurers, space as a creature of any size,
+multiple stirges can be a for- since it crawls all over its prey, but
+midable threat. remains a creature with a 10-foot
+A stirge’s coloration ranges from Stirge space. Swarms never make attacks
+rust-red to reddish-brown, with a of opportunity, but they can pro-
+dirty yellow underside. The voke attacks of opportunity.
+proboscis is pink Unlike other creatures with a 10-foot
+at the tip, fading to space, a swarm is shapeable. It can occupy any
+gray at its base. four contiguous squares, and it can squeeze
+A stirge’s body is about 1 foot through any space large enough to contain one
+long, with a wingspan of about 2 of its component creatures (for example, a bat
+feet. It weighs about 1 pound. swarm can squeeze through a space that a Tiny
+creature could squeeze through).

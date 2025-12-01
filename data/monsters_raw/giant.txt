@@ -1,0 +1,57 @@
+GIANT
+Stone giant characters possess the following racial traits. purple eyes. Adults are about 21 feet tall and weigh about 12,000
+— +16 Strength, +4 Dexterity, +8 Constitution, +2 Wisdom. pounds. Storm giants can live to be 600 years old.
+—Large size. –1 penalty to Armor Class, –1 penalty on attack Storm giants’ garb is usually a short, loose tunic belted at the
+rolls, –4 penalty on Hide checks, +4 bonus on grapple checks, lift- waist, sandals or bare feet, and a headband. They wear a few
+ing and carrying limits double those of Medium characters. pieces of simple but finely crafted jewelry, anklets (favored by
+—Space/Reach: 10 feet/10 feet. barefoot giants), rings, or circlets being most common. They
+—A stone giant’s base land speed is 40 feet. live quiet, reflective lives and spend their time musing about
+—Darkvision out to 60 feet and low-light vision. the world, composing and playing music, and tilling their land
+—Racial Hit Dice: A stone giant begins with fourteen levels of or gathering food.
+giant, which provide 14d8 Hit Dice, a base attack bonus of +10, Storm giants usually carry their bags attached to their belts
+and base saving throw bonuses of Fort +9, Ref +4, and Will +4. instead of as shoulder sacks. Each of these bags holds a simple
+—Racial Skills: A stone giant’s giant levels give it skill points musical instrument (usually a pan pipe or harp) and 2d4 mundane
+equal to 17 × (2 + Int modifier). Its class skills are Climb, Hide, items. Other than the jewelry they wear, they prefer to leave their
+Listen, and Spot. A stone giant has a +8 racial bonus on Hide wealth in their lairs. A storm giant’s possessions are usually simple
+checks in rocky terrain. (if not downright primitive), but well crafted and maintained.
+—Racial Feats: A stone giant’s giant levels give it five feats.
+— +11 natural armor bonus. Combat
+—Special Attacks (see above): Rock throwing. Storm giants use weapons and spell-like abilities instead of throw-
+—Special Qualities (see above): Rock catching. ing rocks. Their composite longbows have a range increment of
+—Automatic Languages: Giant. Bonus Languages: Common, 180 feet.
+Draconic, Elven, Goblin, Orc. Spell-Like Abilities: 1/day—call lightning (DC 15), chain light-
+—Favored Class: Barbarian. ning (DC 18). Caster level 15th. 2/day—control weather,levitate.
+—Level adjustment +4. Caster level 20th. The save DCs are Charisma-based.
+Freedom of Movement (Su): Storm giants have a continuous
+STORM GIANT freedom of movement ability as the spell (caster level 20th). The
+Huge Giant effect can be dispelled, but the storm giant can create it again on
+Hit Dice: 19d8+114 (199 hp) its next turn as a free action.
+Initiative: +2 Water Breathing (Ex): Storm giants can breathe underwater
+Speed: 35 ft. (7 squares), swim 30 ft. (6 squares) in breastplate; indefinitely and can freely use their spell-like abilities while
+base speed 50 ft., swim 40 ft. submerged.
+Armor Class: 27 (–2 size, +2 Dex, +12 natural, +5 breastplate) Skills: A storm giant has a +8 racial bonus on any Swim check
+touch 10, flat-footed 25 to perform some special action or avoid a hazard. It can always
+Base Attack/Grapple: +14/+36 choose to take 10 on a Swim check, even if distracted or endan-
+Attack: Greatsword +26 melee (4d6+21/19–20) or slam +26 gered. It can use the run action while swimming, provided it
+melee (1d6+14) or composite longbow (+14 Str bonus) +14 swims in a straight line. *Storm giants ignore all weight penalties
+ranged (3d6+14/×3) for gear carried when swimming.
+Full Attack: Greatsword +26/+21/+16 melee (4d6+21/19–20) or
+2 slams +26 melee (1d6+14) or composite longbow (+14 Str Storm Giant Society
+bonus) +14/+9/+4 ranged (3d6+14/×3) Storm giants live in castles built on mountain peaks or under-
+Space/Reach: 15 ft./15 ft. water. They live off the land in the immediate vicinity of their
+Special Attacks: Spell-like abilities lairs. If the natural harvest is not enough to sustain them, they
+Special Qualities: Freedom of movement, immunity to electric- create and carefully till large gardens, fields, and vineyards. They
+ity, low-light vision, rock catching, water breathing do not keep animals for food, preferring to hunt. Land-dwelling
+Saves: Fort +17, Ref +8, Will +13 storm giants usually are on good terms with neighboring copper
+Abilities: Str 39, Dex 14, Con 23, Int 16, Wis 20, Cha 15 dragons and good-aligned cloud giants, and cooperate with them
+Skills: Climb +20, Concentration +26, Craft (any one) +13, for mutual defense. Water-dwelling storm giants have similar rela-
+Diplomacy +4, Intimidate +12, Jump +24, Listen +15, Perform tionships with merfolk and bronze dragons.
+(sing) +12, Sense Motive +15, Spot +25, Swim +18*
+Feats: Awesome Blow, Cleave, Combat Reflexes, Improved Bull Storm Giant Characters
+Rush, Improved Sunder, Iron Will, Power Attack About 20% of adult storm giants are sorcerers or clerics. A storm
+Environment: Warm mountains giant cleric has access to two of the following domains: Chaos,
+Organization:Solitary or family (2–4 plus 35% noncombatants Good, Protection, or War. 125
+plus 1 sorcerer or cleric of 7th–10th level plus 1–2 rocs, 2–5
+griffons, or 2–8 sea cats)
+
+mouther makes a ranged touch attack; if it hits, it deals 1d4 points

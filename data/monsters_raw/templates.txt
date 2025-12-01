@@ -1,0 +1,12 @@
+TEMPLATES
+character level for purposes of determining how much equipment
+it can purchase. Generally, only monsters with an Advancement Certain creatures are created by adding a template to an existing
+entry of “By character class” receive NPC gear; other creatures add- creature. A templated creature can represent a freak of nature, the
+ing character levels should be treated as monsters of the appropri- individual creation of a single experimenter, or the first genera-
+ate CR and assigned treasure, not equipment. tion of offspring from parents of different species.
+Feat Acquisition and Ability Score Increases: A monster’s
+total Hit Dice, not its ECL, govern its acquisition of feats and abil- ACQUIRED AND INHERITED TEMPLATES
+ity score increases. For example, a 1st-level minotaur barbarian has Some templates can be added to creatures anytime. A monster or
+a total of 7 HD. It has three feats (for its 1st, 3rd, and 6th HD). character may become a ghost after death. A spellcaster of at least
+When it gains 2nd level as a barbarian, it becomes a creature of 8 11th level can become a lich. Those with 5 or more HD killed by
+Hit Dice and improves one ability score by 1 point. When it adds vampires may become vampires. Templates such as these are ADVANCING CHAPTER

@@ -1,0 +1,36 @@
+WYVERN
+Wyverns are rather stupid but always aggressive: They attack
+Large Dragon nearly anything that isn’t obviously more powerful than
+Hit Dice: 7d12+14 (59 hp) themselves. A wyvern dives from the air,
+Initiative: +1 snatching the opponent with its talons and
+Speed: 20 ft. (4 squares), fly 60 ft. (poor) stinging it to death.
+Armor Class: 18 (–1 size, +1 Dex, A wyvern can slash with its talons
++8 natural), touch 10, only when making a flyby attack.
+flat-footed 17 Improved Grab (Ex): To use
+Base Attack/Grapple: +7/+15 this ability, a wyvern must
+Attack: Sting +10 melee hit with its talons. It can
+(1d6+4 plus poison) then attempt to start a
+or talon +10 melee grapple as a free
+(2d6+4) or bite +10 action without XILL
+melee (2d8+4) provoking an
+Full Attack: attack of op-
+Sting +10 melee portunity. If
+(1d6+4 plus poison) it wins the
+and bite +8 grapple
+melee check, it
+(2d8+4) establishes a
+and hold and stings.
+2 wings Poison (Ex):
++8 melee Injury, Fortitude
+(1d8+2) and 2 talons DC 17, initial
++8 melee (2d6+4) and second-
+Space/Reach: 10 ft./5 ft. ary damage
+Special Attacks: Poison, 2d6 Con.
+improved grab The save DC is
+Special Qualities: Darkvision Constitution-
+60 ft., immunity to sleepand based.
+paralysis, low-light vision, scent Skills: Wyverns have a
+Saves: Fort +7, Ref +6, Will +6 +3 racial bonus on Spot checks.
+Abilities: Str 19, Dex 12, Con 15, Wyvern
+Int 6, Wis 12, Cha 9
+Skills: Hide +7, Listen +13, Move

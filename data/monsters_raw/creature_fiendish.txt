@@ -1,0 +1,18 @@
+CREATURE FIENDISH
+Environment: Cold hills ettin may gather a small group, or gang, of
+Organization:Solitary, ettins. This gang stays together only as long
+gang (2–4), troupe as the leader is undefeated. Any major defeat
+(1–2 plus 1–2 brown shatters the leader’s hold over the others,
+bears), band (3–5 and they go their separate ways.
+plus 1–2 brown Ettins place little value on wealth but
+bears), or colony are smart enough to understand its value
+(3–5 plus 1–2 brown to others. They collect treasure only
+bears and 7–12 orcs because it can buy them the services of
+or 9–16 goblins) goblins or orcs. These lesser creatures
+Challenge Rating: 6 sometimes build traps around ettins’
+Treasure: Standard lairs, or help them fight off powerful
+Alignment: Usually opponents.
+chaotic evil
+Advancement: By Ettin FIENDISH
+character class
+Level Adjustment: +5

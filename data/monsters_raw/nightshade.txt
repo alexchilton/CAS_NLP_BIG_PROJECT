@@ -1,0 +1,18 @@
+NIGHTSHADE
+Abilities: Str 48, Dex 10, Con —, Int 20, Wis 20, Cha 18
+Nightshades are powerful undead composed of equal parts darkness Skills: Concentration +32, Diplomacy +6, Hide +16, Knowledge
+and absolute evil. Their chilling malevolence hangs heavily about (arcana) +33, Listen +33, Move Silently +28, Search +33, Sense
+them, along with the smell of an open grave on a winter’s morning. Motive +23, Spellcraft +35, Spot +33, Survival +5 (+7 following
+Nightshades can read and understand all forms of communica- tracks)
+tion; however, they communicate with others by telepathy. Feats: Blind-Fight, Combat Casting, Great Fortitude, Improved
+Critical (bite), Improved Critical (sting), Improved Initiative,
+COMBAT Iron Will, Power Attack, Quicken Spell-Like Ability (cone of
+Each of the three known varieties of nightshade is a terrible crea- cold)
+ture with unique powers and abilities. Their tactics vary according Environment: Plane of Shadow
+to their abilities, but they all make liberal use of haste. Organization:Solitary or pair
+Challenge Rating: 18
+Nightshade Abilities Treasure: Standard
+All nightshades have the following special abilities. Alignment: Always chaotic evil 195
+Aversion to Daylight (Ex): Nightshades are creatures of utter Advancement: 26–50 HD (Colossal)
+darkness and loathe all light. If exposed to natural daylight (not Level Adjustment: —
+

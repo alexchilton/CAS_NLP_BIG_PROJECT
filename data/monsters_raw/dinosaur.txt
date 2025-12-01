@@ -1,0 +1,5 @@
+DINOSAUR
+Pounce (Ex): If a megaraptor charges, it can make a full attack. Powerful Charge (Ex): When a triceratops charges, its gore
+Skills: A megaraptor has a +8 racial bonus on Hide, Jump, attack deals 4d8+20 points of damage.
+Listen, Spot, and Survival checks. Trample (Ex): Reflex half DC 28. The save DC is Strength-
+based.

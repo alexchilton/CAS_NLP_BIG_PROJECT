@@ -1,0 +1,147 @@
+INEVITABLE
+observation mode, but they seem oblivious to the attention. Those
+Hailing from the lawful neutral plane of Mechanus, inevitables in the know who hear about a 12-foot-tall, golden-armored statue
+are constructs whose sole aim is to enforce the natural laws of the roaming the countryside might seek out the inevitable and pres-
+universe. ent a case, hoping it will take on the alleged transgressor. The deci-
+Each type of inevitable is designed to find and punish a particu- sion is based on the idiosyncrasies of the inevitable’s program-
+lar kind of transgression, hunting down a person or group that has ming, so there’s no guarantee.
+violated a fundamental principle, such as “The guilty should be Their forms vary, but all inevitables are gold-and-silver clock-
+punished,” “Bargains should be kept,” or “Everyone dies eventu- work creatures, with gears and pistons where muscles would be
+ally.” When an inevitable is created, it receives its first mission, on flesh-and-blood creatures. Their eyes glow with a golden
+then finds the transgressors and metes out appropriate punish- radiance.
+ELBATIVENI ment. The sentence is usually death, although some inevitables Note that unlike most constructs, inevitables have an Intelli-
+insist on compensation to the wronged party instead, using geas gence score and can think, learn, and remember.
+andmark of justice to ensure compliance. From its first step, an Inevitables speak Abyssal, Celestial, Infernal, and the native lan-
+inevitable focuses totally on its target. It continues its efforts no guage of their first target.
+matter how cold the trail or hopeless the task. If unable to cross an
+ocean any other way, inevitables have been known to COMBAT
+walk into the waves, travers- Unless their very
+ing the seabed to emerge existence is threat-
+on another continent ened, inevitables
+months later. focus complete-
+Inevitables are ly on the trans-
+single-minded in gressor they’ve
+pursuit of their been assigned
+quarry, but they to, ignoring other
+are under orders to combatants com-
+leave innocents alone. pletely. An inevit-
+Accomplices to their Zelekhut able might attack
+prey are fair game, anyone who hin-
+however, which sometimes cre- ders its progress,
+ates conflicts within their but it won’t tarry
+programming. Even the beyond the point
+most effective inevit- where it can
+ables are periodically reengage its
+recalled to Mech- quarry.
+anus for repro-
+gramming.
+Inevitables Marut
+gladly sacrifice
+themselves to
+complete a
+mission, but
+they aren’t
+suicidal. Faced
+with impending Inevitables take
+defeat, they are self-defense very
+likely to withdraw seriously; anyone
+and seek a way to who attacks an in-
+even the odds. They are evitable with what
+determined but the creature per-
+patient foes. They ceives as deadly
+ally with others if force is met with
+that helps accom- deadly force in return.
+plish their mission, An inevitable’s natural
+but they have a weapons, as well as any
+hard time keeping weapons it wields, are
+allies for long. treated as lawful-
+It’s apparent aligned for the
+to anyone who purpose of overcom-
+spends much time ing damage reduction.
+with one that an inevitable would Fast Healing (Ex): An inevitable
+sacrifice an ally to fulfill its purpose without a Kolyarut heals a certain amount of damage each
+second thought. round (specified in each variety’s description) as
+When an inevitable completes its task, it wanders the landscape long as it has at least 1 hit point. However, damage dealt by chaotic
+158 and passively observes life around it. When it discerns another weapons heals at the normal rate.
+transgression of the principle it is dedicated to, it has a new mis-
+
+KOLYARUT ity before it can react. A kolyarut has no compunctions about using
+Medium Construct (Extraplanar, Lawful) its vampiric touch ability on allies to increase its own power, if
+Hit Dice: 13d10+20 (91 hp) doing so helps it complete its mission.
+Initiative: +1 A kolyarut’s natural weapons, as well as any weapons it wields,
+Speed: 20 ft. in banded mail (4 squares); base speed 30 ft. are treated as lawful-aligned for the purpose of overcoming damage
+Armor Class: 27 (+1 Dex, +10 natural, +6 banded mail) touch 11, reduction.
+flat-footed 26 Enervation Ray (Su): A kolyarut can fire a black enervation
+Base Attack/Grapple: +9/+11 ray at targets within 200 feet. The effect is identical with the ener-
+Attack: Vampiric touch +11 melee touch (5d6) or enervation ray vation spell (caster level 13th).
++10 ranged touch (as spell) or +2 longsword +13 melee Spell-Like Abilities: At will—discern lies (DC 17), disguise self,
+(1d8+5/19–20) or slam +11 melee (1d6+3) fear(DC 17), hold person (DC 16), invisibility, locate creature, suggestion
+Full Attack: Vampiric touch +11/+6 melee touch (5d6) or ener- (DC 16);1/day—hold monster (DC 17), mark of justice; 1/week— INEVITABLE
+vation ray +10 ranged touch (as spell) or +2 longsword +13/+8 geas uest. Caster level 13th. The save DCs are Charisma-based.
+melee (1d8+5/19–20) or slam +11/+6 melee (1d6+3) Vampiric Touch (Su): As a melee touch attack, a kolyarut can
+Space/Reach: 5 ft./5 ft. steal life force from its foe, as the vampiric touch spell (caster level
+Special Attacks: Enervation ray, spell-like abilities, vampiric 13th).
+touch Skills: A kolyarut has a +4 racial bonus on Disguise, Gather
+Special Qualities: Construct traits, damage reduction Information, and Sense Motive checks.
+10/chaotic, darkvision 60 ft., fast healing 5, low-light vision,
+spell resistance 22 MARUT
+Saves: Fort +6, Ref +7, Will +7 Large Construct (Extraplanar, Lawful)
+Abilities: Str 14, Dex 13, Con —, Int 10, Wis 17, Cha 16 Hit Dice: 15d10+30 (112 hp)
+Skills: Diplomacy +5, Disguise +12, Gather Information +12, Initiative: +1
+Listen +11, Search +5, Sense Motive +12, Spot +11, Survival +3 Speed: 30 ft. in full plate armor (6 squares); base speed 40 ft.
+(+5 following tracks) Armor Class: 34 (–1 size, +1 Dex, +16 natural, +8 full plate
+Feats: Alertness, Combat Casting, Great Fortitude, Lightning armor), touch 10, flat-footed 33
+Reflexes, Quickened Spell-Like Ability (suggestion) Base Attack/Grapple: +11/+27
+Environment: Clockwork Nirvana of Mechanus Attack: Slam +22 melee (2d6+12 plus 3d6 sonic or 3d6 electric-
+Organization:Solitary ity)
+Challenge Rating: 12 Full Attack: 2 slams +22 melee (2d6+12 plus 3d6 sonic or 3d6
+Treasure: None electricity)
+Alignment: Always lawful neutral Space/Reach: 10 ft./10 ft.
+Advancement: 14–22 HD (Medium); 23–39 HD (Large) Special Attacks: Fists of thunder and lightning, spell-like
+Level Adjustment: — abilities
+Special Qualities: Construct traits, damage reduction
+This creature looks like a red-skinned humanoid made up of mechanical 15/chaotic, darkvision 60 ft., fast healing 10, low-light vision,
+parts. It is dressed in ornate golden armor and a flowing golden robe. It spell resistance 25
+carries a gleaming sword and wears banded mail. Saves: Fort +7, Ref +6, Will +8
+Abilities: Str 35, Dex 13, Con —, Int 12, Wis 17, Cha 18
+Kolyaruts represent the ultimate enforcement clause in a con- Skills: Concentration +13, Diplomacy +6, Knowledge (religion)
+tract—they mete out punishment to those who break bargains +10, Listen +16, Search +10, Sense Motive +12, Spot +16,
+and oaths. Originally sent from Mechanus to avenge major betray- Survival +3 (+5 following tracks)
+als, once on the Material Plane they hunt down everyone from un- Feats: Ability Focus (fists), Awesome Blow, Combat Casting,
+scrupulous merchants to army deserters. Anyone who reneges on Great Fortitude, Improved Bull Rush, Power Attack
+a deal could draw the ire of a kolyarut, although the creature usu- Environment: Clockwork Nirvana of Mechanus
+ally ignores inconsequential deals and rashly sworn oaths. Organization:Solitary
+Before beginning a mission against a deal-breaker, a kolyarut Challenge Rating: 15
+learns as much about the contract or oath as possible. It’s not inter- Treasure: None
+ested in those who break deals accidentally or against their will— Alignment: Always lawful neutral
+only those who willingly break contracts violate the principle that Advancement: 16–28 HD (Large); 29–45 HD (Huge)
+kolyaruts are created to uphold. If a written contract was broken, Level Adjustment: —
+the kolyarut typically carries a copy of the contract with it.
+Kolyaruts are the most talkative of the inevitables, making cred- This creature, outfitted in golden armor over an onyx-colored body, is
+ible attempts at social niceties such as proper greetings before get- humanoid in shape but much larger than a human and seems to be made
+ting down to the matter at hand. They can use disguise self to appear of mechanical parts. It carries no weapons or other equipment.
+as almost any kind of humanoid—useful if they need to go under-
+cover to catch their quarry. Maruts represent the inevitability of death. They confront those
+who would try to deny the grave itself.
+Combat Any who use unnatural means to extend their life span (such as
+Like all inevitables, a kolyarut is patient enough to study a target a lich) could be targeted by a marut. Those who take extraordinary
+before striking. It has a good idea of the deal-breaker’s abilities and measures to cheat death in some other way (such as sacrificing
+defenses before it enters battle. When it fights, it tries to get the hundreds of others to keep oneself safe from a plague) might be
+conflict over as soon as possible, minimizing excess bloodshed labeled transgressors as well. Those who use magic to reverse
+and mayhem. It doesn’t let concern for innocents delay or endan- death (raise dead spells, for example) aren’t worthy of a marut’s at-
+ger its mission, however. tention unless they do so repeatedly or on a massive scale. 159
+A kolyarut’s favorite tactic is to use invisibility ordisguise self to When a marut has identified its target, it walks surely and
+sneak close, then eliminate the quarry with its vampiric touch abil- implacably toward the foe, never resting.
+
+Combat A zelekhut may initially appear rather nonthreatening—but
+Once it has found its target, a marut brings it the death it has been when it is about to enter combat, it can cause two spiked chains to
+trying to avoid. Those who defile death through necromancy may spring forth from its forearms as a free action. In similar fashion, it
+instead receive a geas and/ormark of justice to enforce proper re- can cause a pair of golden metallic wings to emerge from its back.
+spect. It typically uses wall of force to shut off any escape routes, Retracting the chains or the wings is also a free action.
+then opens up with chain lightning while it closes to melee range.
+Once there, it strikes with its massive fists, using circle of death if Combat
+beset by numbers of defenders. It hits spellcasting opponents with Once it has found its fugitive, a zelekhut uses its speed and its
+repeated uses of greater dispel magic, and it uses dimension door and spell-like abilities to cover the most likely escape routes. Then it
+locate creature to track down foes who flee. immobilizes any defenders while attempting to protect any inno-
+A marut’s natural weapons, as well as any weapons it wields, are cent bystanders. Finally, it apprehends the fugitive with its spiked
+treated as lawful-aligned for the purpose of overcoming damage chains, tripping or disarming the foe as needed. If the sentence is

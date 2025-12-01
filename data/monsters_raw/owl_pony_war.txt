@@ -1,0 +1,75 @@
+OWL PONY, WAR
+Tiny Animal Medium Animal
+Hit Dice: 1d8 (4 hp) Hit Dice: 2d8+4 (13 hp)
+Initiative: +3 Initiative: +1
+Speed: 10 ft. (2 squares), fly 40 ft. (average) Speed: 40 ft. (8 squares)
+Armor Class: 17 (+2 size, +3 Dex, +2 natural), touch 15, Armor Class: 13 (+1 Dex, +2 natural), touch 11, flat-footed 12
+flat-footed 14 Base Attack/Grapple: +1/+3
+Base Attack/Grapple: +0/–11 Attack: Hoof +3 melee (1d3+2)
+Attack: Talons +5 melee (1d4–3) Full Attack: 2 hooves +3 melee (1d3+2)
+Full Attack: Talons +5 melee (1d4–3) Space/Reach: 5 ft./5 ft.
+Space/Reach: 2-1/2 ft./0 ft. Special Attacks: —
+Special Attacks: — Special Qualities: Low-light vision, scent
+Special Qualities: Low-light vision Saves: Fort +5, Ref +4, Will +0
+Saves: Fort +2, Ref +5, Will +2 Abilities: Str 15, Dex 13, Con 14, Int 2, Wis 11, Cha 4
+Abilities: Str 4, Dex 17, Con 10, Int 2, Wis 14, Cha 4 Skills: Listen +5, Spot +5
+Skills: Listen +14, Move Silently +17, Spot +6* Feats: Endurance
+Feats: Weapon Finesse Environment: Temperate plains
+Environment: Temperate forests Organization: Domesticated
+Organization: Solitary Challenge Rating: 1/2
+Challenge Rating: 1/4 Advancement: — 277
+Advancement: 2 HD (Small) Level Adjustment: —
+Level Adjustment: —
+
+Warponies are bred for strength and aggression, and are similar to Abilities: Str 2, Dex 15, Con 10, Int 2, Wis 12, Cha 2
+light warhorses. Skills: Balance +10, Climb +12, Hide +14, Move Silently +10,
+Swim +10
+Combat Feats: Weapon Finesse
+A warpony can fight while carrying a rider, but the rider cannot Environment: Any
+also attack unless he or she succeeds on a Ride check. Organization: Plague (10–100)
+Carrying Capacity: A light load for a warpony is up to 100 Challenge Rating: 1/8
+pounds; a medium load, 101–200 pounds; and a heavy load, Advancement: —
+201–300 pounds. A warpony can drag 1,500 pounds. Level Adjustment: —
+PORPOISE These omnivorous rodents thrive almost anywhere.
+:2 Medium Animal
+RETPAHC SLAMINA Hit Dice: 2d8+2 (11 hp) Combat
+Initiative: +3 Rats usually run away. They bite only as a last resort.
+Speed: Swim 80 ft. (16 squares) Skills: Rats have a +4 racial bonus on Hide and Move Silently
+Armor Class: 15 (+3 Dex, +2 natural), touch 13, flat-footed 12 checks, and a +8 racial bonus on Balance, Climb, and Swim checks.
+Base Attack/Grapple: +1/+1 A rat can always choose to take 10 on Climb checks, even if
+Attack: Slam +4 melee (2d4) rushed or threatened.
+Full Attack: Slam +4 melee (2d4) A rat uses its Dexterity modifier instead of its Strength modifier
+Space/Reach: 5 ft./5 ft. for Climb and Swim checks.
+Special Attacks: — A rat has a +8 racial bonus on any Swim check to perform
+Special Qualities: Blindsight 120 ft., hold breath, low-light some special action or avoid a hazard. It can always choose to
+vision take 10 on a Swim check, even if distracted or endangered. It can
+Saves: Fort +4, Ref +6, Will +1 use the run action while swimming, provided it swims in a
+Abilities: Str 11, Dex 17, Con 13, Int 2, Wis 12, Cha 6 straight line.
+Skills: Listen +8*, Spot +7*, Swim +8
+Feats: Weapon Finesse RAVEN
+Environment: Temperate aquatic Tiny Animal
+Organization: Solitary, pair, or school (3–20) Hit Dice: 1/4 d8 (1 hp)
+Challenge Rating: 1/2 Initiative: +2
+Advancement: 3–4 HD (Medium); 5–6 HD (Large) Speed: 10 ft. (2 squares), fly 40 ft. (average)
+Level Adjustment: — Armor Class: 14 (+2 size, +2 Dex), touch 14, flat-footed 12
+Base Attack/Grapple: +0/–13
+Porpoises are mammals that tend to be playful, friendly, and helpful. Attack: Claws +4 melee (1d2–5)
+A typical porpoise is 4 to 6 feet long and weighs 110 to 160 Full Attack: Claws +4 melee (1d2–5)
+pounds. The statistics presented here can describe any small whale Space/Reach: 2-1/2 ft./0 ft.
+of similar size. Special Attacks: —
+Special Qualities: Low-light vision
+Combat Saves: Fort +2, Ref +4, Will +2
+Blindsight (Ex): Porpoises can “see” by emitting high-fre- Abilities: Str 1, Dex 15, Con 10, Int 2, Wis 14, Cha 6
+quency sounds, inaudible to most other creatures, that allow them Skills: Listen +3, Spot +5
+to locate objects and creatures within 120 feet. A silence spell Feats: Weapon Finesse
+negates this and forces the porpoise to rely on its vision, which is Environment: Temperate forests
+approximately as good as a human’s. Organization: Solitary
+Hold Breath (Ex): A porpoise can hold its breath for a number of Challenge Rating: 1/6
+rounds equal to 6 × its Constitution score before it risks drowning. Advancement: —
+Skills: A porpoise has a +8 racial bonus on any Swim check to Level Adjustment: —
+perform some special action or avoid a hazard. It can always
+choose to take 10 on a Swim check, even if distracted or endan- These glossy black birds are about 2 feet long and have wingspans
+gered. It can use the run action while swimming, provided it of about 4 feet. They combine both claws into a single attack.
+swims in a straight line. The statistics presented here can describe most nonpredatory
+*A porpoise has a +4 racial bonus on Spot and Listen checks. birds of similar size.
+These bonuses are lost if its blindsight is negated.

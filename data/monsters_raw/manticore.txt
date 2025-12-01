@@ -1,0 +1,88 @@
+MANTICORE
+Space/Reach: 5 ft./5 ft.
+Special Attacks: Combustion, fiery aura Large Magical Beast
+Special Qualities: Damage reduc- Hit Dice: 6d10+24 (57 hp)
+tion 5/magic, darkvision 60 ft., Initiative: +2
+elemental traits, immunity to fire, Magmin Speed: 30 ft. (6 squares), fly
+melt weapons, vulnerability to cold 50 ft. (clumsy)
+Saves: Fort +3, Ref +3, Will +0 Armor Class: 17 (–1 size, +2
+Abilities: Str 15, Dex 11, Con 13, Int Dex, +6 natural), touch 11,
+8, Wis 10, Cha 10 flat-footed 15
+Skills: Climb +4, Spot +3 Base Attack/Grapple: +6/+15
+Feats: Great Fortitude Attack: Claw +10 melee
+Environment: Elemental Plane of Fire (2d4+5) or 6 spikes +8 ranged
+Organization: Solitary, gang (2–4), or (1d8+2/19–20)
+squad (6–10) Full Attack: 2 claws +10
+Challenge Rating: 3 melee (2d4+5) and bite +8
+Treasure: Standard coins; standard melee (1d8+2); or 6 spikes +8
+goods (nonflammables only); standard ranged (1d8+2/19–20)
+items (nonflammables only) Space/Reach: 10 ft./5 ft.
+Alignment: Always chaotic neutral Special Attacks: Spikes
+Advancement: 3–4 HD (Small); 5–6 Special Qualities: Darkvision
+HD (Medium) 60 ft., low-light vision, scent
+Level Adjustment: — Saves: Fort +9, Ref +7, Will +3
+Abilities: Str 20, Dex 15,
+This glowing, humanoid creature Con 19, Int 7, Wis 12, Cha 9
+looks like a stumpy human sculpted Skills: Listen +5, Spot +9,
+from fire and flowing lava. It radi- Survival +1
+ates heat like a small bonfire, and Feats: Flyby Attack,
+it has a gleeful, almost mali- Multiattack, TrackB, Weapon
+cious smile on its face. Focus (spikes)
+Environment: Warm
+Magmins are small, marshes
+human-shaped Organization:
+beings from the Solitary, pair, or pride
+Elemental Plane of (3–6)
+Fire that radiate intense Challenge Rating: 5
+heat and are wreathed in an aura of Treasure: Standard
+searing flames. Alignment: Usually lawful evil
+Although not evil, these fiery creatures are extremely mischie- Advancement: 7–16 HD (Large); 17–18 HD (Huge) 179
+vous. They like to watch things burn, perhaps lacking the ability to Level Adjustment: +3 (cohort)
+understand that flames are painful or even deadly to other creatures.
+
+This creature is a monster in every sense of the word. It has the head of a Organization:Solitary or covey (2–4)
+vaguely humanoid beast, the body of a lion, and the wings of a Challenge Rating: 7
+dragon. The creature’s back is set Treasure: Double standard
+with curved barbs, and its long Alignment: Usually lawful evil
+tail ends in a cluster of Advancement: By character class
+deadly spikes. Level Adjustment: —
+Though at first glance this creature
+appeared to be a well-proportioned
+human, a closer look reveals a
+hideous face crowned with a
+mass of writhing, hissing
+ASUDEMonalerA snakes instead of hair, eyes
+glowing a deep, feral red,
+and scaly, earth-colored
+skin.
+The medusa is a
+hateful, repulsive
+creature that
+petrifies living
+Manticore beings with its
+gaze. It prizes
+art objects, fine
+jewelry, and wealth. Its activities
+often revolve around obtaining these
+items.
+Manticores are fierce crea- A medusa is indistinguishable from a normal human at dis-
+tures that hunt widely for living flesh. They are tances greater than 30 feet (or closer, if its face is concealed). The
+cunning and evil. A manticore can be a deadly creature often wears garments that enhance its body while hiding
+enemy or a powerful ally. its face behind a hood or veil.
+A typical manticore is about 10 feet long and Medusas are found in nearly every climate. Some dwell in large
+weighs about 1,000 pounds. cities, becoming active in the criminal underworld to gain their
+Manticores speak Common. desires. A few medusas have formed robbery rings or organized
+.C smuggling cabals.
+yb COMBAT A typical medusa is 5 to 6 feet tall and about the same weight as
+.sullI
+A manticore begins most attacks with a volley of spikes, then a human.
+closes. In the outdoors, it often uses its powerful wings to stay Medusas speak Common.
+aloft during battle.
+Spikes (Ex): With a snap of its tail, a manticore can loose a COMBAT
+volley of six spikes as a standard action (make an attack roll for A medusa tries to disguise its true nature until the intended victim
+each spike). This attack has a range of 180 feet with no range incre- is within range of its petrifying gaze, using subterfuge and bluff-
+ment. All targets must be within 30 feet of each other. The creature ing games to convince the target that there is no danger. It uses
+can launch only twenty-four spikes in any 24-hour period. normal weapons to attack those who avert their eyes or survive its
+Skills: *Manticores have a +4 racial bonus on Spot checks. gaze, while its poisonous snakes strike at adjacent opponents.
+Petrifying Gaze (Su): Turn to stone permanently, 30 feet, Forti-
+tude DC 15 negates. The save DC is Charisma-based.

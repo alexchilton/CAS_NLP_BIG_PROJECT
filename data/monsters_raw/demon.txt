@@ -1,0 +1,233 @@
+DEMON
+Babaus are sneaky and sly. They attack the most powerful foe first,
+Demons are a race of creatures native to the Abyss, a plane of end- hoping to eliminate the true threats quickly and then toy with the
+less evil. They are ferocity personified and will attack any creature rest. When ambushing their opponents, they make excellent use
+just for the sheer fun of it—even other demons. They enjoy terri- of the combination of multiple attacks and sneak attacks.
+fying their victims before slaying them and often devour the slain. A babau’s natural weapons, as well as any weapons it wields, are
+Many demons, not satisfied with their own iniquity, take pleasure treated as chaotic-aligned and evil-aligned for the purpose of over-
+in tempting mortals to become as depraved as they are. coming damage reduction.
+A number of demons belong to a race (and subtype) known as Sneak Attack (Ex): A babau can make a sneak attack like a
+the tanar’ri. The tanar’ri form the largest and most diverse group of rogue, dealing an extra 2d6 points of damage whenever a foe is
+demons, and they are the unchallenged masters of the Abyss. denied his or her Dexterity bonus, or when the babau is flanking.
+Tanar’ri Traits: A tanar’ri possesses the following traits (unless Spell-Like Abilities: Atwill—darkness, dispel magic, see invisibil-
+NOMED otherwise noted in a creature’s entry). ity, greater teleport (self plus 50 pounds of objects only). Caster level
+—Immunity to electricity and poison. 7th.
+—Resistance to acid 10, cold 10, and fire 10. Protective Slime (Su): A slimy red jelly coats the babau’s skin.
+—Summon (Sp): Tanar’ri share the ability to summon others of Any weapon that touches it takes 1d8 points of acid damage from
+their kind (the success chance and type of tanar’ri summoned are the corrosive goo, and the weapon’s hardness does not reduce this
+noted in each monster description). However, between their damage. A magic weapon may attempt a DC 18 Reflex save to
+arrogance and disdain for owing favors to one another, tanar’ri avoid taking this damage. A creature who strikes the babau with
+are often reluctant to use this power until in obvious peril or an unarmed attack, unarmed strike, touch spell, or natural weapon
+extreme circumstances. takes this damage as well but can negate the damage with a DC 18
+—Telepathy. Reflex save. The save DCs are Constitution-based.
+Summon Tanar’ri (Sp): Once per day a babau can attempt to sum-
+Except where otherwise noted, demons speak Abyssal, Celestial, mon 1 babau with a 40% chance of success. This ability is the
+and Draconic. equivalent of a 3rd-level spell.
+Skills: Babaus have a +8 racial bonus on Hide, Listen, Move
+BABAU Silently, and Search checks.
+Medium Outsider (Chaotic, Extraplanar, Evil, Tanar’ri)
+Hit Dice: 7d8+35 (66 hp) BALOR
+Initiative: +1 Large Outsider (Chaotic, Extraplanar, Evil, Tanar’ri)
+Speed: 30 ft. (6 squares) Hit Dice: 20d8+200 (290 hp)
+Armor Class: 19 (+1 Dex, +8 natural), touch 11, flat-footed 18 Initiative: +11
+Base Attack/Grapple: +7/+12 Speed: 40 ft. (8 squares), fly 90 ft. (good)
+Attack: Claw +12 melee (1d6+5) Armor Class: 35 (–1 size, +7 Dex, +19 natural), touch 16,
+Full Attack: 2 claws +12 melee (1d6+5) and bite +7 melee (1d6+2) flat-footed 28
+Space/Reach: 5 ft./5 ft. Base Attack/Grapple: +20/+36
+Special Attacks: Sneak attack +2d6, spell-like abilities, summon Attack: +1 vorpal longsword +33 melee (2d6+8/19–20)
+tanar’ri Full Attack: +1 vorpal longsword +31/+26/+21/+16 melee
+Special Qualities: Damage reduction 10/cold iron or good, (2d6+8/19–20) and +1 flaming whip +30/+25 melee (1d4+4 plus
+darkvision 60 ft., immunity to electricity and poison, protec- 1d6 fire plus entangle); or 2 slams +31 melee (1d10+7)
+tive slime, resistance to acid 10, cold 10, and fire 10, spell Space/Reach: 10 ft./10 ft. (20 ft. with +1 flaming whip)
+resistance 14, telepathy 100 ft. Special Attacks: Death throes, entangle, spell-like abilities,
+Saves: Fort +10, Ref +6, Will +6 summon tanar’ri, vorpal sword
+Abilities: Str 21, Dex 12, Con 20, Int 14, Wis 13, Cha 16 Special Qualities: Damage reduction 15/cold iron and good,
+Skills: Climb +15, Disable Device +12, Disguise +13, Escape darkvision 60 ft., flaming body, immunity to electricity, fire,
+Artist +11, Hide +19, Listen +19, Move Silently +19, Open and poison, resistance to acid 10 and cold 10, spell resistance
+Lock +11, Search +20, Sleight of Hand +11, Survival +1 (+3 28, telepathy 100 ft., true seeing
+following tracks), Use Rope +1 (+3 with bindings) Saves: Fort +22, Ref +19, Will +19
+Feats: Cleave, Multiattack, Power Attack Abilities: Str 35, Dex 25, Con 31, Int 24, Wis 24, Cha 26
+Environment: Infinite Layers of the Abyss Skills: Bluff +31, Concentration +33, Diplomacy +35, Disguise +8
+Organization: Solitary or gang (3–6) (+10 acting), Hide +26, Intimidate +33, Knowledge (any two)
+Challenge Rating: 6 +30, Listen +38, Move Silently +30, Search +30, Sense Motive
+Treasure: Standard +30, Spellcraft +30 (+32 scrolls), Spot +38, Survival +7 (+9
+Alignment: Always chaotic evil following tracks), Use Magic Device +31 (+33 scrolls)
+Advancement: 8–14 HD (Large); 15–21 HD (Huge) Feats: Cleave, Improved Initiative, Improved Two-Weapon
+Level Adjustment: — Fighting, Power Attack, Quicken Spell-Like Ability (telekinesis),
+Two-Weapon Fighting, Weapon Focus (longsword)
+Reeking of decay, this gaunt humanoid is covered in black, leathery skin. Environment: Infinite Layers of the Abyss
+Behind its pointed ears, a large curved horn rises out of the back of its Organization: Solitary or troupe (1 balor, 1 marilith, and 2–5
+skull. A mouth of jagged teeth takes up half of the foul creature’s head. hezrous)
+Challenge Rating: 20
+Babaus serve as assassins that strike with a sudden ferocity. They Treasure: Standard coins; double goods; standard items, plus +1
+are devious, forming careful plans before going into plans— vorpal greatsword and +1 flaming whip
+always making sure that they do not have to engage in a fair fight. Alignment: Always chaotic evil
+40 Almost every demon lord has a number of babaus employed as Advancement: 21–30 HD (Large); 31–60 HD (Huge)
+spies and killers. Level Adjustment: —
+A babau is about 6 feet tall and weighs about 140 pounds.
+
+treated as chaotic-aligned and evil-aligned for the purpose of over-
+coming damage reduction.
+Balor Death Throes (Ex): When killed, a balor explodes in a blinding
+flash of light that deals 100 points of damage to anything within
+100 feet (Reflex DC 30 half ). This explosion automatically
+destroys any weapons the balor is holding. The save
+DC is Constitution-based.
+Entangle (Ex): A balor’s +1
+flaming whip entangles foes
+much like an attack with a
+net. The whip has 20
+hit points. The
+whip needs no DEMON
+folding. If it
+hits, the tar-
+get and the
+balor immediately make
+opposed Strength checks; if the
+balor wins, it drags the target against
+its flaming body (see below). The target
+remains anchored against the balor’s
+body until it escapes the whip.
+Spell-Like Abilities: At will—
+blasphemy (DC 25), dominate
+monster (DC 27), greater
+dispel magic, greater teleport
+(self plus 50 pounds of objects only), insanity
+(DC 25), power word stun, telekinesis (DC 23), unholy
+Marilith aura (DC 26); 1/day—fire storm (DC 26), implosion (DC 27).
+Caster level 20th. The save DCs are Charisma-based.
+A dark aura of power surrounds this towering humanoid with huge bat Vorpal Sword (Su): Every balor carries a +1 vorpal longsword
+wings. Lurid flames dance over its skin. In one of its massive clawed hands, that looks like a flame or a bolt of lightning.
+this creature bears a sword that looks sharp enough to cut even to the Summon Tanar’ri (Sp): Once per day a balor can automatically
+soul. In its other hand, it bears a whip licked by tongues of fire. summon 4d10 dretches, 1d4 hezrous, or one nalfeshnee, glabrezu,
+marilith, or balor. This ability is the equivalent of a 9th-level spell.
+Balors stand among the greatest and most terrible of the under- Flaming Body (Su): The body of a balor is wreathed in flame.
+world creatures. They rule as generals over demonic armies. They Anyone grappling a balor takes 6d6 points of fire damage each
+are the masterminds of schemes to seize power and destroy the round.
+innocent. Even among their own kind, balors are feared, as they True Seeing (Su): Balors have a continuous true seeing ability,
+motivate their kindred to spread terror and misery. as the spell (caster level 20th).
+A balor stands about 12 feet tall. Its skin is usually dark red. It Skills: Balors have a +8 racial bonus on Listen and Spot checks.
+weighs about 4,500 pounds.
+Tactics Round-by-Round
+Combat The balor is most effective as a ranged combatant, using its spell-
+Balors love to join battle armed with their swords and whips. If like abilities to attack from a distance.
+they face stiff resistance, they may teleport away to loose a few Prior to combat: Unholy aura.
+spell-like effects at the foe. Round 1: Fire storm or implosion and quickened telekinesis, or
+A balor’s +1 flaming whip is a long, flexible weapon with many summon additional demons. If the balor does not deem itself seri-
+tails tipped with hooks, spikes, and balls. The weapon deals bludg- ously threatened, it conserves abilities usable only once per day
+eoning and slashing damage, in addition to fire damage. and uses blasphemy instead.
+A balor’s natural weapons, as well as any weapons it wields, are Round 2: Insanity or power word stun.
+pqqqqrs
+DEMONS BY CHALLENGE RATING CR 11 Retriever Demonic spiderlike construct with deadly
+A quick overview of the demons that follow over the next few pages: eye rays.
+CR 2 Dretch Petty demon that attacks in mobs. CR 13 Glabrezu Towering giant demon that tempts mortals
+CR 2 Quasit Clever imp that aids evil mortals. with power.
+CR 6 Babau Tall, gaunt assassin with teeth. CR 14 Nalfeshnee Bloated apelike judge of the damned, with a
+CR 7 Succubus Seductive temptress that can take many forms. deadly smite ability.
+CR 9 Vrock Savage, vulturelike warrior that delights in CR 17 Marilith Six-armed serpent demon queen, general of
+battle. abyssal battalions.
+CR 10 Bebilith Hulking spiderlike horror that hunts demons CR 20 Balor Mighty fire-demon lord with a vorpal sword
+and mortals both. and terrifying spell-like abilities.
+CR 11 Hezrou Froglike demon with incapacitating stench 41
+and the goal of tempting mortals to ruin.
+pqqqqrs
+
+Round 3: Full melee attack with weapons, including entangle A bebilith’s natural weapons, as well as any weapons it wields,
+with whip. are treated as chaotic-aligned and evil-aligned for the purpose of
+Round 4: Teleport or fly away with entangled foe to reestablish overcoming damage reduction.
+range; repeat round 1 and continue. Poison (Ex): Injury, Fortitude DC 24, initial damage 1d6 Con,
+secondary damage 2d6 Con.
+A balor who wants to drive off or neutralize a party without slay- Bebilith venom is highly perishable, losing its potency and
+ing its foes avoids lethal attacks. becoming inert, foul-smelling goo
+Prior to combat: Unholy aura. almost as soon as it comes into con-
+Round 1: Dominate monster. tact with air. The save DC is Con-
+Round 2: Power word stun. stitution-based.
+Round 3: Insanity or teleki- Rend Armor (Ex): If a
+nesis to incapacitate or repel bebilith hits with both claw
+NOMEDnostun a dangerous opponent. attacks, it pulls apart any
+Round 4: Teleport or fly armor worn by its foe.
+away to reestablish range; This attack deals 4d6+18
+repeat round 1 and con- points of damage to the
+tinue. opponent’s armor. Crea-
+Bebilith tures not wearing armor
+BEBILITH are unaffected by this
+Huge Outsider (Chaotic, special attack. Armor re-
+Extraplanar, Evil) duced to 0 hit points is
+Hit Dice: 12d8+96 (150 hp) destroyed. Damaged
+Initiative: +5 armor may be repaired
+Speed: 40 ft. (8 squares), with a successful Craft
+climb 20 ft. (armorsmithing)
+Armor Class: 22 check.
+(–2 size, +1 Dex, +13 natural), touch 9, flat-footed 21 Web (Ex): A bebilith can throw a
+Base Attack/Grapple: +12/+29 web up to four times per day. This
+Attack: Bite +19 melee (2d6+9 plus poison) or web +11 ranged is similar to an attack with a net but has a maximum range of 30
+Full Attack: Bite +19 melee (2d6+9 plus poison) and 2 claws +14 feet, with a range increment of 10 feet. This attack is effective
+melee (2d4+4); or web +11 ranged against targets of up to Gargantuan size. The web anchors the
+Space/Reach: 15 ft./10 ft. target in place, allowing no movement.
+Special Attacks: Poison, rend armor, web An entangled creature can escape with a DC 24 Escape Artist
+K Special Qualities: Damage reduction 10/good, darkvision 60 ft., check or burst the web with a DC 24 Strength check. The check
+. D plane shift, scent, telepathy 100 ft. DCs are Constitution-based. The web has 14 hit points and hard-
+yb
+Saves: Fort +16, Ref +9, Will +9 ness 0. There is a 75% chance that the webbing will not burn if any
+.sullI
+Abilities: Str 28, Dex 12, Con 26, Int 11, Wis 13, Cha 13 sort of fire is applied to it (check each round).
+Skills: Climb +24, Diplomacy +3, Hide +16, Jump +28, Listen +16, Plane Shift (Su): This ability affects only the bebilith. It is
+Move Silently +16, Search +15, Sense Motive +16, Spot +16, otherwise similar to the spell (caster level 12th).
+Survival +1 (+3 following tracks) Skills: A bebilith has mottled coloration that gives it a +8 racial
+Feats: Cleave, Improved Initiative, Improved Grapple, Power bonus on Hide checks.
+Attack, Track
+Environment: Infinite Layers of the Abyss DRETCH
+Organization: Solitary Small Outsider (Chaotic, Extraplanar, Evil, Tanar’ri)
+Challenge Rating: 10 Hit Dice: 2d8+4 (13 hp)
+Treasure: None Initiative: +0
+Alignment: Always chaotic evil Speed: 20 ft. (4 squares)
+Advancement: 13–18 HD (Huge); 19–36 HD (Gargantuan) Armor Class: 16 (+1 size, +5 natural), touch 11, flat-footed 16
+Level Adjustment: — Base Attack/Grapple: +2/–1
+Attack: Claw +4 melee (1d6+1)
+An enormous, misshapen spider stalks out of the darkness. Its forelegs end Full Attack: 2 claws +4 melee (1d6+1) and bite +2 melee (1d4)
+in wicked barbs, and globs of foul goo drip from its fanged mouth. Space/Reach: 5 ft./5 ft.
+Special Attacks: Spell-like abilities, summon tanar’ri
+Bebiliths are enormous, predatory, arachnid demons that hunt Special Qualities: Damage reduction 5/cold iron or good, dark-
+other demons. While they favor preying upon other demons, they vision 60 ft., immunity to electricity and poison, resistance to
+aren’t picky—they will stalk and attack any type of creature. acid 10, cold 10, and fire 10, telepathy 100 ft.
+A bebilith has a body the size of a plow horse, with legs span- Saves: Fort +5, Ref +3, Will +3
+ning more than 14 feet. It weighs more than two tons. Abilities: Str 12, Dex 10, Con 14, Int 5, Wis 11, Cha 11
+Bebiliths understand but do not speak Abyssal. Their telepathy Skills: Hide +9, Listen +5, Move Silently +5, Spot +5, Search +2,
+allows them to communicate silently with one another. Survival +0 (+2 following tracks)
+Feats: Multiattack
+COMBAT Environment: Infinite Layers of the Abyss
+A bebilith attacks any creature it sees. It usually picks one target Organization: Solitary, pair, gang (3–5), crowd (6–15), or mob
+and concentrates its attacks on that opponent, using its webs to iso- (10–40)
+42 late the target from its comrades. Should the bebilith become over- Challenge Rating: 2
+whelmed by tougher opponents, it often attempts to bite one or Treasure: None
+more of its victims and retreats, allowing its poison to do its work. Alignment: Always chaotic evil
+
+Advancement: 3–6 HD (Small) Challenge Rating: 13
+Level Adjustment: +2 Treasure: Standard coins; double goods; standard items
+Alignment: Always chaotic evil
+This humanoid-looking creature has a squat and blubbery, almost hairless Advancement: 13–18 HD (Huge); 19–36 HD (Gargantuan)
+body, with pale, sickly flesh and a slack mouth full of small fangs. Level Adjustment: —
+Dretches are pathetic but wicked creatures that spend most of This creature is as tall as a giant, with a broad, muscular body. Its four
+their time milling about in mobs or serving as rank-and-file troops arms end in weapons—two with clawed hands, two with powerful pincers
+in tanar’ri armies. Its doglike head is topped with horns, and its muzzle drips with sharp
+A dretch is about 4 feet tall and weighs about 60 pounds. fangs. Its eyes have a cold, dark, penetrating quality that suggests cunning
+Dretches cannot speak but can communicate telepathically. and intelligence.
+Combat Like succubi, glabrezu tempt victims into ruin, but they lure their DEMON
+Dretches are slow, stupid, and not very effective combatants. In prey with power or wealth rather than passion.
+one-on-one combat, they rely on their damage reduction to keep Glabrezu have penetrating violet eyes, and their skin color
+them alive. In groups, they depend on sheer numbers to overcome ranges from deep russet to pitch black. A glabrezu stands about 15
+foes and immediately summon other dretches to improve the feet tall and weighs about 5,500 pounds.
+odds in battle. They flee at the first sign of adversity unless more
+powerful demons are present to intimidate them into fighting. Combat
+Dretches’ fear of their greater kin is stronger then even their fear Glabrezu prefer subterfuge to combat. However, if their attempts
+of death. to entice or deceive fail, these enormous demons attack with a ven-
+A dretch’s natural weapons, as well as any weapons it wields, are geance. They follow a confusion attack with melee attacks, hoping to
+treated as chaotic-aligned and evil-aligned for the purpose of over- finish off wounded foes with chaos hammer or unholy blight.
+coming damage reduction. A glabrezu’s natural weapons, as well as any weapons it wields,
+Spell-Like Abilities: 1/day—scare (DC 12), stinking cloud (DC are treated as chaotic-aligned and evil-aligned for the purpose of
+13). Caster level 2nd. The save DCs are Charisma-based. overcoming damage reduction.
+Summon Tanar’ri (Sp): Once per day a dretch can attempt to
+summon another dretch with a 35% chance of success. This ability
+is the equivalent of a 1st-level spell.
+Telepathy (Su): Dretches can communicate telepathically
+with creatures within 100 feet that speak Abyssal.

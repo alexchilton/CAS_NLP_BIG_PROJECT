@@ -1,0 +1,22 @@
+TSUR
+The check DCs are Strength-based, and the Escape Artist DC When it detects one, it dashes toward the source and attempts to
+includes a +4 racial bonus. A roper can draw in a creature within strike it with its antennae. The creature is relentless, chasing char-
+10 feet of itself and bite with a +4 attack bonus in the same round. acters over long distances if they still possess intact metal objects
+A strand has 10 hit points and can be attacked by making a suc- but usually ceasing its attacks to devour a freshly rusted meal. A
+cessful sunder attempt. However, attacking a roper’s strand does clever (or desperate) character can often distract a hungry rust
+not provoke an attack of opportunity. If the strand is currently monster by tossing it some metal objects, then fleeing while it
+attached to a target, the roper takes a –4 penalty on its opposed consumes them.
+attack roll to resist the sunder attempt. Severing a strand deals no The creature targets the largest metal object available, striking
+damage to a roper. first at armor, then at shields and smaller items. It prefers ferrous
+Strands (Ex): Most encounters with a roper begin when it fires metals (steel or iron) over precious metals (such as gold or silver)
+strong, sticky strands. The creature can have up to six strands at but will devour the latter if given the opportunity.
+once, and they can strike up to 50 feet away (no range increment). Rust (Ex): A rust monster that makes a successful touch attack
+If a strand is severed, the roper can extrude a new one on its next with its antennae causes the target metal to corrode, falling to
+turn as a free action. pieces and becoming useless immediately. The touch can destroy
+Weakness (Ex): A roper’s strands can sap an opponent’s up to a 10-foot cube of metal instantly. Magic armor and weapons,
+strength. Anyone grabbed by a strand must succeed on a DC 18 and other magic items made of metal, must succeed on a DC 17
+Fortitude save or take 2d8 points of Strength damage. The save DC Reflex save or be dissolved. The save DC is Constitution-based and
+is Constitution-based. includes a +4 racial bonus.
+Skills: *Ropers have a +8 racial bonus on Hide checks in stony A metal weapon that deals damage to a rust monster corrodes
+or icy areas. immediately. Wooden, stone, and other nonmetallic weapons are
+unaffected.

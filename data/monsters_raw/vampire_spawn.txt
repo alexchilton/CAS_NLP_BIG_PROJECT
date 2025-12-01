@@ -1,0 +1,101 @@
+VAMPIRE SPAWN
+For all their power, vampires have a number of weak-
+nesses. Medium Undead
+Repelling a Vampire: Vampires cannot tolerate Hit Dice: 4d12+3 (29 hp)
+the strong odor of garlic and will not enter an area Initiative: +6
+laced with it. Similarly, they recoil from a mirror or Speed: 30 ft. (6 squares)
+a strongly presented holy symbol. These things don’t Armor Class: 15 (+2 Dex, +3 natural), touch 12, flat-footed 13
+harm the vampire—they merely keep it at bay. A Base Attack/Grapple: +2/+5
+recoiling vampire must stay at least 5 feet away Attack: Slam +5 melee (1d6+4 plus energy drain)
+from a creature holding the mirror Full Attack: Slam +5 melee (1d6+4 plus energy
+or holy symbol and cannot touch drain)
+or make melee attacks against the Space/Reach: 5 ft./5 ft.
+creature holding the item for Special Attacks: Blood drain, domination,
+the rest of the encounter. Hold- energy drain
+ing a vampire at bay takes a stan- Special Qualities: +2 turn resistance,
+dard action. damage reduction 5/silver, darkvision
+Vampires are also unable to 60 ft., fast healing 2, gaseous form, resist-
+cross running water, although ance to cold 10 and electricity 10, spider
+they can be carried over it climb, undead traits
+while resting in their Saves: Fort +1, Ref +5, Will +5
+coffins or aboard a ship. Abilities: Str 16, Dex 14, Con —, Int 13,
+They are utterly unable to Wis 13, Cha 14
+enter a home or other Skills: Bluff +6, Climb +8, Craft or
+building unless invited in Profession (any one) +4, Diplomacy
+by someone with the +4, Hide +10, Jump +8, Listen +11,
+authority to do so. They Move Silently +10, Search +8, Sense
+may freely enter public Motive +11, Spot +11
+places, since these are by Feats: AlertnessB, Improved InitiativeB,
+definition open to all. Lightning ReflexesB, Skill Focus
+Slaying a Vampire: Reduc- (selected Craft or Profession skill), Toughness
+ing a vampire’s hit points to 0 or lower Environment: Any
+incapacitates it but doesn’t always Organization:Solitary or pack (2–5)
+destroy it (see the note on fast heal- Challenge Rating: 4
+ing). However, certain attacks can Treasure: Standard
+slay vampires. Alignment: Always evil (any)
+Exposing any vampire Advancement: —
+to direct sunlight disori- Level Adjustment: —
+ents it: It can take only a
+single move action or This feral-looking creature virtually
+attack action and is drips with evil. Its garb is noble-look-
+destroyed utterly in the ing, though in a state of disrepair. Its
+next round if it cannot dark red mouth is dominated by a
+escape. Similarly, immers- pair of vicious-looking canine teeth.
+ing a vampire in running water robs it of
+one-third of its hit points each round until it is Vampire spawn are undead crea-
+destroyed at the end of the third round of immersion. Vampire spawn tures that come into being when vampires slay
+Driving a wooden stake through a vampire’s heart mortals. Like their creators, spawn remain bound
+instantly slays the monster. However, it returns to life if the stake to their coffins and to the soil of their graves.
+is removed, unless the body is destroyed. A popular tactic is to cut Vampire spawn appear much as they did in life, although their 253
+off the creature’s head and fill its mouth with holy wafers (or their features are often hardened, with a predatory look.
+equivalent). Vampire spawn speak Common.
+
+COMBAT Challenge Rating: 2
+Vampire spawn use their inhuman strength when engaging mor- Treasure: None
+tals, hammering their foes with powerful blows and dashing them Alignment: Always neutral evil
+against rocks or walls. They also use their gaseous form and flight Advancement: 2–3 HD (Small)
+abilities to strike where opponents are most vulnerable. Level Adjustment: —
+Blood Drain (Ex): A vampire spawn can suck blood from a
+living victim with its fangs by making a successful grapple check. This creature looks like a hideous, distorted
+If it pins the foe, it drains blood, dealing 1d4 points of Constitu- human head suspended from leathery wings.
+tion drain each round. On each such successful drain attack, In place of hair, it is crowned with
+the vampire spawn gains 5 temporary hit pints. writhing tendrils, and its eyes burn with
+Domination (Su): A vampire spawn can crush an oppo- a menacing green flame.
+ELLIUOGRAVonallerA nent’s will just by looking onto his or her eyes. This is sim-
+ilar to a gaze attack, except that the vampire must take a
+standard action, and those merely looking at it are not
+affected. Anyone the vampire targets must succeed on a
+DC 14 Will save or fall instantly under the vampire’s
+influence as though by a dominate person spell from a 5th-
+level caster. The ability has a range of 30 feet. The
+save DC is Charisma-based.
+Energy Drain (Su): Living creatures hit by a vam-
+pire spawn’s slam attack gain one negative level. The
+DC is 14 for the Fortitude save to remove a negative
+level. The save DC is Charisma-based. For each such nega-
+tive level bestowed, the vampire spawn gains 5 temporary hit
+points. These revolting creatures come
+Fast Healing (Ex): A vampire spawn heals 2 points of into the world from the deepest
+damage each round so long as it has at least 1 hit point. If pits of the plane of Carceri. They
+reduced to 0 hit points in combat, it automatically assumes haunt graveyards, ruins, and other
+gaseous form and attempts to escape. It must reach its places of death and decay.
+coffin home within 2 hours or be utterly destroyed. (It A vargouille is slightly larger than a
+can travel up to nine miles in 2 hours.) Once at rest in its human head, about 18 inches high, with
+coffin, it is helpless. It regains 1 hit point after 1 hour, a wingspan of 4 feet. It weighs about 10
+then is no longer helpless and resumes healing at the rate pounds.
+of 2 hit points per round. Vargouilles speak Infernal.
+.C Gaseous Form (Su): As a standard action, a vampire
+yb spawn can assume gaseous form at will as the spell (caster level COMBAT
+.sullI
+6th), but it can remain gaseous indefinitely and has a fly speed Vargouilles attack by
+of 20 feet with perfect maneuverability. biting with their jagged teeth.
+Spider Climb (Ex): A vampire spawn can climb sheer surfaces Their special attacks make
+as though with a spider climb spell. them even more dangerous.
+Skills: Vampire spawn have a +4 racial bonus on Bluff, Hide, Vargouille A vargouille’s natural weapons,
+Listen, Move Silently, Search, Sense Motive, and Spot checks. as well as any weapons it wields,
+are treated as evil-aligned for the purpose of overcoming damage
+VAMPIRE SPAWN WEAKNESSES reduction.
+Vampire spawn are vulnerable to all attacks and effects that repel Shriek (Su): Instead of biting, a vargouille can open its dis-
+or slay vampires. For details, see the Vampire entry. tended mouth and let out a terrible shriek. Those within 60 feet
+(except other vargouilles) who hear the shriek and can clearly see
+the creature must succeed on a DC 12 Fortitude save or be para-

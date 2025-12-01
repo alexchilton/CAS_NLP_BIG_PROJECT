@@ -1,0 +1,30 @@
+D
+Full Attack: Slam +5 must hit a Large or smaller
+melee (1d4+4) creature with its slam attack. It
+Space/Reach: 5 ft./5 ft. can then attempt to start a grap-
+Special Attacks: Darkness, ple as a free action without pro-
+improved grab, constrict voking an attack of opportu-
+1d4+4 nity. If it wins the grapple
+Special Qualities: check, it attaches to the
+Blindsight 90 ft. opponent’s head and
+Saves: Fort +3, Ref +2, can constrict.
+Will +0 Constrict (Ex):
+Abilities: Str 16, Dex A darkmantle deals
+10, Con 13, Int 2, 1d4+4 points of dam-
+Wis 10, Cha 10 age with a successful
+Skills: Hide +10, Listen grapple check.
++5*, Spot +5* Blindsight (Ex): A dark-
+Feats: Improved mantle can “see” by emit-
+Initiative ting high-frequency sounds,
+Environment: inaudible to most other crea-
+Underground tures, that allows it to ascertain
+Organization: Solitary, objects and creatures within 90 feet. A
+pair, clutch (3–9), or silence spell negates this ability and effec-
+swarm (6–15) tively blinds the darkmantle.
+Challenge Rating: 1 Skills: A darkmantle has a +4 racial
+Treasure: None bonus on Listen and Spot checks.
+Alignment: Always neutral These bonuses are lost if its blindsight is negated. The
+38 Advancement: 2–3 HD (Small) creature’s variable coloration gives it a +4 racial bonus on Hide
+Level Adjustment: — checks.
+
+are a menace to miners and anyone who carries metal equip-

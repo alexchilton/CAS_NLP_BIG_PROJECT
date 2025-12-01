@@ -1,0 +1,33 @@
+CARRION CRAWLER
+Feats: Alertness, Iron Will, Track, Weapon Focus (bite)
+Environment: Temperate hills Large Aberration
+Organization: Solitary or pair Hit Dice: 3d8+6 (19 hp)
+Challenge Rating: 7 Initiative: +2
+Treasure: None Speed: 30 ft. (6 squares), climb 15 ft.
+Alignment: Always neutral Armor Class: 17 (–1 size, +2 Dex, +6 natural), touch 11,
+Advancement: 10–16 HD (Huge); 17–27 HD (Gargantuan) flat-footed 15
+o Level Adjustment: — Base Attack/Grapple: +2/+8
+o
+w Attack: Tentacle +3 melee (paralysis)
+k
+c o L The ground shakes and rolls and then bursts open to reveal a terrible, Full Attack: 8 tentacles +3 melee (paralysis) and bite –2 melee
+.T armor-plated, bullet-shaped creature with a huge snapping maw and (1d4+1)
+y b short, powerful legs. Space/Reach: 10 ft./5 ft.
+. s u Special Attacks: Paralysis
+l l I Also known as the landshark, the bulette is a terrifying predator Special Qualities: Darkvision 60 ft., scent
+that lives only to eat. It is universally shunned, even by other Saves: Fort +3, Ref +3, Will +5
+monsters. Fortunately for the rest of the world, the bulette is a soli- Abilities: Str 14, Dex 15, Con 14, Int 1, Wis 15, Cha 6
+tary animal, although mated pairs (very rare) might share the same Skills: Climb +12, Listen +6, Spot +6
+territory. Since its appetite is so voracious, each bulette has a large Feats: AlertnessB, Combat Reflexes, Track
+territory that can range up to 30 square miles. Other predators Environment: Underground
+rarely share territory with one, for fear of being eaten. A bulette Organization: Solitary, pair, or cluster (3–5)
+has no lair, preferring to wander above and below ground; it bur- Challenge Rating: 4
+rows beneath the soil to rest. Treasure: None
+A bulette totally consumes its victims—clothing, weapons, and Alignment: Always neutral
+all. Its powerful stomach acid quickly destroys armor, weapons, Advancement: 4–6 HD (Large); 7–9 HD (Huge)
+and even magic items. It is not above nibbling on chests or sacks Level Adjustment: —
+of coins either. When it has eaten everything in its territory, a
+bulette moves on. The sole criterion for a suitable territory is avail- The stink of rotten meat surrounds this multilegged creature with a
+ability of food, so bulettes occasionally locate themselves near segmented, 10-foot-long body. Eight writhing tentacles protrude from
+human settlements and terrorize the residents. its head, growing directly from below its clacking mandibles and tooth-
+filled maw.

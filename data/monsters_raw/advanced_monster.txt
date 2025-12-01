@@ -1,0 +1,3 @@
+ADVANCED MONSTER
+When you know the new Dexterity modifier, recalculate the
+creature’s modifier on initiative checks and Armor Class. Apply

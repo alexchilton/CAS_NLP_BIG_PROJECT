@@ -1,0 +1,12 @@
+BULETTE
+Huge Magical Beast
+Hit Dice: 9d10+45 (94 hp)
+Initiative: +2 Bulette
+Speed: 40 ft. (8 squares), burrow 10 ft.
+Armor Class: 22 (–2 size, +2 Dex, +12
+natural), touch 10, flat-footed 20
+Base Attack/Grapple: +9/+25
+Attack: Bite +16 melee (2d8+8)
+Full Attack: Bite +16 melee
+(2d8+8) and 2 claws +10 melee
+E (2d6+4)

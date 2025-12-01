@@ -1,0 +1,20 @@
+NAGA
+Dark nagas prefer to fight from an elevated position where they
+Nagas are highly intelligent creatures with a variety of magical get a good view of the battlefield while also staying out of reach.
+powers. They are natural masters of those around them, using Poison (Ex): Injury, Fortitude DC 16 or lapse into a nightmare- 191
+subtle wards and clever traps to keep intruders from disturbing haunted sleep for 2d4 minutes. The save DC is Constitution-based.
+their peace. Spells: Dark nagas cast spells as 7th-level sorcerers.
+
+Typical Sorcerer Spells Known (6/7/7/5; save DC 13 + spell level): standard action. This is a ranged touch attack with no range incre-
+0—daze, detect magic, light, mage hand, open/close, ray of frost, read ment. Opponents hit by this attack must make successful saves
+magic; 1st—expeditious retreat, magic missile, ray of enfeeblement, shield, (see above) to avoid the effect.
+silent image; 2nd—cat’s grace, invisibility, scorching ray; 3rd—displace- Spells: Guardian nagas cast spells as 9th-level sorcerers, and can
+ment, lightning bolt. also cast spells from the cleric list and from the Good and Law
+Resistance to Charm: Dark nagas have a +2 racial bonus on domains. The cleric spells and domain spells are considered
+saving throws against all charm effects (not included in the statis- arcane spells for a guardian naga, meaning that the creature does
+tics block). not need a divine focus to cast them.
+Detect Thoughts (Su): A dark naga can continuously use Typical Spells Known (6/7/7/7/5; save DC 14 + spell level): 0—
+detect thoughts as the spell (caster level 9th; Will DC 15 negates). cure minor wounds, daze, detect magic, light, mage hand, open/close, ray
+This ability is always active. The save DC is Charisma-based. of frost, read magic; 1st—cure light wounds, divine favor, expeditious
+Guarded Thoughts (Ex): Dark nagas are immune to any form retreat, mage armor, magic missile; 2nd—detect thoughts, lesser restora-
+of mind reading. tion, see invisibility, scorching ray; 3rd—cure serious wounds, dispel

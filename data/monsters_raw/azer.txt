@@ -1,0 +1,112 @@
+AZER
+Armor Class:20 (–2 size, +1 Dex, +3 hide armor, +8 natural),
+touch 9, flat-footed 19 Medium Outsider (Extraplanar, Fire)
+Base Attack/Grapple:+10/+26 Hit Dice:2d8+2 (11 hp)
+Attack:Morningstar +16 melee (3d6+8) or rock +9 ranged Initiative:+1
+(2d6+8) Speed:20 ft. in scale mail (4 squares); base speed 30 ft.
+Full Attack:Morningstar +12/+7 melee (3d6+8), and 2 Armor Class:23 (+1 Dex, +6 natural, +4 scale mail, +2 heavy
+morningstars +12 melee (3d6+4), and bite +12 melee (2d8+4 shield), touch 11, flat-footed 22
+plus poison); or rock +5 ranged (2d6+8), and 2 rocks +5 Base Attack/Grapple:+2/+3 AZER
+ranged (2d6+4) Attack:Warhammer +3 melee (1d8+1/×3 plus 1 fire) or short-
+Space/Reach:15 ft./15 ft. spear +3 ranged (1d6+1 plus 1 fire)
+Special Attacks:Poison Full Attack: Warhammer +3 melee (1d8+1/×3 plus 1 fire) or
+Special Qualities:Darkvision 60 ft. shortspear +3 ranged (1d6+1 plus 1 fire)
+Saves:Fort +9, Ref +5, Will +10 Space/Reach:5 ft./5 ft.
+Abilities:Str 26, Dex 13, Con 21, Int 7, Wis 12, Cha 6 Special Attacks:Heat
+Skills:Climb +9, Jump +18, Listen +7, Spot +7 Special Qualities: Darkvision 60 ft., immunity to fire, spell
+Feats:Alertness, Cleave, Multiweapon Fighting, Power Attack, resistance 13, vulnerability to cold
+Weapon Focus (bite) Saves:Fort +4, Ref +4, Will +4
+Environment:Temperate hills Abilities: Str 13, Dex 13, Con 13, Int 12, Wis 12,
+Organization:Solitary, gang (2–4), or tribe (7–12) Cha 9
+Challenge Rating:8 Skills:Appraise +6, Climb +0, Craft (any two)
+Treasure: 1/2 coins; double goods; standard +6, Hide +0, Jump –6, Listen +6, Search +6,
+items Spot +6
+Alignment:Often chaotic evil Feats:Power Attack
+Advancement:15–28 HD (Huge) Environment:Elemental Plane of Fire
+Level Adjustment:+5 Organization:Solitary, pair, team (3–4),
+squad (11–20 plus 2 3rd-level sergeants
+The creature looks like a portly giant and 1 leader of 3rd–6th level), or clan
+dressed in shabby rags and furs. It has (30–100 plus 50% noncombatants plus
+a third arm growing from its chest. Its 1 3rd-level sergeant per 20 adults, 5
+wide, slobbering mouth has curving 5th-level lieutenants, and 3 7th-level
+tusks that jut from its lower jaw. captains)
+It has tiny eyes, a small nose, Challenge Rating:2
+and lopsided ears—one huge Treasure: Standard coins; double
+and one tiny. goods (nonflammables only); stan-
+dard items (nonflammables only)
+The athach is a hulking, mis- Alignment:Always lawful neutral
+shapen biped. Immensely strong, an Advancement:By character class
+athach can hammer most opponents Level Adjustment:+4
+to gory paste.
+An athach rarely bathes, The creature resembles a dwarf with hair of
+and smells particularly fire and a beard of flames. It has
+foul. An adult stands brass-colored skin and appears
+some 18 feet tall and to have been forged from
+weighs about 4,500 fire and metal.
+pounds.
+Athachs are fond of gems Athach Azers are dwarflike
+and crystals of all types. They often jam bracelets on their chubby beings native to the Elemental
+fingers, necklaces around their fat wrists, and wear other jewelry Plane of Fire. They wear kilts of brass, bronze, or copper, and speak
+where they can. They have been known to sit for hours, polishing Ignan and Common.
+and admiring their jewels. The only other things athachs tend to
+be passionate about are food and violence. They despise hill giants COMBAT
+and, unless outnumbered, attack them on sight. They fear other Azers use broad-headed spears or well-crafted hammers in
+giants and most other Huge creatures. combat. When unarmed, they attempt to grapple foes.
+Athachs speak a crude dialect of Giant. Although unfriendly and taciturn, azers rarely provoke a
+fight except to relieve a foe of gems, which they love. If threat-
+COMBAT ened, they fight to the death, but they see the value of taking
+Athachs charge into melee combat unless their opponents are prisoners themselves.
+out of reach, in which case they throw rocks. They sometimes try Heat (Ex): An azer’s body is intensely hot, so its unarmed
+to overrun armored opponents to reach unarmored opponents in attacks deal extra fire damage. Its metallic weapons also conduct 21
+back ranks. With its first few melee attacks, an athach tends to this heat.
+flail about indiscriminately. After a few rounds, it concentrates
+
+AZER SOCIETY such as the one described here, is about 6 feet long and weighs
+Azers maintain a tightly regimented society in which every 180 pounds. A barghest’s eyes glow orange when the creature
+member has a specific place. The state always takes precedence becomes excited.
+over the individual. Azer nobles are prodigiously Barghests speak Goblin, Worg, and Infernal.
+strong and wield absolute power. Azers dwell within
+bronze fortresses on their home plane, only rarely COMBAT
+visiting other planes to gather gems. They hate Barghests can claw and bite, no matter what their
+efreet, with whom they wage an eternal war for form, and usually disdain weapons. Though
+territory and slaves. they love killing, they have little stomach for
+direct combat and attack from ambush
+AZERS AS CHARACTERS whenever possible. Barghests start a
+Rare among their well-ordered kind, a few combat by using crushing despair and
+TSEHGRABdooW
+azers leave behind the absolute rule of their charm monsterto keep opponents off bal-
+kin. These explorers tend to be fierce war- ance. They try to stay away from the
+riors, quick to take offense. enemy’s main strength.
+Azer characters possess the following A barghest’s natural weapons, as well
+racial traits. as any weapons it wields, are treated as
+— +2 Strength, +2 Dexterity, +2 Con- evil-aligned and lawful-aligned for the
+stitution, +2 Intelligence, +2 Wisdom, purpose of overcoming damage reduc-
+–2 Charisma. tion. Its natural weapons are treated as
+—Medium size. magic weapons for the purpose of over-
+—An azer’s base land speed is 30 feet. coming damage reduction.
+—Darkvision: Azers can see in the Spell-Like Abilities: At will—blink,
+dark up to 60 feet. levitate, misdirection(DC 14), rage(DC
+—Racial Hit Dice: An azer begins 15); 1/day—charm monster(DC 16),
+with two levels of outsider, which pro- crushingdespair(DC 16), dimension door.
+vide 2d8 Hit Dice, a base attack bonus Caster level equals the barghest’s HD.
+of +2, and base saving throw bonuses The save DCs are Charisma-based.
+of Fort +3, Ref +3, and Will +3. Feed (Su):When a barghest slays a
+—Racial Skills: An azer’s outsider humanoid opponent, it can feed on the
+levels give it skill points equal to 5 ×(8 + corpse, devouring both flesh and life
+Int modifier). Its class skills are force, as a full-round action. Feeding
+.S Appraise,Climb, Craft, Hide, Jump, Azer destroys the victim’s body and prevents
+yb Listen, Search, and Spot. any form of raising or resurrection
+.sulli
+—Racial Feats: An azer’s outsider levels that requires part of the corpse.
+give it one feat. There is a 50% chance that a wish,
+tsehgraB
+— +6 natural armor bonus. miracle,or true resurrectionspell can
+—Special Attacks (see above): Heat. restore a devoured victim to life. Check
+—Special Qualities (see above): Immunity to once for each destroyed creature. If the check
+fire, spell resistance equal to 13 + class levels, vulnerability to cold. fails, the creature cannot be brought back to life by
+—Automatic Languages: Common, Ignan. Bonus Languages: mortal magic.
+Abyssal, Aquan, Auran, Celestial, Infernal, Terran. A barghest advances in Hit Dice by consuming corpses in this
+—Favored Class: Fighter. fashion. For every three suitable corpses a barghest devours, it
+—Level adjustment +4. gains 1 Hit Die, and its Strength, Constitution, and natural
+armor increase by +1. Its attack bonus and saves improve as
+normal for an outsider of its Hit Dice, and it gains skill points,

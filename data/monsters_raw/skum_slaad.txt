@@ -1,0 +1,12 @@
+SKUM SLAAD
+Medium Aberration (Aquatic) The chaotic planes seethe and roil with random energy and bits of
+Hit Dice: 2d8+2 (11 hp) matter. Weaving their way amid this cacophony of light and sound
+Initiative: +1 are the slaadi.
+Speed: 20 ft. (4 squares), swim 40 ft. Creatures of chaos, slaadi have been likened to humanoid toads,
+Armor Class: 13 (+1 Dex, +2 natural), touch 11, flat-footed but that description belies their agility and fearsome fighting
+12 prowess.
+Base Attack/Grapple: +1/+5 All slaadi speak their own language, Slaad. Green, gray, and
+Attack: Bite +5 melee (2d6+4) death slaadi also speak Common, and in addition death slaadi
+Full Attack: Bite +5 melee (2d6+4) can communicate telepathically.
+and 2 claws +0 melee (1d4+2)
+Space/Reach: 5 ft./5 ft. COMBAT

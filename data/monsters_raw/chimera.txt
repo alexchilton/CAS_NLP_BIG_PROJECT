@@ -1,0 +1,21 @@
+CHIMERA
+every 1d4 rounds, deals 3d8 points of damage, and allows a DC 17
+Large Magical Beast Reflex save for half damage. The save DC is Constitution-based.
+Hit Dice: 9d10+27 (76 hp) To determine a chimera’s head color and breath weapon ran-
+Initiative: +1 domly, roll 1d10 and consult the table below.
+Speed: 30 ft. (6 squares), fly 50 ft. (poor) 1d10 Head Color Breath Weapon
+Armor Class: 19 (–1 size, +1 Dex, +9 natural), touch 10, 1–2 Black 40-foot line of acid
+flat-footed 18 3–4 Blue 40-foot line of lightning
+Base Attack/Grapple: +9/+17 5–6 Green 20-foot cone of gas (acid)
+Attack: Bite +12 melee (2d6+4) 7–8 Red 20-foot cone of fire
+Full Attack: Bite +12 melee (2d6+4) and bite +12 melee (1d8+4) 9–10 White 20-foot cone of cold
+and gore +12 melee (1d8+4) and 2 claws +10 melee (1d6+2) Skills: A chimera’s three heads give it a +2 racial bonus on Spot
+AREMIHCwolhctirC
+Space/Reach: 10 ft./5 ft. and Listen checks.
+Special Attacks: Breath weapon *In areas of scrubland or brush, a chimera gains a +4 racial
+Special Qualities: Darkvision 60 ft., low-light vision, scent bonus on Hide checks.
+Saves: Fort +9, Ref +7, Will +6 Carrying Capacity: A light load for a chimera is up to 348
+Abilities: Str 19, Dex 13, Con 17, Int 4, Wis 13, Cha 10 pounds; a medium load, 349–699 pounds, and a heavy load,
+Skills: Hide +1*, Listen +9, Spot +9 700–1,050 pounds.
+Feats: Alertness, Hover, Iron Will, Multiattack
+Environment: Temperate hills

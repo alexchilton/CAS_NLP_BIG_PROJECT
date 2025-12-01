@@ -1,0 +1,54 @@
+TSOHG
+Hit Dice: 6d8+6 (33 hp) tal Planes of Air, Earth, Fire, or Water for up to 48 hours. Failure to
+Initiative: +6 return to the Material Plane before that time expires causes a janni
+Speed: 20 ft. (4 squares), fly 15 ft. (perfect) in chainmail; base to take 1 point of damage per additional hour spent on the ele-
+land speed 30 ft., base fly speed 20 ft. (perfect) mental plane, until it dies or returns to the Material Plane.
+Armor Class: 18 (+2 Dex, +1 natural, +5 chainmail), touch 12,
+flat-footed 16 Jann as Characters
+Base Attack/Grapple: +6/+9 Janni characters possess the following racial traits.
+Attack: Scimitar +9 melee (1d6+4/18–20) or longbow +8 ranged — +6 Strength, +4 Dexterity, +2 Constitution, +4 Intelligence,
+(1d8/×3) +4 Wisdom, +2 Charisma.
+Full Attack: Scimitar +9/+4 melee (1d6+4/18–20) or longbow —Medium size.
++8/+3 ranged (1d8/×3) —A janni’s base land speed is 30 feet. It also has a fly speed of 20
+Space/Reach: 5 ft./5 ft. feet (perfect).
+Special Attacks: Change size, spell-like abilities —Darkvision out to 60 feet.
+Special Qualities: Darkvision 60 ft., elemental endurance, plane —Racial Hit Dice: A janni begins with six levels of outsider,
+shift, resistance to fire 10, telepathy 100 ft. which provide 6d8 Hit Dice, a base attack bonus of +6, and base
+Saves: Fort +6, Ref +7, Will +7 saving throw bonuses of Fort +5, Ref +5, and Will +5.
+Abilities: Str 16, Dex 15, Con 12, Int 14, Wis 15, Cha 13 —Racial Skills: A janni’s outsider levels give it skill points equal
+Skills: Appraise +11, Concentration +10, Craft (any two) +11, to 9 × (8 + Int modifier). Its class skills are Appraise, Concentra-
+Diplomacy +3, Escape Artist +6, Listen +11, Move Silently tion, Craft (any), Escape Artist, Listen, Move Silently, Ride, Sense
++6, Ride +11, Sense Motive +11, Spot +11, Use Rope +2 (+4 Motive, and Spot.
+with bindings) —Racial Feats: A janni’s outsider levels give it three feats. A
+Feats: Combat Reflexes, Dodge, Improved InitiativeB, Mobility janni receives Improved Initiative as a bonus feat.
+Environment: Warm deserts — +1 natural armor bonus.
+Organization: Solitary, company (2–4), or band (6–15) —Special Attacks (see above): Change size, spell-like abilities.
+Challenge Rating: 4 —Special Qualities (see above): Elemental endurance, plane
+Treasure: Standard shift, resistance to fire 10, telepathy. 100 ft.
+Alignment: Usually neutral —Automatic Languages: Common. Bonus Languages: Abyssal,
+Advancement: 7–9 HD (Medium); 10–18 HD (Large) Aquan, Auran, Celestial, Ignan, Infernal, Terran.
+Level Adjustment: +5 —Favored Class: Rogue.
+—Level adjustment +5.
+This creature looks like a tall human. It stands proudly, with a regal bear-
+ing that is almost palpable. GHOST
+The jann (singular janni) are the weakest of the genies. Jann are Ghosts are the spectral remnants of intelligent beings who, for one
+formed out of all four elements and must therefore spend most of reason or another, cannot rest easily in their graves.
+their time on the Material Plane. They favor forlorn deserts and Some ghosts go about their business with little or no interest in
+hidden oases, where they have both privacy and safety. the living. Others, however, are malevolent spirits who loathe all
+Jann society is very open, treating males and females as equals. life and seek to destroy it whenever possible. Although ghosts can
+Each tribe is ruled by a sheik and one or two viziers. Exceptionally often be driven off or destroyed, they return again and again until
+powerful sheiks are given the title of amir, and in times of need they deal with the reason for their existence.
+they gather and command large forces of jann (and sometimes A ghost greatly resembles its corporeal form in life, but in some
+allied humans). cases the spiritual form is somewhat altered. Some ghosts look
+Many jann bands are nomadic, traveling with herds of camels, angelic and sweet, while others are twisted and horrible things,
+goats, or sheep from oasis to oasis. These itinerant jann are often showing clearly the agony of the undead. There is often—but not
+mistaken for humans—until they are attacked. The territory of a always—a correlation between a ghost’s appearance and its align-
+jann tribe can extend for hundreds of miles. ment. Assumptions are dangerous.
+Jann speak Common, one elemental language (Aquan, Auran, A ghost’s behavior usually matches its life. The spirit of a miserly
+Ignan, or Terran) and one alignment language (Abyssal, Celestial, person, for example, might continue to hoard wealth even though
+or Infernal). it has no use for such treasures. Similarly, a ghost is generally tied
+to the place where it died. If the aforementioned miser had died in
+Combat a robbery, the ghost might remain in the counting house, torment-
+116 Jann are physically strong and courageous, and do not take kindly ing the new owner and all who do business there. This is not a hard
+to insult or injury. If they meet a foe they cannot defeat in a stand- and fast rule, though—many ghosts wander freely.
+

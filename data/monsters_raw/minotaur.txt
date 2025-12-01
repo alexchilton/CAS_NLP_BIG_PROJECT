@@ -1,0 +1,39 @@
+MINOTAUR
+—A mind flayer’s base land speed is 30 feet.
+—Darkvision out to 60 feet. Large Monstrous Humanoid
+—Racial Hit Dice: A mind flayer begins with eight levels of Hit Dice: 6d8+12 (39 hp)
+aberration, which provide 8d8 Hit Dice, a base attack bonus of +6, Initiative: +0
+and base saving throw bonuses of Fort +2, Ref +2, and Will +6. Speed: 30 ft. (6 squares)
+—Racial Skills: A mind flayer’s aberration levels give it skill Armor Class: 14 (–1 size, +5 natural), touch 9, flat-footed —
+points equal to 11 × (2 + Int modifier). Its class skills are Bluff, (see text)
+Concentration, Hide, Intimidate, Knowledge (any), Listen, Move Base Attack/Grapple: +6/+14
+Silently, and Spot. Attack: Greataxe +9 melee (3d6+6/×3) or gore +9 melee (1d8+4)
+—Racial Feats: A mind flayer’s aberration levels give it three feats. Full Attack: Greataxe +9/+4 melee (3d6+6/×3) and gore +4
+— +3 natural armor bonus. melee (1d8+2)
+—Natural Weapons: 4 tentacles (1d4). Space/Reach: 10 ft./10 ft.
+—Special Attacks (see above): Mind blast, psionics, improved Special Attacks: Powerful charge 4d6+6
+grab, extract. Special Qualities: Darkvision 60 ft., natural cunning, scent
+—Special Qualities (see above): Spell resistance equal to 25 + Saves: Fort +6, Ref +5, Will +5
+class levels, telepathy 100 ft. Abilities: Str 19, Dex 10, Con 15, Int 7, Wis 10, Cha 8
+—Automatic Languages: Common, Undercommon. Bonus Skills: Intimidate +2, Listen +7, Search +2, Spot +7
+Languages: Abyssal, Aquan, Draconic, Dwarven, Elven, Gnome, Feats: Great Fortitude, Power Attack, Track
+188 Infernal, Terran. Environment: Underground
+—Favored Class: Wizard. Organization: Solitary, pair, or gang (3–4)
+—Level adjustment +7. Challenge Rating: 4
+
+Treasure: Standard —A minotaur’s base land speed is 30 feet.
+Alignment: Usually chaotic —Darkvision out to 60 feet.
+evil —Racial Hit Dice: A minotaur begins with six levels of mon-
+Advancement: strous humanoid, which provide 6d8 Hit Dice, a base attack bonus
+By character class of +6, and base saving throw bonuses of Fort +2, Ref +5, and Will +5.
+Level Adjustment: +2 —Racial Skills: A minotaur’s monstrous humanoid levels give it
+skill points equal to 9 × (2 + Int modifier, minimum 1). Its class
+The creature looks like an skills are Intimidate, Jump, Listen, Search, and Spot. Minotaurs
+incredibly tall, powerfully have a +4 racial bonus on Search, Spot, and Listen checks.
+muscled human, covered in —Racial Feats: A minotaur’s monstrous humanoid levels give it
+shaggy fur, with the head of a three feats.
+bull. The dark eyes of the —Weapon Proficiency: A minotaur is proficient with the
+brute gleam with savage greataxe and all simple weapons. MOHR
+fury. — +5 natural armor bonus.
+—Natural Weapons: Gore (1d8).
+Minotaurs are strong, —Special Attacks (see above): Powerful charge.

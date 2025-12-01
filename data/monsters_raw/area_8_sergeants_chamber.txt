@@ -1,0 +1,57 @@
+AREA 8: SERGEANT’S CHAMBER (EL 5)
+If fighting alone, Vuroosk tries to stay out of melee
+Vuroosk, the sergeant in charge of the outpost, lives
+range as long as he can. If he can’t avoid melee, he tries
+here. His chamber is similar to area 7, except that it has
+to stand in a doorway or corner, where be can’t be
+no water clock or niche with skulls and holy symbol.
+flanked.
+A neatly kept ledger on the writing desk details cap-
+Treasure: Vuroosk keeps a locked strongbox
+tives and loot the hobgoblins have taken. The ser-
+under his bed. He has the only key.
+geant’s notes are nearly identical to those kept by the sIronbound Strongbox:2 in. thick; hardness
+adept in area 7, but easier to read. Vuroosk also keeps a
+5; hp 35; Break DC 27; Open Lock DC 25.
+roster of the outpost’s warriors, a pay ledger, and
+Inside the box are a leather bag containing 350 gp, a
+records of supplies both used and needed. A packet of
+leather pouch containing 28 pp, an unlocked wooden
+reports detailing the exploits of Vuroosk’s troops (all
+box that holds three strings of pearls (worth 500 gp
+addressed to the local hobgoblin chieftain, named
+each), eight packets of rare spices (worth 25 gp each),
+Nygraag) lies at the bottom of the stack. All the records
+and a cloak of elvenkind. The gold coins represent
+here are written in Goblin.
+Vuroosk’s pay chest; the other items are treasure that
+Creatures: Vuroosk spends most of his time
+the hobgoblins wrested from their victims.
+laying plans for future raids. He accepts suggestions
+Development:When foes try to enter the out-
+from the adept and from his troops, incorporating the 7
+post, word of the assault eventually reaches Vuroosk.
+
+The sergeant tries to make a stand in area 4, where there the outpost quite well, but if the PCs have already
+is space to bring the apes from area 6 into play. He sends defeated the hobgoblins, such information does them
+a few warriors off to delay the attackers but holds back little good. The goblins know nothing about the hob-
+at least half of his troops for the main battle in area 4. goblins’ plans for the surrounding area. They do know
+When fighting in area 4, Vuroosk tries to draw the that the two chief hobgoblins, Vuroosk and Hoortchuc,
+foe to the east end of the chamber, so that any rein- answer to some “hobgoblin bigwig” in the area, but
+forcements arriving from areas 1 and 2 can come up they don’t know who. They’ve never heard of Nygraag
+behind the foe. (see the area 8 entry), and they have no idea where such
+a person might be found.
+AREA 9: FANE OF MAGLUBIYET The goblins are much less helpful if they believe the
+In the center of this chamber is a large firepit (usually PCs have not defeated the hobgoblins in the outpost.
+cold). South of the firepit stand two rows of benches They pretend to be utterly cowed, and they usually
+made of split logs, and north of it lies a big chopping reply to questions by cringing and whining.
+block with a great, black, double-bitted axe embedded in In any case, the goblins bide their time and try to
+it. Both axe and block are well spattered with bloodstains. escape from the PCs (and the hobgoblins) at the first
+The block is just a piece of bloodstained wood with opportunity.
+hollows and channels cut in it to facilitate beheadings.
+The axe is a masterwork greataxe with a head made of AREA 11: PRISON
+blackened steel and a handle made of dark wood,
+This long, narrow chamber features two rows of cov-
+stained black.
+ered pits that the hobgoblins use as prison cells. Each
+pit is 20 feet deep, and its walls are similar to those at

@@ -1,0 +1,163 @@
+MRAWS
+Combat Diminutive Magical Beast (Extraplanar, Evil, Swarm)
+A bat swarm seeks to surround and attack any warm-blooded prey Hit Dice: 12d10+27 (93 hp)
+it encounters. The swarm deals 1d6 points of damage to any crea- Initiative: +10
+ture whose space it occupies at the end of its move. Speed: 5 ft. (1 square), fly 40 ft.
+Distraction (Ex): Any living creature that begins its turn with Armor Class: 20 (+4 size, +6 Dex), touch 20, flat-footed 14
+a swarm in its space must succeed on a DC 11 Fortitude save or be Base Attack/Grapple: +12/—
+nauseated for 1 round. The save DC is Constitution-based. Attack: Swarm (3d6 plus poison)
+Wounding (Ex): Any living creature damaged by a bat swarm Full Attack: Swarm (3d6 plus poison)
+continues to bleed, losing 1 hit point per round thereafter. Multi- Space/Reach: 10 ft./0 ft.
+ple wounds do not result in cumulative bleeding loss. The bleed- Special Attacks: Distraction, inhabit, poison
+ing can be stopped by a DC 10 Heal check or the application of a Special Qualities: Damage reduction 10/magic, darkvision
+cure spell or some other healing magic. 60 ft., hive mind, immune to weapon damage, resistance to
+Blindsense (Ex): A bat swarm notices and locates creatures fire 10, low-light vision, swarm traits
+within 20 feet. Opponents still have total concealment against the Saves: Fort +10, Ref +14, Will +7
+bat swarm (but swarm attacks ignore concealment). Abilities: Str 1, Dex 22, Con 14, Int 6, Wis 13, Cha 9
+Skills: A bat swarm has a +4 racial bonus on Listen and Spot Skills: Hide +19, Listen +10, Spot +10
+checks. These bonuses are lost if its blindsense is negated. Feats: Ability Focus (poison), Alertness, Improved Initiative,
+Iron Will, Toughness
+CENTIPEDE SWARM Environment: Bleak Eternity of Gehenna
+Diminutive Vermin (Swarm) Organization:Solitary, fright (2–4 swarms), or terror (5–8
+Hit Dice: 9d8–9 (31 hp) swarms)
+Initiative: +4 Challenge Rating: 8
+Speed: 20 ft. (4 squares), climb 20 ft. Treasure: None
+Armor Class: 18 (+4 size, +4 Dex), touch 18, flat-footed 14 Alignment: Always lawful evil
+Base Attack/Grapple: +6/— Advancement: None
+Attack: Swarm (2d6 plus poison) Level Adjustment: —
+Full Attack: Swarm (2d6 plus poison)
+Space/Reach: 10 ft./0 ft. An angry buzz fills the air around a darting cloud of thousands of ruby-red
+Special Attacks: Distraction, poison insects.
+Special Qualities: Darkvision 60 ft., immune to weapon
+damage, swarm traits, tremorsense 30 ft., vermin traits Hellwasps are vicious, foul-tempered magical insects from the
+Saves: Fort +5, Ref +7, Will +3 infernal planes. A single hellwasp resembles a thumb-sized
+Abilities: Str 1, Dex 19, Con 8, Int —, Wis 10, Cha 2 normal wasp, except its carapace is gleaming black with ruby-red
+Skills: Climb +12, Spot +4 stripes, and its compound eyes are an iridescent green. In swarms,
+Feats: Weapon FinesseB hellwasps form a collective hive mind intelligence with infernal
+Environment: Underground cunning and bloodlust.
+Organization:Solitary, tangle (2–4 swarms), or colony (7–12
+swarms) Combat
+Challenge Rating: 4 Like any swarm, a hellwasp swarm seeks to surround and attack
+Treasure: None any living prey it encounters. A swarm deals 3d6 points of damage
+Alignment: Always neutral to any creature whose space it occupies at the end of its move. The
+Advancement: None swarm can take over the bodies of its prey and infest both the liv-
+Level Adjustment: — ing and the dead, using them as horrible living (or unliving) pup-
+pets to accomplish acts of wickedness that a swarm of insects
+A glistening, squirming mass of blue-black insects advances like a venomous could never attempt.
+army. A hellwasp swarm’s attack is treated as an evil-aligned weapon and
+a magic weapon for the purpose of overcoming damage reduction.
+A centipede swarm is a crawling mass of voracious centipedes that Distraction (Ex): Any living creature that begins its turn with a
+can climb over obstacles to get at prey. hellwasp swarm in its space must succeed on a DC 18 Fortitude save
+or be nauseated for 1 round. The save DC is Constitution-based.
+Combat Inhabit (Ex): A hellwasp swarm can enter the body of a help-
+238 A centipede swarm seeks to surround and attack any living prey it less or dead creature by crawling into its mouth and other orifices.
+encounters. A swarm deals 2d6 points of damage to any creature Inhabiting requires 1 minute, and the victim must be Small,
+whose space it occupies at the end of its move. Medium, or Large (although four swarms working together can
+
+inhabit a Huge creature). The swarm can abandon the body at any or be nauseated for 1 round. The save DC is Constitution-based.
+time, although doing this takes 1 full round. Any attack against Skills: A locust swarm has a +4 racial bonus on Listen and Spot
+the host deals half damage to the hellwasp swarm as well, checks.
+although the swarm’s resistances and immunities may negate
+some or all of this damage. RAT SWARM
+If a hellwasp swarm inhabits a dead body, it can restore anima- Tiny Animal (Swarm)
+tion to the creature and control its movements, effectively trans- Hit Dice: 4d8 (13 hp)
+forming it into a zombie of the appropriate size for as long as the Initiative: +2
+swarm remains inside. If a hellwasp swarm inhabits a living Speed: 15 ft. (3 squares), climb 15 ft.
+victim, it can neutralize the effects of its own poison and control Armor Class: 14 (+2 size, +2 Dex), touch 14, flat-footed 12
+the victim’s movement and actions as if using dominate monster on Base Attack/Grapple: +3/—
+the victim. The hellwasps quickly consume a living victim, dealing Attack: Swarm (1d6 plus disease)
+2d4 points of Constitution damage per hour they inhabit a body. A Full Attack: Swarm (1d6 plus disease) SWARM
+body reduced to Constitution 0 is dead. Space/Reach: 10 ft./0 ft.
+A hellwasp-inhabited creature is relatively easy to spot, since its Special Attacks: Disease, distraction
+skin crawls with the forms of insects inside. The swarm is intelli- Special Qualities: Half damage from slashing and piercing,
+gent enough to attempt to hide beneath loose clothing or a large low-light vision, scent, swarm traits
+cloak to keep its presence from being detected. The swarm can Saves: Fort +4, Ref +6, Will +2
+attempt a Disguise check to conceal its inhabitation of a host, with Abilities: Str 2, Dex 15, Con 10, Int 2, Wis 12, Cha 2
+a –4 penalty if currently inhabiting a Small host. Skills: Balance +10, Climb +10, Hide +14, Listen +6, Spot +7,
+Aremove disease orhealspell cast on an inhabited victim forces Swim +10
+the hellwasp swarm to abandon its host. Feats: Alertness, Weapon Finesse
+Poison (Ex): Injury, Fortitude DC 18, initial and secondary Environment: Any
+damage 1d6 Dex. The save DC is Constitution-based. Organization:Solitary, pack (2–4 swarms), or infestation (7–12
+Hive Mind (Ex): Any hellwasp swarm with at least 1 hit point swarms)
+per Hit Die (or 12 hit points, for a standard hellwasp swarm) forms Challenge Rating: 2
+a hive mind, giving it an Intelligence of 6. When a hellwasp swarm Treasure: None
+is reduced below this hit point threshold, it becomes mindless. Alignment: Always neutral
+Advancement: None
+LOCUST SWARM Level Adjustment: —
+Diminutive Vermin (Swarm)
+Hit Dice: 6d8–6 (21 hp) A squirming, squeaking horde of feral rats surges closer, teeth glistening in
+Initiative: +4 their slavering jaws.
+Speed: 10 ft. (2 squares), fly 30 ft. (poor)
+Armor Class: 18 (+4 size, +4 Dex), touch 18, flat-footed 14 A rat swarm is a mass of teeming, famished, disease-ridden rats. A
+Base Attack/Grapple: +4/— swarm is composed of individuals very much like the rat described
+Attack: Swarm (2d6) on page 278, but in such great numbers, rats can become implaca-
+Full Attack: Swarm (2d6) ble hunters capable of killing a human with hundreds of bites.
+Space/Reach: 10 ft./0 ft. A rat swarm sometimes can be found in the sewers and founda-
+Special Attacks: Distraction tions of human cities.
+Special Qualities: Darkvision 60 ft., immune to weapon
+damage, swarm traits, vermin traits Combat
+Saves: Fort +4, Ref +6, Will +2 A rat swarm seeks to surround and attack any warm-blooded prey
+Abilities: Str 1, Dex 19, Con 8, Int —, Wis 10, Cha 2 it encounters. A swarm deals 1d6 points of damage to any creature
+Skills: Listen +4, Spot +4 whose space it occupies at the end of its move.
+Feats: — Disease (Ex): Filth fever—swarm attack, Fortitude DC 12,
+Environment: Temperate plains incubation period 1d3 days, damage 1d3 Dex and 1d3 Con. The
+Organization:Solitary, cloud (2–7 swarms), or plague (11–20 save DC is Constitution-based.
+swarms) Distraction (Ex): Any living creature that begins its turn with
+Challenge Rating: 3 a swarm in its square must succeed on a DC 12 Fortitude save or be
+Treasure: None nauseated for 1 round. The save DC is Constitution-based.
+Alignment: Always neutral Skills: A rat swarm has a +4 racial bonus on Hide and Move
+Advancement: None Silently checks, and a +8 racial bonus on Balance, Climb, and
+Level Adjustment: — Swim checks. A rat swarm can always choose to take 10 on all
+Climb checks, even if rushed or threatened.
+A whirling, clacking cloud of voracious, grasshopperlike insects flutters A rat swarm uses its Dexterity modifier instead of its Strength
+closer, filling the air with a high-pitched buzz. modifier for Climb and Swim checks.
+A rat swarm has a +8 racial bonus on any Swim check to perform
+A locust swarm is a cloud of thousands of winged vermin that some special action or avoid a hazard. It can always choose to take
+devours any organic material in its path. 10 on a Swim check, even if distracted or endangered. It can use the
+run action while swimming, provided it swims in a straight line.
+Combat
+A locust swarm surrounds and attacks any living prey it encoun- SPIDER SWARM
+ters. A swarm deals 2d6 points of damage to any creature whose Diminutive Vermin (Swarm)
+space it occupies at the end of its move. Hit Dice: 2d8 (9 hp) 239
+Distraction (Ex): Any living creature that begins its turn with Initiative: +3
+a locust swarm in its space must succeed on a DC 12 Fortitude save Speed: 20 ft. (4 squares), climb 20 ft.
+
+Armor Class: 17 (+4 size, +3 Dex), touch 17, flat-footed 14 Feats: Alertness, Awesome Blow, Blind-Fight, Cleave, Combat
+Base Attack/Grapple: +1/— Reflexes, Dodge, Great Cleave, Improved Bull Rush,
+Attack: Swarm (1d6 plus poison) Improved Initiative, Iron Will, Power Attack, Toughness (6)
+Full Attack: Swarm (1d6 plus poison) Environment: Any
+Space/Reach: 10 ft./0 ft. Organization:Solitary
+Special Attacks: Distraction, poison Challenge Rating: 20
+Special Qualities: Darkvision 60 ft., swarm traits, tremorsense Treasure: None
+30 ft., vermin traits Alignment: Always neutral
+Saves: Fort +3, Ref +3, Will +0 Advancement: 49+ HD (Colossal)
+Abilities: Str 1, Dex 17, Con 10, Int —, Wis 10, Cha 2 Level Adjustment: —
+Skills: Climb +11, Listen +4, Spot +4
+EUQSARRATwolhctirC Environment: Warm forests This scaly biped seems about as tall as a five-story building. It carries itself
+Organization:Solitary, tangle (2–4 swarms), or colony (7–12 like a bird of prey, leaning well forward and using its powerful, lashing tail
+swarms) for balance. It has two horns on its head and a thick, reflective carapace
+Challenge Rating: 1 on its back.
+Treasure: None
+Alignment: Always neutral The legendary tarrasque—fortunately, only one exists—is possi-
+Advancement: None bly the most dreaded monster of all (except for the largest drag-
+Level Adjustment: — ons). None can predict where and when the creature will strike
+next.
+A horrible, scuttling army of hand-sized spiders scrambles forward. The location of the tarrasque’s lair is a mystery, and the beast
+remains dormant much of the time. Its torporous slumber usually
+A spider swarm is a scuttling horde of venomous spiders. lasts 6d4 months before it leaves its lair for a brief hunting foray
+lasting 1d3 days. Once every decade or so, the monster is particu-
+Combat larly active, staying awake for 1d2 weeks. Thereafter, it slumbers
+A spider swarm seeks to surround and attack any living prey it for at least 4d6 years unless disturbed.
+encounters. A swarm deals 1d6 points of damage to any creature When active, the tarrasque is a perfect engine of destruction. It
+whose space it occupies at the end of its move. rampages across the land eating everything in its path, including
+Distraction (Ex): Any living creature that begins its turn with a plants, animals, humanoids, and even towns. Nothing is safe, and
+spider swarm in its space must succeed on a DC 11 Fortitude save entire communities prefer to flee the ravening tarrasque rather
+or be nauseated for 1 round. The save DC is Constitution-based. than face its power.
+Poison (Ex): Injury, Fortitude DC 11, initial and secondary Many legends surround the tarrasque’s origins and purpose.
+damage 1d3 Str. The save DC is Constitution-based. Some hold it to be an abomination unleashed by ancient, forgotten
+Skills: A spider swarm has a +4 racial bonus on Hide and Spot gods to punish all of nature, while others tell of a conspiracy be-
+.C checks and a +8 racial bonus on Climb checks. It uses its Dexterity mod- tween evil wizards or merciless elemental powers. These tales are
+yb ifier instead of its Strength modifier for Climb checks. It can always mere speculation, however, and the creature’s true nature will prob-
+.sullI choose to take 10 on a Climb check, even if rushed or threatened. ably remain a mystery. The tarrasque isn’t in the habit of explaining
+itself, and it rarely leaves any living witnesses in its wake.
+The tarrasque is 70 feet long and 50 feet tall, and it

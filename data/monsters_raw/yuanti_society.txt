@@ -1,0 +1,136 @@
+YUAN-TI SOCIETY
+and scaly patches on the neck
+The yuan-ti are devout wor- and limbs.
+shipers of evil. They also hold
+all reptiles in high esteem. The Yuan-ti purebloods appear
+center of yuan-ti life is the human at first glance, with
+temple, and their rituals often only very subtle snakelike
+involve bloody sacrifices. features.
+They tend toward isolated, A pureblood is about the
+old ruins but have been same height and weight as a
+known to build even under- human.
+neath human cities. Yuan-ti
+are always secretive about the Combat
+location of a city or temple. Purebloods are the least intelli-
+Their architecture favors gent of the yuan-ti, though they
+curves, with ramps and poles still pride themselves on being more
+replacing stairs. intelligent than humans. Pure-
+The abominations rule over bloods often disguise them-
+the yuan-ti and are the temple selves as humans and work
+leaders, with the high priest above among them as spies for
+all. Purebloods take care of all out- their abomination masters.
+side negotiations, always pretend- Spell-Like Abilities:
+ing to be human. 1/day—animal trance (DC
+The chief deity of the yuan-ti 13), cause fear (DC 12),
+is Merrshaulk, who prompted charm person (DC 12),
+and directed the formation of darkness, entangle (DC 12).
+the line. Caster level 4th. The save
+DCs are Charisma-based.
+YUAN-TI Skills: *A pureblood gains a
+PUREBLOOD +5 racial bonus on Disguise checks when impersonating a
+Medium Monstrous human.
+Humanoid
+Hit Dice: 4d8 (18 hp) Yuan-Ti Purebloods as Characters
+Initiative: +5 Yuan-ti pureblood characters possess the following racial traits.
+Speed: 30 ft. (6 squares) — +2 Dexterity, +2 Intelligence, +2 Charisma.
+Armor Class: 17 (+1 Dex, +1 natural, +3 masterwork studded —Medium size.
+leather, +2 masterwork heavy shield), touch 11, flat-footed 16 —A yuan-ti pureblood’s base land speed is 30 feet.
+Base Attack/Grapple: +4/+4 —Darkvision out to 60 feet.
+Attack: Masterwork scimitar +5 melee (1d6/18–20) or master- —Racial Hit Dice: A yuan-ti pureblood begins with four levels
+work longbow +6 ranged (1d8/×3) of monstrous humanoid, which provide 4d8 Hit Dice, a base at- 263
+Full Attack: Masterwork scimitar +5 melee (1d6/18–20) or tack bonus of +4, and base saving throw bonuses of Fort +1, Ref +4,
+masterwork longbow +6 ranged (1d8/×3) and Will +4.
+
+—Racial Skills: A yuan-ti pureblood’s monstrous humanoid purebloods all fall, the halfbloods wade into melee in their stead.
+levels give it skill points equal to 7 × (2 + Int modifier). Its class Poison (Ex): Injury, Fortitude DC 14, initial and secondary
+skills are Concentration, Disguise, Hide, Knowledge (any), Listen damage 1d6 Con. The save DC is Constitution-based.
+and Spot. Produce Acid (Sp): A yuan-ti halfblood has the psionic power to
+—Racial Feats: A yuan-ti pureblood’s monstrous humanoid exude acid from its body, dealing 3d6 points of acid damage to the
+levels give it two feats. Yuan-ti purebloods receive Alertness and next creature it touches, including a creature hit by its bite attack.
+Blind-Fight as bonus feats. If the yuan-ti is grappling or pinning a foe when it uses this power,
+— +1 natural armor bonus. its grasp deals 5d6 points of acid damage. The acid becomes inert
+—Special Attacks (see above): Spell-like abilities. when it leaves the yuan-ti’s body, and the yuan-ti is immune to its
+—Special Qualities (see above): Alternate form, detect poison, spell effects.
+resistance equal to class levels + 14. Spell-Like Abilities: 3/day—animal trance (DC 15), cause fear
+—Automatic Languages: Yuan-ti, Common. Bonus Languages: (DC 14), entangle (DC 14); 1/day—deeper darkness, neutralize poison
+IT-NAUY Abyssal, Draconic. (DC 17), suggestion (DC 16). Caster level 8th. The save DCs are
+—Favored Class: Ranger. Charisma-based.
+—Level adjustment +2. Chameleon Power (Sp): A yuan-ti halfblood can psionically
+change the coloration of itself and its equipment to match its sur-
+YUAN-TI HALFBLOOD roundings, granting it a +10 circumstance bonus on Hide checks.
+Medium Monstrous Humanoid Skills: *Yuan-ti halfbloods using chameleon power gain a +10 cir-
+Hit Dice: 7d8+7 (38 hp) cumstance bonus on Hide checks.
+Initiative: +5
+Speed: 30 ft. (6 squares) Halfblood Variants
+Armor Class: 20 (+1 Dex, +4 natural, +3 masterwork studded The statistics above reflect the most common form of a yuan-ti
+leather, +2 masterwork heavy shield), touch 11, flat-footed 19 halfblood, with the head and scaly skin of a serpent but otherwise
+Base Attack/Grapple: +7/+9 human features. The curse of the yuan-ti produces a wide variety
+Attack: Masterwork scimitar +10 melee (1d6+2/18–20) or of halfbloods, however, manifesting their serpentine nature in dif-
+masterwork composite longbow (+2 Str bonus) +9 ranged ferent ways. To generate a random yuan-ti halfblood, roll d% and
+(1d8+2/×3) consult the following table.
+Full Attack: Masterwork scimitar +10/+5 melee (1d6+2/18–20) d% Halfblood Variety
+and bite +4 melee (1d6+1 plus poison); or masterwork compos- 01–40 As described above
+ite longbow (+2 Str bonus) +9/+4 ranged (1d8+2/×3) 41–60 Human head, but arms are snakes (two bite attacks
+Space/Reach: 5 ft./5 ft. instead of one, damage 1d4+2 plus poison)
+Special Attacks: Poison, produce acid, spell-like abilities 61–80 Snake tail in addition to human legs (speed 30 ft., swim
+Special Qualities: Alternate form, chameleon power, darkvision 15 ft., can constrict Small or smaller creatures for 1d4+3
+60 ft., detect poison, scent, spell resistance 16 points of damage)
+Saves: Fort +3, Ref +6, Will +9 81–00 Snake tail instead of human legs (speed 20 ft., climb 15
+Abilities: Str 15, Dex 13, Con 13, Int 18, Wis 18, Cha 16 ft., swim 15 ft., can constrict Medium or smaller creatures
+Skills: Concentration +11, Craft or Knowledge (any two) +14, for 1d6+3 points of damage)
+Hide +10*, Listen +16, Spot +16 Constrict (Ex): A halfblood with a snake tail deals extra
+Feats: AlertnessB, Blind-FightB, Combat Expertise, Dodge, damage (1d4+3 if it also has legs, or 1d6+3 if it does not) with a suc-
+Improved Initiative cessful grapple check against a creature small enough for it to con-
+Environment: Warm forests strict.
+Organization: Solitary, pair, gang (3–4), troupe (2–13 pure-
+bloods, 2–5 halfbloods, and 2–4 abominations), or tribe YUAN-TI ABOMINATION
+(20–160 purebloods, 10–80 halfbloods, and 10–40 abomina- Large Monstrous Humanoid
+tions) Hit Dice: 9d8+27 (67 hp)
+Challenge Rating: 5 Initiative: +5
+Treasure: Double standard Speed: 30 ft. (6 squares), climb 20 ft., swim 20 ft.
+Alignment: Usually chaotic evil Armor Class: 22 (–1 size, +1 Dex, +10 natural, +2 masterwork
+Advancement: By character class heavy shield), touch 10, flat-footed 21
+Level Adjustment: +5 Base Attack/Grapple: +9/+17
+Attack: Masterwork scimitar +13 melee (1d8+4/18–20) or
+This being has the body of a lithe human with sharp features and unblink- masterwork composite longbow (+4 Str bonus) +10 ranged
+ing eyes. Its skin is covered with gleaming scales, and a serpent’s head, (2d6+4/×3)
+complete with long fangs and forked tongue, rises from its shoulders. Full Attack: Masterwork scimitar +13/+8 melee (1d8+4/18–20)
+and bite +7 melee (2d6+3 plus poison); or masterwork compos-
+Like purebloods, yuan-ti halfbloods appear mostly human, but ite longbow (+4 Str bonus) +10/+5 ranged (2d6+4/×3)
+they always have obvious snake features. The snakelike features of Space/Reach: 10 ft./10 ft.
+a halfblood may reflect any of a variety of venomous snakes, so a Special Attacks: Aversion, constrict 1d6+6, improved grab,
+halfblood may have a cobra’s hood or a diamondback’s distinctive poison, produce acid, spell-like abilities
+scale pattern. These features are usually consistent within a single Special Qualities: Alternate form, chameleon power, darkvision
+troupe of yuan-ti, and often mark a troupe’s status within a tribe. 60 ft., detect poison, scent, spell resistance 18
+A halfblood is about the same height and weight as a human. Saves: Fort +6, Ref +7, Will +11
+Abilities: Str 19, Dex 13, Con 17, Int 20, Wis 20, Cha 18
+Combat Skills: Concentration +15, Craft or Knowledge (any two) +17,
+264 Halfbloods typically hang back out of melee while any purebloods Hide +8*, Listen +19, Move Silently +12, Spot +19
+accompanying them wade in, using their chameleon power to hide Feats: AlertnessB, Blind-FightB, Combat Expertise, Dodge,
+while softening up opponents with their spell-like abilities. If the Improved Initiative, Mobility
+
+Environment: Warm forests Produce Acid (Sp): An abomination has the psionic ability to
+Organization: Solitary, pair, gang (3–4), troupe (2–13 pure- exude acid from its body, dealing 3d6 points of acid damage to the
+bloods, 2–5 halfbloods, and 2–4 abominations), or tribe next creature it touches, including a creature hit by its bite attack.
+(20–160 purebloods, 10–80 halfbloods, and 10–40 abomina- If the yuan-ti is grappling, constricting, or pinning a foe when it
+tions) uses this power, its grasp deals 5d6 points of acid damage. The acid
+Challenge Rating: 7 becomes inert when it leaves the yuan-ti’s body, and the yuan-ti is
+Treasure: Double standard immune to its effects.
+Alignment: Usually chaotic evil Spell-Like Abilities: At will—animal trance (DC 16), entangle
+Advancement: By character class (DC 15); 3/day—deeper darkness, neutralize poison (DC 18), suggestion
+Level Adjustment: +7 (DC 17); 1/day—baleful polymorph (DC 19; into snake form only),
+fear (DC 18). Caster level 10th. The save DCs are Charisma-based.
+This creature looks like a big serpent, except that its eyes betray a baleful Chameleon Power (Sp): A yuan-ti abomination can psionically
+intelligence and it has two burly, humanoid arms. change the coloration of itself and its equipment to match its sur- ZOMBIE
+roundings, granting it a +10 circumstance bonus on Hide checks.
+Yuan-ti abominations are monstrous snakes with humanlike arms. Skills: A yuan-ti abomination can always choose to take 10 on a
+The snakelike features of an abomination may reflect any of a vari- Climb checks, even if rushed or threatened.
+ety of venomous snakes, so an abomination may have a black A yuan-ti abomination has a +8 racial bonus on any Swim check
+mamba’s glossy scales or a viper’s wedge-shaped head. These fea- to perform some special action or avoid a hazard. It can always
+tures are usually consistent within a single troupe of yuan-ti, and choose to take 10 on a Swim check, even if distracted or endan-
+often mark a troupe’s status within a tribe. gered. It can use the run action while swimming, provided it
+A yuan-ti abomination is 8 to 12 feet long and weighs 200 to 300 swims in a straight line.
+pounds. *Yuan-ti abominations using chameleon power gain a +10 circum-
+stance bonus on Hide checks.
+Combat
+Abominations are the masterminds of yuan-ti society, and urge

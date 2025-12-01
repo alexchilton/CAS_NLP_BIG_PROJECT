@@ -1,0 +1,65 @@
+BELKER
+affected as though by the spell. The beholder likes to use this ray
+on any foe it considers a real threat. Large Elemental (Air, Extraplanar)
+Fear: This works like the spell, except that it targets one creature. Hit Dice: 7d8+7 (38 hp)
+The target must succeed on a Will save or be affected as though by Initiative: +5
+the spell. Beholders like to use this ray against warriors and other Speed: 30 ft. (6 squares), fly 50 ft. (perfect)
+powerful creatures early in a fight, to break up the opposition. Armor Class: 22 (–1 size, +5 Dex, +8 natural), touch 14,
+Finger of Death: The target must succeed on a Fortitude save or be flat-footed 17
+slain as though by the spell. The target takes 3d6+13 points of dam- Base Attack/Grapple: +5/+11
+age if its saving throw succeeds. Beholders use this ray to elimi- Attack: Wing +9 melee (1d6+2) BELKER
+nate dangerous foes quickly. Full Attack: 2 wings +9 melee (1d6+2) and bite +4 melee (1d4+1)
+Flesh to Stone: The target must succeed on a Fortitude save or be and 2 claws +4 melee (1d3+1)
+affected as though by the spell. Beholders like to aim this ray at Space/Reach: 10 ft./10 ft.
+enemy spellcasters. They also use it on any creature whose appear- Special Attacks: Smoke claws
+ance they find interesting. (After the fight, the beholder takes the Special Qualities: Darkvision 60 ft., elemental traits, smoke
+statue to its lair as a decoration.) form
+Inflict Moderate Wounds: This works like the spell, causing Saves: Fort +3, Ref +10, Will +2
+2d8+10 points of damage (Will half ). Abilities: Str 14, Dex 21, Con 13, Int 6, Wis 11, Cha 11
+Sleep: This works like the spell, except that it affects one creature Skills: Listen +7, Move Silently +9, Spot +7
+with any number of Hit Dice (Will negates). Beholders like to use Feats: Alertness, Multiattack, Weapon Finesse
+this ray against warriors and other physically powerful creatures. Environment: Elemental Plane of Air
+They know their foes can quickly awaken the sleepers, but they Organization: Solitary, pair, or clutch (3–4)
+also know that doing so takes time and can delay an effective Challenge Rating: 6
+counterattack. Treasure: None
+Slow: This works like the spell, except that it affects one crea- Alignment: Usually neutral evil
+ture. The target can make a Will save to negate the effect. Behold- Advancement: 8–10 HD (Large); 11–21 HD (Huge)
+ers often use this ray against the same creature targeted by their Level Adjustment: —
+disintegrate, flesh to stone, or finger of death ray. If one
+of the former rays fails to eliminate the foe, this A mass of dark smoke moves against the breeze, shifting shape as
+ray might at least hamper it. Belker it comes closer. Cloudlike, roiling, it suddenly explodes into a
+Telekinesis: A beholder can move objects demonic creature of smoke and wind, with large bat wings,
+or creatures that weigh up to 325 pounds, clawed tendrils, and a biting maw.
+as though with a telekinesis spell. Crea-
+tures can resist the effect with a success- Belkers are creatures from the Plane of Air. They
+ful Will save. are composed primarily of smoke. Although
+Antimagic Cone (Su): A beholder’s undeniably evil, they are very reclusive and
+central eye continually produces a 150- usually have no interest in the affairs of others.
+foot cone of antimagic. This functions A belker’s winged shape makes it look dis-
+just like antimagic field (caster level tinctly demonic. Because of its semigaseous
+13th). All magical and supernatural nature, however, it shifts and changes shape
+powers and effects within the cone are with every puff of wind. It is about 7 feet long
+suppressed—even the beholder’s own and weighs about 8 pounds.
+eye rays. Once each round, during its Belkers speak Auran.
+turn, the beholder decides whether the
+antimagic cone is active or not (the COMBAT
+beholder deactivates the cone by shutting its In most cases, a belker fights with its nasty claws
+central eye). and painful bite.
+Smoke Claws (Ex): A belker in smoke form (see
+Beholder Society below) can engulf opponents by moving on top of them. It fills
+Beholders are hateful, aggressive, and avari- the air around one Medium or smaller opponent without pro-
+cious, attacking or dominating others when- voking an attack of opportunity. The target must
+ever they can get away with it. They exhibit succeed on a DC 14 Fortitude save or inhale part of
+a xenophobic intolerance, hating all creatures the creature. The save DC is Constitution-based.
+not like themselves. The basic body type comprises a great variety Smoke inside the victim solidifies into a claw and begins to rip at
+of beholder subspecies. Some are covered with overlapping chiti- the surrounding organs, dealing 3d4 points of damage per round.
+nous plates; some have smooth hides or snakelike eye tentacles; An affected creature can attempt another Fortitude save each sub-
+some have crustacean joints. But even a difference as small as hide sequent round to cough out the semivaporous menace.
+color or size of the central eye can make two groups of beholders Smoke Form (Su): Most of the time a belker is more or less
+sworn enemies. Every beholder declares its own unique form to solid, but at will it can assume smoke form. It can switch forms
+be the “true ideal of beholderhood,” the others being nothing but once per round as a free action and can spend up to 20 rounds per
+ugly replicas fit only to be eliminated. day in smoke form. A belker in smoke form can fly at a speed of 50
+Beholders usually carve out underground lairs for themselves feet (perfect). The ability is otherwise similar to a gaseous form spell 27
+using their disintegrate rays. Beholder architecture emphasizes the (caster level 7th).
+vertical, and a lair usually has a number of parallel tubes, with Skills: Belkers have a +4 racial bonus on Move Silently checks.
+

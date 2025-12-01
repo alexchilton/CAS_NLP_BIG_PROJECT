@@ -1,0 +1,19 @@
+-FLAH
+Skills: A half-celestial gains skill points as an outsider and has This half-dragon is based on a 4th-level human fighter with the
+skill points equal to (8 + Int modifier) × (HD +3). Do not include following ability scores: Str 14, Dex 13, Con 16, Int 8, Wis 12,
+Hit Dice from class levels in this calculation—the half-celestial Cha 10.
+gains outsider skill points only for its racial Hit Dice, and gains the
+normal amount of skill points for its class levels. Treat skills from Combat
+the base creature’s list as class skills, and other skills as cross-class. Half-black dragon fighters use two-handed (often exotic) weap-
+Challenge Rating: HD 5 or less, as base creature +1; HD 6 to ons. Aggressive and temperamental, they’re usually itching for a
+10, as base creature +2; HD 11 or more, as base creature +3. battle. They often lead other evil warriors, but fight as individuals.
+Alignment: Always good (any). Breath Weapon (Su): 30-foot line, once per day, damage 6d8
+Level Adjustment: Same as base creature +4. acid, Reflex DC 14 half. The save DC is Constitution-based.
+Possessions: +1 full plate armor, masterwork two-bladed sword, 2
+HALF-CELESTIAL CHARACTERS javelins.
+Half-celestial humanoids often have a character class, preferring
+bard, cleric, fighter, and paladin. Nonhumanoids are also some- CREATING A HALF-DRAGON
+times clerics or paladins. Half-celestial clerics serve good deities “Half-dragon” is an inherited template that can be added to any
+such as Ehlonna, Heironeous, Kord, or Pelor. living, corporeal creature (referred to hereafter as the base crea-
+ture).
+A half-dragon uses all the base creature’s statistics and special

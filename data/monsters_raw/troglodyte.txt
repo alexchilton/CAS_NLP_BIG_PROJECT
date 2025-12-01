@@ -1,0 +1,57 @@
+TROGLODYTE
+rounds. The save DC is Constitution-based. Creatures
+Medium Humanoid that successfully save cannot be affected by the
+(Reptilian) same troglodyte’s stench for 24 hours. A delay
+Hit Dice: 2d8+4 (13 hp) poisonorneutralize poison spell removes the effect
+Initiative: –1 from the sickened creature. Creatures with immu-
+Speed: 30 ft. (6 squares) nity to poison are unaffected, and creatures resistant
+Armor Class: 15 (–1 Dex, to poison receive their normal
++6 natural), touch 9, bonus on their saving
+flat-footed 15 throws.
+Base Attack/Grapple: Skills: The
++1/+1 skin of a trog-
+Attack: Club +1 melee lodyte changes
+(1d6) or claw +1 melee color some-
+(1d4) or javelin +1 what, allowing it to
+ranged (1d6) blend in with its surround-
+Full Attack: Club +1 melee ings like a chameleon and
+(1d6) and claw –1 melee (1d4) and bite –1 melee (1d4); or 2 providing a +4 racial bonus
+claws +1 melee (1d4) and bite –1 melee (1d4); or javelin +1 on Hide checks. *In rocky
+ranged (1d6) or underground settings,
+Space/Reach: 5 ft./5 ft. this bonus improves to +8.
+Special Attacks: Stench
+Special Qualities: Darkvision 90 ft. TROGLODYTE
+Saves: Fort +5, Ref –1, Will +0 SOCIETY
+Abilities: Str 10, Dex 9, Con 14, Int 8, Wis 10, Cha 10 Troglodyte tribes are ruled
+Skills: Hide +5*, Listen +3 by the largest and fiercest
+Feats: MultiattackB, Weapon Focus (javelin) among them, with sub-
+Environment: Underground chieftains
+Organization:Clutch (2–5), squad (6–11 plus 1–2 monitor who
+lizards), or band (20–80 plus 20% noncombatants plus 3–13 have dis-
+monitor lizards) tinguished them-
+Challenge Rating: 1 selves in battle. Trogs like
+Treasure: 50% coins; 50% goods; 50% items to lair near humanoid settle-
+Alignment: Usually chaotic evil ments to prey on inhabi-
+Advancement: By character class tants and their livestock.
+Level Adjustment: +2 They raid on moonless
+nights when their darkvision
+This reptilian creature looks somewhat humanoid. It is a little shorter than and coloration are most ef-
+a human. It has spindly but muscular arms and walks erect on its squat fective.
+legs, trailing a long, slender tail. Its head is lizardlike and crowned with a
+frill that extends from the forehead to the base of the neck. Its eyes are
+246 black and beady.
+Troglodyte
+
+Troglodytes prize steel above all else. Though individuals usu- TROLL
+ally have no wealth, a lair may contain valuable items casually dis-
+carded, pushed into corners, or mixed in with refuse. The lair is This big, bipedal creature is about one and a half times as tall as a human
+usually a large cave with smaller caves for the hatchlings and eggs. but very thin. It has long and ungainly arms and legs The legs end in great
+A lair has hatchlings equal to one-fifth the number of adults and three-toed feet, the arms in wide, powerful hands with sharpened claws.
+eggs equal to one-tenth. The hide is rubbery, and its hair is thick and ropy, and seems to writhe with
+Troglodytes revere Laogzed, a vile deity who resembles a cross its own energy.
+between a toad and a lizard.
+Trolls are horrid carnivores found in all climes, from arctic waste-
+TROGLODYTE CHARACTERS lands to tropical jungles. Most creatures avoid these beasts, who
+Troglodyte characters possess the following racial traits. know no fear and attack unceasingly when hungry.
+— –2 Dexterity, +4 Constitution, –2 Intelligence. Trolls have ravenous appetites, devouring everything from
+—Medium size. grubs to bears and humanoids. They often lair near settlements

@@ -1,0 +1,47 @@
+SAHUAGIN
+heavy crossbow +3 ranged (1d10/19–20) Freshwater Sensitivity (Ex): A sahuagin fully immersed in
+Space/Reach: 5 ft./5 ft. fresh water must succeed on a DC 15 Fortitude save or become
+Special Attacks: Blood frenzy, rake 1d4+1 fatigued. Even on a success, it must repeat the save attempt every
+Special Qualities: Blindsense 30 ft., darkvision 60 ft., freshwater 10 minutes it remains immersed.
+sensitivity, light blindness, speak with sharks, water dependent Light Blindness (Ex): Abrupt exposure to bright light (such as
+Saves: Fort +3, Ref +4, Will +4 sunlight or a daylightspell) blinds sahuagin for round. On subse-
+Abilities: Str 14, Dex 13, Con 12, Int 14, Wis 13, Cha 9 quent rounds, they are dazzled while operating in bright light.
+Skills: Handle Animal +4*, Hide +6*, Listen +6*, Profession Speak with Sharks (Ex): Sahuagin can communicate tele-
+(hunter) +1*, Ride +3, Spot +6*, Survival +1* pathically with sharks up to 150 feet away. The communication is
+Feats: Great Fortitude, MultiattackB limited to fairly simple concepts such as “food,” “danger,” and
+Environment: Warm aquatic “enemy.” Sahuagin can use the Handle Animal skill to befriend
+Organization:Solitary, pair, team (5–8), patrol (11–20 plus 1 and train sharks.
+3rd-level lieutenant and 1–2 sharks), band (20–80 plus 100% Water Dependent (Ex): Sahuagin can survive out of the water
+noncombatants plus 1 3rd-level lieutenant and 1 4th-level for 1 hour per 2 points of Constitution (after that, refer to the
+chieftain per 20 adults plus 1–2 sharks), or tribe (70–160 plus drowning rules on page 304 of the Dungeon Master’s Guide).
+100% noncombatants plus 1 3rd-level lieutenant per 20 adults, Skills: A sahuagin has a +8 racial bonus on any
+1 4th-level chieftain per 40 adults, 9 4th-level guards, 1–4 Swim check to perform some special action or
+underpriestesses of 3rd–6th level, 1 7th-level priestess, and 1 avoid a hazard. It can always choose to take 10
+baron of 6th–8th level plus 5–8 sharks) on a Swim check, even if distracted or endan-
+Challenge Rating: 2 gered. It can use the run action while swim- Illus.
+Treasure: Standard ming, provided it swims in a straight line.
+Alignment: Usually lawful evil *Underwater, a sahuagin has a +4 racial by
+Advancement: 3–5 HD (Medium), 6–10 HD (Large), or by char- bonus on Hide, Listen, and Spot checks. P.
+Jaquays
+acter class
+Level Adjustment: +2 (+3 if four-armed)
+Sahuagin
+This humanoid has scaly skin with webbed fingers and toes, and sharp
+fangs fill its mouth. It has a long tail ending in a curved fin, and it has fins
+on its arms, back, and head. Its great, staring eyes are deep black.
+Sahuagin are marine predators superbly adapted to undersea
+hunting. Also known as sea devils, these beings dwell in coastal
+waters, forming organized groups that raid shore communities.
+Most sahuagin feature green coloration, darker along the back and
+lighter on the belly. Many have dark stripes, bands, or
+spots, but these tend to fade with age. An adult male sahua-
+gin stands roughly 6 feet tall and weighs about 200 pounds.
+Sahuagin are the natural enemy of aquatic elves. The two
+cannot coexist peacefully: Wars between them are prolonged,
+bloody affairs that sometimes interfere with shipping and mar-
+itime trade. Sahuagin have an only slightly less vehement
+hatred for tritons.
+Sahuagin speak their own language, Sahuagin.
+Thanks to their high Intelligence scores, most sahua-
+gin also speak two bonus languages, usually Common
+and Aquan.

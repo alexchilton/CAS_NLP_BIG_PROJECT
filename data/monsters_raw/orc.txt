@@ -1,0 +1,40 @@
+ORC
+Orc, 1st-Level Warrior
+Medium Humanoid (Orc)
+Hit Dice: 1d8+1 (5 hp)
+Initiative: +0
+Speed: 30 ft. (6 squares)
+Armor Class: 13 (+3 studded leather armor), touch 10,
+flat-footed 13
+Base Attack/Grapple: +1/+4
+Attack: Falchion +4 melee (2d4+4/18–20) or javelin +1
+ranged (1d6+3)
+Full Attack: Falchion +4 melee (2d4+4/18–20) or javelin
++1 ranged (1d6+3)
+Space/Reach: 5 ft./5 ft.
+Special Attacks: —
+Special Qualities: Darkvision 60 ft., light sensitivity
+Saves: Fort +3, Ref +0, Will –2 Orc
+Abilities: Str 17, Dex 11, Con 12, Int 8, Wis 7, Cha 6
+Skills: Listen +1, Spot +1
+Feats: Alertness
+Environment: Temperate hills
+Organization:Gang (2–4), squad (11–20 plus 2 3rd-level
+sergeants and 1 leader of 3rd–6th level), or band (30–100 plus
+150% noncombatants plus 1 3rd-level sergeant per 10 adults, 5
+5th-level lieutenants, and 3 7th-level captains)
+Challenge Rating: 1/2
+Treasure: Standard
+Alignment: Often chaotic evil
+Advancement: By character class 203
+Level Adjustment: +0
+
+ORC SOCIETY —Orc Blood: For all effects related to race, a half-orc is consid-
+Orcs believe that to survive, they must conquer as much territory ered an orc. Half-orcs, for example, are just as vulnerable to special
+as possible, which puts them at odds with all intelligent creatures effects that affect orcs as their orc ancestors are, and they can use
+that live near them. They are constantly warring with or preparing magic items that are only usable by orcs.
+to war with other humanoids, including other orc tribes. They can —Automatic Languages: Common, Orc. Bonus Languages: Dra-
+ally with other humanoids for a time but quickly rebel if not com- conic, Giant, Gnoll, Goblin, Abyssal.
+manded by orcs. Their deities teach them that all other beings are —Favored Class: Barbarian.
+inferior and that all worldly goods rightfully belong to the orcs,
+having been stolen by the others. Orc spellcasters are ambitious,

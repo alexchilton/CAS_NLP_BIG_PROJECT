@@ -1,0 +1,92 @@
+INVISIBLE STALKER
+The save DCs are Charisma-based.
+Skills: A marut has a +4 racial bonus on Concentration, Listen, Large Elemental (Air, Extraplanar)
+and Spot checks. Hit Dice: 8d8+16 (52 hp)
+Initiative: +8
+ZELEKHUT Speed: 30 ft. (6 squares), fly 30 ft. (perfect)
+Large Construct (Extraplanar, Lawful) Armor Class: 17 (–1 size, +4 Dex, +4 natural), touch 13,
+Hit Dice: 8d10+30 (74 hp) flat-footed 13
+Initiative: +0 Base Attack/Grapple: +6/+14
+Speed: 35 ft. in plate barding (7 squares), fly 40 ft. (average) in Attack: Slam +10 melee (2d6+4)
+plate barding (8 squares); base speed 50 ft., fly 60 ft. (average) Full Attack: 2 slams +10 melee (2d6+4)
+Armor Class: 27 (–1 size, +10 natural, +8 plate barding), touch 9, Space/Reach: 10 ft./10 ft.
+flat-footed 27 Special Attacks: —
+Base Attack/Grapple: +6/+15 Special Qualities: Darkvision 60 ft., elemental traits, natural
+Attack: Spiked chain +10 melee (2d6+5 plus 1d6 electricity) invisibility, improved tracking
+Full Attack: 2 spiked chains +10 melee (2d6+5 plus 1d6 electric- Saves: Fort +4, Ref +10, Will +4
+ity) Abilities: Str 18, Dex 19, Con 14, Int 14, Wis 15, Cha 11
+Space/Reach: 10 ft./10 ft. Skills: Listen +13, Move Silently +15, Search +13, Spot +13,
+Special Attacks: Spell-like abilities Survival +2 (+4 following tracks)
+Special Qualities: Construct traits, damage reduction Feats: Combat Reflexes, Improved Initiative, Weapon Focus (slam)
+10/chaotic, darkvision 60 ft., fast healing 5, low-light vision, Environment: Elemental Plane of Air
+spell resistance 20 Organization:Solitary
+Saves: Fort +4, Ref +2, Will +5 Challenge Rating: 7
+Abilities: Str 21, Dex 11, Con —, Int 10, Wis 17, Cha 15 Treasure: None
+Skills: Diplomacy +4, Listen +9, Search +9, Sense Motive +12, Alignment: Usually neutral
+Spot +9, Survival +3 (+5 following tracks) Advancement: 9–12 HD (Large); 13–24 HD (Huge)
+Feats: Great Fortitude, Ride-By Attack, Spirited Charge Level Adjustment: —
+Environment: Clockwork Nirvana of Mechanus
+Organization:Solitary Invisible stalkers are creatures native to the Elemental Plane of
+Challenge Rating: 9 Air. They sometimes serve wizards and sorcerers, who summon
+Treasure: None them to perform specific tasks.
+Alignment: Always lawful neutral A summoned invisible stalker undertakes whatever task the
+Advancement: 9–16 HD (Large); 17–24 HD (Huge) summoner commands, even if the task sends it hundreds or thou-
+Level Adjustment: +7 sands of miles away. The creature follows a command until the
+task is completed and obeys only the summoner. However, it
+This clockwork creature resembles a centaur in shape. It wears ornate resents protracted missions or complex tasks and seeks to pervert
+golden armor over alabaster skin. It carries no weapons or other equipment. its instructions accordingly.
+Invisible stalkers have an amorphous form. A see invisibility spell
+Zelekhuts are charged with hunting down those who would deny shows only a dim outline of a cloud, while a true seeing spell reveals
+160 justice—especially those who flee to escape punishment. Expert a roiling cloud of vapor.
+trackers, they use a combination of natural skill and magic to find These creatures speak only Auran but can understand
+fugitives wherever they may hide. Common.
+
+Skills: Craft (trapmaking) +2, Hide +6, Listen +2, Move Silently +2,
+Profession (miner) +2, Search +2, Spot +2
+Feats: Alertness
+Environment: Temperate forests
+Organization:Gang (4–9), band (10–100 plus 100 noncombat-
+ants plus 1 3rd-level sergeant per 20 adults and 1 leader of
+4th–6th level), warband (10–24 plus 2–4 dire weasels), tribe
+(40–400 plus 1 3rd-level sergeant per 20 adults, 1 or 2 lieu-
+tenants of 4th or 5th level, 1 leader of 6th–8th level, and 5–8
+dire weasels)
+Challenge Rating: 1/4
+Treasure: Standard
+Alignment: Usually lawful evil KOBOLD
+Advancement: By character class
+Level Adjustment: +0
+This humanoid is about the size of a gnome or halfling. It has a scaly hide,
+a naked tail like that of a rat, and a doglike head with two small horns.
+Kobolds are short, reptilian humanoids with cowardly and sadistic
+tendencies.
+A kobold’s scaly skin ranges from dark rusty brown to a rusty
+black color. It has glowing red eyes. Its tail is nonprehensile.
+Kobolds wear ragged clothing, favoring red and orange.
+Kobolds usually consume plants or animals but are not averse to
+eating intelligent beings. They spend most of their time fortifying
+the land around their lairs with traps and warning devices (such as
+spiked pits, tripwires attached to crossbows, and other mechanical
+contraptions).
+Invisible
+Invisible stalker Kobolds hate almost every other sort of humanoid or fey, espe-
+cially gnomes and sprites.
+A kobold is 2 to 2-1/2 feet tall and weighs 35 to 45 pounds.
+stalker
+COMBAT Kobolds speak Draconic with a voice that sounds like that of a
+An invisible stalker attacks by using the air itself as a weapon. It yapping dog.
+illus.
+creates a sudden, intense blast of wind that pounds a single target
+on the same plane as the creature. COMBAT by
+An invisible stalker can be killed only when it is on the Ele- Kobolds like to attack with over- T.
+mental Plane of Air. When performing a task elsewhere, it auto- whelming odds—at least two to Lockwood
+matically returns to its home plane when it takes damage suffi- one—or trickery; should the odds fall
+cient to destroy it. below this threshold, they usually flee.
+Natural Invisibility (Su): This ability is constant, allowing a However, they attack gnomes on sight
+stalker to remain invisible even when attacking. This ability is if their numbers are equal.
+inherent and not subject to the invisibility purge spell. They begin a fight by slinging bullets,
+Improved Tracking (Ex): An invisible stalker is a consummate closing only when they can see that their
+tracker and makes Spot checks instead of the usual Survival Kobold foes have been weakened. Whenever they
+checks to trace a creature’s passage. can, kobolds set up ambushes near trapped
+areas. They aim to drive enemies into the
+traps, where other kobolds wait to pour flam-

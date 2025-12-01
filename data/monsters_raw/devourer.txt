@@ -1,0 +1,75 @@
+DEVOURER
+wields, are treated as evil-aligned and lawful-aligned for the pur-
+pose of overcoming damage reduction. Large Undead (Extraplanar)
+Constrict (Ex): A pit fiend deals 2d8+26 points of damage with Hit Dice: 12d12 (78 hp)
+a successful grapple check. Initiative: +4
+Disease (Su): A creature struck by a pit fiend’s bite attack must Speed: 30 ft. (6 squares)
+RERUOVEDonallerA succeed on a DC 27 Fortitude save or be Armor Class: 24 (–1 size, +15 natural), touch 9, flat-footed 24
+infected with a vile disease known Base Attack/Grapple: +6/+19
+as devil chills (incubation period Attack: Claw +15 melee (1d6+9)
+1d4 days, damage 1d4 Str). The save Full Attack: 2 claws +15 melee (1d6+9)
+DC is Constitution-based. Space/Reach: 10 ft./10 ft.
+Fear Aura (Su): A pit fiend can Special Attacks: Energy drain, trap essence, spell-like abilities
+radiate a 20-foot-radius fear aura as a Special Qualities: Darkvision 60 ft., spell deflection,
+free action. A creature in the area must spell resistance 21, undead traits
+succeed on a DC 27 Will save or be Saves: Fort +4, Ref +4, Will +11
+affected as though by a fear spell (caster Abilities: Str 28, Dex 10, Con —, Int 16, Wis 16,
+level 18th). A creature that successfully Cha 17
+saves cannot be affected again by the same Skills: Climb +24, Concentration +18, Diplomacy
+pit fiend’s aura for 24 hours. Other baatezu +5, Jump +24, Listen +18, Move Silently +15,
+are immune to the aura. The save DC is Search +10, Sense Motive +11, Spot +18, Survival
+Charisma-based. +3 (+5 following tracks)
+Improved Grab (Ex): To use this ability, a Feats: Blind-Fight, Combat Casting,
+pit fiend must hit with its tail slap attack. It Expertise, Improved Initiative, Weapon
+can then attempt to start a grapple as a free Focus (claw)
+action without provoking an attack of oppor- Environment: Any
+tunity. If it wins the grapple check, it estab- Organization: Solitary
+lishes a hold and can constrict. Challenge Rating: 11
+Poison (Ex): Injury, Fortitude DC 27, ini- Treasure: None
+tial damage 1d6 Con, secondary damage Alignment: Always neutral evil
+.C death. The save DC is Constitution-based. Advancement: 13–24 HD (Large);
+yb Spell-Like Abilities: At will—blas- 25–36 HD (Huge)
+.sullI
+phemy (DC 25), create undead, fireball (DC Level Adjustment: —
+21), greater dispel magic, greater teleport (self
+plus 50 pounds of objects only), invisibility, This tall, skeletal creature has strands of
+magic circle against good, mass hold monster mummified flesh hanging from its bones.
+(DC 27), persistent image (DC 23), power word Imprisoned within the creature’s rib cage is a tiny
+stun, unholy aura (DC 26); 1/day—meteor figure, clearly in agony.
+swarm (DC 27). Caster level 18th. The save
+DCs are Charisma-based. Devourers are massive creatures every bit as evil as
+Once per year a pit fiend can use wish as the they look. They lurk on the Ethereal Plane and the
+spell (caster level 20th). Astral Plane, stalking both natives and travelers with
+Summon Baatezu (Sp): Twice per day a pit fiend equal sadistic glee.
+can automatically summon 2 lemures, bone devils, The tiny figure in the rib cage is the trapped
+or bearded devils, or 1 erinyes, horned devil, or ice essence of a slain opponent, which is consumed
+devil. This ability is the equivalent of an 8th-level spell. like firewood to sustain the monster’s unnatural life.
+Regeneration (Ex): A pit fiend takes normal damage A devourer is about 9 feet tall and weighs 500
+from good-aligned silvered weapons, and from spells or pounds.
+effects with the good descriptor. Devourers speak Common.
+Tactics Round-by-Round COMBAT
+A pit fiend typically opens combat by using its spell- Devourer Even if it had no special abilities, a devourer would
+like abilities, attempting to neutralize dangerous be a terrible opponent, for its bony claws can flay
+opponents before entering melee. enemies alive.
+Prior to combat: Unholy aura; activate fear aura, Energy Drain (Su): Living creatures hit by a
+summon baatezu. devourer’s claw attack or spectral hand ability gain
+Round 1: Quickened fireball and mass hold mon- one negative level. The DC is 19 for the Fortitude save
+ster if facing three or more visible, active oppo- to remove a negative level. The save DC is Charisma-
+nents; otherwise power word stun against unarmored opponent based.
+(preferably a spellcaster). Trap Essence (Su): The devourer is named for its abil-
+58 Round 2: Meteor swarm against as many foes as possible, ity to consume an enemy’s life essence. To do so, it must
+approach worst-injured enemy. forgo its normal melee attacks and make a trap essence attack.
+Round 3: Full attack against injured enemy. This requires a normal attack roll but deals no damage. The
+
+affected creature must succeed on a DC 19 Fortitude save or die Saves: Fort +9, Ref +10, Will +3
+instantly. The save DC is Charisma-based. Abilities: Str 17, Dex 15, Con 17, Int 2, Wis 12, Cha 10
+A slain creature’s essence is trapped within the devourer’s ribs, Skills: Hide +9, Listen +6, Jump +21, Spot +6
+and the tiny figure takes on that victim’s features. The trapped Feats: Alertness, Improved Initiative, Lightning Reflexes
+essence cannot be raised or resurrected, but a limited wish, miracle, Environment: Warm forests
+or wish spell frees it, as does destroying the devourer. A devourer Organization: Solitary or pack (3–6)
+can hold only one essence at a time. Challenge Rating: 6
+The trapped essence provides a devourer with enough power to Treasure: None
+use five spell-like abilities for each Hit Die or level of the trapped Alignment: Always neutral
+creature. As this energy is expended, the twisted soul fades away Advancement: 9–12 HD (Medium); 13–24 HD (Large)
+until it evaporates completely. The trapped essence gains one neg- Level Adjustment: —
+ative level for every five times the devourer uses one of its spell-

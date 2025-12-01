@@ -1,0 +1,43 @@
+UNICORN
+Once per day a unicorn can use
+This powerful, equine creature has a gleaming white coat and big, greater teleport to move anywhere
+lively eyes. Long, silky white hair hangs down in a mane and forelock. within its home. It cannot teleport
+A single ivory-colored horn, about 2 feet long, grows from the center beyond the forest boundaries nor
+of the forehead. The hooves are cloven. back from outside.
+A unicorn can use cure light wounds
+These fierce, noble beasts shun contact with all but sylvan crea- three times per day and cure moderate 249
+tures (dryads, pixies, and the like), showing themselves only to wounds once per day (caster level 5th) by
+defend their woodland homes. Unicorn touching a wounded creature with its horn. Once per
+
+Unicorn Celestial Charger, 7th-Level Cleric
+Large Magical Beast Large Magical Beast
+Hit Dice: 4d10+20 (42 hp) 8d10+7d8+75 (155 hp)
+Initiative: +3 +4
+Speed: 60 ft. (12 squares) 60 ft. (12 squares)
+Armor Class: 18 (–1 size, +3 Dex, +6 natural), 24 (–1 size, +4 Dex, +6 natural, +5 bracers of armor +5),
+touch 12, flat-footed 15 touch 13, flat-footed 20
+Base Attack/Grapple: +4/+13 +13/+24
+Attack: Horn +11 melee (1d8+8) Horn +22 melee (1d8+10)
+Full Attack: Horn +11 melee (1d8+8) and Horn +22 melee (1d8+10) and
+2 hooves +3 melee (1d4+2) 2 hooves +14 melee (1d4+3)
+Space/Reach: 10 ft./5 ft. 10 ft./5 ft.
+ERIPMAV Special Attacks: — Turn undead 13/day, smite evil, spells
+Special Qualities: Darkvision 60 ft., magic circle against Damage reduction 10/magic, darkvision 60 ft., immunity to
+evil, spell-like abilities, immunity to poison, charm, and compulsion, low-light vision, magic circle
+poison, charm, and compulsion, against evil, resistance to acid 10, cold 10, and electricity 10,
+low-light vision, scent, wild empathy scent, spell-like abilities, spell resistance 20, wild empathy
+Saves: Fort +9, Ref +7, Will +6 Fort +16, Ref +12, Will +15
+Abilities: Str 20, Dex 17, Con 21, Str 24, Dex 18, Con 20,
+Int 10, Wis 21, Cha 24 Int 13, Wis 27, Cha 22
+Skills: Jump +21, Listen +11, Move Silently +9, Concentration +11, Knowledge (nature) +9,
+Spot +11, Survival +8* Knowledge (religion) +8, Listen +15, Move Silently +12,
+Spellcraft +5, Spot +15, Survival +15 (+17 aboveground)*
+Feats: Alertness, Skill Focus (Survival) Alertness, Combat Casting, Extra Turning,
+Improved Turning, Run, Skill Focus (Survival)
+Environment: Temperate forests Seven Mounting Heavens of Celestia
+Organization: Solitary, pair, or grace (3–6) Solitary
+Challenge Rating: 3 13
+Treasure: None None
+Alignment: Always chaotic good Always chaotic good
+Advancement: 5–8 HD (Large) By character class
+Level Adjustment: +4 (cohort) +8 (cohort)

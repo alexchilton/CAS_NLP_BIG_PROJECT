@@ -1,0 +1,43 @@
+KRENSHAR KUO-TOA
+Medium Magical Beast Medium Monstrous Humanoid (A uatic)
+Hit Dice: 2d10 (11 hp) Hit Dice: 2d8+2 (11 hp)
+Initiative: +2 Initiative: +0
+Speed: 40 ft. (8 squares) Speed: 20 ft. (4 squares), swim 50 ft.
+Armor Class: 15 (+2 Dex, +3 natural), touch 12, flat-footed 13 Armor Class: 16 (+6 natural) or 18 (+6 natural, +2 heavy wooden
+Base Attack/Grapple: +2/+2 shield), touch 10, flat-footed 16 or 18
+Attack: Bite +2 melee (1d6) Base Attack/Grapple: +2/+3
+Full Attack: Bite +2 melee (1d6) and 2 claws +0 melee (1d4) Attack: Shortspear +3 melee (1d6+1) or bite +3 melee (1d4+1)
+Space/Reach: 5 ft./5 ft. Full Attack: Shortspear +3 melee (1d6+1) and bite –2 melee
+Special Attacks: Scare (1d4)
+Special Qualities: Darkvision 60 ft., low-light vision, scent Space/Reach: 5 ft./5 ft.
+Saves: Fort +3, Ref +5, Will +1 Special Attacks: Lightning bolt, pincer staff
+Abilities: Str 11, Dex 14, Con 11, Int 6, Wis 12, Cha 13 Special Qualities: Adhesive, amphibious, immunity to poison
+Skills: Hide +4, Jump +9, Listen +3, Move Silently +6 and paralysis, keen sight, light blindness, resistance to electric-
+Feats: Multiattack, TrackB ity 10, slippery
+Environment: Temperate forests Saves: Fort +3, Ref +3, Will +5
+Organization:Solitary, pair, or pride (6–10) Abilities: Str 13, Dex 10, Con 13, Int 13, Wis 14, Cha 8
+Challenge Rating: 1 Skills: Craft or Knowledge (any one) +4, Escape Artist +8, Listen
+Treasure: None +7, Move Silently +3, Search +8, Spot +11, Swim +9
+Alignment: Usually neutral Feats: AlertnessB, Great Fortitude
+Advancement: 3–4 HD (Medium); 5–8 HD (Large) Environment: Temperate aquatic
+Level Adjustment: +2 Organization:Patrol (2–4 plus 1 3rd-level whip), squad (6–11
+plus 1 or 2 3rd-level whips, 1 or 2 4th-level monitors, and 1
+This creature seems to combine the worst features of a wolf and a hyena. 8th-level fighter), band (20–50 plus 100 noncombatants plus
+It has a shaggy, spotted coat, a bristling mane along its spine, and a long, 2 3rd-level whips, 2 8th-level fighters, and 1 10th-level fighter),
+bushy tail. or tribe (40–400 plus 1 3rd-level whip per 20 adults, 1 4th-level
+monitor, 4 8th-level fighters, 1 10th-level whip, and 2 10th-
+The krenshar is a strange, catlike carnivore with extremely flexi- level fighters)
+ble skin on its head. Challenge Rating: 2
+A typical krenshar measures 4 or 5 feet in length with a long, Treasure: Standard
+narrow head. It weighs about 175 pounds. Males and Alignment: Often neutral evil
+females hunt together, preferring herd animals for Advancement: By character class
+food but attacking humanoids when game Level Adjustment: +3
+becomes scarce. Krenshars are very
+social among their own kind, and occa-
+sional attempts to domesticate Krenshar
+cubs have produced fierce and
+loyal companions. They other-
+wise behave much like mun-
+dane great cats. A lair con-
+tains cubs numbering half
+the adult total.

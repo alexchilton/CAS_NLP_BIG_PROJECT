@@ -1,0 +1,81 @@
+AREA 6: APE DEN (EL 5)
+dire apes from area 6 (see the Development sections in
+The south door to this chamber is barred from the
+those areas for details).
+south side, but not locked.
+Treasure: A small bag or box of valuables is
+The hobgoblins keep a pair of dire apes in this room.
+stowed near each bed in this room. The container
+Read or paraphrase the following when the characters
+either lies underneath the bed or hangs from the frame.
+enter.
+If the PCs search all the beds, they can collect the fol-
+lowing: 300 gp, 600 sp, 12 pieces of hematite (worth 10
+The door opens to reveal a dingy chamber that
+gp each), 8 pieces of malachite (worth 10 gp each), 10
+reeks of excrement and rotted flesh. By the light
+moss agates (worth 10 gp each), a set of eight of ivory
+of a single touch set in the north wall, two gaunt,
+dice with gold and amber pips (worth 8 gp each), 2
+feral apes, both well equipped with claws and
+silver cups (worth 12 gp each, 3 gold armbands (worth
+teeth, are visible. In the northeast corner beyond
+25 gp each), and a serpentine statuette of an erinyes
+the apes stands a massive-looking wooden ladder.
+devil (worth 80 gp). Its top is out of sight in a vertical shaft that is
+easily wide enough to accommodate the apes.
+Area 4a: Storeroom
+The apes don’t seem too pleased with the intru-
+The walls, ceiling, and floor of this area are all made of
+sion. They bare their bloodstained teeth and
+stone. The hobgoblins keep their food and drink here.
+bellow out inhuman sounds that seem half growl,
+Most of their provisions consist of game taken from the half scream. 5
+surface, so several dressed carcasses hang from hooks
+
+The ladder in the northeast corner leads up about 12 and a small water clock. About half the parchments are
+feet to a dead end. Three feet of packed earth separate blank; the rest contain notes that form a sort of per-
+the end of the shaft from the surface. The hobgoblins sonal journal (see the Creatures section, below, for
+created this feature to serve as an emergency exit for details).
+the outpost. With about 1 minute of digging, a charac- In a niche in the north wall is a pile of humanoid
+ter working with a shovel or a sword can clear away the skulls (mostly human and elf). Set into the wall above
+dirt and open a path to the surface. them is a small, double-bitted axe made from a single
+The torch stuck in the north wall is an everburning piece of silver. An artful combination of black and red
+torch,set here to give the apes some light. It can easily enamel makes the blades appear to be dripping blood.
+be removed. The axe is the symbol of the deity Maglubiyet, patron
+Creatures:As noted above, this chamber serves as of goblins and hobgoblins. Though useless as a tool or
+the lair of two dire apes. weapon, it’s worth 75 gp.
+DDire Apes (2):hp 35 each; see page 62 in the Creature: The hobgoblin adept Hoortchuc calls
+Monster Manual. this chamber home. He spends most of his time here
+Tactics: The adept in area 7 has reared and trained considering plans for future raids, composing sermons
+these apes to serve as fighting creatures. They attack to deliver to the rest of the outpost, and scribbling in
+any creature they see, except goblins or hobgoblins. If a his journal in Goblin.
+foe should enter through the south door, both apes The journal features a careful accounting of the
+move to attack. Should the foe come from the west, passing days, since Hoortchuc must give a sermon
+where there’s room for only one ape to fight, the closest every eight days. He also fills many pages with theolog-
+one charges in while the other tries to burst through ical musings, and these notes form the basis of his ser-
+the south door and attack the foe through area 7. (The mons. In addition, the adept keeps notes on all the loot
+apes aren’t very smart, but they know the outposts’ and slaves the warband has collected. His journal indi-
+layout and they’re eager to fight.) cates that the band has captured far more slaves and
+Development: If the PCs get this far without taken considerably more loot than the outpost actually
+alerting the hobgoblins to their presence, the screams contains at present. Most of the missing treasure and
+of the apes serve as an effective alarm. If Hoortchuc, slaves have been passed on to the local tribal chieftain.
+the adept from area 7, is still alive, he is the first to The hobgoblins have spent the remaining cash and
+arrive. killed the remaining slaves, either in gladiatorial
+If a general alarm has been raised before the party matches or as sacrifices to their god, Maglubiyet.
+gets this far, the hobgoblins in area 4 have already sent Hoortchuc also handles the feeding and ongoing
+a slave here (and one each to areas 7 and 8). Upon arriv- training of the apes in area 6. He isn’t too concerned
+ing, the goblin goes to the south door and waits for the about their hygiene, which accounts for the stench in
+adept in area 7 to release the apes. If Hoortchuc does the apes’ den.
+not appear within 3 rounds, the goblin lifts the bar to DHoortchuc:Male hobgoblin Expert 2/Adept 2;
+the south door and releases the creatures himself. CR 4; Medium humanoid (goblinoid); HD 2d6+2 plus
+Once out of their chamber, the apes first try to go to 2d6+2; hp 18; Init +1; Spd 30 ft.; AC 11, touch 11, flat-
+area 7 to find the adept, if he is not present. If footed 10; Base Atk +2; Grp +1; Atk +1 (1d6–1, quarter-
+Hoortchuc is dead or absent, or if the apes can’t get into staff) or +3 ranged (1d8/19–20, light crossbow); Full
+area 7, they go to area 4 and attack the first enemy they Atk +1 (1d6–1, quarterstaff) or +3 ranged (1d8/19–20,
+see or scent. If the adept is not on hand to take charge light crossbow); AL LE; SV Fort +1, Ref +1, Will +10; Str
+of the apes, the goblin slave picks up the everburning 8, Dex 12, Con 13, Int 15, Wis 14, Cha 12.
+torchfrom the north wall and follows the apes. If the Skills and Feats:Appraise +9 (+11 for appraisals relat-
+adept does take over, the goblin follows along but slips ing to metalwork or traps), Concentration +6, Craft
+off to area 10 at the first opportunity. (metalworking) +7, Craft (trapmaking) +7, Diplomacy
++3, Handle Animal +8, Heal +7, Intimidate +6, Knowl-

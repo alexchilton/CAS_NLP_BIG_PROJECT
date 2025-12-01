@@ -1,0 +1,35 @@
+KOBOLD
+ing oil over them, shoot them, or drop poison-
+obold, 1st-Level Warrior ous vermin onto them.
+Small Humanoid (Reptilian) Light Sensitivity (Ex): Kobolds are dazzled
+Hit Dice: 1d8 (4 hp) in bright sunlight or within the radius of a day-
+Initiative: +1 lightspell.
+Speed: 30 ft. (6 squares) Skills: Kobolds have a +2 racial bonus on Craft
+Armor Class: 15 (+1 size, +1 Dex, +1 (trapmaking), Profession (miner), and Search
+natural, +2 leather), touch 12, checks.
+flat-footed 14
+Base Attack/Grapple: +1/–4 The kobold warrior presented here had the follow-
+Attack: Spear +1 melee (1d6–1/×3) ing ability scores before racial adjustments: Str 13,
+or sling +3 ranged (1d3) Dex 11, Con 12, Int 10, Wis 9, Cha 8.
+Full Attack: Spear +1 melee Challenge Rating: Kobolds with levels in NPC
+(1d6–1/×3) or sling +3 ranged (1d3) classes have a CR equal to their character level –3.
+Space/Reach: 5 ft./5 ft.
+Special Attacks: — KOBOLD SOCIETY
+Special Qualities: Darkvision 60 ft., light sensitivity Kobolds live in dark places, usually underground locations and 161
+Saves: Fort +2, Ref +1, Will –1 overgrown forests. They are good miners and often live in the
+Abilities: Str 9, Dex 13, Con 10, Int 10, Wis 9, Cha 8 mines they are developing. A kobold tribe sends out warbands
+
+that patrol within a 10-mile radius from the lair, attacking any Knowledge (geography) +17, Knowledge (nature) +16, Listen
+intelligent creatures that enter their territory. Kobolds usually kill +30, Search +28, Sense Motive +17, Spot +30, Survival +5 (+7
+prisoners for food but occasionally sell some of them as slaves. following tracks), Swim +20, Use Magic Device +16
+Their nasty habits and their distrust of most other beings mean Feats: Alertness, Blind-Fight, Expertise, Improved Critical
+that they have many enemies. (tentacle), Improved Initiative, Improved Trip, Iron Will
+A kobold lair has one noncombatant child and one egg per ten Environment: Temperate aquatic
+adults. Organization:Solitary
+The patron deity of the kobolds is Kurtulmak, who despises all Challenge Rating: 12
+living creatures except kobolds. Treasure: Triple standard
+Alignment: Usually neutral evil
+KOBOLD CHARACTERS Advancement: 21–32 HD (Gargantuan); 33–60 HD (Colossal)
+Kobold characters possess the following racial traits. Level Adjustment: —
+N — –4 Strength, +2 Dexterity, –2 Constitution.
+E —Small size: +1 bonus to Armor Class, +1 bonus on attack rolls, This creature resembles an immense squid, with a streamlined body, two

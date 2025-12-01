@@ -1,0 +1,61 @@
+REDLOHEB
+Saves: Fort +5, Ref +4, Will +9 Base Attack/Grapple: +8/+12
+Abilities: Str 8, Dex 14, Con 16, Int 15, Wis 15, Cha 13 Attack: Eye rays +9 ranged touch and bite +2 melee (2d4)
+Skills: Hide +11, Knowledge (arcana) +11, Listen +4, Search +15, Full Attack: Eye rays +9 ranged touch and bite +2 melee (2d4)
+Spot +17, Survival +2 (+4 following tracks) Space/Reach: 10 ft./5 ft.
+Feats: AlertnessB, Flyby Attack, Improved Initiative, Iron Will Special Attacks: Eye rays
+Environment: Cold hills Special Qualities: All-around vision, antimagic cone, darkvision
+Organization: Solitary, pair, or cluster (3–6) 60 ft., flight
+Challenge Rating: 6 Saves: Fort +9, Ref +5, Will +11
+Treasure: Standard Abilities: Str 10, Dex 14, Con 18, Int 17, Wis 15, Cha 15
+Alignment: Usually lawful evil Skills: Hide +12, Knowledge (arcana) +17, Listen +18, Search
+Advancement: 7–12 HD (Medium); 13–18 HD (Large) +21, Spot +22, Survival +2 (+4 following tracks)
+Level Adjustment: — Feats: AlertnessB, Flyby Attack, Great Fortitude, Improved
+Initiative, Iron Will
+The gauth, sometimes known as the lesser beholder, is a 4-foot Environment: Cold hills
+wide orb dominated by a central eye. Six smaller eyes on stalks Organization: Solitary, pair, or cluster (3–6)
+sprout from the top of its body. It is a rapacious and tyrannical Challenge Rating: 13
+creature that seeks to exact tribute from anything weaker than Treasure: Double standard
+itself, and often attacks adventurers simply to acquire their wealth. Alignment: Usually lawful evil
+Eye Rays (Su): Each of a gauth’s six eye rays resembles a spell Advancement: 12–16 HD (Large); 17–33 HD
+cast by an 8th-level caster. Each eye ray has a range of 100 feet (Huge)
+and a save DC of 14. The save DCs are Charisma-based. The six Level Adjustment: —
+eye rays include:
+Sleep: This works like the spell, except that it A beholder is
+affects one creature an 8-foot-wide orb
+with any number Beholder dominated by a cen-
+of Hit Dice (Will tral eye and a large, toothy
+negates). Gauths maw. Ten smaller eyes on
+like to use this ray stalks sprout from the top of
+against warriors and the orb.
+other physically power-
+ful creatures. Combat
+Inflict Mod- Beholders often attack with-
+erate Wounds: out provocation. Though
+This works not powerful physically, they
+like the spell, often plow right into groups
+causing 2d8+8 of opponents to use as many
+points of damage of their eyes as they
+(Will half ). can. When closing with
+Dispel Magic: This works an enemy, a beholder
+like the targeted dispel func- tries to cause as much
+tion of the spell. The disruption and confusion
+gauth’s dispel check is as possible.
+1d20+8. Eye Rays (Su): Each
+Scorching Ray: This works like of a beholder’s ten eye
+the spell, dealing 4d6 points of rays resembles a spell cast by a 13th-
+fire damage (no save). A gauth cre- level caster. Each eye ray has a
+ates only one fiery ray per use of range of 150 feet and a save DC of
+this ability. 17. The save DCs are Charisma-
+Paralysis: The target must succeed on a Forti- based. The ten eye rays include:
+tude save or be paralyzed for 2d10 minutes. Charm Monster: The target must succeed on a
+Exhaustion: This works like the spell ray of Will save or be affected as though by the spell.
+exhaustion (no save). Beholders use this ray to confuse the opposition,
+26 Stunning Gaze (Su): Stun for 1 round, 30 feet, usually employing it early in a fight. The beholder gen-
+Will DC 14 negates. The save DC is Charisma-based. erally instructs a charmed target to either restrain a com-
+Any creature meeting the gaze of the gauth’s central eye rade or stand aside.
+
+Charm Person: The target must succeed on a Will save or be chambers stacked on top of each other. Beholders prefer inacces-
+affected as though by the spell. Beholders use this ray in the same sible locations that earthbound foes can reach only with difficulty.
+manner as the charm monster ray.
+Disintegrate: The target must succeed on a Fortitude save or be

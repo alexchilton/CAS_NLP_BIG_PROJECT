@@ -1,0 +1,39 @@
+CHOKER
+Organization: Solitary, pride (3–5), or flight (6–13)
+Challenge Rating: 7 Small Aberration
+Treasure: Standard Hit Dice: 3d8+3 (16 hp)
+Alignment: Usually chaotic evil Initiative: +6
+Advancement: 10–13 HD (Large); 14–27 HD (Huge) Speed: 20 ft. (4 squares), climb 10 ft.
+Level Adjustment: +2 (cohort) Armor Class: 17 (+1 size, +2 Dex, +4 natural), touch 13,
+flat-footed 15
+This creature has the hindquarters of a big goat and the forequarters of a Base Attack/Grapple: +2/+5
+great lion. It has dragon wings and three heads: a horned goat, a mane- Attack: Tentacle +6 melee (1d3+3)
+less lion, and a fierce dragon. Full Attack: 2 tentacles +6 melee (1d3+3)
+Space/Reach: 5 ft./10 ft.
+The chimera is a bizarre predator that hunts on the ground and Special Attacks: Improved grab, constrict 1d3+3
+on the wing. It can defeat even the hardiest opponent with a Special Qualities: Darkvision 60 ft., quickness
+flurry of claws and fangs. Saves: Fort +2, Ref +5, Will +4
+.C A chimera is about 5 feet tall at the shoulder, nearly 10 feet Abilities: Str 16, Dex 14, Con 13, Int 4, Wis 13, Cha 7
+yb long, and weighs about 4,000 pounds. A chimera’s dragon head Skills: Climb +13, Hide +10, Move Silently +6
+.sullI might be black, blue, green, red, or white. Feats: Improved InitiativeB, Lightning Reflexes, Stealthy
+Chimeras can speak Draconic but seldom bother to do so, Environment: Underground
+except when toadying to more powerful creatures. Organization: Solitary
+Challenge Rating: 2
+COMBAT Treasure: 1/10 coins; 50% goods; 50% items
+A deadly foe, the chimera prefers to surprise prey. It often Alignment: Usually chaotic evil
+swoops down from the sky or lies concealed until it charges. The Advancement: 4–6 HD (Small); 7–12 HD (Medium)
+dragon head can loose a breath weapon instead of biting. Several Level Adjustment: —
+chimeras attack in concert.
+Breath Weapon (Su): A chimera’s breath weapon depends A creature perches in the shadows, near the ceiling, in a corner of the
+on the color of its drag- chamber. Its body resembles that of a naked halfling with mottled flesh,
+on head, as sum- but its limbs are incredibly spindly and long. It hisses, showing sharp, large
+marized on the teeth an instant before one of its limbs snaps out like a whip.
+table below.
+These vicious little predators lurk underground, grabbing what-
+Chimera ever prey happens by.
+A choker’s skull, spine, and rib cage are bony, but its limbs are
+really tentacles with multiple knobby joints of cartilage. Thus, it
+appears bowlegged, and its movements seem peculiar and fluid.
+Its hands and feet have spiny pads that help the choker grip
+almost any surface. The creature weighs about 35 pounds.
+Chokers speak Undercommon.

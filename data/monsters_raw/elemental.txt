@@ -1,0 +1,178 @@
+ELEMENTAL
+A ghaele can take the form of an incorporeal globe of eldritch
+colors, 5 feet in diameter. Elementals are incarnations of the elements that compose existence.
+A ghaele is about 6 feet tall and weighs about 170 pounds. They are as wild and dangerous as the forces that birthed them.
+Ghaeles speak Celestial, Infernal, and Draconic, but can com-
+municate with almost any creature, thanks to their tongues ability. COMBAT
+Elementals have varied combat abilities and tactics, but all have
+Combat the same elemental qualities.
+Ghaeles who enter combat prefer direct confrontation and damag-
+ing attacks to more subtle or insidious methods. They usually fight AIR ELEMENTAL
+in their humanoid form, wielding incandescent +4 holy This creature appears to be an amorphous, shifting cloud surrounded by
+greatswords. If a ghaele desires mobility, it assumes its globe form fast-moving currents of air. Darker bits of twirling vapor form the sugges-
+and blasts the enemy with light rays. tion of two eyes and a mouth, but this could be a trick of the swirling air.
+A ghaele’s natural weapons, as well as any weapons it wields, are
+treated as chaotic-aligned and good-aligned for the purpose of Air elementals are among the swiftest and most agile creatures in
+overcoming damage reduction. existence. They seldom leave their home plane except when sum-
+Spell-Like Abilities: At will—aid, charm monster (DC 17), color moned elsewhere by a spell.
+spray (DC 14), comprehend languages, continual flame, cure light wounds Air elementals speak Auran, though they rarely choose to do so.
+(DC 14), dancing lights, detect evil, detect thoughts (DC 15), disguise self, The voice of an air elemental sounds like the high-pitched screech
+dispel magic, hold monster (DC 18), greater invisibility (self only), major of a tornado or the low moan of a midnight storm.
+image (DC 16), see invisibility, greater teleport (self plus 50 pounds of
+objects only); 1/day—chain lightning (DC 19), prismatic spray (DC 20), Combat
+wall of force. Caster level 12th. The save DCs are Charisma-based. Their rapid speed makes air elementals useful on vast battlefields
+Spells: Ghaeles in humanoid form can cast divine spells as or in extended aerial combat.
+14th-level clerics. A ghaele has access to two of the following do- Air Mastery (Ex): Airborne creatures take a –1 penalty on
+mains: Air, Animal, Chaos, Good, or Plant (plus any others from its attack and damage rolls against an air elemental.
+deity). The save DCs are Wisdom-based. Whirlwind (Su): The elemental can transform itself into a
+Typical Cleric Spells Prepared (6/7/7/6/5/4/4/3; save DC 13 + spell whirlwind once every 10 minutes and remain in that form for up
+level): 0—cure minor wounds, detect magic, guidance, light, resistance, to 1 round for every 2 HD it has. In this form, the elemental can
+virtue; 1st—bless, calm animals*, command, divine favor, obscuring move through the air or along a surface at its fly speed.
+mist, sanctuary, shield of faith; 2nd—aid, align weapon, bear’s The whirlwind is 5 feet wide at the base, up to 30 feet wide at
+endurance, hold animal*, lesser restoration, remove paralysis, zone of the top, and up to 50 feet tall, depending on the elemental’s size.
+truth; 3rd—daylight, gaseous form*, prayer, remove curse, searing light, The elemental controls the exact height, but it must be at least
+water breathing; 4th—death ward, dismissal, divine power, restoration, 10 feet.
+summon nature’s ally IV (animal)*; 5th—control winds*, flame strike, The elemental’s movement while in whirlwind form does not
+raise dead, true seeing; 6th—banishment, blade barrier, chain lightning*, provoke attacks of opportunity, even if the elemental enters the
+heal; 7th—animal shapes*, holy word, summon monster VII. space another creature occupies. Another creature might be
+*Domain spell. Domains: Air and Animal. caught in the whirlwind if it touches or enters the whirlwind, or if
+Gaze (Su): In humanoid form—slay evil creatures of 5 or less the elemental moves into or through the creature’s space. 95
+HD, range 60 feet, Will DC 18 negates. Even if the save succeeds, Creatures one or more size categories smaller than the elemen-
+the creature is affected as though by a fear spell for 2d10 rounds. tal might take damage when caught in the whirlwind (see the
+
+table below for details) and may be lifted into the air. An affected against the whirlwind’s effects varies with the elemental’s size (see
+creature must succeed on a Reflex save when it comes into contact the table). The save DC is Strength based.
+with the whirlwind or take the indicated damage. It must also suc- Creatures trapped in the whirlwind cannot move except to go
+ceed on a second Reflex save or be picked up bodily and held sus- where the elemental carries them or to escape the whirlwind.
+pended in the powerful winds, automatically taking the indicated Creatures caught in the whirlwind can otherwise act normally, but
+damage each round. A creature that can fly is allowed a Reflex save must succeed on a Concentration check (DC 15 + spell level) to
+each round to escape the whirlwind. The creature still takes cast a spell. Creatures caught in the whirlwind take a –4 penalty to
+damage but can leave if the save is successful. The DC for saves Dexterity and a –2 penalty on attack rolls. The elemental can have
+Air Elemental, Small Air Elemental, Medium Air Elemental, Large
+Small Elemental(Air, Extraplanar) Medium Elemental (Air, Extraplanar) Large Elemental (Air, Extraplanar)
+LATNEMELE Hit Dice: 2d8 (9 hp) 4d8+8 (26 hp) 8d8+24 (60 hp)
+Initiative: +7 +9 +11
+Speed: Fly 100 ft. (perfect) (20 squares) Fly 100 ft. (perfect) (20 squares) Fly 100 ft. (perfect) (20 squares)
+Armor Class: 17 (+1 size, +3 Dex, +3 natural), 18 (+5 Dex, +3 natural), 20 (–1 size, +7 Dex, +4 natural),
+touch 14, flat-footed 14 touch 15, flat-footed 13 touch 16, flat-footed 13
+Base Attack/Grapple:+1/–3 +3/+4 +6/+12
+Attack: Slam +5 melee (1d4) Slam +8 melee (1d6+1) Slam +12 melee (2d6+2)
+Full Attack: Slam +5 melee (1d4) Slam +8 melee (1d6+1) 2 slams +12 melee (2d6+2)
+Space/Reach: 5 ft./5 ft. 5 ft./5 ft. 10 ft./10 ft.
+Special Attacks: Air mastery, whirlwind Air mastery, whirlwind Air mastery, whirlwind
+Special Qualities: Darkvision 60 ft., elemental traits Darkvision 60 ft., elemental traits Damage reduction 5/–,
+darkvision 60 ft., elemental traits
+Saves: Fort +0, Ref +6, Will +0 Fort +3, Ref +9, Will +1 Fort +5, Ref +13, Will +2
+Abilities: Str 10, Dex 17, Con 10, Str 12, Dex 21, Con 14, Str 14, Dex 25, Con 16,
+Int 4, Wis 11, Cha 11 Int 4, Wis 11, Cha 11 Int 6, Wis 11, Cha 11
+Skills: Listen +2, Spot +3 Listen +3, Spot +4 Listen +5, Spot +6
+Feats: Flyby Attack, Improved InitiativeB, Dodge, Flyby Attack, Improved Combat Reflexes, Dodge, Flyby Attack,
+Weapon FinesseB InitiativeB, Weapon FinesseB Improved InitiativeB, Weapon FinesseB
+Environment: Elemental Plane of Air Elemental Plane of Air Elemental Plane of Air
+Organization: Solitary Solitary Solitary
+Challenge Rating: 1 3 5
+Treasure: None None None
+Alignment: Usually neutral Usually neutral Usually neutral
+Advancement: 3 HD (Small) 5–7 HD (Medium) 9–15 HD (Large)
+Level Adjustment: — — —
+Air Elemental, Huge Air Elemental, Greater Air Elemental, Elder
+Huge Elemental(Air, Extraplanar) Huge Elemental(Air, Extraplanar) Huge Elemental (Air, Extraplanar)
+Hit Dice: 16d8+64 (136 hp) 21d8+84 (178 hp) 24d8+96 (204 hp)
+Initiative: +13 +14 +15
+Speed: Fly 100 ft. (perfect) (20 squares) Fly 100 ft. (perfect) (20 squares) Fly 100 ft. (perfect) (20 squares)
+Armor Class: 21 (–2 size, +9 Dex, +4 natural), 26 (–2 size, +10 Dex, +8 natural), 27 (–2 size, +11 Dex, +8 natural),
+touch 17, flat-footed 12 touch 18, flat-footed 16 touch 19, flat-footed 16
+Base Attack/Grapple:+12/+24 +15/+28 +18/+32
+Attack: Slam +19 melee (2d8+4) Slam +23 melee (2d8+5) Slam +27 melee (2d8+6)
+Full Attack: 2 slams +19 melee (2d8+4) 2 slams +23 melee (2d8+5) 2 slams +27 melee (2d8+6)
+Space/Reach: 15 ft./15 ft. 15 ft./15 ft. 15 ft./15 ft.
+Special Attacks: Air mastery, whirlwind Air mastery, whirlwind Air mastery, whirlwind
+Special Qualities: Damage reduction 5/–, Damage reduction 10/–, Damage reduction 10/–,
+darkvision 60 ft., elemental traits darkvision 60 ft., elemental traits darkvision 60 ft., elemental traits
+Saves: Fort +9, Ref +19, Will +5 Fort +11, Ref +22, Will +9 Fort +12, Ref +25, Will +10
+Abilities: Str 18, Dex 29, Con 18, Str 20, Dex 31, Con 18, Str 22, Dex 33, Con 18,
+Int 6, Wis 11, Cha 11 Int 8, Wis 11, Cha 11 Int 10, Wis 11, Cha 11
+Skills: Listen +11, Spot +12 Listen +14, Spot +14 Listen +29, Spot +29
+Feats: Alertness, Combat Reflexes, Alertness, Blind-fight, Combat Alertness, Blind-fight, Cleave,
+Dodge, Flyby Attack, Improved Reflexes, Flyby Attack, Improved Combat Reflexes, Flyby Attack,
+InitiativeB, Mobility, Spring InitiativeB, Iron Will, Mobility, Improved InitiativeB, Iron Will,
+Attack, Weapon FinesseB Power Attack, Spring Attack, Mobility, Power Attack, Spring
+Weapon FinesseB Attack, Weapon FinesseB
+Environment: Elemental Plane of Air Elemental Plane of Air Elemental Plane of Air
+Organization: Solitary Solitary Solitary
+Challenge Rating: 7 9 11
+Treasure: None None None
+96 Alignment: Usually neutral Usually neutral Usually neutral
+Advancement: 17–20 HD (Huge) 22–23 HD (Huge) 25–48 HD (Huge)
+Level Adjustment: — — —
+
+only as many creatures trapped inside the whirlwind at one time diameter equal to half the whirlwind’s height. The cloud obscures
+as will fit inside the whirlwind’s volume. all vision, including darkvision, beyond 5 feet. Creatures 5 feet
+The elemental can eject any carried creatures whenever it away have concealment, while those farther away have total con-
+wishes, depositing them wherever the whirlwindhappens to be. A cealment. Those caught in the cloud must succeed on a Concen-
+summoned elemental always ejects trapped creatures before tration check (DC 15 + spell level) to cast a spell.
+returning to its home plane. An elemental in whirlwind form cannot make slam attacks and
+If the whirlwind’s base touches the ground, it creates a swirling does not threaten the area around it.
+cloud of debris. This cloud is centered on the elemental and has a
+Earth Elemental, Small Earth Elemental, Medium Earth Elemental, Large
+Small Elemental Medium Elemental Large Elemental
+(Earth, Extraplanar) (Earth, Extraplanar) (Earth, Extraplanar) ELEMENTAL
+Hit Dice: 2d8+2 (11 hp) 4d8+12 (30 hp) 8d8+32 (68 hp)
+Initiative: –1 –1 –1
+Speed: 20 ft. (4 squares) 20 ft. (4 squares) 20 ft. (4 squares)
+Armor Class: 17 (+1 size, –1 Dex, +7 natural) 18 (–1 Dex, +9 natural) 18 (–1 size, –1 Dex, +10 natural)
+touch 10, flat-footed 17 touch 9, flat-footed 18 touch 8, flat-footed 18
+Base Attack/Grapple:+1/+0 +3/+8 +6/+17
+Attack: Slam +5 melee (1d6+4) Slam +8 melee (1d8+7) Slam +12 melee (2d8+7)
+Full Attack: Slam +5 melee (1d6+4) Slam +8 melee (1d8+7) 2 slams +12 melee (2d8+7)
+Space/Reach: 5 ft./5 ft. 5 ft./5 ft. 10 ft./10 ft.
+Special Attacks: Earth mastery, push Earth mastery, push Earth mastery, push
+Special Qualities: Darkvision 60 ft., earth glide, Darkvision 60 ft., earth glide, Damage reduction 5/–, earth glide,
+elemental traits elemental traits darkvision 60 ft., elemental traits
+Saves: Fort +4, Ref –1, Will +0 Fort +7, Ref +0, Will +1 Fort +10, Ref +1, Will +2
+Abilities: Str 17, Dex 8, Con 13, Str 21, Dex 8, Con 17, Str 25, Dex 8, Con 19,
+Int 4, Wis 11, Cha 11 Int 4, Wis 11, Cha 11 Int 6, Wis 11, Cha 11
+Skills: Listen +3, Spot +2 Listen +4, Spot +3 Listen +6, Spot +5
+Feats: Power Attack Cleave, Power Attack Cleave, Great Cleave, Power Attack
+Environment: Elemental Plane of Earth Elemental Plane of Earth Elemental Plane of Earth
+Organization: Solitary Solitary Solitary
+Challenge Rating: 1 3 5
+Treasure: None None None
+Alignment: Usually neutral Usually neutral Usually neutral
+Advancement: 3 HD (Small) 5–7 HD (Medium) 9–15 HD (Large)
+Level Adjustment: — — —
+Earth Elemental, Huge Earth Elemental, Greater Earth Elemental, Elder
+Huge Elemental Huge Elemental Huge Elemental
+(Earth, Extraplanar) (Earth, Extraplanar) (Earth, Extraplanar)
+Hit Dice: 16d8+80 (152 hp) 21d8+105 (199 hp) 24d8+120 (228 hp)
+Initiative: –1 –1 –1
+Speed: 30 ft. (6 squares) 30 ft. (6 squares) 30 ft. (6 squares)
+Armor Class: 18 (–2 size, –1 Dex, +11 natural) 20 (–2 size, –1 Dex, +13 natural) 22 (–2 size, –1 Dex, +15 natural)
+touch 7, flat-footed 18 touch 7, flat-footed 20 touch 7, flat-footed 22
+Base Attack/Grapple:+12/+29 +15/+33 +18/+37
+Attack: Slam +19 melee (2d10+9) Slam +23 melee (2d10+10) Slam +27 melee (2d10+11/19–20)
+Full Attack: 2 slams +19 melee (2d10+9) 2 slams +23 melee (2d10+10) 2 slams +27 melee (2d10+11/19–20)
+Space/Reach: 15 ft./15 ft. 15 ft./15 ft. 15 ft./15 ft.
+Special Attacks: Earth mastery, push Earth mastery, push Earth mastery, push
+Special Qualities: Damage reduction 5/–, earth glide, Damage reduction 10/–, earth glide, Damage reduction 10/–, earth glide,
+darkvision 60 ft., elemental traits darkvision 60 ft., elemental traits darkvision 60 ft., elemental traits
+Saves: Fort +15, Ref +4, Will +7 Fort +17, Ref +6, Will +9 Fort +19, Ref +7, Will +10
+Abilities: Str 29, Dex 8, Con 21, Str 31, Dex 8, Con 21, Str 33, Dex 8, Con 21,
+Int 6, Wis 11, Cha 11 Int 8, Wis 11, Cha 11 Int 10, Wis 11, Cha 11
+Skills: Listen +10, Spot +9 Listen +14, Spot +14 Listen +29, Spot +29
+Feats: Awesome Blow, Cleave, Great Alertness, Awesome Blow, Cleave, Alertness, Awesome Blow, Cleave,
+Cleave, Improved Bull Rush, Great Cleave, Improved Bull Rush, Great Cleave, Improved Bull Rush,
+Iron Will, Power Attack Improved Sunder, Iron Will, Improved Critical (slam), Improved
+Power Attack Sunder, Iron Will, Power Attack
+Environment: Elemental Plane of Earth Elemental Plane of Earth Elemental Plane of Earth
+Organization: Solitary Solitary Solitary
+Challenge Rating: 7 9 11
+Treasure: None None None
+Alignment: Usually neutral Usually neutral Usually neutral 97
+Advancement: 17–20 HD (Huge) 22–23 HD (Huge) 25–48 HD (Huge)
+Level Adjustment: — — —
+
+Air Elemental Sizes
+ning the creature for 1 round unless it succeeds on a DC 15 For-
+—––—— Whirlwind ——––— titude save.
+Elemental Height Weight Save DC Damage Height

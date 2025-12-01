@@ -1,0 +1,26 @@
+SPEED
+Boar (+6)
+This entry gives the creature’s base land speed in feet per move action. Rhinoceros (+7)
+All speeds must be evenly divisible by 5 feet. Most creatures have base Scales +5 to +10 or more Dragon (varies)
+land speeds of between 20 and 40 feet. Larger creatures and Exoskeleton +2 to +11 or more Giant bee (+2)
+quadrupeds tend to be faster, and predators or creatures noted for Chuul (+10)
+their fast movement could have a speed of up to 60 to 80 feet. Com- Remorhaz (+11)
+pare the speeds of monsters similar to your monster concept to pick a Shell or carapace +10 to +12 or more Juvenile tojanida (+10)
+suitable value. See Table 5–2 for some guidelines and suggestions. Bulette (+12)
+If the creature has other modes of movement, list all that apply Very tough hide +8 to +15 or more Otyugh (+8)
+298 after the base land speed in alphabetical order. If the creature wears Kraken (+14)
+armor that reduces its speed, it’s helpful to give its reduced move- Ravid (+15)
+ment rate in a parenthetical note following the base land speed.
+
+ATTACK CR × 1.5) – 1. A CR 5 monster of this sort would have an attack
+Decide what attack forms the creature uses in melee and ranged bonus of +6 or +7.
+combat and determine the monster’s attack bonus with each Manipulating your monster’s attack bonus to fit the CR you
+attack. The attacks you might decide to give a creature include: have in mind is not quite as easy as manipulating Armor Class. You
+—Melee weapon (possibly multiple melee weapons) can change the creature’s Hit Dice, since base attack bonus is
+—Ranged weapon derived from Hit Dice, but doing this will change several other
+—Bite characteristics. The best way to fine-tune your monster at this step
+—Claw or tentacle is to change its Strength score (or Dexterity, for ranged attacks),
+—Slam but watch out for creating ability scores that seem unusually low
+—Gore or high for a creature of the given size and type.
+—Touch attack
+Attack Bonus: A creature’s attack bonus consists of the follow- FULL ATTACK CHAPTER

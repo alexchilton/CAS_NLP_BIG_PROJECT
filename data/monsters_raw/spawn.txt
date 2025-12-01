@@ -1,0 +1,4 @@
+SPAWN
+Advancement: By character class. former companion. The character can summon another familiar,
+Level Adjustment: Same as the base creature +8. but it must be a rat or bat.
+Vampire Weaknesses

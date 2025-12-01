@@ -1,0 +1,70 @@
+REDNAMALAS
+just like an aquatic elf. These creatures, called malenti, have a swim others. They are rarely encountered without their heated metal
+speed of 40 feet, can remain out of water for 1 hour per point of spears, but sometimes wield other weapons.
+Constitution, and have freshwater sensitivity and light sensitivity When summoned to the Material Plane, salamanders often
+(dazzled in bright light). Malenti have no natural attacks. They are assist forge workers and smiths. Their ability to work metal while
+otherwise identical with sahuagin. it’s still in the fire makes them some of the best metalsmiths
+known anywhere.
+SAHUAGIN SOCIETY Salamanders reproduce asexually, each producing a single
+The sea devils live by a code of ritualized behavior developed over larva every ten years and incubating the young in fire pits until
+millennia. Every member of a sahuagin they reach maturity. Flamebrothers and average salamanders are
+community knows its place well—and actually different species, while nobles rise from the ranks of the
+remains there. The sahuagin average.
+pride themselves on Salamanders speak Ignan. Some average
+self-sufficiency and salamanders and all nobles also speak
+strict adherence to Common.
+their social code.
+Unfortunately for COMBAT
+others, one of Salamander Salamanders use metal spears
+their core beliefs is heated red-hot by their own
+that the survival of furnacelike bodies. Blood-
+the sahuagin de- thirsty and sadistic,
+pends on ruthlessly they are quick to at-
+eradicating anything tack. They prefer to
+that is not sahuagin. take on those who
+Sahuagin dwell in appear strongest
+communities of vary- first, saving weaker
+ing sizes, from villages enemies for slower,
+to cities, built of stone agonizing treatment
+and other natural mate- later.
+rials deep beneath the If a salamander
+ocean waves. The crea- has damage reduc-
+tures employ a variety tion, its natural
+of defenses, both pas- weapons are treated
+sive (such as seaweed as magic weapons for
+camouflage) and active the purpose of over-
+(such as traps and tame coming damage reduction.
+sharks), to protect their com- Constrict (Ex): A salaman-
+munities. Elite groups of senior der deals automatic tail slap damage
+males (especially the four-armed ones) rule each community: (including fire damage) with a successful
+A baron governs a village, while a prince rules approximately grapple check. A noble salamander can constrict multiple crea-
+twenty villages. Sahuagin kings rule much larger territories and tures simultaneously, provided they are all at least two sizes
+dwell within cities having as many as six thousand inhabitants. A smaller than it.
+sahuagin kingdom generally covers an entire seacoast, with vil- Heat (Ex): A salamander generates so much heat that its mere
+lages and towns at least 100 miles apart. Sahuagin clerics function touch deals additional fire damage. Salamanders’ metallic weap-
+as teachers and keepers of lore, controlling religious life in their ons also conduct this heat.
+communities. Despite the presence of these priestesses within Improved Grab (Ex): To use this ability, a salamander must hit
+their society, the superstitious sea devils distrust and fear magic. a creature of up to one size larger than itself with its tail slap attack.
+The patron deity of sahuagin is Sekolah, a great devil shark. It can then attempt to start a grapple as a free action without pro-
+voking an attack of opportunity. If it wins the grapple check, it
+SAHUAGIN CHARACTERS establishes a hold and can constrict.
+A male sahuagin’s favored class is ranger, and most sahuagin lead- Spell-Like Abilities: (Noble salamanders only) 3/day—burn-
+ers are rangers. Most sahuagin rangers choose humanoids (elves) ing hands (DC 13), fireball (DC 15), flaming sphere (DC 14), wall of fire
+as their favored enemy. Female sahuagin favor the cleric class. (DC 16); 1/day—dispel magic, summon monster VII (Huge fire ele-
+Sahuagin clerics worship Sekolah. A sahuagin cleric has access to mental). Caster level 15th. The save DCs are Charisma-based.
+218 two of the following domains: Evil, Law, Strength, or War (favored Skills: Salamanders have a +4 racial bonus on Craft (black-
+weapon: trident). smithing) checks.
+
+Flamebrother Salamander AverageSalamander NobleSalamander
+SmallOutsider MediumOutsider LargeOutsider
+(Extraplanar,Fire) (Extraplanar,Fire) (Extraplanar,Fire)
+HitDice: 4d8+8(26hp) 9d8+18(58hp) 15d8+45(112hp)
+Initiative: +1 +1 +1
+Speed: 20ft.(4squares) 20ft.(4squares) 20ft.(4squares)
+ArmorClass: 19(+1size,+1Dex,+7natural), 18(+1Dex,+7natural), 18(–1size,+1Dex,+8natural),
+touch12,flat-footed18 touch11,flat-footed17 touch10,flat-footed17
+BaseAttack/Grapple:+4/+1 +9/+11 +15/+25
+Attack: Spear+6melee Spear+11melee longspear+23melee
+(1d6+1/×3plus1d6fire) (1d8+3/×3plus1d6fire) (1d8+9/×3plus1d8fire)
+FullAttack: Spear+6melee Spear+11/+6melee longspear+23/+18/+13
+(1d6+1/×3plus1d6fire)and (1d8+3/×3plus1d6fire)and melee(1d8+9/×3plus1d8fire)

@@ -1,0 +1,5 @@
+MEDUSA
+Poison (Ex): Injury, Fortitude DC 14, initial damage 1d6 Str,
+Medium Monstrous Humanoid secondary damage 2d6 Str. The save DC is Constitution-based.
+Hit Dice: 6d8+6 (33 hp)
+Initiative: +2

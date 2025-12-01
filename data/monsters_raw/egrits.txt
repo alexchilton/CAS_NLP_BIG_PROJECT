@@ -1,0 +1,43 @@
+EGRITS
+form some special action or avoid a hazard. It can always choose to once per day.
+take 10 on a Swim check, even if distracted or endangered. It can Special Arrows (Ex): Pixies sometimes employ arrows that
+use the run action while swimming, provided it swims in a deal no damage but can erase memory or put a creature to sleep.
+straight line. Memory Loss: An opponent struck by this arrow must succeed on
+*Nixies have a +5 racial bonus on Hide checks when in the a DC 15 Will save or lose all memory. The save DC is Charisma-
+water. based and includes a +2 racial bonus. The subject retains skills, lan-
+guages, and class abilities but forgets everything else until he or
+PIXIE she receives a heal spell or memory restoration with limited wish,
+Small Fey wish, or miracle.
+Hit Dice: 1d6 (3 hp) Sleep: Any opponent struck by this arrow, regardless of Hit Dice,
+Initiative: +4 must succeed on a DC 15 Fortitude save or be affected as though
+Speed: 20 ft. (4 squares), fly 60 ft. (good) by a sleep spell. The save DC is Charisma-based and includes a +2
+Armor Class: 16 (+1 size, +4 Dex, +1 natural), touch 15, racial bonus.
+flat-footed 12
+Base Attack/Grapple: +0/–6 Pixies as Characters
+Attack: Short sword +5 melee (1d4–2/19–20) or longbow +5 A pixie character exchanges its 1 HD of fey for its first class level,
+ranged (1d6–2/×3) so a 1st-level pixie sorcerer has a d4 Hit Die, a +0 base attack bonus,
+Full Attack: Short sword +5 melee (1d4–2/19–20) or longbow the base save bonuses of a sorcerer, and the sorcerer’s skill points
++5 ranged (1d6–2)/×3 and class skills.
+Space/Reach: 5 ft./5 ft. Pixie characters possess the following racial traits.
+Special Attacks: Spell-like abilities, special arrows — –4 Strength, +8 Dexterity, +6 Intelligence, +4 Wisdom, +6
+Special Qualities: Damage reduction 10/cold iron, greater Charisma.
+invisibility, low-light vision, spell resistance 15 —Small size. +1 bonus to Armor Class, +1 bonus on attack rolls,
+Saves: Fort +0, Ref +6, Will +4 +4 bonus on Hide checks, –4 penalty on grapple checks, lifting
+Abilities: Str 7, Dex 18, Con 11, Int 16, Wis 15, Cha 16 and carrying limits 3/4 those of Medium characters.
+Skills: Bluff +7, Concentration +4, Escape Artist +8, Hide +8, —A pixie’s base land speed is 20 feet. It also has a fly speed of 60
+Listen +8, Move Silently +8, Ride +8, Search +9, Sense Motive feet (good).
++6, Spot +8 —Low-light vision.
+Feats: DodgeB, Weapon Finesse —Skills: Pixies have a +2 racial bonus on Listen, Search, and
+Environment: Temperate forests Spot checks.
+Organization: Gang (2–4), band (6–11), or tribe (20–80) —Racial Feats: A pixie receives Dodge as a bonus feat.
+Challenge Rating: 4 (5 with Otto’s irresistible dance) — +1 natural armor bonus.
+Treasure: No coins; 50% goods; 50% items —Special Attacks (see above): Spell-like abilities.
+Alignment: Always neutral good —Special Qualities (see above): Damage reduction 10/cold
+Advancement: 2–3 HD (Small) iron, greater invisibility, spell resistance equal to 15 + class levels.
+Level Adjustment: +4 (+6 with Otto’s irresistible dance) —Automatic Languages: Common, Sylvan. Bonus Languages:
+Elven, Gnome, Halfling.
+This being resembles a very small elf, but with longer ears and gossamer —Favored Class: Sorcerer.
+wings. —Level adjustment +4 (+6 if the pixie can use Otto’s irresistible
+dance).
+Pixies are merry pranksters that love to lead travelers astray. They
+can, however, be roused to surprising ire when dealing with evil

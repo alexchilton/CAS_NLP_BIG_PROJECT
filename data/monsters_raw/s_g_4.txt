@@ -1,0 +1,37 @@
+S G 4
+the creature has. Some templates grant one or more bonus feats. relevant ability score modifier of the creature using the ability. :
+Environment: Usually the same as the base creature. Typically, each ability is associated with certain kinds of abilities,
+Organization: Usually the same as the base creature. as follows.
+Challenge Rating: Most templates increase the creature’s Strength: Any application of force, crushing, binding, or con-
+Challenge Rating. A template might provide a modifier to be striction.
+added to the base creature’s CR, or it might specify a range of mod- Dexterity: Movement, movement restrictions, hitting with a
+ifiers depending on the base creature’s original Hit Dice or CR. missile, entanglement.
+Treasure: Usually the same as the base creature. Constitution: Almost anything that comes from the creature’s
+Alignment: Usually the same as the base creature, unless the body, including poison attacks and breath weapons.
+template is associated with a certain alignment (such as the celes- Intelligence: Illusion effects.
+tial and fiendish templates, and any template that changes a crea- Wisdom: Mental or perception effects (except charms and com-
+ture’s type to undead). pulsions; see Charisma).
+Advancement: Usually the same as the base creature. Charisma: A creature’s Charisma modifier affects the save DC
+Level Adjustment: This entry is a modifier to the base crea- for any spell-like abilities it has. Use Charisma for anything pit-
+ture’s level adjustment. Any level adjustment is meaningless ting the creature’s will against an opponent, such as gaze attacks,
+unless the creature retains a high enough Intelligence (minimum charms, compulsions, and energy drain effects. Also use Charisma
+3) to gain class levels after applying the template. for any DC that normally would be based on an ability score the
+creature does not have. For example, undead have no Constitution
+ADDING A TEMPLATE, STEP-BY-STEP score, so any poison attack an undead creature has would use
+All the templates presented in this book include at least one Charisma to determine the save DC.
+example of the template applied to a creature. To apply a template Add any new special abilities granted by the template.
+to a creature yourself, follow the steps outlined below. Add any skill bonuses given by the template.
+If the template changes the base creature’s size, use Table 4–2 to Add any feats given by the template that are not already taken
+determine changes to natural armor, Armor Class, and attack rolls. into account.
+Check the text of the template to see if you apply size modifiers to Update the Challenge Rating as instructed by the template.
+Strength, Dexterity, and Constitution. The template’s Abilities
+entry may already account for those adjustments. Adding More Than One Template
+Add all ability score modifiers, from size and from the Abilities In theory, there’s no limit to the number of templates you can add
+entry, to the base creature’s ability scores. to a creature. To add more than one template, just apply each tem-
+When you know the new Constitution modifier and any plate one at a time. Always apply inherited templates before apply-
+change to Hit Die size, recalculate the templated monster’s hit ing acquired templates. Whenever you add multiple templates, pay
+points. See Hit Dice and Hit Points, above. attention to the creature’s type—you may add a template that
+The new Constitution modifier also modifies the creature’s Forti- makes the creature ineligible for other templates you might want
+tude saving throw modifier and any skill modifier for Concentration to add. For example, a vampire cannot become a lich and vice versa.
+checks. Check for Great Fortitude or any other feat that affects the
+Fortitude saving throw modifier and apply the change now.

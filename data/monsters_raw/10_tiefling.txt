@@ -1,0 +1,33 @@
+10 TIEFLING
+Skills: Heal +4, Knowledge (religion) +1, Listen Tiefling, 1st-Level
++3, Ride +1, Spot +3 Warrior
+Feats: Improved Initiative Medium Outsider (Native)
+Environment: Temperate Tiefling Hit Dice: 1d8+1 (5 hp)
+plains Initiative: +1
+Organization: Solitary, pair, Speed: 30 ft. (6 squares)
+or team (3–4) Armor Class: 15 (+1 Dex,
+Challenge Rating: 1/2 +3 studded leather, +1
+Treasure: Standard light shield), touch 11,
+Alignment: Usually good (any) flat-footed 14
+Advancement: By character class Base Attack/Grapple:
+Level Adjustment: +1 +1/+2
+Attack: Rapier +3 melee
+This being looks like a beautiful human, (1d6+1/18–20) or light
+with calm, serene features and an inner crossbow +2 ranged
+radiance that shines from its face. (1d8/19–20)
+Full Attack: Rapier +3 melee
+Graced with a touch of the holy, aasi- (1d6+1/18–20) or light crossbow
+mars are usually tall, good-looking, and +2 ranged (1d8/19–20)
+generally pleasant. Some have a minor Space/Reach: 5 ft./5 ft.
+physical trait suggesting their her- Special Attacks: Darkness
+itage, such as silver hair, golden Special Qualities: Darkvision
+eyes, or an unnaturally 60 ft., resistance to cold 5, elec-
+intense stare. tricity 5, and fire 5
+Most aasimars are Saves: Fort +3, Ref +1,
+decidedly good-aligned. Will –1
+They fight against evil causes Abilities: Str 13, Dex 209
+and attempt to sway others to do 13, Con 12, Int 12, Wis
+the right thing. Occasionally they take on 9, Cha 6
+Planetouched
+
+Skills: Bluff +4, Hide +5, Move Silently +1, Sleight of Hand +1
