@@ -1,3 +1,12 @@
+---
+title: D&D RAG GM
+emoji: 🎲
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+---
+
 # D&D RAG System
 
 An AI-powered Dungeon Master assistant using Retrieval Augmented Generation (RAG) with D&D 5e content.
