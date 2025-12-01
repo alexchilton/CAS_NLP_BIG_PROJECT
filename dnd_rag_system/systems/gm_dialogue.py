@@ -226,7 +226,7 @@ GM RESPONSE:"""
 
         return prompt
 
-    def _query_ollama(self, prompt: str, timeout: int = 30) -> str:
+    def _query_ollama(self, prompt: str, timeout: int = 120) -> str:
         """
         Send prompt to Ollama and get response.
 

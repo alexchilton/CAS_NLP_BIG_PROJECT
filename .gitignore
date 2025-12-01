@@ -32,7 +32,7 @@ dnd_rag_system.log
 .ipynb_checkpoints/
 
 # Data files (too large for git)
-*.pdf
+
 
 # Environment
 .env
