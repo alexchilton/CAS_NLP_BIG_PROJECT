@@ -160,10 +160,7 @@ def chat(message, history):
     global conversation_history
 
     if not current_character:
-        return history + [
-            {"role": "user", "content": "Please select a character first!"},
-            {"role": "assistant", "content": ""}
-        ]
+        return history + [("⚠️ Please select a character first", "")]
 
     if not message.strip():
         return history
@@ -180,60 +177,36 @@ def chat(message, history):
 - `/rag <query>` - Search D&D rules (e.g., `/rag fireball`)
 
 Otherwise, just type your action and press Enter!"""
-            return history + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": help_text}
-            ]
+            return history + [(message, help_text)]
 
         elif cmd == "/context":
             context_text = gm.session.context
-            return history + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": f"**Current Context:**\n\n{context_text}"}
-            ]
+            return history + [(message, f"**Current Context:**\n\n{context_text}")]
 
         elif cmd == "/stats":
             stats = format_character_sheet()
-            return history + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": stats}
-            ]
+            return history + [(message, stats)]
 
         elif cmd.startswith("/rag "):
             query = cmd[5:].strip()
             if query:
                 results = gm.search_rag(query, n_results=2)
                 formatted = gm.format_rag_context(results)
-                return history + [
-                    {"role": "user", "content": message},
-                    {"role": "assistant", "content": f"**RAG Search Results:**\n\n{formatted}"}
-                ]
+                return history + [(message, f"**RAG Search Results:**\n\n{formatted}")]
             else:
-                return history + [
-                    {"role": "user", "content": message},
-                    {"role": "assistant", "content": "Usage: `/rag <query>` (e.g., `/rag magic missile`)"}
-                ]
+                return history + [(message, "Usage: `/rag <query>` (e.g., `/rag magic missile`)")]
 
         else:
-            return history + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": f"Unknown command: {cmd}\nType `/help` for available commands"}
-            ]
+            return history + [(message, f"Unknown command: {cmd}\nType `/help` for available commands")]
 
     # Generate GM response
     try:
         response = gm.generate_response(message, use_rag=True)
         conversation_history.append((message, response))
-        return history + [
-            {"role": "user", "content": message},
-            {"role": "assistant", "content": response}
-        ]
+        return history + [(message, response)]
     except Exception as e:
         error_msg = f"Error: {str(e)}\n\nMake sure Ollama is running and the model is installed:\n`ollama pull hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M`"
-        return history + [
-            {"role": "user", "content": message},
-            {"role": "assistant", "content": error_msg}
-        ]
+        return history + [(message, error_msg)]
 
 
 def clear_history():
@@ -278,9 +251,7 @@ with gr.Blocks(title="D&D RAG Game Master") as demo:
             chatbot = gr.Chatbot(
                 height=500,
                 label="Game Master",
-                show_label=True,
-                avatar_images=(None, "🎭"),
-                type="messages"  # Gradio 6.x requires this for dict format
+                show_label=True
             )
 
             with gr.Row():
