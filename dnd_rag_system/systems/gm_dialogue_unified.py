@@ -314,24 +314,25 @@ GM RESPONSE:"""
             Model response
         """
         try:
-            response = self.client.text_generation(
-                prompt,
+            # Use chat completion API for conversational models
+            messages = [{"role": "user", "content": prompt}]
+
+            response = self.client.chat_completion(
+                messages=messages,
                 model=self.model_name,
-                max_new_tokens=300,
+                max_tokens=300,
                 temperature=0.7,
                 top_p=0.9,
-                repetition_penalty=1.1,
-                do_sample=True,
             )
 
-            # Clean up response
-            response = response.strip()
+            # Extract the response text
+            response_text = response.choices[0].message.content.strip()
 
             # Remove prompt echo if present
-            if "GM RESPONSE:" in response:
-                response = response.split("GM RESPONSE:")[-1].strip()
+            if "GM RESPONSE:" in response_text:
+                response_text = response_text.split("GM RESPONSE:")[-1].strip()
 
-            return response if response else "..."
+            return response_text if response_text else "..."
 
         except Exception as e:
             raise Exception(f"HF Inference API query failed: {e}")
