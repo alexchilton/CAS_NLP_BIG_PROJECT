@@ -89,10 +89,12 @@ class GameMaster:
                 raise ImportError("huggingface_hub is required for HF Spaces. Install with: pip install huggingface_hub")
 
             self.hf_token = hf_token or os.getenv("HF_TOKEN")
-            # Use the same RPG roleplay model as local Ollama for consistency
-            self.model_name = model_name or "Chun121/Qwen3-4B-RPG-Roleplay-V2"
+            # Use a model that's available via Inference API
+            # Qwen2.5-7B-Instruct is excellent for roleplay and available on HF Inference API
+            self.model_name = model_name or "Qwen/Qwen2.5-7B-Instruct"
             self.client = InferenceClient(token=self.hf_token)
             print(f"   Model: {self.model_name}")
+            print(f"   Note: Using Inference API compatible model (local uses RPG-specific model)")
         else:
             print("🦙 Using local Ollama mode")
             # Local Ollama model

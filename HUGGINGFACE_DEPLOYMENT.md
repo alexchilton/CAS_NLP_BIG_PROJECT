@@ -5,10 +5,10 @@ This guide explains how to deploy your D&D RAG Game Master to Hugging Face Space
 ## 🎯 Overview
 
 The app **automatically detects** its environment and uses the optimal backend:
-- **Local Mode** (auto-detected): Uses Ollama with `hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M` (quantized)
-- **HF Spaces Mode** (auto-detected): Uses HF Inference API with `Chun121/Qwen3-4B-RPG-Roleplay-V2` (full model)
+- **Local Mode** (auto-detected): Uses Ollama with `hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M` (RPG-optimized)
+- **HF Spaces Mode** (auto-detected): Uses HF Inference API with `Qwen/Qwen2.5-7B-Instruct` (larger, public model)
 
-**Same RPG-optimized model in both modes!** The app detects HF Spaces by checking for `SPACE_ID`, `SPACE_AUTHOR_NAME`, or `HF_SPACE` environment variables.
+**Different but compatible models:** Local uses RPG-specific model, HF Spaces uses a larger general model that's excellent for roleplay. The app detects HF Spaces by checking for `SPACE_ID`, `SPACE_AUTHOR_NAME`, or `HF_SPACE` environment variables.
 
 ## 📦 Step 1: Prepare Files
 
@@ -46,8 +46,8 @@ The app **auto-detects** HF Spaces, so you only need to set:
 
 1. **`HF_TOKEN`** (Optional) = Your HF token
    - Get from: https://huggingface.co/settings/tokens
-   - Only needed if using private models
-   - The RPG model (Chun121/Qwen3-4B-RPG-Roleplay-V2) is public
+   - Qwen/Qwen2.5-7B-Instruct is public and doesn't require a token
+   - Only set if using a private model
 
 **Note:** No need to set `USE_HF_API` - it's detected automatically!
 
@@ -90,7 +90,8 @@ git push
    ```
    🎲 Initializing D&D RAG System...
    🤗 Using Hugging Face Inference API mode
-      Model: Chun121/Qwen3-4B-RPG-Roleplay-V2
+      Model: Qwen/Qwen2.5-7B-Instruct
+      Note: Using Inference API compatible model (local uses RPG-specific model)
    ```
 3. Test the interface:
    - Load a character
@@ -122,15 +123,15 @@ python3 app_gradio.py
 
 ## 📊 Model Information
 
-**Model Used:** `Chun121/Qwen3-4B-RPG-Roleplay-V2` (same model everywhere!)
-- **Local Ollama**: `hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M` (quantized to Q4_K_M)
-- **HF Spaces**: `Chun121/Qwen3-4B-RPG-Roleplay-V2` (full precision model)
+**Models Used (auto-selected):**
+- **Local Ollama**: `hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M` (4B params, RPG-optimized)
+- **HF Spaces**: `Qwen/Qwen2.5-7B-Instruct` (7B params, general model excellent for roleplay)
 
-**Benefits of using the same model:**
-- **Consistent behavior** across local and cloud environments
-- **RPG-optimized** - specifically fine-tuned for D&D roleplay and narrative
-- **Better on HF Spaces** - full precision vs quantized version
-- **Faster inference** via HF's optimized infrastructure
+**Why different models:**
+- **Local RPG model** not available via HF Inference API (download-only)
+- **Qwen2.5-7B-Instruct** is larger (7B vs 4B) = better quality
+- **Public and free** via HF Inference API
+- **Excellent for roleplay** - Qwen2.5 series is known for great instruction-following and narrative
 
 ## 🐛 Troubleshooting
 
@@ -139,11 +140,11 @@ python3 app_gradio.py
 - Verify all files uploaded
 - Check build logs for errors
 
-### "HF_TOKEN not found" error:
-- Only needed for private models
-- The RPG model (Chun121/Qwen3-4B-RPG-Roleplay-V2) should be public
-- Check model visibility at: https://huggingface.co/Chun121/Qwen3-4B-RPG-Roleplay-V2
-- If private, add `HF_TOKEN` to Space secrets
+### Model errors / "HF_TOKEN not found":
+- Qwen/Qwen2.5-7B-Instruct is public and doesn't need a token
+- If you get Inference API errors, the model might be rate-limited
+- Check HF Inference API status: https://status.huggingface.co/
+- Free tier has rate limits - upgrade for higher throughput
 
 ### ChromaDB errors:
 - Ensure entire `chromadb/` folder is uploaded
@@ -166,8 +167,8 @@ python3 app_gradio.py
 2. **Keep ChromaDB small**: Current 85MB is fine
 3. **Monitor usage**: HF Inference API has rate limits on free tier
 4. **Auto-detection**: No need to configure env vars - it just works!
-5. **Same RPG model everywhere**: Consistent D&D gameplay experience
-6. **Better quality on HF Spaces**: Full precision vs quantized local version
+5. **Better model on HF Spaces**: 7B model vs 4B locally = higher quality
+6. **No token needed**: Qwen2.5-7B-Instruct is public
 
 ## 📚 Resources
 
