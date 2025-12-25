@@ -12,6 +12,7 @@ import sys
 import subprocess
 import json
 import os
+import logging
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
@@ -21,6 +22,19 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.config import settings
 from dnd_rag_system.systems.game_state import GameSession, CombatState, PartyState
+
+# Configure logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.DEBUG if (settings.DEBUG_MODE or os.getenv("GM_DEBUG", "").lower() == "true") else logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+# Check if debug mode is enabled
+DEBUG_PROMPTS = settings.DEBUG_MODE or os.getenv("GM_DEBUG", "").lower() == "true"
+if DEBUG_PROMPTS:
+    logger.info("🔍 GM Debug mode enabled - will log all prompts sent to LLM")
+    logger.info("   Set GM_DEBUG=false or update settings.DEBUG_MODE to disable")
 
 
 def is_huggingface_space() -> bool:
@@ -285,6 +299,14 @@ GM RESPONSE:"""
         Returns:
             Model response
         """
+        # Log prompt if debug mode is enabled
+        if DEBUG_PROMPTS:
+            logger.debug("=" * 80)
+            logger.debug("PROMPT SENT TO OLLAMA:")
+            logger.debug("-" * 80)
+            logger.debug(prompt)
+            logger.debug("=" * 80)
+
         try:
             result = subprocess.run(
                 ['ollama', 'run', self.model_name, prompt],
@@ -301,6 +323,13 @@ GM RESPONSE:"""
             # Clean up response (remove prompt echo if present)
             if "GM RESPONSE:" in response:
                 response = response.split("GM RESPONSE:")[-1].strip()
+
+            # Log response if debug mode is enabled
+            if DEBUG_PROMPTS:
+                logger.debug("-" * 80)
+                logger.debug("RESPONSE FROM OLLAMA:")
+                logger.debug(response)
+                logger.debug("=" * 80)
 
             return response if response else "..."
 
@@ -320,6 +349,14 @@ GM RESPONSE:"""
         Returns:
             Model response
         """
+        # Log prompt if debug mode is enabled
+        if DEBUG_PROMPTS:
+            logger.debug("=" * 80)
+            logger.debug("PROMPT SENT TO HUGGING FACE API:")
+            logger.debug("-" * 80)
+            logger.debug(prompt)
+            logger.debug("=" * 80)
+
         try:
             # Use chat completion API for conversational models
             messages = [{"role": "user", "content": prompt}]
@@ -338,6 +375,13 @@ GM RESPONSE:"""
             # Remove prompt echo if present
             if "GM RESPONSE:" in response_text:
                 response_text = response_text.split("GM RESPONSE:")[-1].strip()
+
+            # Log response if debug mode is enabled
+            if DEBUG_PROMPTS:
+                logger.debug("-" * 80)
+                logger.debug("RESPONSE FROM HUGGING FACE API:")
+                logger.debug(response_text)
+                logger.debug("=" * 80)
 
             return response_text if response_text else "..."
 
