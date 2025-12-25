@@ -9,10 +9,19 @@
 - [ ] **Add party/character mode toggle in Play Game tab**
   - Allow switching between single character mode and party mode
   - Update UI to show which mode is active
+  - **Character Mode**: If a specific character is selected/loaded, send only that character's info to GM chat
+  - **Party Mode**: If party is selected, send entire party info to GM chat
 
 - [ ] **Update GM context to handle party-based gameplay**
   - Format party context with all character stats, equipment, spells
   - Handle multi-character scenarios in GM responses
+
+- [ ] **Implement initiative-based party actions**
+  - Roll initiative for all party members at start of combat
+  - Each party member automatically takes action based on initiative order
+  - GM describes what each character does in turn
+  - Integration with existing `CombatState` in `game_state.py` for initiative tracking
+  - Display initiative order in UI during combat encounters
 
 ## Spell System Improvements
 
