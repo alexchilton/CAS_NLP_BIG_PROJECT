@@ -12,6 +12,7 @@ os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 
 import gradio as gr
 import json
+import random
 from pathlib import Path
 from typing import Optional, List, Tuple
 from dataclasses import asdict
@@ -337,6 +338,25 @@ def clear_history() -> list:
     return []
 
 
+def roll_random_stats() -> Tuple[int, int, int, int, int, int]:
+    """
+    Roll random ability scores using 3d6 method.
+
+    Returns tuple of (STR, DEX, CON, INT, WIS, CHA)
+    """
+    def roll_3d6():
+        return sum(random.randint(1, 6) for _ in range(3))
+
+    return (
+        roll_3d6(),  # Strength
+        roll_3d6(),  # Dexterity
+        roll_3d6(),  # Constitution
+        roll_3d6(),  # Intelligence
+        roll_3d6(),  # Wisdom
+        roll_3d6(),  # Charisma
+    )
+
+
 # Create Gradio interface
 with gr.Blocks(title="D&D RAG Game Master") as demo:
     gr.Markdown("""
@@ -447,19 +467,21 @@ with gr.Blocks(title="D&D RAG Game Master") as demo:
 
                 with gr.Column():
                     gr.Markdown("### Ability Scores")
-                    gr.Markdown("*Standard array: 15, 14, 13, 12, 10, 8*")
+                    gr.Markdown("*Standard array: 15, 14, 13, 12, 10, 8 | Or roll random with 3d6*")
+
+                    roll_stats_btn = gr.Button("🎲 Roll Random Stats (3d6)", variant="secondary", size="sm")
 
                     with gr.Row():
-                        str_slider = gr.Slider(minimum=3, maximum=20, value=10, step=1, label="Strength")
-                        dex_slider = gr.Slider(minimum=3, maximum=20, value=10, step=1, label="Dexterity")
+                        str_slider = gr.Slider(minimum=3, maximum=18, value=10, step=1, label="Strength")
+                        dex_slider = gr.Slider(minimum=3, maximum=18, value=10, step=1, label="Dexterity")
 
                     with gr.Row():
-                        con_slider = gr.Slider(minimum=3, maximum=20, value=10, step=1, label="Constitution")
-                        int_slider = gr.Slider(minimum=3, maximum=20, value=10, step=1, label="Intelligence")
+                        con_slider = gr.Slider(minimum=3, maximum=18, value=10, step=1, label="Constitution")
+                        int_slider = gr.Slider(minimum=3, maximum=18, value=10, step=1, label="Intelligence")
 
                     with gr.Row():
-                        wis_slider = gr.Slider(minimum=3, maximum=20, value=10, step=1, label="Wisdom")
-                        cha_slider = gr.Slider(minimum=3, maximum=20, value=10, step=1, label="Charisma")
+                        wis_slider = gr.Slider(minimum=3, maximum=18, value=10, step=1, label="Wisdom")
+                        cha_slider = gr.Slider(minimum=3, maximum=18, value=10, step=1, label="Charisma")
 
             create_btn = gr.Button("Create Character", variant="primary", size="lg")
             create_output = gr.Textbox(label="Status", interactive=False)
@@ -502,6 +524,12 @@ with gr.Blocks(title="D&D RAG Game Master") as demo:
     )
 
     # Event handlers - Create Character Tab
+    roll_stats_btn.click(
+        roll_random_stats,
+        inputs=[],
+        outputs=[str_slider, dex_slider, con_slider, int_slider, wis_slider, cha_slider]
+    )
+
     create_btn.click(
         create_character,
         inputs=[
