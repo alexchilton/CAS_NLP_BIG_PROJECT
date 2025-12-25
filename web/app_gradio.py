@@ -25,6 +25,7 @@ from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.systems.character_creator import Character, CharacterCreator
 from dnd_rag_system.systems.gm_dialogue_unified import GameMaster
 from dnd_rag_system.systems.game_state import CharacterState, PartyState, SpellSlots
+from dnd_rag_system.systems.racial_bonuses import load_racial_traits, get_racial_bonus_summary
 from dnd_rag_system.config import settings
 
 # Initialize system
@@ -188,7 +189,29 @@ def create_character(name: str, race: str, char_class: str, level: int,
     if not name:
         return "❌ Please enter a character name", gr.update()
 
-    # Create character
+    # Load racial traits and apply bonuses
+    racial_traits = load_racial_traits(None, race)  # Use fallback data
+    racial_bonuses_applied = ""
+
+    if racial_traits:
+        # Apply racial ability score bonuses
+        for ability, bonus in racial_traits.ability_increases.items():
+            if ability == "strength":
+                str_val += bonus
+            elif ability == "dexterity":
+                dex_val += bonus
+            elif ability == "constitution":
+                con_val += bonus
+            elif ability == "intelligence":
+                int_val += bonus
+            elif ability == "wisdom":
+                wis_val += bonus
+            elif ability == "charisma":
+                cha_val += bonus
+
+        racial_bonuses_applied = get_racial_bonus_summary(racial_traits)
+
+    # Create character with bonuses applied
     character = Character(
         name=name,
         race=race,
@@ -244,8 +267,13 @@ def create_character(name: str, race: str, char_class: str, level: int,
     # Update character list
     new_choices = get_available_characters()
 
+    # Format success message with racial bonuses
+    success_msg = f"✅ Character '{name}' created successfully!\n\nSaved to: {save_result}\n\n"
+    if racial_bonuses_applied:
+        success_msg += f"{racial_bonuses_applied}"
+
     return (
-        f"✅ Character '{name}' created successfully!\nSaved to: {save_result}",
+        success_msg,
         gr.update(choices=new_choices, value=f"{name} ({race} {char_class})")
     )
 

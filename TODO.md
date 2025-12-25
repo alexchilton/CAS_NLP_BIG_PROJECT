@@ -53,14 +53,43 @@
 
 ## RAG-Based Character Creation
 
-- [ ] **Load racial bonuses from RAG**
+- [x] **Load racial bonuses from RAG** ✅ IMPLEMENTED (with fallback data)
   - Query ChromaDB for race information during character creation
+  - **Issue Found**: Current ChromaDB racial data has incorrect ability scores (OCR errors from PDF parsing)
+  - **Solution**: Implemented with fallback to hardcoded correct D&D 5e racial bonuses
   - Auto-apply ability score increases (e.g., Dwarf +2 CON, Elf +2 DEX)
   - Add racial traits (Darkvision, Fey Ancestry, Dwarven Resilience, etc.)
   - Set speed, size, languages
   - Display racial features in character creation form
 
-- [ ] **Load class features from RAG**
+- [ ] **Fix racial data in ChromaDB** 🔴 DATA QUALITY ISSUE
+  - Current problem: All races showing same ability scores (CHA +1, DEX +1)
+  - Need to re-parse or manually add correct racial bonuses:
+    - Dwarf: CON +2
+    - Elf: DEX +2
+    - Halfling: DEX +2
+    - Human: All abilities +1
+    - Dragonborn: STR +2, CHA +1
+    - Gnome: INT +2
+    - Half-Elf: CHA +2, two others +1
+    - Half-Orc: STR +2, CON +1
+    - Tiefling: CHA +2, INT +1
+
+- [ ] **Improve class features data in RAG** 🔴 REQUIRED BEFORE IMPLEMENTATION
+  - Current state: Class descriptions exist but lack structured metadata
+  - Need to add structured metadata for each class:
+    - Hit dice (d6, d8, d10, d12)
+    - Proficiencies (armor types, weapon types, saving throws, skills)
+    - Starting equipment lists
+    - Class features by level (e.g., Fighter gets Second Wind at level 1)
+    - Spell slots for caster classes
+  - Options:
+    1. Parse existing PDF text more thoroughly
+    2. Add structured JSON data manually for 12 classes
+    3. Use additional source files with structured class data
+  - **Blocking**: Cannot implement auto-apply class features until this data is available
+
+- [ ] **Load class features from RAG** (blocked by above)
   - Query ChromaDB for class information during character creation
   - Set correct hit dice (d6/d8/d10/d12)
   - Apply proficiencies (armor, weapons, tools, saving throws)
