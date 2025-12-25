@@ -105,7 +105,7 @@ python initialize_rag.py --only monsters,classes  # Load specific collections
 
 **Option A: Comprehensive Test Suite** (recommended)
 ```bash
-python test_all_collections.py
+python tests/test_all_collections.py
 ```
 
 Runs 26+ automated tests validating:
@@ -125,7 +125,7 @@ Runs 26+ automated tests validating:
 
 **Option B: Manual Testing**
 ```bash
-python test_spell_search.py
+python tests/test_spell_search.py
 ```
 
 Shows detailed search results for spells, monsters, classes, and races.
@@ -218,23 +218,26 @@ You have **two ways** to play:
 Launch the web UI for the best experience:
 
 ```bash
-python app_gradio.py
+python web/app_gradio.py
 ```
 
 Then open http://localhost:7860 in your browser.
 
 **Features:**
 - 🎭 **Pre-made Characters**: Play as Thorin Stormshield (Dwarf Fighter) or Elara Moonwhisper (Elf Wizard)
+- ✨ **Create Characters**: Full interactive character creation in the web UI
 - 💬 **Chat Interface**: Clean conversation view with the AI GM
 - 📊 **Character Sheet**: Live character stats displayed in sidebar
+- 🖼️ **Character Portraits**: Placeholder for future GAN-generated images
 - ⚡ **Quick Commands**: Built-in buttons for common actions
 - 🎲 **RAG Search**: Test spell/monster lookups directly in the UI
 
 **Quick Start:**
-1. Select a character from dropdown (Thorin or Elara)
-2. Click "Load Character"
-3. Type your action in the chat box
-4. The GM responds with RAG-enhanced D&D rules!
+1. **Play Game Tab**: Select Thorin or Elara from the dropdown
+2. Or **Create Character Tab**: Build your own custom character
+3. Click "Load Character" to begin
+4. Type your action in the chat box
+5. The GM responds with RAG-enhanced D&D rules!
 
 **Example Actions:**
 ```
@@ -480,6 +483,11 @@ You should see the Qwen3-4B-RPG model in the list.
 ## 📁 Project Structure
 
 ```
+├── characters/              # Character JSON files ⭐ NEW!
+│   ├── thorin_stormshield.json
+│   ├── elara_moonwhisper.json
+│   └── [custom characters...]
+│
 ├── dnd_rag_system/          # Main package
 │   ├── config/              # Configuration
 │   │   └── settings.py
@@ -488,21 +496,30 @@ You should see the Qwen3-4B-RPG model in the list.
 │   │   ├── base_chunker.py  # Chunking utilities
 │   │   └── chroma_manager.py # Database interface
 │   ├── parsers/             # Content parsers
-│   │   └── spell_parser.py  # Spell parser with name weighting ⭐
+│   │   └── spell_parser.py  # Spell parser with name weighting
 │   └── systems/             # High-level systems
 │       ├── character_creator.py # Interactive character builder
 │       └── gm_dialogue.py   # RAG-enhanced AI Game Master
 │
+├── docs/                    # Documentation ⭐ NEW!
+│   ├── plan_progress.md     # Development progress tracking
+│   └── HUGGINGFACE_DEPLOYMENT.md
+│
+├── tests/                   # Test suite ⭐ NEW!
+│   ├── test_all_collections.py  # Comprehensive tests
+│   ├── test_spell_search.py
+│   └── [other test files...]
+│
+├── web/                     # Web applications ⭐ NEW!
+│   ├── app_gradio.py        # Main Gradio UI with tabs
+│   └── app.py               # Alternative Gradio UI
+│
 ├── chromadb/                # Vector database (created on init)
-├── initialize_rag.py        # Main initialization script ⭐
-├── app_gradio.py            # Gradio web UI ⭐ NEW!
-├── play_with_character.py  # Character-aware gameplay CLI ⭐ NEW!
-├── query_rag.py             # Interactive query CLI ⭐
-├── test_all_collections.py  # Comprehensive test suite ⭐
-├── test_spell_search.py     # Manual search testing
-├── create_character.py      # Character creator launcher
+├── initialize_rag.py        # Main initialization script
+├── query_rag.py             # Interactive query CLI
+├── create_character.py      # Character creator launcher (CLI)
+├── play_with_character.py  # Character-aware gameplay CLI
 ├── run_gm_dialogue.py       # AI GM dialogue launcher
-├── plan_progress.md         # Development progress tracking
 └── requirements.txt         # Python dependencies
 ```
 

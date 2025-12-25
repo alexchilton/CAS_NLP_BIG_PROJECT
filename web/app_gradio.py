@@ -338,7 +338,7 @@ def clear_history() -> list:
 
 
 # Create Gradio interface
-with gr.Blocks(title="D&D RAG Game Master", theme=gr.themes.Soft()) as demo:
+with gr.Blocks(title="D&D RAG Game Master") as demo:
     gr.Markdown("""
     # 🎲 D&D Character-Aware Game Master
 

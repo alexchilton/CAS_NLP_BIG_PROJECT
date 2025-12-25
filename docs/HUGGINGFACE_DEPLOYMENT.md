@@ -16,8 +16,10 @@ You'll need to upload these files to your HF Space:
 
 ### Required Files:
 ```
-app.py                           # Main Gradio app (unified version)
-requirements_spaces.txt          # Rename to requirements.txt for Spaces
+web/app_gradio.py                # Main Gradio app with character creation
+characters/                      # Character JSON files
+├── thorin_stormshield.json
+└── elara_moonwhisper.json
 chromadb/                        # Your ChromaDB database (85MB)
 dnd_rag_system/                 # Entire package
 ├── core/
@@ -27,6 +29,7 @@ dnd_rag_system/                 # Entire package
 └── systems/
     ├── character_creator.py
     └── gm_dialogue_unified.py   # Unified Ollama + HF support
+requirements.txt                 # Python dependencies
 ```
 
 ## 🚀 Step 2: Create HF Space
@@ -61,10 +64,11 @@ git clone https://huggingface.co/spaces/YOUR_USERNAME/dnd-rag-game-master
 cd dnd-rag-game-master
 
 # Copy files
-cp ../CAS_NLP_BIG_PROJECT/app.py .
-cp ../CAS_NLP_BIG_PROJECT/requirements_spaces.txt requirements.txt
+cp ../CAS_NLP_BIG_PROJECT/web/app_gradio.py app.py
+cp ../CAS_NLP_BIG_PROJECT/requirements.txt .
 cp -r ../CAS_NLP_BIG_PROJECT/dnd_rag_system .
 cp -r ../CAS_NLP_BIG_PROJECT/chromadb .
+cp -r ../CAS_NLP_BIG_PROJECT/characters .
 
 # Add and commit
 git lfs install  # For large files
@@ -78,8 +82,9 @@ git push
 
 1. Go to your Space's "Files" tab
 2. Upload each file/folder:
-   - `app.py`
-   - `requirements.txt` (renamed from requirements_spaces.txt)
+   - `app.py` (copy from web/app_gradio.py)
+   - `requirements.txt`
+   - `characters/` folder (with JSON files)
    - `dnd_rag_system/` folder
    - `chromadb/` folder
 
@@ -103,7 +108,7 @@ git push
 ### Local (Ollama) - Auto-detected:
 ```bash
 # No environment variables needed
-python3 app_gradio.py
+python3 web/app_gradio.py
 # Automatically uses Ollama
 ```
 
@@ -111,7 +116,7 @@ python3 app_gradio.py
 ```bash
 export USE_HF_API=true
 export HF_TOKEN=your_token_here
-python3 app_gradio.py
+python3 web/app_gradio.py
 # Manually enables HF API mode for testing
 ```
 
@@ -179,12 +184,15 @@ python3 app_gradio.py
 
 ## 🎮 What Works on HF Spaces
 
-✅ Character selection (Thorin, Elara)
-✅ RAG retrieval (spells, monsters, classes)
-✅ AI GM responses using Qwen3-4B-RPG model
-✅ All commands (`/help`, `/stats`, `/context`, `/rag`)
-✅ Conversation history
-✅ Character stats display
+✅ **Pre-made Characters**: Play as Thorin Stormshield or Elara Moonwhisper
+✅ **Character Creation**: Full interactive character creator in the UI
+✅ **Custom Characters**: Create and save your own characters
+✅ **Character Portraits**: Placeholder for future GAN-generated images
+✅ **RAG Retrieval**: Spells, monsters, classes, and races
+✅ **AI GM Responses**: Using Qwen2.5-7B-Instruct model
+✅ **All Commands**: `/help`, `/stats`, `/context`, `/rag`
+✅ **Conversation History**: Full chat history tracking
+✅ **Character Stats Display**: Live character sheet in sidebar
 
 ## ⚠️ Limitations on Free Tier
 
