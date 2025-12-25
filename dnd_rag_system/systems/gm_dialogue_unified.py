@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.config import settings
+from dnd_rag_system.systems.game_state import GameSession, CombatState, PartyState
 
 
 def is_huggingface_space() -> bool:
@@ -34,27 +35,10 @@ def is_huggingface_space() -> bool:
 
 @dataclass
 class Message:
-    """Conversation message."""
+    """Conversation message for GM dialogue history."""
     role: str  # 'player', 'gm', 'system'
     content: str
     rag_context: Optional[str] = None
-
-
-@dataclass
-class GameSession:
-    """D&D game session state."""
-    session_name: str = "D&D Adventure"
-    messages: List[Message] = field(default_factory=list)
-    context: str = "You are adventuring in a fantasy world"
-    active_characters: List[str] = field(default_factory=list)
-
-    def add_message(self, role: str, content: str, rag_context: Optional[str] = None):
-        """Add message to conversation history."""
-        self.messages.append(Message(role, content, rag_context))
-
-    def get_recent_history(self, n: int = 5) -> List[Message]:
-        """Get recent conversation history."""
-        return self.messages[-n:] if len(self.messages) > n else self.messages
 
 
 class GameMaster:
@@ -76,7 +60,8 @@ class GameMaster:
             model_name: Model name override (optional)
         """
         self.db = db_manager
-        self.session = GameSession()
+        self.session = GameSession(session_name="D&D Adventure")
+        self.message_history: List[Message] = []  # Separate conversation history
 
         # Auto-detect environment
         self.use_hf_api = is_huggingface_space()
@@ -218,8 +203,9 @@ class GameMaster:
                 response = self._query_ollama(prompt)
 
             # Save to history
-            self.session.add_message('player', player_input, rag_context if use_rag else None)
-            self.session.add_message('gm', response)
+            self.message_history.append(Message('player', player_input, rag_context if use_rag else None))
+            self.message_history.append(Message('gm', response))
+            self.session.add_note(f"Player: {player_input[:50]}... | GM: {response[:50]}...")
 
             return response
 
@@ -227,20 +213,40 @@ class GameMaster:
             return f"Error generating response: {e}"
 
     def _build_prompt(self, player_input: str, rag_context: str) -> str:
-        """Build complete prompt for LLM."""
+        """Build complete prompt for LLM with full game state context."""
 
         # Get recent conversation history
-        history = self.session.get_recent_history(n=4)
+        recent_messages = self.message_history[-4:] if len(self.message_history) > 4 else self.message_history
         history_text = "\n".join([
             f"{'Player' if msg.role == 'player' else 'GM'}: {msg.content}"
-            for msg in history
+            for msg in recent_messages
         ])
 
+        # Build game state context
         prompt = f"""You are an experienced Dungeon Master running a D&D 5e game.
 
-CURRENT SCENE: {self.session.context}
-
+CURRENT LOCATION: {self.session.current_location}
+SCENE: {self.session.scene_description if self.session.scene_description else "The adventure continues..."}
+TIME: Day {self.session.day}, {self.session.time_of_day}
 """
+
+        # Add NPCs/Monsters if present
+        if self.session.npcs_present:
+            prompt += f"\nNPCs/CREATURES PRESENT: {', '.join(self.session.npcs_present)}\n"
+
+        # Add combat state if in combat
+        if self.session.combat.in_combat:
+            prompt += f"\nCOMBAT STATUS: Round {self.session.combat.round_number}, {self.session.combat.get_current_turn()}'s turn\n"
+            prompt += f"Initiative Order: {', '.join([f'{name} ({init})' for name, init in self.session.combat.initiative_order])}\n"
+
+        # Add active quests
+        if self.session.active_quests:
+            active = [q for q in self.session.active_quests if q.get('status') == 'active']
+            if active:
+                quest_names = [q['name'] for q in active[:2]]  # Show up to 2 active quests
+                prompt += f"\nACTIVE QUESTS: {', '.join(quest_names)}\n"
+
+        prompt += "\n"
 
         if rag_context and rag_context != "No specific rules retrieved." and rag_context != "No highly relevant rules found.":
             prompt += f"""RETRIEVED D&D RULES (Apply these rules accurately):
@@ -258,10 +264,11 @@ CURRENT SCENE: {self.session.context}
 
 INSTRUCTIONS:
 1. Apply D&D 5e rules accurately using the retrieved information
-2. Ask for appropriate dice rolls (d20 for attacks/checks, damage dice, saves, etc.)
-3. Be concise and engaging (2-4 sentences max)
-4. Maintain narrative flow while being mechanically precise
-5. If rules are unclear, use standard D&D 5e mechanics
+2. Consider the current location, NPCs present, and combat state
+3. Ask for appropriate dice rolls (d20 for attacks/checks, damage dice, saves, etc.)
+4. Be concise and engaging (2-4 sentences max)
+5. Maintain narrative flow while being mechanically precise
+6. If rules are unclear, use standard D&D 5e mechanics
 
 GM RESPONSE:"""
 
@@ -338,6 +345,46 @@ GM RESPONSE:"""
             raise Exception(f"HF Inference API query failed: {e}")
 
     def set_context(self, context: str):
-        """Update current scene/context."""
-        self.session.context = context
-        self.session.add_message('system', f"Scene: {context}")
+        """
+        Update current scene/context.
+
+        For backwards compatibility, sets scene_description.
+        Use set_location() for more detailed location tracking.
+        """
+        self.session.scene_description = context
+        self.session.add_note(f"Scene updated: {context}")
+
+    def set_location(self, location: str, description: str = ""):
+        """Set current location and scene description."""
+        self.session.set_location(location, description)
+
+    def add_npc(self, npc_name: str):
+        """Add an NPC or monster to the current scene."""
+        if npc_name not in self.session.npcs_present:
+            self.session.npcs_present.append(npc_name)
+            self.session.add_note(f"{npc_name} appeared")
+
+    def remove_npc(self, npc_name: str):
+        """Remove an NPC or monster from the current scene."""
+        if npc_name in self.session.npcs_present:
+            self.session.npcs_present.remove(npc_name)
+            self.session.add_note(f"{npc_name} left or was defeated")
+
+    def start_combat(self, initiatives: Dict[str, int]):
+        """Start combat with initiative rolls."""
+        self.session.combat.start_combat(initiatives)
+        self.session.add_note(f"Combat started! Initiative order: {', '.join([f'{n} ({i})' for n, i in self.session.combat.initiative_order])}")
+
+    def end_combat(self):
+        """End combat."""
+        self.session.combat.end_combat()
+        self.session.add_note("Combat ended")
+
+    def add_quest(self, name: str, description: str):
+        """Add a quest to the session."""
+        self.session.add_quest(name, description)
+        self.session.add_note(f"New quest: {name}")
+
+    def get_session_summary(self) -> str:
+        """Get comprehensive session summary."""
+        return self.session.get_session_summary()
