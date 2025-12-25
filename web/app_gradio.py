@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.systems.character_creator import Character, CharacterCreator
 from dnd_rag_system.systems.gm_dialogue_unified import GameMaster
+from dnd_rag_system.systems.game_state import CharacterState, PartyState, SpellSlots
 from dnd_rag_system.config import settings
 
 # Initialize system
@@ -38,6 +39,8 @@ CHARACTERS_DIR.mkdir(exist_ok=True)
 # Global state
 current_character = None
 conversation_history = []
+party = PartyState(party_name="Adventuring Party")
+party_characters = {}  # {char_name: Character} for display
 
 
 def load_character_from_json(filepath: Path) -> Optional[Character]:
@@ -176,9 +179,9 @@ def format_character_sheet() -> str:
     return sheet
 
 
-def create_character(name: str, race: str, char_class: str, background: str,
-                     alignment: str, str_val: int, dex_val: int, con_val: int,
-                     int_val: int, wis_val: int, cha_val: int) -> Tuple[str, str]:
+def create_character(name: str, race: str, char_class: str, level: int,
+                     alignment: str, background: str, str_val: int, dex_val: int,
+                     con_val: int, int_val: int, wis_val: int, cha_val: int) -> Tuple[str, str]:
     """Create a new character with given parameters."""
     global current_character
 
@@ -190,7 +193,7 @@ def create_character(name: str, race: str, char_class: str, background: str,
         name=name,
         race=race,
         character_class=char_class,
-        level=1,
+        level=int(level),
         strength=str_val,
         dexterity=dex_val,
         constitution=con_val,
@@ -357,6 +360,130 @@ def roll_random_stats() -> Tuple[int, int, int, int, int, int]:
     )
 
 
+def add_to_party(character_choices: List[str]) -> str:
+    """Add selected characters to the party."""
+    global party, party_characters
+
+    if not character_choices:
+        return "⚠️ No characters selected"
+
+    added_count = 0
+    for choice in character_choices:
+        # Map character choice to file
+        if "Thorin" in choice:
+            filepath = CHARACTERS_DIR / "thorin_stormshield.json"
+        elif "Elara" in choice:
+            filepath = CHARACTERS_DIR / "elara_moonwhisper.json"
+        else:
+            name = choice.split("(")[0].strip()
+            filepath = CHARACTERS_DIR / f"{name.lower().replace(' ', '_')}.json"
+
+        char = load_character_from_json(filepath)
+        if char and char.name not in party_characters:
+            # Store Character for display
+            party_characters[char.name] = char
+
+            # Create CharacterState for game mechanics
+            char_state = CharacterState(
+                character_name=char.name,
+                max_hp=char.hit_points,
+                level=char.level
+            )
+            party.add_character(char_state)
+            added_count += 1
+
+    party_summary = get_party_summary()
+    return f"✅ Added {added_count} character(s) to party!\n\n{party_summary}"
+
+
+def remove_from_party(character_name: str) -> str:
+    """Remove a character from the party."""
+    global party, party_characters
+
+    if character_name in party_characters:
+        del party_characters[character_name]
+        party.remove_character(character_name)
+        return f"✅ Removed {character_name} from party\n\n{get_party_summary()}"
+    else:
+        return f"⚠️ {character_name} is not in the party"
+
+
+def get_party_summary() -> str:
+    """Get formatted party summary."""
+    if not party_characters:
+        return "**No characters in party**\n\nAdd characters from the dropdown above."
+
+    summary = f"# 🎭 {party.party_name}\n\n"
+    summary += f"**Party Size:** {len(party_characters)} adventurer(s)\n"
+    summary += f"**Party Gold:** {party.gold} GP\n\n"
+    summary += "---\n\n"
+
+    for char_name, char in party_characters.items():
+        char_state = party.get_character(char_name)
+        status = "✅ Ready" if char_state and char_state.is_alive() else "❌ Dead"
+
+        summary += f"### {char.name} ({status})\n"
+        summary += f"**{char.race} {char.character_class}, Level {char.level}**\n"
+        summary += f"- HP: {char.hit_points} | AC: {char.armor_class}\n"
+        summary += f"- Background: {char.background}\n\n"
+
+    if party.shared_inventory:
+        summary += "### 🎒 Shared Inventory\n"
+        for item, qty in party.shared_inventory.items():
+            summary += f"- {item} x{qty}\n"
+
+    return summary
+
+
+def get_all_character_sheets() -> str:
+    """Get all character sheets formatted."""
+    if not party_characters:
+        return "No characters in party"
+
+    sheets = []
+    for char_name, char in party_characters.items():
+        sheet = format_character_sheet_for_char(char)
+        sheets.append(sheet)
+        sheets.append("\n---\n\n")
+
+    return "\n".join(sheets)
+
+
+def format_character_sheet_for_char(char: Character) -> str:
+    """Format character sheet for a specific character."""
+    mods = char.get_modifiers()
+
+    sheet = f"""# {char.name}
+**{char.race} {char.character_class}, Level {char.level}**
+*{char.background} | {char.alignment}*
+
+### Combat Stats
+- **HP**: {char.hit_points}
+- **AC**: {char.armor_class}
+- **Proficiency Bonus**: +{char.proficiency_bonus}
+
+### Ability Scores
+| Ability | Score | Modifier |
+|---------|-------|----------|
+| STR | {char.strength} | {mods['strength']:+d} |
+| DEX | {char.dexterity} | {mods['dexterity']:+d} |
+| CON | {char.constitution} | {mods['constitution']:+d} |
+| INT | {char.intelligence} | {mods['intelligence']:+d} |
+| WIS | {char.wisdom} | {mods['wisdom']:+d} |
+| CHA | {char.charisma} | {mods['charisma']:+d} |
+
+### Equipment
+{chr(10).join('- ' + item for item in char.equipment)}
+"""
+
+    if char.spells:
+        sheet += f"""\n### Spells
+{chr(10).join('- ' + spell for spell in char.spells)}
+"""
+
+    return sheet
+
+
 # Create Gradio interface
 with gr.Blocks(title="D&D RAG Game Master") as demo:
     gr.Markdown("""
@@ -462,8 +589,25 @@ with gr.Blocks(title="D&D RAG Game Master") as demo:
                         )
 
                     with gr.Row():
-                        char_background = gr.Textbox(label="Background", placeholder="e.g., Soldier, Sage, Folk Hero")
-                        char_alignment = gr.Textbox(label="Alignment", placeholder="e.g., Lawful Good, Chaotic Neutral")
+                        char_level = gr.Slider(
+                            minimum=1,
+                            maximum=20,
+                            value=1,
+                            step=1,
+                            label="Level",
+                            info="Character level (1-20)"
+                        )
+                        char_alignment = gr.Dropdown(
+                            choices=[
+                                "Lawful Good", "Neutral Good", "Chaotic Good",
+                                "Lawful Neutral", "True Neutral", "Chaotic Neutral",
+                                "Lawful Evil", "Neutral Evil", "Chaotic Evil"
+                            ],
+                            value="True Neutral",
+                            label="Alignment"
+                        )
+
+                    char_background = gr.Textbox(label="Background", placeholder="e.g., Soldier, Sage, Folk Hero")
 
                 with gr.Column():
                     gr.Markdown("### Ability Scores")
@@ -491,6 +635,64 @@ with gr.Blocks(title="D&D RAG Game Master") as demo:
 
             **Note:** Equipment and spells will be automatically assigned based on your class.
             Character images can be added later via the GAN generation feature (coming soon).
+            """)
+
+        # Tab 3: Party Management
+        with gr.Tab("🎭 Party Management"):
+            gr.Markdown("""
+            ## Manage Your Adventuring Party
+
+            Create a band of adventurers! Add multiple characters to your party and view their stats.
+            Each character can be viewed individually, and the party shares gold and inventory.
+            """)
+
+            with gr.Row():
+                with gr.Column(scale=1):
+                    gr.Markdown("### Add Characters to Party")
+
+                    party_char_selector = gr.Dropdown(
+                        choices=get_available_characters(),
+                        multiselect=True,
+                        label="Select Characters",
+                        info="Choose one or more characters to add to your party"
+                    )
+
+                    add_party_btn = gr.Button("➕ Add to Party", variant="primary", size="lg")
+
+                    gr.Markdown("---")
+
+                    gr.Markdown("### Remove from Party")
+
+                    remove_char_selector = gr.Dropdown(
+                        choices=[],
+                        label="Select Character to Remove",
+                        info="Choose a character to remove from the party"
+                    )
+
+                    remove_party_btn = gr.Button("➖ Remove from Party", variant="secondary")
+
+                    party_status = gr.Textbox(label="Status", interactive=False, lines=3)
+
+                with gr.Column(scale=2):
+                    gr.Markdown("### Party Overview")
+
+                    party_summary_display = gr.Markdown(get_party_summary())
+
+                    gr.Markdown("---")
+
+                    gr.Markdown("### Party Member Sheets")
+
+                    with gr.Accordion("View All Character Sheets", open=False):
+                        party_sheets_display = gr.Markdown("No characters in party")
+
+            gr.Markdown("""
+            ---
+
+            **Party Features:**
+            - Add multiple characters to form a party
+            - Shared gold and inventory pool
+            - View individual character stats
+            - Track party health and status
             """)
 
     # Event handlers - Play Game Tab
@@ -533,10 +735,63 @@ with gr.Blocks(title="D&D RAG Game Master") as demo:
     create_btn.click(
         create_character,
         inputs=[
-            char_name, char_race, char_class, char_background, char_alignment,
+            char_name, char_race, char_class, char_level, char_alignment, char_background,
             str_slider, dex_slider, con_slider, int_slider, wis_slider, cha_slider
         ],
         outputs=[create_output, character_dropdown]
+    )
+
+    # Event handlers - Party Management Tab
+    def add_and_update(character_choices):
+        """Add characters to party and update all displays."""
+        result = add_to_party(character_choices)
+        summary = get_party_summary()
+        sheets = get_all_character_sheets()
+
+        # Update remove dropdown with current party members
+        party_member_names = list(party_characters.keys())
+
+        return (
+            result,  # party_status
+            summary,  # party_summary_display
+            sheets,  # party_sheets_display
+            gr.update(choices=party_member_names)  # remove_char_selector
+        )
+
+    def remove_and_update(character_name):
+        """Remove character from party and update all displays."""
+        if not character_name:
+            return (
+                "⚠️ Please select a character to remove",
+                get_party_summary(),
+                get_all_character_sheets(),
+                gr.update()
+            )
+
+        result = remove_from_party(character_name)
+        summary = get_party_summary()
+        sheets = get_all_character_sheets()
+
+        # Update remove dropdown with current party members
+        party_member_names = list(party_characters.keys())
+
+        return (
+            result,  # party_status
+            summary,  # party_summary_display
+            sheets,  # party_sheets_display
+            gr.update(choices=party_member_names, value=None)  # remove_char_selector
+        )
+
+    add_party_btn.click(
+        add_and_update,
+        inputs=[party_char_selector],
+        outputs=[party_status, party_summary_display, party_sheets_display, remove_char_selector]
+    )
+
+    remove_party_btn.click(
+        remove_and_update,
+        inputs=[remove_char_selector],
+        outputs=[party_status, party_summary_display, party_sheets_display, remove_char_selector]
     )
 
 
