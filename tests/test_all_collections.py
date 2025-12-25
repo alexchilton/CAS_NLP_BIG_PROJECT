@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 
 # Add project to path
-project_root = Path(__file__).parent
+project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
@@ -349,10 +349,11 @@ class RAGTestSuite:
             found_darkvision = any(meta.get('darkvision', 0) > 0
                                   for meta in results['metadatas'][0])
 
+            darkvision_races = [f"{m.get('name')} ({m.get('darkvision')}ft)" for m in results['metadatas'][0][:3] if m.get('darkvision', 0) > 0]
             self.assert_test(
                 "Race: Trait search finds races with darkvision",
                 found_darkvision,
-                f"Races: {[f\"{m.get('name')} ({m.get('darkvision')}ft)\" for m in results['metadatas'][0][:3] if m.get('darkvision', 0) > 0]}"
+                f"Races: {darkvision_races}"
             )
         else:
             self.assert_test(

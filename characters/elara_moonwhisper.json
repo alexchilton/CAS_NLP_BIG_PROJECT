@@ -1,0 +1,43 @@
+{
+  "name": "Elara Moonwhisper",
+  "race": "Elf",
+  "character_class": "Wizard",
+  "level": 2,
+  "strength": 8,
+  "dexterity": 14,
+  "constitution": 12,
+  "intelligence": 17,
+  "wisdom": 13,
+  "charisma": 10,
+  "hit_points": 14,
+  "armor_class": 12,
+  "proficiency_bonus": 2,
+  "background": "Sage",
+  "alignment": "Neutral Good",
+  "race_traits": [
+    "Darkvision",
+    "Fey Ancestry"
+  ],
+  "class_features": [
+    "Spellcasting",
+    "Arcane Recovery"
+  ],
+  "proficiencies": [
+    "Daggers",
+    "Quarterstaffs",
+    "Light crossbows"
+  ],
+  "equipment": [
+    "Quarterstaff",
+    "Spellbook",
+    "Component Pouch",
+    "Scholar's Pack"
+  ],
+  "spells": [
+    "Fire Bolt",
+    "Mage Hand",
+    "Magic Missile",
+    "Shield"
+  ],
+  "image_path": null
+}

@@ -19,4 +19,4 @@ fi
 
 # Start the Gradio application
 echo "Starting Gradio app..."
-python app_gradio.py
+python web/app_gradio.py

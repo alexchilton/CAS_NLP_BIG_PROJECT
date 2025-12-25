@@ -1,0 +1,40 @@
+{
+  "name": "Thorin Stormshield",
+  "race": "Dwarf",
+  "character_class": "Fighter",
+  "level": 3,
+  "strength": 16,
+  "dexterity": 12,
+  "constitution": 16,
+  "intelligence": 10,
+  "wisdom": 13,
+  "charisma": 8,
+  "hit_points": 28,
+  "armor_class": 18,
+  "proficiency_bonus": 2,
+  "background": "Soldier",
+  "alignment": "Lawful Good",
+  "race_traits": [
+    "Dwarven Resilience",
+    "Darkvision"
+  ],
+  "class_features": [
+    "Fighting Style: Defense",
+    "Second Wind",
+    "Action Surge"
+  ],
+  "proficiencies": [
+    "All armor",
+    "All weapons",
+    "Shields"
+  ],
+  "equipment": [
+    "Longsword",
+    "Shield",
+    "Plate Armor",
+    "Backpack",
+    "50 GP"
+  ],
+  "spells": [],
+  "image_path": null
+}

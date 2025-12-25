@@ -52,6 +52,9 @@ class Character:
     equipment: List[str] = field(default_factory=list)
     spells: List[str] = field(default_factory=list)
 
+    # Character Image (for future GAN generation)
+    image_path: Optional[str] = None
+
     def get_ability_modifier(self, score: int) -> int:
         """Calculate ability modifier from score."""
         return (score - 10) // 2
