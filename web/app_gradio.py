@@ -89,6 +89,46 @@ def get_available_characters() -> List[str]:
     return characters
 
 
+def delete_character(character_choice: str) -> Tuple[str, gr.update]:
+    """
+    Delete a character file.
+
+    Args:
+        character_choice: Character selection string
+
+    Returns:
+        Tuple of (status message, updated dropdown)
+    """
+    if not character_choice:
+        return "⚠️ No character selected", gr.update()
+
+    # Prevent deletion of pre-made characters
+    if "Thorin" in character_choice or "Elara" in character_choice:
+        return "❌ Cannot delete pre-made characters (Thorin, Elara)", gr.update()
+
+    # Map character choice to file
+    try:
+        name = character_choice.split("(")[0].strip()
+        filepath = CHARACTERS_DIR / f"{name.lower().replace(' ', '_')}.json"
+
+        if filepath.exists():
+            filepath.unlink()  # Delete the file
+
+            # Update character list
+            new_choices = get_available_characters()
+            new_value = new_choices[0] if new_choices else None
+
+            return (
+                f"✅ Character '{name}' deleted successfully",
+                gr.update(choices=new_choices, value=new_value)
+            )
+        else:
+            return f"❌ Character file not found: {filepath}", gr.update()
+
+    except Exception as e:
+        return f"❌ Error deleting character: {e}", gr.update()
+
+
 def load_character(character_choice: str) -> Tuple[str, str, list, Optional[str]]:
     """Load selected character and update context."""
     global current_character, conversation_history
@@ -539,7 +579,11 @@ with gr.Blocks(title="D&D RAG Game Master") as demo:
                         label="Choose Your Character"
                     )
 
-                    load_btn = gr.Button("Load Character", variant="primary")
+                    with gr.Row():
+                        load_btn = gr.Button("Load Character", variant="primary", scale=2)
+                        delete_btn = gr.Button("🗑️ Delete", variant="stop", scale=1)
+
+                    delete_status = gr.Textbox(label="Delete Status", interactive=False, visible=False)
 
                     # Character Image
                     char_image = gr.Image(
@@ -728,6 +772,15 @@ with gr.Blocks(title="D&D RAG Game Master") as demo:
         load_character,
         inputs=[character_dropdown],
         outputs=[character_sheet, msg_input, chatbot, char_image]
+    )
+
+    delete_btn.click(
+        delete_character,
+        inputs=[character_dropdown],
+        outputs=[delete_status, character_dropdown]
+    ).then(
+        lambda: gr.update(visible=True),
+        outputs=[delete_status]
     )
 
     submit_btn.click(
