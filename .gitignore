@@ -36,3 +36,4 @@ dnd_rag_system.log
 
 # Environment
 .env
+e2e_tests/screenshots/
