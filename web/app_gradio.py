@@ -42,6 +42,7 @@ current_character = None
 conversation_history = []
 party = PartyState(party_name="Adventuring Party")
 party_characters = {}  # {char_name: Character} for display
+gameplay_mode = "character"  # "character" or "party"
 
 
 def load_character_from_json(filepath: Path) -> Optional[Character]:
@@ -131,9 +132,10 @@ def delete_character(character_choice: str) -> Tuple[str, gr.update]:
 
 def load_character(character_choice: str) -> Tuple[str, str, list, Optional[str]]:
     """Load selected character and update context."""
-    global current_character, conversation_history
+    global current_character, conversation_history, gameplay_mode
 
     conversation_history = []
+    gameplay_mode = "character"
 
     # Map character choice to file
     if "Thorin" in character_choice:
@@ -176,6 +178,61 @@ EQUIPMENT: {', '.join(char.equipment[:5])}
 
     # Return character sheet, clear input, empty chat, and image
     return format_character_sheet(), "", [], char_image
+
+
+def load_party_mode() -> Tuple[str, str, list]:
+    """Load party mode and set GM context for party-based gameplay."""
+    global gameplay_mode, conversation_history
+
+    conversation_history = []
+    gameplay_mode = "party"
+
+    if not party_characters:
+        return "⚠️ No party members! Please add characters in the Party Management tab first.", "", []
+
+    # Build party context for GM
+    party_info = []
+    for char_name, char in party_characters.items():
+        mods = char.get_modifiers()
+        party_info.append(f"""
+**{char.name}** - {char.race} {char.character_class}, Level {char.level}
+- HP: {char.hit_points}  |  AC: {char.armor_class}  |  Prof Bonus: +{char.proficiency_bonus}
+- STR: {char.strength} ({mods['strength']:+d})  |  DEX: {char.dexterity} ({mods['dexterity']:+d})  |  CON: {char.constitution} ({mods['constitution']:+d})
+- INT: {char.intelligence} ({mods['intelligence']:+d})  |  WIS: {char.wisdom} ({mods['wisdom']:+d})  |  CHA: {char.charisma} ({mods['charisma']:+d})
+- Equipment: {', '.join(char.equipment[:3])}""")
+
+    context = f"""The party consists of {len(party_characters)} adventurers:
+
+{chr(10).join(party_info)}
+
+Party Gold: {party.gold} GP"""
+
+    gm.set_context(context)
+
+    # Return party summary
+    return format_party_sheet(), "", []
+
+
+def format_party_sheet() -> str:
+    """Format party sheet for display in character panel."""
+    if not party_characters:
+        return "**No Party Loaded**\n\nAdd characters in the Party Management tab."
+
+    sheet = f"# 🎭 Party Mode\n\n"
+    sheet += f"**{party.party_name}**\n"
+    sheet += f"**Party Size:** {len(party_characters)} adventurer(s)\n"
+    sheet += f"**Party Gold:** {party.gold} GP\n\n"
+    sheet += "---\n\n"
+
+    for char_name, char in party_characters.items():
+        mods = char.get_modifiers()
+        sheet += f"### {char.name}\n"
+        sheet += f"*{char.race} {char.character_class}, Level {char.level}*\n"
+        sheet += f"- HP: {char.hit_points} | AC: {char.armor_class}\n"
+        sheet += f"- STR {char.strength} ({mods['strength']:+d}) | DEX {char.dexterity} ({mods['dexterity']:+d}) | CON {char.constitution} ({mods['constitution']:+d})\n"
+        sheet += f"- INT {char.intelligence} ({mods['intelligence']:+d}) | WIS {char.wisdom} ({mods['wisdom']:+d}) | CHA {char.charisma} ({mods['charisma']:+d})\n\n"
+
+    return sheet
 
 
 def format_character_sheet() -> str:
@@ -320,13 +377,21 @@ def create_character(name: str, race: str, char_class: str, level: int,
 
 def chat(message: str, history: list) -> list:
     """Handle chat messages."""
-    global conversation_history
+    global conversation_history, gameplay_mode
 
-    if not current_character:
-        return history + [
-            {"role": "user", "content": message},
-            {"role": "assistant", "content": "⚠️ Please load a character first"}
-        ]
+    # Check if in party mode or character mode
+    if gameplay_mode == "party":
+        if not party_characters:
+            return history + [
+                {"role": "user", "content": message},
+                {"role": "assistant", "content": "⚠️ Please load party mode first (add characters in Party Management tab)"}
+            ]
+    else:
+        if not current_character:
+            return history + [
+                {"role": "user", "content": message},
+                {"role": "assistant", "content": "⚠️ Please load a character first"}
+            ]
 
     if not message.strip():
         return history
@@ -356,7 +421,10 @@ Otherwise, just type your action and press Enter!"""
             ]
 
         elif cmd == "/stats":
-            stats = format_character_sheet()
+            if gameplay_mode == "party":
+                stats = format_party_sheet()
+            else:
+                stats = format_character_sheet()
             return history + [
                 {"role": "user", "content": message},
                 {"role": "assistant", "content": stats}
@@ -571,17 +639,30 @@ with gr.Blocks(title="D&D RAG Game Master") as demo:
         with gr.Tab("🎮 Play Game"):
             with gr.Row():
                 with gr.Column(scale=1):
-                    gr.Markdown("## Character")
+                    gr.Markdown("## Gameplay Mode")
 
+                    mode_toggle = gr.Radio(
+                        choices=["🎭 Single Character", "🎲 Party Mode"],
+                        value="🎭 Single Character",
+                        label="Play Mode",
+                        info="Single Character: Traditional one-player mode | Party Mode: Multi-character adventure"
+                    )
+
+                    gr.Markdown("---")
+
+                    # Character mode UI
                     character_dropdown = gr.Dropdown(
                         choices=get_available_characters(),
                         value=get_available_characters()[0] if get_available_characters() else None,
-                        label="Choose Your Character"
+                        label="Choose Your Character",
+                        visible=True
                     )
 
                     with gr.Row():
                         load_btn = gr.Button("Load Character", variant="primary", scale=2)
                         delete_btn = gr.Button("🗑️ Delete", variant="stop", scale=1)
+
+                    load_party_btn = gr.Button("Load Party", variant="primary", visible=False)
 
                     delete_status = gr.Textbox(label="Delete Status", interactive=False, visible=False)
 
@@ -629,6 +710,13 @@ with gr.Blocks(title="D&D RAG Game Master") as demo:
             - "I draw my weapon and prepare for combat"
             - "I cast Magic Missile at the goblin"
             - "I attack with my longsword"
+
+            ### 🎭 Party Mode Tips
+            - First add characters in the Party Management tab
+            - Switch to "Party Mode" above and click "Load Party"
+            - In party mode, the GM manages the entire group
+            - Type actions like "We investigate the cave" or "The party attacks"
+            - Use `/stats` to see all party members
 
             ### 🔍 RAG Commands
             - `/rag Magic Missile` - Look up spell details
@@ -768,10 +856,34 @@ with gr.Blocks(title="D&D RAG Game Master") as demo:
             """)
 
     # Event handlers - Play Game Tab
+
+    # Mode toggle handler
+    def toggle_mode(mode):
+        """Toggle between character and party mode UI."""
+        is_character_mode = (mode == "🎭 Single Character")
+        return (
+            gr.update(visible=is_character_mode),  # character_dropdown
+            gr.update(visible=is_character_mode),  # load_btn
+            gr.update(visible=is_character_mode),  # delete_btn
+            gr.update(visible=not is_character_mode)  # load_party_btn
+        )
+
+    mode_toggle.change(
+        toggle_mode,
+        inputs=[mode_toggle],
+        outputs=[character_dropdown, load_btn, delete_btn, load_party_btn]
+    )
+
     load_btn.click(
         load_character,
         inputs=[character_dropdown],
         outputs=[character_sheet, msg_input, chatbot, char_image]
+    )
+
+    load_party_btn.click(
+        load_party_mode,
+        inputs=[],
+        outputs=[character_sheet, msg_input, chatbot]
     )
 
     delete_btn.click(

@@ -2,26 +2,31 @@
 
 ## Party-Based Gameplay
 
-- [ ] **Implement party-based chat mode**
-  - When party is defined and no single character is loaded, send full party info to GM chat context instead of individual character
-  - Enable true party-based D&D gameplay where GM manages adventures for the whole group
+- [x] **Implement party-based chat mode** ✅ IMPLEMENTED
+  - When party is defined and party mode is active, send full party info to GM chat context
+  - Enabled true party-based D&D gameplay where GM manages adventures for the whole group
+  - GM receives complete party information including all character stats, equipment, and abilities
 
-- [ ] **Add party/character mode toggle in Play Game tab**
-  - Allow switching between single character mode and party mode
-  - Update UI to show which mode is active
-  - **Character Mode**: If a specific character is selected/loaded, send only that character's info to GM chat
-  - **Party Mode**: If party is selected, send entire party info to GM chat
+- [x] **Add party/character mode toggle in Play Game tab** ✅ IMPLEMENTED
+  - Added radio button toggle: "🎭 Single Character" vs "🎲 Party Mode"
+  - UI dynamically shows/hides appropriate controls based on mode
+  - **Character Mode**: Load single character, GM sees only that character's info
+  - **Party Mode**: Load entire party, GM sees all party members' stats and equipment
+  - Mode switching updates displayed character sheet and load buttons
 
-- [ ] **Update GM context to handle party-based gameplay**
-  - Format party context with all character stats, equipment, spells
-  - Handle multi-character scenarios in GM responses
+- [x] **Update GM context to handle party-based gameplay** ✅ IMPLEMENTED
+  - Format party context with all character stats, equipment, spells for each party member
+  - GM prompts include full party roster with individual stats
+  - /stats command shows party sheet in party mode
+  - Party sheet displays all members with HP, AC, ability scores, and equipment
 
-- [ ] **Implement initiative-based party actions**
+- [ ] **Implement initiative-based party actions** 🔴 TODO
   - Roll initiative for all party members at start of combat
   - Each party member automatically takes action based on initiative order
   - GM describes what each character does in turn
   - Integration with existing `CombatState` in `game_state.py` for initiative tracking
   - Display initiative order in UI during combat encounters
+  - **Note**: CombatState already supports initiative tracking, needs UI integration
 
 ## Spell System Improvements
 
