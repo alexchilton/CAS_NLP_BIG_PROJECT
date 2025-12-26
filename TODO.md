@@ -168,7 +168,37 @@
 - **Priority**: Lower (nice-to-have, but not blocking core gameplay)
 
 
-A large Bug...
+---
+
+## ✅ FIXED BUGS (Moved to DONE.md)
+
+### ✅ "Large Bug" - Spell Target Hallucination (FIXED 2025-12-26)
+
+**Status**: ✅ FIXED - See DONE.md for details
+
+**Original Issue**: 
+When player cast "Magic Missile at the goblin" with no goblin present, the GM hallucinated:
+- Goblin appearing and dying
+- Dragon appearing from nowhere
+- Combat starting unexpectedly
+- Thorin appearing (wasn't loaded!)
+
+**Root Cause**: 
+Spell validation never checked if target exists (combat did, but spells didn't)
+
+**Fix Applied**:
+1. Added spell target validation in `_validate_spell()`
+2. Created `_extract_spell_target()` for proper target extraction
+3. Added spell-specific rejection responses
+
+**Result**: 
+Spell targets now validated like combat targets - NO MORE HALLUCINATIONS!
+
+**Test**: `e2e_tests/test_hallucination_bug.py` (Selenium test validates fix)
+
+---
+
+## 🔴 CRITICAL PRIORITY
 
 So i start and try and cast magic missile at the goblin- there is no goblin but...then it goes into combat with a dragon who appears from nowhere and together with thorin...
 Example 
