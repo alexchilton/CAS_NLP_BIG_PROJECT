@@ -20,13 +20,73 @@
   - /stats command shows party sheet in party mode
   - Party sheet displays all members with HP, AC, ability scores, and equipment
 
-- [ ] **Implement initiative-based party actions** 🔴 TODO
-  - Roll initiative for all party members at start of combat
-  - Each party member automatically takes action based on initiative order
-  - GM describes what each character does in turn
-  - Integration with existing `CombatState` in `game_state.py` for initiative tracking
-  - Display initiative order in UI during combat encounters
-  - **Note**: CombatState already supports initiative tracking, needs UI integration
+- [ ] **Fix Party Mode UI Bug** 🔴 CRITICAL BUG
+  - **Issue**: When party mode checkbox is enabled, chat textarea becomes non-interactable
+  - **Impact**: Cannot send messages in party mode, makes feature unusable
+  - **Root Cause**: Gradio UI state management issue when switching modes
+  - **Investigation Needed**: Check `web/app_gradio.py` party mode toggle implementation
+  - **Test Case**: `e2e_tests/test_party_mode_logging.py` documents the issue
+
+- [ ] **Implement Turn-Based Combat System for Party Mode** 🔴 TODO
+  - **Initiative System**:
+    - Roll initiative for all party members + enemies at combat start
+    - Sort by initiative order (highest to lowest)
+    - Track current turn in combat round
+    - Display initiative order in UI
+  - **Turn Management**:
+    - Active character indicator: "🎯 Thorin's Turn"
+    - Turn advance button or automatic progression
+    - End round detection (all characters acted)
+    - New round notification
+  - **Action Resolution**:
+    - Player specifies which character is acting: "Thorin attacks" or prefix with character name
+    - Reality Check validates action against THAT character's inventory/spells/abilities
+    - GM narrates the outcome for that specific character
+    - Auto-advance to next character's turn after action resolved
+  - **Group Dynamics**:
+    - Characters can interact with each other (healing, buffs, coordinated actions)
+    - NPC targeting: any party member can be targeted by enemies
+    - Shared combat state: all party members see same enemies
+  - **Technical Implementation**:
+    - Integration with existing `CombatState` in `game_state.py`
+    - `CombatState.initiative_order` already exists, needs full utilization
+    - Add `current_turn_index` to track whose turn it is
+    - Add `rounds_elapsed` counter
+    - UI component to display initiative tracker
+  - **UI Components Needed**:
+    - Initiative tracker panel (shows all combatants in order)
+    - Current turn indicator (highlight active character)
+    - Turn advance button
+    - Round counter display
+
+- [ ] **Implement Character-Specific Action Parsing for Party Mode** 🔴 TODO
+  - **Problem**: When player says "Elara casts Fire Bolt", system needs to know Elara is acting
+  - **Solution**: Parse character names from player input
+    - Extract character name from prefix: "Thorin attacks the goblin"
+    - Use character name to set `gm.session.character_state` to correct party member
+    - Validate action against THAT character's stats/inventory/spells
+  - **Examples**:
+    - "Thorin attacks the dragon with his longsword" → Set active character to Thorin, validate longsword
+    - "Elara casts Fire Bolt at the dragon" → Set active character to Elara, validate Fire Bolt spell
+    - "Gimli drinks a healing potion" → Set active character to Gimli, validate potion in inventory
+  - **Fallback**: If no character name detected, use current turn's character from initiative order
+  - **Implementation**: Add character name parser to `action_validator.py`
+
+- [ ] **Implement Party Member Interactions** 🎯 ENHANCEMENT
+  - **Character-to-Character Actions**:
+    - Healing: "Elara casts Cure Wounds on Thorin"
+    - Buffs: "Gandalf casts Bless on the entire party"
+    - Item sharing: "Thorin hands his rope to Legolas"
+    - Coordinated attacks: "Aragorn and Gimli attack together"
+  - **Validation**:
+    - Check if target party member exists
+    - Check if healer has the spell/ability
+    - Update target's HP/status
+  - **Social Interactions**:
+    - Party member conversations
+    - Strategy discussions
+    - Roleplaying between characters
+  - **Technical**: Extend `action_validator.py` to handle party-member-as-target
 
 ## Spell System Improvements
 
