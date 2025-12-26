@@ -66,7 +66,7 @@ class ActionValidator:
 
     # Keywords for intent detection
     COMBAT_KEYWORDS = [
-        'attack', 'hit', 'strike', 'slash', 'stab', 'shoot', 'fire at',
+        'attack', 'hit', 'strike', 'slash', 'stab', 'shoot', 'fire at', 'fire',
         'punch', 'kick', 'swing', 'swing at', 'charge', 'lunge at', 'fight',
         'smash', 'bash', 'cleave', 'thrust', 'parry', 'block and attack'
     ]

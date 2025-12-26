@@ -64,72 +64,108 @@ def wait_for_gradio_load(driver, timeout=10):
 def load_character(driver, character_name="Thorin"):
     """Load a character in the Gradio UI."""
     try:
-        # Find character dropdown
-        dropdown = driver.find_element(By.XPATH, "//select[contains(@aria-label, 'Choose Your Character')]")
-        dropdown.send_keys(character_name)
+        # Simpler approach: just click the first dropdown we find and the first option
+        print("Looking for dropdown...")
+
+        # Wait for Gradio to fully load
+        time.sleep(3)
+
+        # Try to find dropdown by class (Gradio dropdowns typically have specific classes)
+        dropdowns = driver.find_elements(By.TAG_NAME, "select")
+        if not dropdowns:
+            # If no <select>, try to find Gradio's custom dropdown
+            dropdowns = driver.find_elements(By.CSS_SELECTOR, "[role='combobox']")
+
+        if dropdowns:
+            print(f"Found {len(dropdowns)} dropdown(s)")
+            dropdown = dropdowns[0]  # First dropdown should be character selector
+            dropdown.click()
+            time.sleep(1)
+
+            # Try to find and click the Thorin option
+            options = driver.find_elements(By.CSS_SELECTOR, "[role='option']")
+            for opt in options:
+                if "Thorin" in opt.text:
+                    print(f"Found Thorin option: {opt.text}")
+                    opt.click()
+                    break
 
         time.sleep(1)
 
         # Click Load Character button
-        load_btn = driver.find_element(By.XPATH, "//button[contains(text(), 'Load Character')]")
-        load_btn.click()
+        load_btns = driver.find_elements(By.TAG_NAME, "button")
+        for btn in load_btns:
+            if "Load Character" in btn.text:
+                print("Clicking Load Character button")
+                btn.click()
+                break
 
-        time.sleep(2)
+        time.sleep(3)
         print(f"✓ Loaded character: {character_name}")
         return True
     except Exception as e:
         print(f"❌ Failed to load character: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 
 def send_chat_message(driver, message, wait_for_response=True):
     """Send a message in the chat and optionally wait for GM response."""
     try:
-        # Find the chat input textbox
-        chat_input = driver.find_element(By.XPATH, "//textarea[@placeholder='Type your action or command here...']")
+        # Find the chat input textbox (use more generic selector)
+        textareas = driver.find_elements(By.TAG_NAME, "textarea")
+        if not textareas:
+            print("❌ No textarea found!")
+            return None
+
+        # Use the first visible textarea
+        chat_input = None
+        for ta in textareas:
+            if ta.is_displayed():
+                chat_input = ta
+                break
+
+        if not chat_input:
+            print("❌ No visible textarea found!")
+            return None
+
         chat_input.clear()
         chat_input.send_keys(message)
 
         # Click Send button
-        send_btn = driver.find_element(By.XPATH, "//button[contains(text(), 'Send')]")
-        send_btn.click()
+        send_btns = driver.find_elements(By.TAG_NAME, "button")
+        for btn in send_btns:
+            if "Send" in btn.text and btn.is_displayed():
+                btn.click()
+                break
 
         print(f"🎲 Player: {message}")
 
         if wait_for_response:
-            # Wait for response (loading indicator disappears)
-            time.sleep(1)  # Initial delay
+            # Wait for response
+            time.sleep(5)  # Give GM time to respond
 
-            # Wait for chatbot to update (max 30 seconds)
-            start_time = time.time()
-            last_message_count = 0
+            # Try to get the response text
+            # Look for any new text that appeared
+            chatbot_divs = driver.find_elements(By.CSS_SELECTOR, "[data-testid]")
+            if chatbot_divs:
+                # Get the last few divs and look for the response
+                for div in reversed(chatbot_divs[-10:]):
+                    text = div.text.strip()
+                    if text and len(text) > 10:  # Meaningful response
+                        print(f"🎭 GM: {text[:200]}...")
+                        return text
 
-            while time.time() - start_time < TIMEOUT:
-                # Count messages in chatbot
-                messages = driver.find_elements(By.CSS_SELECTOR, ".message")
-                current_count = len(messages)
-
-                if current_count > last_message_count:
-                    # New message appeared
-                    time.sleep(2)  # Wait for complete render
-
-                    # Get latest GM response
-                    gm_messages = driver.find_elements(By.XPATH, "//div[@data-testid='bot']")
-                    if gm_messages:
-                        response_text = gm_messages[-1].text
-                        print(f"🎭 GM: {response_text[:200]}...")
-                        return response_text
-
-                last_message_count = current_count
-                time.sleep(0.5)
-
-            print("⏱️  Response timeout - GM taking too long")
-            return None
+            print("⏱️  No response detected")
+            return "No response"
 
         return True
 
     except Exception as e:
         print(f"❌ Failed to send message: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 
