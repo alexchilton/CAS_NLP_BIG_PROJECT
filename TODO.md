@@ -59,18 +59,27 @@
     - Turn advance button
     - Round counter display
 
-- [ ] **Implement Character-Specific Action Parsing for Party Mode** 🔴 TODO
+- [x] **Implement Character-Specific Action Parsing for Party Mode** ✅ IMPLEMENTED
   - **Problem**: When player says "Elara casts Fire Bolt", system needs to know Elara is acting
-  - **Solution**: Parse character names from player input
-    - Extract character name from prefix: "Thorin attacks the goblin"
-    - Use character name to set `gm.session.character_state` to correct party member
+  - **Solution**: Parse character names from player input and validate against correct character
+    - Extract character name from prefix: "Thorin attacks the goblin" → "Thorin"
+    - Temporarily set `gm.session.character_state` to that party member for validation
     - Validate action against THAT character's stats/inventory/spells
-  - **Examples**:
-    - "Thorin attacks the dragon with his longsword" → Set active character to Thorin, validate longsword
-    - "Elara casts Fire Bolt at the dragon" → Set active character to Elara, validate Fire Bolt spell
-    - "Gimli drinks a healing potion" → Set active character to Gimli, validate potion in inventory
-  - **Fallback**: If no character name detected, use current turn's character from initiative order
-  - **Implementation**: Add character name parser to `action_validator.py`
+    - Strip character name from input before action analysis
+  - **Implementation**:
+    - Added `extract_acting_character()` and `set_party_characters()` to `action_validator.py`
+    - Integrated into GM's `generate_response()` flow in `gm_dialogue_unified.py`
+    - Fixed word boundary issues in target/spell/item/weapon extraction methods
+    - Reordered intent detection to check items before conversation
+  - **Testing**: Comprehensive E2E test suite (`e2e_tests/test_party_character_parsing.py`) - ALL 8 TESTS PASSING
+    - ✅ Thorin attacks with longsword (valid)
+    - ✅ Elara casts Fire Bolt (valid)
+    - ✅ Gimli drinks healing potion (valid)
+    - ✅ Thorin tries to cast Fireball (rejected - Fighter can't cast)
+    - ✅ Elara shoots bow (rejected - no bow in inventory)
+    - ✅ Thorin uses staff (rejected - staff belongs to Elara)
+    - ✅ Elara casts Shield (valid)
+    - ✅ Gimli casts Cure Wounds (valid)
 
 - [ ] **Implement Party Member Interactions** 🎯 ENHANCEMENT
   - **Character-to-Character Actions**:
@@ -104,8 +113,8 @@
   - **Equipment RAG Database**: Parsed 58 equipment items from equipment.txt into ChromaDB
     - Weapons (swords, axes, bows, etc.) with damage and properties
     - Armor (leather, chainmail, plate, etc.) with AC and weight
-    - Adventuring gear (rope, torches, rations, potions, etc.)
-    - Tools, mounts, and other equipment
+    - Adventuring gear (rope, torches, rations, etc.)
+    - Magical items (if applicable)
   - **Shop Transaction System**:
     - ✅ Purchase validation (checks gold, updates inventory)
     - ✅ Sell system (half market price, D&D 5e standard)
@@ -187,7 +196,6 @@
   - Query ChromaDB for class information during character creation
   - Set correct hit dice (d6/d8/d10/d12)
   - Apply proficiencies (armor, weapons, tools, saving throws)
-  - Add starting equipment based on class
   - Add class abilities by level
   - Set spell slots for caster classes
 
@@ -276,6 +284,49 @@
   - **Implementation Priority**: Medium (current system works, but this would make it production-ready)
   - **Estimated Effort**: 2-3 hours (model integration, prompt engineering, testing)
 
+## Narrative to Mechanics Translation (GM Output Processing) 🔴 CRITICAL NEW FEATURE
+
+- [ ] **Convert GM's narrative responses into structured game mechanics updates.**
+  - **Goal**: Automatically update `game_state.py` based on the GM's storytelling, ensuring mechanical consistency.
+  - **Problem**: GM LLM's free-form text output ("The dragon breathes fire, scorching everyone for 30 damage!") needs to be parsed into actionable game mechanics (damage, status effects, etc.).
+  - **Proposed Approaches**:
+
+    ### Approach 1: Structured Output (JSON/Tool Use) - Recommended
+    - **Method**: Force the GM LLM to generate a structured data block (e.g., JSON) alongside its narrative text. This data block would contain all mechanical details of the GM's described action.
+    - **Workflow**:
+      1.  Define a schema for GM output (e.g., `action_type`, `source`, `targets`, `damage_type`, `damage_amount`, `status_effects`, etc.).
+      2.  Prompt the GM LLM to output both `narrative` and `game_mechanics` JSON blocks.
+      3.  Your Python code parses the `game_mechanics` JSON.
+      4.  Execute corresponding `game_state.py` functions (e.g., `character.take_damage(amount, type)`).
+      5.  Display the `narrative` to the user.
+    - **Pros**: High accuracy and reliability for mechanical updates. AI decides the mechanical intent.
+    - **Cons**: Requires an LLM capable of generating structured JSON (most modern large models, and some smaller ones, can do this with function calling/tool use). May require careful prompt engineering to ensure correct schema adherence.
+    - **Integration Point**: Modify `gm.generate_response` in `dnd_rag_system/systems/gm_dialogue_unified.py` to include structured output in the GM's prompt.
+
+    ### Approach 2: The "Engine-First" Flow (Inversion of Control) - Robust Alternative
+    - **Method**: The Python game engine decides the mechanical actions of NPCs/monsters, performs the calculations, and *then* prompts the GM LLM to narrate the outcome.
+    - **Workflow**:
+      1.  Python code (or a simple tactical AI) determines NPC/monster action (e.g., "Dragon uses Fire Breath").
+      2.  Python code performs all mechanical calculations (rolls, damage, saves, status effects) and updates `game_state.py`.
+      3.  Construct a detailed prompt for the GM LLM describing the *mechanically resolved* action (e.g., "The Dragon's Fire Breath hit Thorin for 56 damage and Elara for 28 damage. Describe this.").
+      4.  GM LLM generates only the narrative description.
+    - **Pros**: 100% rules adherence; game state always accurate. GM is purely a narrator.
+    - **Cons**: Requires implementing significant NPC/monster AI logic and decision-making in Python. LLM loses creative freedom over mechanical outcomes.
+    - **Integration Point**: Modify `gm.generate_response` or introduce a new "GM Orchestrator" that decides when to let the engine act and when to ask the LLM to narrate.
+
+    ### Approach 3: The "Interpreter" Agent (Post-Processing) - Least Recommended
+    - **Method**: The GM LLM generates free-form text, and a *secondary* LLM (or a specialized parsing model) then attempts to extract mechanical updates from that text.
+    - **Workflow**:
+      1.  GM LLM generates narrative response (e.g., "The dragon lashes out, claws raking Thorin for 15 damage!").
+      2.  Pass this narrative to a smaller, specialized "Interpreter" LLM.
+      3.  The Interpreter LLM extracts `{"action": "claw_attack", "target": "Thorin", "damage": 15}`.
+      4.  Your Python code applies the extracted mechanics to `game_state.py`.
+    - **Pros**: GM LLM has maximum narrative freedom.
+    - **Cons**: Slow (two LLM calls per turn). Prone to "sync errors" (Interpreter might misinterpret, or GM might narrate something mechanically impossible, leading to a desync between narrative and game state).
+    - **Integration Point**: Introduce a post-processing step after the main GM response.
+
+  - **Priority**: CRITICAL (Essential for dynamic gameplay where NPC/monster actions have real mechanical impact).
+  - **Dependencies**: Relies heavily on robust `game_state.py` definitions for characters, combat, and NPCs.
 
 ## Implementation Notes
 
