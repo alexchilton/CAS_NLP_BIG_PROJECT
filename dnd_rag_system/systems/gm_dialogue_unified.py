@@ -22,6 +22,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.config import settings
 from dnd_rag_system.systems.game_state import GameSession, CombatState, PartyState
+from dnd_rag_system.systems.action_validator import (
+    ActionValidator, ValidationResult, create_context_aware_prompt
+)
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -76,6 +79,7 @@ class GameMaster:
         self.db = db_manager
         self.session = GameSession(session_name="D&D Adventure")
         self.message_history: List[Message] = []  # Separate conversation history
+        self.action_validator = ActionValidator(debug=DEBUG_PROMPTS)  # Reality check system
 
         # Auto-detect environment
         self.use_hf_api = is_huggingface_space()
@@ -201,20 +205,31 @@ class GameMaster:
         """
         rag_context = ""
 
-        # Step 1: Search RAG if enabled
+        # Step 1: Reality Check - Validate action against game state
+        action_intent = self.action_validator.analyze_intent(player_input)
+        validation = self.action_validator.validate_action(action_intent, self.session)
+
+        if DEBUG_PROMPTS:
+            logger.debug(f"🎯 Action Intent: {action_intent}")
+            logger.debug(f"✅ Validation: {validation.result.value} - {validation.message}")
+
+        # Step 2: Search RAG if enabled
         if use_rag:
             rag_results = self.search_rag(player_input)
             rag_context = self.format_rag_context(rag_results)
 
-        # Step 2: Build prompt with history and RAG context
-        prompt = self._build_prompt(player_input, rag_context)
+        # Step 3: Build prompt with history, RAG context, and validation guidance
+        prompt = self._build_prompt(player_input, rag_context, validation)
 
-        # Step 3: Get LLM response (route based on mode)
+        # Step 4: Get LLM response (route based on mode)
         try:
             if self.use_hf_api:
                 response = self._query_hf(prompt)
             else:
                 response = self._query_ollama(prompt)
+
+            # Step 5: Post-process response (e.g., auto-add NPCs introduced in conversation)
+            self._post_process_response(response, validation)
 
             # Save to history
             self.message_history.append(Message('player', player_input, rag_context if use_rag else None))
@@ -226,8 +241,15 @@ class GameMaster:
         except Exception as e:
             return f"Error generating response: {e}"
 
-    def _build_prompt(self, player_input: str, rag_context: str) -> str:
-        """Build complete prompt for LLM with full game state context."""
+    def _build_prompt(self, player_input: str, rag_context: str, validation=None) -> str:
+        """
+        Build complete prompt for LLM with full game state context.
+
+        Args:
+            player_input: Player's action
+            rag_context: Retrieved RAG information
+            validation: ValidationReport from action validator (optional)
+        """
 
         # Get recent conversation history
         recent_messages = self.message_history[-4:] if len(self.message_history) > 4 else self.message_history
@@ -276,17 +298,75 @@ TIME: Day {self.session.day}, {self.session.time_of_day}
 
         prompt += f"""PLAYER ACTION: {player_input}
 
-INSTRUCTIONS:
+"""
+
+        # Add validation guidance if available
+        if validation:
+            prompt += f"""ACTION VALIDATION:
+{validation.message}
+
+"""
+            if validation.result == ValidationResult.INVALID:
+                prompt += """⚠️ IMPORTANT: This action is INVALID. The target/resource does not exist in the current game state.
+Narrate the failure or impossibility of this action WITHOUT introducing non-existent entities.
+For example: "You swing at empty air" or "You search your pack but don't find that item."
+
+"""
+            elif validation.result == ValidationResult.NPC_INTRODUCTION:
+                prompt += """💬 NPC INTRODUCTION OPPORTUNITY: The player is trying to interact with an NPC who hasn't been explicitly introduced.
+If it makes logical sense for this NPC to exist in the current location (e.g., bartender in tavern, guard at gate),
+introduce them naturally with a brief description and roleplay their response. If it doesn't make sense,
+narrate that no such person is present. Be consistent with the established scene.
+
+"""
+            elif validation.matched_entity and validation.matched_entity != validation.action.target:
+                prompt += f"""ℹ️ TARGET CLARIFICATION: Player said "{validation.action.target}" but likely means "{validation.matched_entity}".
+Use "{validation.matched_entity}" in your response.
+
+"""
+
+        prompt += """INSTRUCTIONS:
 1. Apply D&D 5e rules accurately using the retrieved information
 2. Consider the current location, NPCs present, and combat state
-3. Ask for appropriate dice rolls (d20 for attacks/checks, damage dice, saves, etc.)
-4. Be concise and engaging (2-4 sentences max)
-5. Maintain narrative flow while being mechanically precise
-6. If rules are unclear, use standard D&D 5e mechanics
+3. Follow the ACTION VALIDATION guidance above - respect entity existence
+4. Ask for appropriate dice rolls (d20 for attacks/checks, damage dice, saves, etc.)
+5. Be concise and engaging (2-4 sentences max)
+6. Maintain narrative flow while being mechanically precise
+7. If rules are unclear, use standard D&D 5e mechanics
 
 GM RESPONSE:"""
 
         return prompt
+
+    def _post_process_response(self, response: str, validation) -> None:
+        """
+        Post-process GM response to update game state.
+        Handles NPC auto-introduction and other state updates.
+
+        Args:
+            response: GM's response
+            validation: ValidationReport from action validation
+        """
+        # Auto-add NPCs introduced during conversation
+        if validation.result == ValidationResult.NPC_INTRODUCTION and validation.action.target:
+            npc_name = validation.action.target.title()
+
+            # Check if GM actually introduced the NPC (response isn't a rejection)
+            rejection_phrases = [
+                "no such", "nobody", "no one", "isn't here", "not present",
+                "don't see", "can't find", "nowhere to be found"
+            ]
+
+            response_lower = response.lower()
+            is_rejection = any(phrase in response_lower for phrase in rejection_phrases)
+
+            if not is_rejection and npc_name not in self.session.npcs_present:
+                # GM introduced the NPC, add to game state
+                self.session.npcs_present.append(npc_name)
+                self.session.add_note(f"NPC introduced in conversation: {npc_name}")
+
+                if DEBUG_PROMPTS:
+                    logger.debug(f"🎭 Auto-added NPC to scene: {npc_name}")
 
     def _query_ollama(self, prompt: str, timeout: int = 120) -> str:
         """

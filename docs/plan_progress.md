@@ -492,22 +492,151 @@ python query_rag.py --monster "dragon" # Search monsters
 
 ---
 
-**Status**: ✅ **V2.0 PHASE 8 COMPLETE!** (Comprehensive Game State System)
-**Current Focus**: Gradio web interface integration
-**Next Steps**:
-1. Integrate state system with Gradio app
-2. Display real-time HP, spell slots, and conditions in UI
-3. Combat mode UI with initiative tracker
-4. Inventory and party management UI
-5. Save/load game sessions
+---
 
-**Latest Achievement (Dec 25, 2024)**:
-🎉 **Complete D&D 5e State Management System**
-- 900+ lines of production code
-- 70 comprehensive tests (100% passing)
-- Full D&D 5e mechanics: HP, spell slots, inventory, conditions, combat, parties
-- Extensible architecture ready for integration
+## 🏪 Phase 9: Shop System & Equipment Database ✅ COMPLETE **⭐ NEW! (Dec 26, 2024)**
+
+**Goal**: Implement GM-driven conversational shopping with NPC shopkeepers
+
+### ✅ 9.1 Equipment Database
+**File**: `loaders/equipment_loader.py`, `web/equipment.txt`
+- [x] Parse D&D 5e equipment tables (weapons, armor, gear, tools, mounts)
+- [x] Extract 58 equipment items with prices, weights, and properties
+- [x] Load into ChromaDB `dnd_equipment` collection
+- [x] Metadata: name, cost_gp, weight, category, properties
+- [x] Integration with RAG system for shop queries
+
+### ✅ 9.2 Shop System
+**File**: `systems/shop_system.py`
+- [x] ShopSystem class with RAG-powered inventory search
+- [x] Natural language purchase/sell command parsing
+- [x] Transaction validation (gold checks, inventory updates)
+- [x] Fuzzy item name matching ("longsword", "long sword" both work)
+- [x] D&D 5e sell mechanics (half price)
+- [x] Shopkeeper personality context generator (friendly, grumpy, mysterious, etc.)
+- [x] Integration hooks for GM dialogue system
+
+### ✅ 9.3 Shop System Testing
+**File**: `test_shop_system.py`
+- [x] 7 comprehensive test suites
+- [x] Shop inventory search tests
+- [x] Item price lookup tests (with fuzzy matching)
+- [x] Purchase transaction tests (gold deduction, inventory add)
+- [x] Sell transaction tests (gold increase, inventory remove)
+- [x] Chat command parsing tests (natural language + commands)
+- [x] Shopkeeper context generation tests
+- [x] Complete shopping experience simulation
+- [x] **100% test pass rate**
+
+### ✅ 9.4 Documentation
+**File**: `SHOP_SYSTEM_GUIDE.md`
+- [x] Comprehensive usage guide with examples
+- [x] Philosophy: Chat-first, mechanics-second
+- [x] Example shopping sessions
+- [x] Technical API documentation
+- [x] GM best practices
+
+**Philosophy**: Shop interactions happen through natural GM chat with NPC shopkeepers. System validates transactions and manages gold/inventory automatically while GM brings the shopkeeper to life with personality!
 
 ---
 
-**Last Updated**: December 25, 2024
+## ✅ Phase 10: Reality Check System ✅ COMPLETE **⭐ NEW! (Dec 26, 2024)**
+
+**Goal**: Prevent GM hallucinations by validating player actions against game state
+
+### ✅ 10.1 Action Validation System
+**File**: `systems/action_validator.py`
+- [x] ActionType enum (combat, spell_cast, conversation, item_use, exploration)
+- [x] ValidationResult enum (valid, invalid, npc_introduction, fuzzy_match)
+- [x] ActionIntent dataclass (structured action parsing)
+- [x] ValidationReport dataclass (validation results with guidance)
+- [x] Intent analysis from natural language input
+- [x] State validation against GameSession
+- [x] Fuzzy matching for flexible input (e.g., "goblin" → "Goblin Scout")
+- [x] Context-aware prompting for GM guidance
+
+### ✅ 10.2 Validation Logic
+**Combat Validation**:
+- [x] Target must exist in npcs_present or combat.initiative_order
+- [x] Fuzzy matching for partial names
+- [x] Clear error messages for invalid targets
+
+**Spell Validation**:
+- [x] Character must know the spell (fuzzy matching)
+- [x] Spell must exist in character's spell list
+- [x] Helpful suggestions for similar spells
+
+**Item Validation**:
+- [x] Item must be in character inventory
+- [x] Quantity validation
+
+**NPC Conversation**:
+- [x] Allows contextually appropriate NPC introductions
+- [x] Rejects NPCs that don't make sense in current scene
+- [x] Auto-adds introduced NPCs to game state
+
+### ✅ 10.3 GM Integration
+**File**: `systems/gm_dialogue_unified.py`
+- [x] Integrated ActionValidator into GameMaster.__init__
+- [x] Modified generate_response() to validate before LLM generation
+- [x] Updated _build_prompt() with validation guidance
+- [x] Added _post_process_response() to auto-add introduced NPCs
+- [x] Debug logging for validation steps
+
+### ✅ 10.4 Reality Check Testing
+**File**: `test_reality_check.py`
+- [x] Combat validation tests (valid/invalid targets, fuzzy matching)
+- [x] NPC conversation tests (introduction, rejection, fuzzy matching)
+- [x] Spell casting tests (known/unknown spells)
+- [x] Item usage tests (inventory validation)
+- [x] Exploration tests (always allowed)
+- [x] **100% test pass rate**
+
+**Benefits**:
+- Prevents GM from inventing non-existent entities
+- Maintains game state consistency
+- Preserves narrative freedom (GM can still introduce appropriate NPCs)
+- Fuzzy matching allows flexible player input
+- Clear error messaging guides GM narration
+
+---
+
+## 📦 Updated Statistics (Dec 26, 2024)
+
+### Collection Counts
+- **Spells**: 86 spells → 250+ chunks
+- **Monsters**: 332 monsters → 332 chunks
+- **Classes**: 12 classes → 12 chunks
+- **Races**: 9 races → 18 chunks
+- **Equipment**: 58 items → 58 chunks ⭐ NEW!
+- **Total**: ~670+ chunks in ChromaDB
+
+### Test Results
+- **SpellSlots**: 6 tests ✅
+- **DeathSaves**: 3 tests ✅
+- **CharacterState**: 34 tests ✅
+- **CombatState**: 9 tests ✅
+- **PartyState**: 11 tests ✅
+- **GameSession**: 7 tests ✅
+- **Shop System**: 7 test suites ✅ NEW!
+- **Reality Check**: 15+ tests ✅ NEW!
+- **Total Tests**: 92+ tests
+- **Pass Rate**: 100% ✅
+
+---
+
+**Status**: ✅ **V3.0 PRODUCTION READY!** (Shop System + Reality Check)
+**Current Focus**: Documentation and deployment
+**Latest Achievements (Dec 26, 2024)**:
+🎉 **GM-Driven Shop System** - Conversational shopping with NPC shopkeepers
+🎉 **Reality Check System** - Prevents hallucinations while preserving narrative freedom
+🎉 **Equipment Database** - 58 D&D 5e items with accurate prices
+
+**Next Steps**:
+1. Deploy to Hugging Face Spaces
+2. Test with HF Inference API model (Qwen2.5-7B-Instruct)
+3. User feedback and iteration
+
+---
+
+**Last Updated**: December 26, 2024
