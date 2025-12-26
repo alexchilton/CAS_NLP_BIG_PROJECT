@@ -1,7 +1,7 @@
 """
 D&D Mechanics Extraction System
 
-Uses a small LLM (Gemma 3 4B) to extract game mechanics from GM narrative responses.
+Uses a small LLM to extract game mechanics from GM narrative responses.
 Automatically parses damage, healing, conditions, spell usage, etc. from natural language.
 
 Example:
@@ -17,6 +17,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 logger = logging.getLogger(__name__)
+
+# Default model for mechanics extraction
+# Change this in one place to switch models across the entire system
+DEFAULT_MECHANICS_MODEL = "qwen2.5:3b"  # Fast and accurate for structured extraction
 
 
 class MechanicType(Enum):
@@ -105,14 +109,15 @@ class ExtractedMechanics:
 
 class MechanicsExtractor:
     """
-    Extracts game mechanics from GM narrative using Gemma 3 4B.
+    Extracts game mechanics from GM narrative using a small LLM.
 
     Uses structured prompting to get consistent JSON output.
+    The default model can be changed via DEFAULT_MECHANICS_MODEL constant.
     """
 
     def __init__(
         self,
-        model_name: str = "qwen2.5:3b",  # Fast and accurate for structured extraction
+        model_name: str = DEFAULT_MECHANICS_MODEL,
         debug: bool = False,
         timeout: int = 30
     ):
@@ -120,7 +125,7 @@ class MechanicsExtractor:
         Initialize mechanics extractor.
 
         Args:
-            model_name: Ollama model to use (default: gemma2:2b for speed)
+            model_name: Ollama model to use (default: DEFAULT_MECHANICS_MODEL)
             debug: Enable debug logging
             timeout: Query timeout in seconds
         """
