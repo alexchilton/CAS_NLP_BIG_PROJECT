@@ -25,6 +25,7 @@ from dnd_rag_system.systems.game_state import GameSession, CombatState, PartySta
 from dnd_rag_system.systems.action_validator import (
     ActionValidator, ValidationResult, ActionType, create_context_aware_prompt
 )
+from dnd_rag_system.systems.shop_system import ShopSystem
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -80,6 +81,7 @@ class GameMaster:
         self.session = GameSession(session_name="D&D Adventure")
         self.message_history: List[Message] = []  # Separate conversation history
         self.action_validator = ActionValidator(debug=DEBUG_PROMPTS)  # Reality check system
+        self.shop = ShopSystem(db_manager, debug=DEBUG_PROMPTS)  # Shop transaction system
 
         # Auto-detect environment
         self.use_hf_api = is_huggingface_space()
@@ -204,6 +206,37 @@ class GameMaster:
             GM response
         """
         rag_context = ""
+        transaction_feedback = ""
+
+        # Step 0: Shop Transaction Processing (before Reality Check)
+        # Check for /buy or /sell commands and process transactions
+        if self.session.character_state:
+            purchase_intent = self.shop.parse_purchase_intent(player_input)
+            sell_intent = self.shop.parse_sell_intent(player_input)
+
+            if purchase_intent:
+                item_name, quantity = purchase_intent
+                transaction = self.shop.attempt_purchase(
+                    self.session.character_state,
+                    item_name,
+                    quantity
+                )
+                transaction_feedback = f"**💰 SHOP TRANSACTION**: {transaction.message}\n\n"
+
+                if DEBUG_PROMPTS:
+                    logger.debug(f"🛒 Purchase: {item_name} x{quantity} - {transaction.message}")
+
+            elif sell_intent:
+                item_name, quantity = sell_intent
+                transaction = self.shop.attempt_sale(
+                    self.session.character_state,
+                    item_name,
+                    quantity
+                )
+                transaction_feedback = f"**💵 SHOP TRANSACTION**: {transaction.message}\n\n"
+
+                if DEBUG_PROMPTS:
+                    logger.debug(f"💵 Sale: {item_name} x{quantity} - {transaction.message}")
 
         # Step 1: Reality Check - Validate action against game state
         action_intent = self.action_validator.analyze_intent(player_input)
@@ -242,6 +275,10 @@ class GameMaster:
 
             # Step 5: Post-process response (e.g., auto-add NPCs introduced in conversation)
             self._post_process_response(response, validation)
+
+            # Add shop transaction feedback if any
+            if transaction_feedback:
+                response = transaction_feedback + response
 
             # Save to history
             self.message_history.append(Message('player', player_input, rag_context if use_rag else None))
