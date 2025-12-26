@@ -196,10 +196,10 @@ This file tracks completed and working features that have been implemented and t
 **Status:** ✅ Fully Implemented and Working
 
 ### Overview
-Automatically extracts game mechanics from GM narrative responses and updates game state using a small LLM (Gemma 2 2B).
+Automatically extracts game mechanics from GM narrative responses and updates game state using a small LLM (Qwen 2.5 3B).
 
 ### Features
-- **Automatic Mechanics Extraction**: Uses Gemma 2 2B to parse GM narratives for:
+- **Automatic Mechanics Extraction**: Uses Qwen 2.5 3B to parse GM narratives for:
   - Damage dealt (amount, type, target)
   - Healing received (amount, source, target)
   - Conditions added/removed (poisoned, stunned, frightened, etc.)
@@ -259,4 +259,25 @@ Auto-Applied: Thorin's HP: 28 → 20
    - **Location**: `dnd_rag_system/systems/shop_system.py:164, 177, 239-240`
 
 **Result**: All shop commands (`/buy`, `/sell`) now working correctly ✅
+
+### Dragon Combat E2E Test - Improved (2025-12-26)
+- **File**: `e2e_tests/test_dragon_combat_mechanics.py`
+- **Improvements**:
+  1. **Fixed jarring location jump**: Added scene transition message that establishes dragon's lair before combat
+     - Previously: Load character → random location (Market Square) → "I enter the dragon's lair" (confusing!)
+     - Now: Load character → transition message → dragon's lair established → combat starts smoothly
+  2. **Fixed HP extraction**: Improved `get_character_sheet_hp()` to search multiple DOM element types
+     - Added XPath search for elements containing "HP:" or "Hit Points"
+     - Added fallback checks for textareas, labels
+     - Previously returned `None`, now robust extraction
+  3. **Fixed "Loading content" bug**: Added wait loop to skip intermediate loading states
+     - Prevents getting partial/loading messages instead of final GM responses
+  4. **Fixed None HP crashes**: Added proper None checks throughout all HP comparisons
+     - Prevents `TypeError: '>' not supported between instances of 'NoneType'`
+     - Gracefully handles cases where HP tracking unavailable
+  5. **Removed blocking input()**: Replaced with automatic browser close after 2s
+     - Allows test to run in CI/CD without manual intervention
+     - Optional commented code for manual browser inspection during development
+  6. **Updated model references**: Changed from "Gemma 2 2B" to "Qwen 2.5 3B" throughout
+- **Status**: ✅ Test now runs smoothly with proper scene transitions and error handling
 
