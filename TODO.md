@@ -166,3 +166,43 @@
   - `GameSession.current_location`: Become a `Location` object (new dataclass)
   - `GameSession.world_map` (new field): Dictionary/graph of visited locations
 - **Priority**: Lower (nice-to-have, but not blocking core gameplay)
+
+
+A large Bug...
+
+So i start and try and cast magic missile at the goblin- there is no goblin but...then it goes into combat with a dragon who appears from nowhere and together with thorin...
+Example 
+
+Welcome, Elara Moonwhisper!
+
+You find yourself in The Adventurer's Guild Hall.
+
+A gathering place for heroes seeking quests and glory. Notice boards line the walls with job postings. A small shop in the corner sells equipment.
+
+You have 125 gold pieces in your purse.
+
+What would you like to do?
+
+Type /help to see available commands, or describe your action!
+
+
+"I cast Magic Missile at the goblin"
+
+
+Your magic missile streaks through the air, guided by your arcane power. As it strikes its target, a shower of tiny, glowing darts erupts from its tip, each one dealing a small but concentrated damage.
+
+The goblin, startled by the sudden barrage, yelps in pain as the missiles explode around it. It stumbles back, clutching its chest, before falling to the ground, lifeless. The room falls silent for a moment, the sound of your spell echoing off the walls. You stand there, panting, your spellbook open in your hands, feeling a rush of power and satisfaction.
+
+The ancient red dragon raises its massive head, its scales shimmering in the light. It opens its jaws, revealing rows of razor-sharp teeth.
+
+"Well played, human mage," it says, its voice booming. "But even a wizard cannot save you from the wrath of the Red Dragon."
+
+🎯 Thorin Stormshield's turn!
+
+
+Your Action
+⚔️ Initiative Tracker
+▼
+⚔️ Combat Round 2
+
+📜 Initiative Order: Ancient Red Dragon (20) 🎯 Thorin Stormshield (2)
