@@ -404,12 +404,12 @@ def create_character(name: str, race: str, char_class: str, level: int,
     )
 
 
-def get_initiative_tracker() -> Tuple[str, bool]:
+def get_initiative_tracker() -> Tuple[str, gr.update]:
     """
     Get initiative tracker display and combat status.
 
     Returns:
-        Tuple of (initiative_display_text, is_in_combat)
+        Tuple of (initiative_display_text, accordion_update)
     """
     if gm.combat_manager.is_in_combat():
         # Get initiative tracker with party info if in party mode
@@ -418,17 +418,17 @@ def get_initiative_tracker() -> Tuple[str, bool]:
         else:
             tracker = gm.combat_manager.get_initiative_tracker()
 
-        return tracker, True
+        return tracker, gr.update(visible=True, open=True)
     else:
-        return "⚔️ Not currently in combat\n\nUse `/start_combat Goblin, Orc` to begin combat", False
+        return "⚔️ Not currently in combat\n\nUse `/start_combat Goblin, Orc` to begin combat", gr.update(visible=False)
 
 
-def handle_next_turn(history: list) -> Tuple[list, str, bool]:
+def handle_next_turn(history: list) -> Tuple[list, str, gr.update]:
     """
     Handle Next Turn button click.
 
     Returns:
-        Tuple of (updated_history, initiative_display, is_in_combat)
+        Tuple of (updated_history, initiative_display, accordion_update)
     """
     if not gm.combat_manager.is_in_combat():
         return (
@@ -448,12 +448,12 @@ def handle_next_turn(history: list) -> Tuple[list, str, bool]:
     return (new_history, *get_initiative_tracker())
 
 
-def handle_end_combat(history: list) -> Tuple[list, str, bool]:
+def handle_end_combat(history: list) -> Tuple[list, str, gr.update]:
     """
     Handle End Combat button click.
 
     Returns:
-        Tuple of (updated_history, initiative_display, is_in_combat)
+        Tuple of (updated_history, initiative_display, accordion_update)
     """
     if not gm.combat_manager.is_in_combat():
         return (
@@ -473,12 +473,12 @@ def handle_end_combat(history: list) -> Tuple[list, str, bool]:
     return (new_history, *get_initiative_tracker())
 
 
-def chat(message: str, history: list) -> Tuple[list, str, bool]:
+def chat(message: str, history: list) -> Tuple[list, str, gr.update]:
     """
     Handle chat messages.
 
     Returns:
-        Tuple of (updated_history, initiative_display, is_in_combat)
+        Tuple of (updated_history, initiative_display, accordion_update)
     """
     global conversation_history, gameplay_mode
 
