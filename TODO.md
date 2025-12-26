@@ -6,41 +6,6 @@
 
 ## 🔥 HIGH PRIORITY
 
-### Narrative to Mechanics Translation (GM Output Processing)
-**Critical for dynamic gameplay!** The GM LLM can narrate events, but game state doesn't update automatically.
-
-- **Problem**: GM's narrative ("The dragon breathes fire, dealing 30 damage!") doesn't update `game_state.py`
-- **Goal**: Automatically apply mechanical effects from GM narration to game state
-- **Recommended Approach**: **Structured Output (JSON + Narrative)**
-  - GM LLM outputs both narrative text AND structured mechanics data
-  - Use Claude's function calling / structured output capabilities
-  - Python parses mechanics JSON and updates game state
-  - Display narrative to player
-- **Example Output**:
-  ```json
-  {
-    "narrative": "The dragon's fiery breath scorches the party! Thorin takes 30 damage, Elara 15.",
-    "mechanics": {
-      "action_type": "dragon_breath_attack",
-      "targets": [
-        {"name": "Thorin", "damage": 30, "damage_type": "fire"},
-        {"name": "Elara", "damage": 15, "damage_type": "fire"}
-      ],
-      "status_effects": []
-    }
-  }
-  ```
-- **Implementation Points**:
-  - Modify GM prompt in `gm_dialogue_unified.py` to request structured output
-  - Add JSON parser for mechanics extraction
-  - Call appropriate `game_state.py` methods (e.g., `character.take_damage()`)
-  - Update UI to reflect state changes
-- **Priority**: HIGH - Essential for immersive, mechanically-accurate gameplay
-
----
-
-## 🎯 MEDIUM PRIORITY
-
 ### Character-Specific Action Parsing for Party Mode
 - **Problem**: When player says "Elara casts Fire Bolt", system needs to know Elara is acting
 - **Solution**: Parse character names from player input
@@ -159,6 +124,37 @@
 ---
 
 ## ✅ FIXED BUGS (Moved to DONE.md)
+
+### ✅ Narrative to Mechanics Translation (COMPLETED 2025-12-26)
+
+**Status**: ✅ FULLY IMPLEMENTED - See commit cf43f62
+
+**What It Does**:
+Automatically extracts and applies game mechanics from GM narrative to game state.
+- GM narrates: "The dragon deals 30 damage to Thorin!"  
+- System extracts: `{"damage": [{"target": "Thorin", "amount": 30, "type": "fire"}]}`
+- Automatically updates: `character_state.current_hp -= 30`
+- UI refreshes showing new HP
+
+**Components**:
+- `mechanics_extractor.py` - Uses LLM (qwen2.5:3b) to extract structured JSON
+- `mechanics_applicator.py` - Applies mechanics to CharacterState/PartyState
+- Integration in `gm_dialogue_unified.py` (lines 388-418)
+- Test suite: `test_mechanics_system.py`
+
+**Supported Mechanics**:
+✅ Damage (with type: slashing, fire, etc.)
+✅ Healing (with source tracking)
+✅ Conditions (poisoned, stunned, etc.)
+✅ Spell slot consumption
+✅ Item consumption
+✅ Death/unconscious detection
+✅ Works in both single character and party mode
+
+**Result**: 
+Game state automatically stays in sync with GM narrative! No manual HP tracking needed.
+
+---
 
 ### ✅ Party Mode UI Bug (FIXED 2025-12-26)
 

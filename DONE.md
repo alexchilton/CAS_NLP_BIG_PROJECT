@@ -60,6 +60,65 @@ This file tracks completed and working features that have been implemented and t
 
 ---
 
+## ✅ Narrative to Mechanics Translation System ✅ FULLY IMPLEMENTED (2025-12-26)
+
+### Automatic Game State Updates from GM Narrative
+- **Goal**: Automatically extract and apply game mechanics from GM narrative responses to keep game state in sync
+- **Problem Solved**: GM could narrate "The dragon deals 30 damage!" but HP wouldn't update automatically
+- **Implementation**: Created comprehensive two-component system:
+  
+**Component 1: MechanicsExtractor** (`mechanics_extractor.py`)
+  - Uses small LLM (qwen2.5:3b) for structured extraction
+  - Parses narrative text into JSON with specific mechanics schema
+  - Extracts: damage, healing, conditions, spell slots, item consumption, death/unconscious
+  - Character-aware: Accepts character names list for better extraction accuracy
+  - Debug mode available for testing and troubleshooting
+  
+**Component 2: MechanicsApplicator** (`mechanics_applicator.py`)
+  - Applies extracted mechanics to CharacterState or PartyState objects
+  - Calls appropriate game_state.py methods: `take_damage()`, `heal()`, `add_condition()`, etc.
+  - Returns feedback messages describing what was applied
+  - Supports both single character and party mode
+  
+**Integration** (in `gm_dialogue_unified.py`):
+  - Step 5.3 in response generation pipeline (lines 388-418)
+  - Automatically triggered after GM generates narrative
+  - Extracts mechanics → Applies to game state → UI auto-updates
+  - Error handling ensures graceful degradation if extraction fails
+  
+**Supported Mechanics**:
+  ✅ **Damage**: Amount, type (slashing/fire/etc.), target
+  ✅ **Healing**: Amount, source, target
+  ✅ **Conditions**: Added/removed, duration, target
+  ✅ **Spell Slots**: Level, spell name, caster
+  ✅ **Items**: Consumed items, quantity, character
+  ✅ **Death/Unconscious**: Character state changes
+  
+**Example Flow**:
+  1. GM: "The dragon's fiery breath scorches Thorin for 30 fire damage!"
+  2. Extractor: `{"damage": [{"target": "Thorin", "amount": 30, "type": "fire"}]}`
+  3. Applicator: Calls `thorin_state.take_damage(30, "fire")`
+  4. Game State: `thorin.current_hp: 28 → -2` (unconscious!)
+  5. UI: Character sheet automatically shows "HP: 0/28 💀 UNCONSCIOUS"
+  
+**Testing**:
+  - Unit tests: `test_mechanics_system.py` ✅
+  - E2E tests: `e2e_tests/test_dragon_combat_mechanics.py` ✅
+  - All core mechanics tested and working
+  - Minor edge cases where non-mechanics text triggers extraction (low impact)
+  
+**Result**: Game state now automatically stays synchronized with narrative! Players don't need to manually track HP, conditions, or resources. The system handles it transparently.
+
+**Commit**: cf43f62 - "feat: Implement narrative to mechanics translation + fix shop/testing bugs"
+
+**Files**:
+  - `dnd_rag_system/systems/mechanics_extractor.py`
+  - `dnd_rag_system/systems/mechanics_applicator.py`
+  - `dnd_rag_system/systems/gm_dialogue_unified.py` (integration)
+  - `test_mechanics_system.py` (test suite)
+
+---
+
 ## ✅ Party Mode UI Bug Fix ✅ COMPLETED (2025-12-26)
 
 ### Fixed Party Mode Chat Textarea Non-Interactive Bug
