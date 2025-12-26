@@ -20,14 +20,14 @@
   - /stats command shows party sheet in party mode
   - Party sheet displays all members with HP, AC, ability scores, and equipment
 
-- [ ] **Fix Party Mode UI Bug** 🔴 CRITICAL BUG
+- [x] **Fix Party Mode UI Bug** ✅ FIXED
   - **Issue**: When party mode checkbox is enabled, chat textarea becomes non-interactable
   - **Impact**: Cannot send messages in party mode, makes feature unusable
-  - **Root Cause**: Gradio UI state management issue when switching modes
-  - **Investigation Needed**: Check `web/app_gradio.py` party mode toggle implementation
-  - **Test Case**: `e2e_tests/test_party_mode_logging.py` documents the issue
+  - **Root Cause**: `load_party_mode()` was returning `""` for msg_input, breaking interactivity
+  - **Solution**: Changed to return `gr.update(interactive=True, value="")` to explicitly keep textarea interactive
+  - **Files**: `web/app_gradio.py` lines 204-242
 
-- [ ] **Implement Turn-Based Combat System for Party Mode** 🔴 TODO
+- [ ] **Implement Turn-Based Combat System for Party Mode** 🏗️ IN PROGRESS
   - **Initiative System**:
     - Roll initiative for all party members + enemies at combat start
     - Sort by initiative order (highest to lowest)

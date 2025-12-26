@@ -26,6 +26,7 @@ from dnd_rag_system.systems.action_validator import (
     ActionValidator, ValidationResult, ActionType, create_context_aware_prompt
 )
 from dnd_rag_system.systems.shop_system import ShopSystem
+from dnd_rag_system.systems.combat_manager import CombatManager
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -82,6 +83,7 @@ class GameMaster:
         self.message_history: List[Message] = []  # Separate conversation history
         self.action_validator = ActionValidator(debug=DEBUG_PROMPTS)  # Reality check system
         self.shop = ShopSystem(db_manager, debug=DEBUG_PROMPTS)  # Shop transaction system
+        self.combat_manager = CombatManager(self.session.combat, debug=DEBUG_PROMPTS)  # Combat system
 
         # Auto-detect environment
         self.use_hf_api = is_huggingface_space()
@@ -207,6 +209,63 @@ class GameMaster:
         """
         rag_context = ""
         transaction_feedback = ""
+        combat_feedback = ""
+
+        # Step -1: Combat Command Processing
+        # Handle combat commands like /start_combat, /next_turn, /end_combat, /initiative
+        combat_command_handled = False
+        lower_input = player_input.lower().strip()
+
+        if lower_input.startswith('/start_combat'):
+            # Parse NPCs from command: /start_combat Goblin, Orc, Dragon
+            npc_list = []
+            if ' ' in player_input:
+                npc_text = player_input.split(' ', 1)[1]
+                npc_list = [npc.strip() for npc in npc_text.split(',')]
+
+            # Use existing NPCs if no list provided
+            if not npc_list:
+                npc_list = self.session.npcs_present
+
+            if npc_list:
+                # Start combat with party or single character
+                if self.session.party and len(self.session.party.characters) > 0:
+                    combat_feedback = self.combat_manager.start_combat_with_party(
+                        self.session.party,
+                        npc_list
+                    )
+                elif self.session.character_state:
+                    combat_feedback = self.combat_manager.start_combat_with_character(
+                        self.session.character_state,
+                        npc_list
+                    )
+                else:
+                    combat_feedback = "⚠️ No character or party loaded!"
+            else:
+                combat_feedback = "⚠️ No NPCs specified for combat! Use: `/start_combat Goblin, Orc` or add NPCs with add_npc() first."
+
+            combat_command_handled = True
+
+        elif lower_input in ['/next_turn', '/next']:
+            combat_feedback = self.combat_manager.advance_turn()
+            combat_command_handled = True
+
+        elif lower_input == '/end_combat':
+            combat_feedback = self.combat_manager.end_combat()
+            combat_command_handled = True
+
+        elif lower_input == '/initiative':
+            if self.session.party and len(self.session.party.characters) > 0:
+                combat_feedback = self.combat_manager.get_initiative_tracker(self.session.party)
+            else:
+                combat_feedback = self.combat_manager.get_initiative_tracker()
+            combat_command_handled = True
+
+        # If combat command was handled, return immediately
+        if combat_command_handled:
+            self.message_history.append(Message('player', player_input))
+            self.message_history.append(Message('system', combat_feedback))
+            return combat_feedback
 
         # Step 0: Shop Transaction Processing (before Reality Check)
         # Check for /buy or /sell commands and process transactions
@@ -320,9 +379,24 @@ class GameMaster:
             # Step 5: Post-process response (e.g., auto-add NPCs introduced in conversation)
             self._post_process_response(response, validation)
 
+            # Step 5.5: Auto-advance turn in combat mode after character acts
+            if self.combat_manager.is_in_combat():
+                # Only advance if this was an actual action (not conversation/exploration)
+                if action_intent.action_type in [ActionType.COMBAT, ActionType.SPELL_CAST, ActionType.ITEM_USE]:
+                    turn_message = self.combat_manager.advance_turn()
+                    if turn_message:
+                        combat_feedback = f"\n\n{turn_message}"
+
+                    if DEBUG_PROMPTS:
+                        logger.debug(f"⚔️ Combat turn auto-advanced: {turn_message}")
+
             # Add shop transaction feedback if any
             if transaction_feedback:
                 response = transaction_feedback + response
+
+            # Add combat feedback if any (turn advancement)
+            if combat_feedback:
+                response = response + combat_feedback
 
             # Save to history
             self.message_history.append(Message('player', player_input, rag_context if use_rag else None))
