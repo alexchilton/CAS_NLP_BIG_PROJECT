@@ -23,7 +23,7 @@ from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.config import settings
 from dnd_rag_system.systems.game_state import GameSession, CombatState, PartyState
 from dnd_rag_system.systems.action_validator import (
-    ActionValidator, ValidationResult, create_context_aware_prompt
+    ActionValidator, ValidationResult, ActionType, create_context_aware_prompt
 )
 
 # Configure logging
@@ -213,6 +213,18 @@ class GameMaster:
             logger.debug(f"🎯 Action Intent: {action_intent}")
             logger.debug(f"✅ Validation: {validation.result.value} - {validation.message}")
 
+        # Step 1.5: For INVALID actions, return deterministic response without calling LLM
+        # Small LLMs are bad at following "do not" instructions, so we handle this ourselves
+        if validation.result == ValidationResult.INVALID:
+            response = self._generate_invalid_action_response(validation)
+
+            # Save to history
+            self.message_history.append(Message('player', player_input))
+            self.message_history.append(Message('gm', response))
+            self.session.add_note(f"Invalid action rejected: {validation.action.action_type.value}")
+
+            return response
+
         # Step 2: Search RAG if enabled
         if use_rag:
             rag_results = self.search_rag(player_input)
@@ -300,43 +312,151 @@ TIME: Day {self.session.day}, {self.session.time_of_day}
 
 """
 
-        # Add validation guidance if available
-        if validation:
-            prompt += f"""ACTION VALIDATION:
-{validation.message}
-
-"""
-            if validation.result == ValidationResult.INVALID:
-                prompt += """⚠️ IMPORTANT: This action is INVALID. The target/resource does not exist in the current game state.
-Narrate the failure or impossibility of this action WITHOUT introducing non-existent entities.
-For example: "You swing at empty air" or "You search your pack but don't find that item."
-
-"""
-            elif validation.result == ValidationResult.NPC_INTRODUCTION:
-                prompt += """💬 NPC INTRODUCTION OPPORTUNITY: The player is trying to interact with an NPC who hasn't been explicitly introduced.
-If it makes logical sense for this NPC to exist in the current location (e.g., bartender in tavern, guard at gate),
-introduce them naturally with a brief description and roleplay their response. If it doesn't make sense,
-narrate that no such person is present. Be consistent with the established scene.
-
-"""
-            elif validation.matched_entity and validation.matched_entity != validation.action.target:
-                prompt += f"""ℹ️ TARGET CLARIFICATION: Player said "{validation.action.target}" but likely means "{validation.matched_entity}".
-Use "{validation.matched_entity}" in your response.
-
-"""
-
         prompt += """INSTRUCTIONS:
 1. Apply D&D 5e rules accurately using the retrieved information
 2. Consider the current location, NPCs present, and combat state
-3. Follow the ACTION VALIDATION guidance above - respect entity existence
-4. Ask for appropriate dice rolls (d20 for attacks/checks, damage dice, saves, etc.)
-5. Be concise and engaging (2-4 sentences max)
-6. Maintain narrative flow while being mechanically precise
-7. If rules are unclear, use standard D&D 5e mechanics
+3. Ask for appropriate dice rolls (d20 for attacks/checks, damage dice, saves, etc.)
+4. Be concise and engaging (2-4 sentences max)
+5. Maintain narrative flow while being mechanically precise
+6. If rules are unclear, use standard D&D 5e mechanics
 
+"""
+
+        # Add validation guidance RIGHT BEFORE response - most prominent position
+        if validation:
+            if validation.result == ValidationResult.INVALID:
+                prompt += f"""
+═══════════════════════════════════════════════════════════════════
+🚫 CRITICAL RULE - THIS ACTION IS IMPOSSIBLE 🚫
+═══════════════════════════════════════════════════════════════════
+
+{validation.message}
+
+YOU MUST NARRATE FAILURE. DO NOT create the target/item/NPC.
+
+Examples of CORRECT responses:
+- "You swing your sword, but there's nothing there - the cavern is empty."
+- "You reach for your bow, but you're only carrying your longsword and shield."
+- "You try to recall the spell, but as a fighter, you have no magical training."
+
+DO NOT write: "The goblin appears" or "You pull out your bow"
+The target DOES NOT EXIST. Narrate the impossibility.
+═══════════════════════════════════════════════════════════════════
+
+GM RESPONSE:"""
+            elif validation.result == ValidationResult.NPC_INTRODUCTION:
+                prompt += f"""
+═══════════════════════════════════════════════════════════════════
+💬 NPC INTRODUCTION OPPORTUNITY 💬
+═══════════════════════════════════════════════════════════════════
+
+{validation.message}
+
+Player wants to interact with: "{validation.action.target}"
+
+If this makes sense in current location, introduce them naturally.
+If NOT logical, narrate that no such person is present.
+═══════════════════════════════════════════════════════════════════
+
+GM RESPONSE:"""
+            elif validation.matched_entity and validation.matched_entity != validation.action.target:
+                prompt += f"""
+═══════════════════════════════════════════════════════════════════
+ℹ️ TARGET CLARIFICATION ℹ️
+═══════════════════════════════════════════════════════════════════
+
+{validation.message}
+
+Player said: "{validation.action.target}"
+Likely means: "{validation.matched_entity}"
+
+Use "{validation.matched_entity}" in your response.
+═══════════════════════════════════════════════════════════════════
+
+GM RESPONSE:"""
+            else:
+                # Valid action
+                prompt += f"""{validation.message}
+
+GM RESPONSE:"""
+        else:
+            prompt += """
 GM RESPONSE:"""
 
         return prompt
+
+    def _generate_invalid_action_response(self, validation) -> str:
+        """
+        Generate a deterministic response for invalid actions.
+        Doesn't call LLM since small models are bad at following "do not" instructions.
+
+        Args:
+            validation: ValidationReport with invalid result
+
+        Returns:
+            GM response narrating the impossibility
+        """
+        action = validation.action
+
+        # Combat-specific responses
+        if action.action_type == ActionType.COMBAT:
+            if action.target:
+                return (
+                    f"You swing your weapon at where you think the {action.target} should be, "
+                    f"but there's nothing there. Looking around, you see no enemies - only empty space. "
+                    f"Perhaps you heard something that wasn't there?"
+                )
+            else:
+                return (
+                    "You ready your weapon and look for something to fight, "
+                    "but you don't see any enemies nearby."
+                )
+
+        # Item use responses
+        elif action.action_type == ActionType.ITEM_USE:
+            if action.resource:
+                # Get what they actually have
+                inventory_hint = ""
+                if hasattr(self.session, 'character_state') and self.session.character_state:
+                    inv = list(self.session.character_state.inventory.keys())[:3]
+                    if inv:
+                        inventory_hint = f" You're carrying: {', '.join(inv)}."
+
+                return (
+                    f"You reach for your {action.resource}, but it's not there. "
+                    f"You search your pack but don't find it.{inventory_hint}"
+                )
+            else:
+                return "You search through your belongings, trying to find what you need."
+
+        # Spell casting responses
+        elif action.action_type == ActionType.SPELL_CAST:
+            if action.resource:
+                # Check if character is a spellcaster
+                char_class = ""
+                if hasattr(self.session, 'character_state') and self.session.character_state:
+                    char_class = getattr(self.session.character_state, 'character_class', '')
+
+                if char_class in ['Fighter', 'Barbarian', 'Rogue']:
+                    return (
+                        f"You try to recall the words to cast {action.resource}, "
+                        f"but as a {char_class}, you have no magical training. "
+                        f"The arcane words escape you."
+                    )
+                else:
+                    return (
+                        f"You try to cast {action.resource}, but you don't know that spell. "
+                        f"You can't recall the proper incantation or gestures."
+                    )
+            else:
+                return "You attempt to channel magical energy, but nothing happens."
+
+        # Generic invalid action
+        else:
+            return (
+                "You attempt the action, but something prevents you from completing it. "
+                "Perhaps you're missing something, or the timing isn't right."
+            )
 
     def _post_process_response(self, response: str, validation) -> None:
         """
