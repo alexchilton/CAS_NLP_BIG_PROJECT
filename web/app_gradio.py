@@ -152,8 +152,25 @@ def load_character(character_choice: str) -> Tuple[str, str, list, Optional[str]
     if not current_character:
         return "Error loading character", "", [], None
 
-    # Set GM context
+    # Create CharacterState and load into GameSession for Reality Check
     char = current_character
+    char_state = CharacterState(
+        character_name=char.name,
+        max_hp=char.hit_points,
+        current_hp=char.hit_points,
+        level=char.level,
+        inventory={item: 1 for item in char.equipment},  # Convert equipment list to inventory dict
+    )
+
+    # Add spells to character state for spell validation
+    if char.spells:
+        char_state.spells = char.spells  # Add spells attribute dynamically
+
+    # Load into game session
+    gm.session.character_state = char_state
+    gm.session.npcs_present = []  # Clear NPCs when loading new character
+
+    # Set GM context
     mods = char.get_modifiers()
 
     context = f"""The player is {char.name}, a level {char.level} {char.race} {char.character_class}.
@@ -621,7 +638,13 @@ def format_character_sheet_for_char(char: Character) -> str:
 
 
 # Create Gradio interface
-with gr.Blocks(title="D&D RAG Game Master") as demo:
+try:
+    demo = gr.Blocks(title="D&D RAG Game Master", theme=gr.themes.Soft())
+except TypeError:
+    # Fallback for older Gradio versions that don't support theme parameter
+    demo = gr.Blocks(title="D&D RAG Game Master")
+
+with demo:
     gr.Markdown("""
     # 🎲 D&D Character-Aware Game Master
 
