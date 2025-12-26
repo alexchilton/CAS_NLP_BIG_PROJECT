@@ -125,6 +125,21 @@
     - Tests: `test_shop_system.py`
     - Equipment data: `web/equipment.txt`
 
+- [ ] **Integrate Shop Reality Check** 🔴 TODO
+  - **Problem**: Currently players can use `/buy` and `/sell` anywhere, even in a dragon's lair!
+  - **Solution**: Validate shop location before allowing transactions
+  - **Implementation**:
+    - Check if current location is a shop (`location_type = "shop"` in GameSession)
+    - OR check if a merchant/shopkeeper NPC is present in `npcs_present`
+    - Reject transactions with message: "There's no shop here! You're in a dragon's lair, not a marketplace!"
+  - **Examples**:
+    - ✅ Valid: Player in "The Rusty Blade" shop location → `/buy` works
+    - ✅ Valid: "Grum the Shopkeeper" in `npcs_present` → `/buy` works
+    - ❌ Invalid: Player in "Dragon's Lair" → `/buy` rejected
+    - ❌ Invalid: No merchant NPC present → `/buy` rejected
+  - **Integration Point**: Add shop location validation in `ShopSystem.attempt_purchase()` and `attempt_sale()`
+  - **Priority**: Medium (prevents immersion-breaking shop abuse)
+
 - [ ] **Optional: Create dedicated shop UI tab** (Low Priority)
   - Current system works entirely through GM chat (preferred!)
   - Could add visual inventory browser as enhancement
