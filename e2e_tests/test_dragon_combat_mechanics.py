@@ -135,33 +135,29 @@ def load_character(driver, char_name="Thorin"):
 def get_character_sheet_hp(driver):
     """Extract current HP from character sheet."""
     try:
-        # Look for HP display in character sheet
-        # Try all text elements, not just textareas
-        all_elements = driver.find_elements(By.XPATH, "//*[contains(text(), 'HP:') or contains(text(), 'Hit Points')]")
-
         import re
-        for elem in all_elements:
-            text = elem.text
-            if text and "HP:" in text:
-                # Parse HP from text like "HP: 20" or "HP: 20/28" or "Current HP: 20"
-                match = re.search(r'HP[:\s]+(\d+)', text)
-                if match:
-                    return int(match.group(1))
 
-        # Fallback: check textareas
-        textareas = driver.find_elements(By.TAG_NAME, "textarea")
-        for tb in textareas:
-            text = tb.get_attribute("value") or tb.text
-            if text and "HP:" in text:
-                match = re.search(r'HP[:\s]+(\d+)', text)
-                if match:
-                    return int(match.group(1))
+        # The character sheet is rendered as Markdown in Gradio
+        # HP is displayed as: <li><strong>HP</strong>: 28</li>
+        # Find markdown components
+        markdown_divs = driver.find_elements(By.CSS_SELECTOR, "[data-testid='markdown']")
 
-        # Last resort: look for labels
-        labels = driver.find_elements(By.TAG_NAME, "label")
-        for label in labels:
-            text = label.text
-            if text and "HP:" in text:
+        for md_div in markdown_divs:
+            text = md_div.text
+            if "HP" in text and "Combat Stats" in text:
+                # Found the character sheet markdown!
+                # Extract HP from text like "HP: 28"
+                match = re.search(r'\bHP\b[:\s]+(\d+)', text)
+                if match:
+                    hp = int(match.group(1))
+                    return hp
+
+        # Fallback: search all list items for HP
+        list_items = driver.find_elements(By.TAG_NAME, "li")
+        for li in list_items:
+            text = li.text
+            if text and text.startswith("HP"):
+                # Format: "HP: 28" or "HP : 28"
                 match = re.search(r'HP[:\s]+(\d+)', text)
                 if match:
                     return int(match.group(1))
