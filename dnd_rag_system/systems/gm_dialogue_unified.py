@@ -549,12 +549,14 @@ TIME: Day {self.session.day}, {self.session.time_of_day}
         # Add location context for better narrative consistency
         current_loc = self.session.get_current_location_obj()
         if current_loc:
+            # Don't explicitly mention visit count - just note it's a return
             if current_loc.visit_count > 1:
-                prompt += f"RETURN VISIT: This is the party's {current_loc.visit_count}{'st' if current_loc.visit_count == 1 else 'nd' if current_loc.visit_count == 2 else 'rd' if current_loc.visit_count == 3 else 'th'} time at {current_loc.name}. Acknowledge familiarity (e.g., 'You return to...', 'Once again you find yourself in...').\n"
+                prompt += f"NOTE: The party has been here before. Describe naturally without explicitly counting visits.\n"
             
+            # Mention defeated enemies for atmosphere
             if current_loc.defeated_enemies:
                 enemies = ", ".join(list(current_loc.defeated_enemies)[:3])
-                prompt += f"AFTERMATH: These enemies were previously defeated here: {enemies}. Mention remains/corpses/aftermath if the player looks around or if relevant.\n"
+                prompt += f"AFTERMATH: These enemies were defeated here previously: {enemies}. You may mention remains/corpses if appropriate.\n"
         
         # Add NPCs/Monsters if present
         if self.session.npcs_present:
