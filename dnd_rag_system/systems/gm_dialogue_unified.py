@@ -29,6 +29,7 @@ from dnd_rag_system.systems.shop_system import ShopSystem
 from dnd_rag_system.systems.combat_manager import CombatManager
 from dnd_rag_system.systems.mechanics_extractor import MechanicsExtractor
 from dnd_rag_system.systems.mechanics_applicator import MechanicsApplicator
+from dnd_rag_system.systems.encounter_system import EncounterSystem
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -90,6 +91,9 @@ class GameMaster:
         # Narrative to Mechanics Translation System
         self.mechanics_extractor = MechanicsExtractor(debug=DEBUG_PROMPTS)
         self.mechanics_applicator = MechanicsApplicator(debug=DEBUG_PROMPTS)
+        
+        # Random Encounter System
+        self.encounter_system = EncounterSystem(chromadb_manager=db_manager)
 
         # Initialize world map with starting locations
         from dnd_rag_system.systems.world_builder import initialize_world
@@ -447,8 +451,43 @@ class GameMaster:
             rag_results = self.search_rag(player_input)
             rag_context = self.format_rag_context(rag_results)
 
-        # Step 3: Build prompt with history, RAG context, and validation guidance
-        prompt = self._build_prompt(player_input, rag_context, validation)
+        # Step 2.5: Random Encounter Check
+        # Check if player is exploring/traveling and roll for random encounter
+        encounter = None
+        encounter_instruction = ""
+        
+        # Only check for encounters during exploration actions (not in combat, shops, etc.)
+        exploration_keywords = ['explore', 'travel', 'venture', 'search', 'wander', 'head', 'go', 
+                               'leave', 'continue', 'follow', 'look around', 'investigate']
+        is_exploring = any(keyword in player_input.lower() for keyword in exploration_keywords)
+        
+        if (is_exploring and 
+            not self.combat_manager.is_in_combat() and 
+            self.session.character_state is not None):
+            
+            # Get current location info
+            current_loc = self.session.get_current_location_obj()
+            location_type = current_loc.location_type.value if current_loc else "wilderness"
+            character_level = self.session.character_state.level
+            
+            # Roll for encounter
+            encounter = self.encounter_system.generate_encounter(location_type, character_level)
+            
+            if encounter:
+                # Add monster to NPCs present
+                self.session.add_npc(encounter.monster_name)
+                
+                # Create hidden instruction for GM
+                encounter_instruction = self.encounter_system.format_encounter_for_gm(encounter)
+                
+                if DEBUG_PROMPTS:
+                    logger.debug(f"🎲 Random Encounter: {encounter.monster_name} (CR {encounter.monster_cr})")
+                    logger.debug(f"   Location: {location_type}, Character Level: {character_level}")
+                    if encounter.surprise:
+                        logger.debug(f"   💥 SURPRISE ATTACK!")
+
+        # Step 3: Build prompt with history, RAG context, validation guidance, and encounter
+        prompt = self._build_prompt(player_input, rag_context, validation, encounter_instruction)
 
         # Step 4: Get LLM response (route based on mode)
         try:
@@ -459,6 +498,14 @@ class GameMaster:
 
             # Step 5: Post-process response (e.g., auto-add NPCs introduced in conversation)
             self._post_process_response(response, validation)
+            
+            # Step 5.2: Fallback encounter text if GM didn't mention the monster
+            if encounter and encounter.monster_name.lower() not in response.lower():
+                encounter_text = self.encounter_system.format_encounter_fallback(encounter)
+                response += encounter_text
+                
+                if DEBUG_PROMPTS:
+                    logger.debug(f"🎲 Encounter fallback text added (GM didn't mention {encounter.monster_name})")
 
             # Step 5.3: Extract mechanics from narrative and auto-update game state
             if self.session.character_state or (self.session.party and len(self.session.party.characters) > 0):
@@ -521,7 +568,7 @@ class GameMaster:
         except Exception as e:
             return f"Error generating response: {e}"
 
-    def _build_prompt(self, player_input: str, rag_context: str, validation=None) -> str:
+    def _build_prompt(self, player_input: str, rag_context: str, validation=None, encounter_instruction: str = "") -> str:
         """
         Build complete prompt for LLM with full game state context.
 
@@ -529,6 +576,7 @@ class GameMaster:
             player_input: Player's action
             rag_context: Retrieved RAG information
             validation: ValidationReport from action validator (optional)
+            encounter_instruction: Hidden instruction for random encounter (optional)
         """
 
         # Get recent conversation history
@@ -589,6 +637,12 @@ TIME: Day {self.session.day}, {self.session.time_of_day}
 """
 
         prompt += f"""PLAYER ACTION: {player_input}
+
+"""
+        
+        # Add encounter instruction if present (hidden from player, only GM sees this)
+        if encounter_instruction:
+            prompt += f"""{encounter_instruction}
 
 """
 
