@@ -201,7 +201,7 @@ EQUIPMENT: {', '.join(char.equipment[:5])}
     return format_character_sheet(), "", [], char_image
 
 
-def load_party_mode() -> Tuple[str, str, list]:
+def load_party_mode() -> Tuple[str, gr.update, list]:
     """Load party mode and set GM context for party-based gameplay."""
     global gameplay_mode, conversation_history
 
@@ -209,7 +209,11 @@ def load_party_mode() -> Tuple[str, str, list]:
     gameplay_mode = "party"
 
     if not party_characters:
-        return "⚠️ No party members! Please add characters in the Party Management tab first.", "", []
+        return (
+            "⚠️ No party members! Please add characters in the Party Management tab first.",
+            gr.update(interactive=True),  # Keep msg_input interactive
+            []
+        )
 
     # Build party context for GM
     party_info = []
@@ -230,8 +234,12 @@ Party Gold: {party.gold} GP"""
 
     gm.set_context(context)
 
-    # Return party summary
-    return format_party_sheet(), "", []
+    # Return party summary - use gr.update() to keep msg_input unchanged and interactive
+    return (
+        format_party_sheet(),
+        gr.update(interactive=True, value=""),  # Explicitly keep it interactive
+        []
+    )
 
 
 def format_party_sheet() -> str:
