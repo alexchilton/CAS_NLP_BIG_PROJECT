@@ -412,8 +412,29 @@ GM RESPONSE:"""
 
         # Combat-specific responses
         if action.action_type == ActionType.COMBAT:
-            if action.target:
-                # Personality-driven responses
+            # NEW: Check if trying to use a weapon they don't have
+            if action.resource:
+                # Get what they actually have
+                inventory_hint = ""
+                if hasattr(self.session, 'character_state') and self.session.character_state:
+                    inv = list(self.session.character_state.inventory.keys())[:3]
+                    if inv:
+                        inventory_hint = f" Ye're carryin': {', '.join(inv)}."
+
+                if char_race == 'dwarf':
+                    return (
+                        f"Ye reach fer yer {action.resource} to attack, but it's not there! "
+                        f"Ye pat down yer belt and check yer pack - nothin'! "
+                        f"Can't attack with a weapon ye don't have, ye daft fool!{inventory_hint}"
+                    )
+                else:
+                    return (
+                        f"You reach for your {action.resource} to attack, but it's not there. "
+                        f"You search your belt and pack, but can't find it.{inventory_hint}"
+                    )
+
+            elif action.target:
+                # No weapon specified, just invalid target
                 if char_race == 'dwarf':
                     return (
                         f"Ye swing yer weapon with all the fury of the mountain halls, but there's nothin' there! "

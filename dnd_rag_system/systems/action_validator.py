@@ -106,9 +106,11 @@ class ActionValidator:
         # Check for combat actions
         if any(keyword in lower_input for keyword in self.COMBAT_KEYWORDS):
             target = self._extract_target(lower_input, self.COMBAT_KEYWORDS)
+            weapon = self._extract_weapon(lower_input)  # NEW: Extract weapon used
             return ActionIntent(
                 action_type=ActionType.COMBAT,
                 target=target,
+                resource=weapon,  # Store weapon in resource field
                 raw_input=user_input
             )
 
@@ -191,7 +193,22 @@ class ActionValidator:
         )
 
     def _validate_combat(self, intent: ActionIntent, game_session) -> ValidationReport:
-        """Validate combat action - STRICT validation"""
+        """Validate combat action - STRICT validation including weapon check"""
+
+        # NEW: Check if player specified a weapon they don't have
+        if intent.resource and game_session.character_state:
+            inventory_items = [item.lower() for item in game_session.character_state.inventory]
+            weapon_lower = intent.resource.lower()
+
+            if weapon_lower not in inventory_items:
+                # Player is trying to use a weapon they don't have!
+                return ValidationReport(
+                    result=ValidationResult.INVALID,
+                    action=intent,
+                    message=f"Player tries to attack with '{intent.resource}', but they don't have that weapon. "
+                           f"Narrate that they reach for it but it's not there.",
+                    suggestions=inventory_items[:5]
+                )
 
         if not intent.target:
             return ValidationReport(
@@ -471,6 +488,44 @@ class ActionValidator:
                 words = after.split()[:3]
                 if words:
                     return ' '.join(words).strip('.,!?').title()
+
+        return None
+
+    def _extract_weapon(self, text: str) -> Optional[str]:
+        """
+        Extract weapon from combat action.
+        Looks for patterns like "my bow", "with my sword", "using a crossbow"
+        """
+        # Common weapon names to look for
+        common_weapons = [
+            'bow', 'longbow', 'shortbow', 'crossbow',
+            'sword', 'longsword', 'shortsword', 'greatsword',
+            'axe', 'greataxe', 'battleaxe', 'handaxe',
+            'dagger', 'knife', 'rapier', 'scimitar',
+            'mace', 'club', 'staff', 'quarterstaff',
+            'spear', 'javelin', 'halberd', 'pike',
+            'hammer', 'warhammer', 'maul'
+        ]
+
+        # Look for "my X" or "the X" patterns
+        for weapon in common_weapons:
+            # Pattern: "my bow", "the bow", "a bow"
+            if re.search(rf'\b(my|the|a|an)\s+{weapon}\b', text):
+                return weapon.title()
+
+        # Look for "with X" pattern
+        with_match = re.search(r'\bwith\s+(my|a|the|an)\s+(\w+)', text)
+        if with_match:
+            potential_weapon = with_match.group(2)
+            if potential_weapon in common_weapons:
+                return potential_weapon.title()
+
+        # Look for "using X" pattern
+        using_match = re.search(r'\busing\s+(my|a|the|an)\s+(\w+)', text)
+        if using_match:
+            potential_weapon = using_match.group(2)
+            if potential_weapon in common_weapons:
+                return potential_weapon.title()
 
         return None
 
