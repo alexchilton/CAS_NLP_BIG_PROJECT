@@ -160,8 +160,8 @@ class ShopSystem:
         if not hasattr(character_state, 'inventory'):
             character_state.inventory = {}
 
-        # Get character's gold
-        character_gold = character_state.inventory.get('Gold', 0)
+        # Get character's gold (use CharacterState.gold field, not inventory)
+        character_gold = getattr(character_state, 'gold', 0)
 
         # Check if enough gold
         if character_gold < total_cost:
@@ -174,7 +174,7 @@ class ShopSystem:
             )
 
         # Process purchase
-        character_state.inventory['Gold'] = character_gold - total_cost
+        character_state.gold = character_gold - total_cost
 
         # Add item to inventory
         if item_name in character_state.inventory:
@@ -186,8 +186,8 @@ class ShopSystem:
             success=True,
             item_name=item_name,
             cost_gp=total_cost,
-            remaining_gold=character_state.inventory['Gold'],
-            message=f"Purchase successful! Bought {quantity}x {item_name} for {total_cost} gp. Remaining gold: {character_state.inventory['Gold']} gp"
+            remaining_gold=character_state.gold,
+            message=f"Purchase successful! Bought {quantity}x {item_name} for {total_cost} gp. Remaining gold: {character_state.gold} gp"
         )
 
     def attempt_sale(
@@ -235,17 +235,16 @@ class ShopSystem:
         if character_state.inventory[item_name] <= 0:
             del character_state.inventory[item_name]
 
-        # Add gold
-        if 'Gold' not in character_state.inventory:
-            character_state.inventory['Gold'] = 0
-        character_state.inventory['Gold'] += sell_price
+        # Add gold (use CharacterState.gold field)
+        current_gold = getattr(character_state, 'gold', 0)
+        character_state.gold = current_gold + sell_price
 
         return ShopTransaction(
             success=True,
             item_name=item_name,
             cost_gp=sell_price,
-            remaining_gold=character_state.inventory['Gold'],
-            message=f"Sold {quantity}x {item_name} for {sell_price} gp. Total gold: {character_state.inventory['Gold']} gp"
+            remaining_gold=character_state.gold,
+            message=f"Sold {quantity}x {item_name} for {sell_price} gp. Total gold: {character_state.gold} gp"
         )
 
     def parse_purchase_intent(self, player_input: str) -> Optional[Tuple[str, int]]:

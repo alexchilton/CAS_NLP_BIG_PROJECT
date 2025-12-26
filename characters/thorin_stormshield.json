@@ -32,9 +32,9 @@
     "Longsword",
     "Shield",
     "Plate Armor",
-    "Backpack",
-    "50 GP"
+    "Backpack"
   ],
+  "gold": 150,
   "spells": [],
   "image_path": null
 }

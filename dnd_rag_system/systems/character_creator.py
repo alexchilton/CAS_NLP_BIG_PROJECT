@@ -51,6 +51,7 @@ class Character:
     proficiencies: List[str] = field(default_factory=list)
     equipment: List[str] = field(default_factory=list)
     spells: List[str] = field(default_factory=list)
+    gold: int = 50  # Starting gold
 
     # Character Image (for future GAN generation)
     image_path: Optional[str] = None
