@@ -148,16 +148,33 @@ def send_chat_message(driver, message, wait_for_response=True):
             # Wait for response
             time.sleep(5)  # Give GM time to respond
 
-            # Try to get the response text
-            # Look for any new text that appeared
-            chatbot_divs = driver.find_elements(By.CSS_SELECTOR, "[data-testid]")
-            if chatbot_divs:
-                # Get the last few divs and look for the response
-                for div in reversed(chatbot_divs[-10:]):
-                    text = div.text.strip()
-                    if text and len(text) > 10:  # Meaningful response
-                        print(f"🎭 GM: {text[:200]}...")
-                        return text
+            # Try to get the response text from Gradio chatbot
+            # Gradio uses specific class names for chat messages
+            try:
+                # Look for all message bubbles in the chatbot
+                message_elements = driver.find_elements(By.CSS_SELECTOR, ".message, .bot, [class*='message'], [class*='bot']")
+
+                if message_elements:
+                    # Get the last message (should be GM's response)
+                    last_message = message_elements[-1].text.strip()
+                    if last_message and len(last_message) > 5:
+                        print(f"🎭 GM: {last_message[:200]}...")
+                        return last_message
+
+                # Fallback: try to get all text from chatbot container
+                chatbot = driver.find_elements(By.TAG_NAME, "gradio-chatbot")
+                if chatbot:
+                    all_text = chatbot[0].text.strip()
+                    # Split by player/GM and get last response
+                    if all_text:
+                        lines = all_text.split('\n')
+                        for line in reversed(lines):
+                            if line.strip() and len(line.strip()) > 10:
+                                print(f"🎭 GM: {line[:200]}...")
+                                return line
+
+            except Exception as e:
+                print(f"⚠️  Error capturing response: {e}")
 
             print("⏱️  No response detected")
             return "No response"

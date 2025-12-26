@@ -273,6 +273,153 @@ def test_generic_item_term(gm: GameMaster, char: Character):
         return False
 
 
+def test_dragon_combat_scenario(gm: GameMaster, char: Character):
+    """Test realistic dragon combat with various weapons and spells."""
+    print("\n" + "="*80)
+    print("TEST 8: Dragon Combat Scenario (Single Character)")
+    print("="*80)
+
+    # Set up dragon encounter
+    gm.set_location("Dragon's Lair", "A vast cave filled with treasure. A massive red dragon guards its hoard.")
+    gm.add_npc("Ancient Red Dragon")
+    print("📍 Setup: Set location to Dragon's Lair, added Ancient Red Dragon")
+
+    # Test 1: Attack with longsword (valid - has longsword)
+    print("\n🎲 Test 8a: Attack dragon with longsword")
+    response1 = gm.generate_response("I attack the dragon with my longsword", use_rag=False)
+    print(f"🎭 GM: {response1[:100]}...")
+    valid1 = "not there" not in response1.lower() and "no dragon" not in response1.lower()
+
+    # Test 2: Try to use bow (invalid - no bow)
+    print("\n🎲 Test 8b: Try to use bow (not in inventory)")
+    response2 = gm.generate_response("I fire my bow at the dragon", use_rag=False)
+    print(f"🎭 GM: {response2[:100]}...")
+    valid2 = "don't have" in response2.lower() or "no bow" in response2.lower()
+
+    # Test 3: Use shield (valid - has shield)
+    print("\n🎲 Test 8c: Raise shield")
+    response3 = gm.generate_response("I raise my shield to block the dragon's flames", use_rag=False)
+    print(f"🎭 GM: {response3[:100]}...")
+    valid3 = "not there" not in response3.lower()
+
+    # Test 4: Generic weapon term (valid - has longsword)
+    print("\n🎲 Test 8d: Generic 'weapon' term")
+    response4 = gm.generate_response("I strike the dragon with my weapon", use_rag=False)
+    print(f"🎭 GM: {response4[:100]}...")
+    valid4 = "not there" not in response4.lower() and "no weapon" not in response4.lower()
+
+    all_valid = valid1 and valid2 and valid3 and valid4
+
+    if all_valid:
+        print("\n✅ PASS: Dragon combat scenario handled correctly")
+        print("   ✓ Longsword attack allowed")
+        print("   ✓ Bow attack rejected (not in inventory)")
+        print("   ✓ Shield use allowed")
+        print("   ✓ Generic weapon term worked")
+    else:
+        print("\n❌ FAIL: Some combat actions handled incorrectly")
+        if not valid1: print("   ✗ Longsword attack failed")
+        if not valid2: print("   ✗ Bow attack not rejected")
+        if not valid3: print("   ✗ Shield use failed")
+        if not valid4: print("   ✗ Generic weapon term failed")
+
+    return all_valid
+
+
+def test_party_dragon_combat(gm: GameMaster):
+    """Test party-mode dragon combat with multiple character types."""
+    print("\n" + "="*80)
+    print("TEST 9: Party Dragon Combat (Multiple Characters)")
+    print("="*80)
+
+    # Create a party with different classes
+    fighter = Character(
+        name="Thorin", race="Dwarf", character_class="Fighter", level=5,
+        strength=16, dexterity=12, constitution=16, intelligence=10, wisdom=13, charisma=8,
+        hit_points=45, armor_class=18, proficiency_bonus=3,
+        equipment=["Longsword", "Shield", "Plate Armor"],
+        spells=[]
+    )
+
+    wizard = Character(
+        name="Elara", race="Elf", character_class="Wizard", level=5,
+        strength=8, dexterity=14, constitution=12, intelligence=18, wisdom=13, charisma=10,
+        hit_points=25, armor_class=12, proficiency_bonus=3,
+        equipment=["Quarterstaff", "Spellbook", "Robes"],
+        spells=["Fireball", "Magic Missile", "Shield"]
+    )
+
+    # Create party state
+    from dnd_rag_system.systems.game_state import PartyState
+    party = PartyState(party_name="Dragon Slayers")
+
+    # Add characters to party
+    fighter_state = CharacterState(character_name=fighter.name, max_hp=45, level=5,
+                                   inventory={item: 1 for item in fighter.equipment})
+    fighter_state.race = fighter.race
+    fighter_state.character_class = fighter.character_class
+
+    wizard_state = CharacterState(character_name=wizard.name, max_hp=25, level=5,
+                                  inventory={item: 1 for item in wizard.equipment})
+    wizard_state.race = wizard.race
+    wizard_state.character_class = wizard.character_class
+    wizard_state.spells = wizard.spells
+
+    party.add_character(fighter_state)
+    party.add_character(wizard_state)
+    gm.session.party = party
+
+    # Set dragon location
+    gm.set_location("Dragon's Mountain Peak", "A treacherous mountain summit where an ancient dragon roosts.")
+    gm.add_npc("Ancient Red Dragon")
+    print("📍 Setup: Party of 2 at Dragon's Mountain Peak with Ancient Red Dragon")
+
+    # Test 1: Fighter uses longsword (valid)
+    print("\n🎲 Test 9a: Thorin attacks with longsword")
+    gm.session.character_state = fighter_state  # Set active character
+    response1 = gm.generate_response("Thorin attacks the dragon with his longsword", use_rag=False)
+    print(f"🎭 GM: {response1[:100]}...")
+    valid1 = "not there" not in response1.lower()
+
+    # Test 2: Wizard casts Fireball (valid - knows the spell)
+    print("\n🎲 Test 9b: Elara casts Fireball")
+    gm.session.character_state = wizard_state
+    response2 = gm.generate_response("Elara casts Fireball at the dragon", use_rag=False)
+    print(f"🎭 GM: {response2[:100]}...")
+    valid2 = "don't know" not in response2.lower() and "not a spellcaster" not in response2.lower()
+
+    # Test 3: Fighter tries to cast spell (invalid - Fighter can't cast)
+    print("\n🎲 Test 9c: Thorin tries to cast Fireball (should fail)")
+    gm.session.character_state = fighter_state
+    response3 = gm.generate_response("Thorin casts Fireball", use_rag=False)
+    print(f"🎭 GM: {response3[:100]}...")
+    valid3 = "fighter" in response3.lower() or "not a" in response3.lower()
+
+    # Test 4: Wizard tries to use longsword (invalid - doesn't have it)
+    print("\n🎲 Test 9d: Elara tries to use longsword (not in inventory)")
+    gm.session.character_state = wizard_state
+    response4 = gm.generate_response("Elara attacks with a longsword", use_rag=False)
+    print(f"🎭 GM: {response4[:100]}...")
+    valid4 = "don't have" in response4.lower() or "not there" in response4.lower()
+
+    all_valid = valid1 and valid2 and valid3 and valid4
+
+    if all_valid:
+        print("\n✅ PASS: Party dragon combat handled correctly")
+        print("   ✓ Fighter longsword attack allowed")
+        print("   ✓ Wizard Fireball allowed")
+        print("   ✓ Fighter can't cast spells")
+        print("   ✓ Wizard doesn't have longsword")
+    else:
+        print("\n❌ FAIL: Some party combat actions handled incorrectly")
+        if not valid1: print("   ✗ Fighter longsword failed")
+        if not valid2: print("   ✗ Wizard Fireball failed")
+        if not valid3: print("   ✗ Fighter spell cast not rejected")
+        if not valid4: print("   ✗ Wizard longsword not rejected")
+
+    return all_valid
+
+
 def run_all_tests():
     """Run all Reality Check E2E tests."""
     print("\n" + "="*80)
@@ -312,6 +459,8 @@ def run_all_tests():
     results["Valid Item Use"] = test_valid_item_use(gm, char)
     results["NPC Conversation"] = test_npc_conversation_introduction(gm, char)
     results["Generic Item Term"] = test_generic_item_term(gm, char)
+    results["Dragon Combat Scenario"] = test_dragon_combat_scenario(gm, char)
+    results["Party Dragon Combat"] = test_party_dragon_combat(gm)
 
     # Summary
     print("\n" + "="*80)
