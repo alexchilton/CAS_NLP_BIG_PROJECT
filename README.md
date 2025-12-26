@@ -13,11 +13,14 @@ An AI-powered Dungeon Master assistant using Retrieval Augmented Generation (RAG
 
 ## 🎯 Features
 
-- **Semantic Search** across D&D spells, monsters, classes, and races
+- **Semantic Search** across D&D spells, monsters, classes, races, and equipment
 - **RAG-Enhanced GM Dialogue** with accurate rule retrieval
-- **Character Creation** system
+- **Reality Check System** - Prevents GM hallucinations by validating actions against game state
+- **Shop System** - GM-driven conversational shopping with NPC shopkeepers
+- **Character Creation** system with racial bonuses
+- **Party Mode** - Play with multiple characters simultaneously
 - **ChromaDB** vector database for fast retrieval
-- **Ollama Integration** for local LLM inference
+- **Dual LLM Support** - Local Ollama (RPG-optimized) or Hugging Face Inference API
 
 ## 🚀 Quick Start Guide
 
@@ -337,6 +340,82 @@ alone by the fireplace...
 
 ---
 
+### 🏪 Shop System - Conversational Shopping
+
+The shop system is integrated into GM chat for natural NPC interactions:
+
+**How It Works:**
+1. GM introduces a shopkeeper NPC (e.g., "You enter Grundle's Armory...")
+2. Players converse naturally: "What swords do you have?"
+3. GM describes items using RAG-powered equipment database
+4. Players buy/sell: `/buy longsword` or "I'll take the rope"
+5. System automatically validates gold and updates inventory
+6. GM narrates the transaction naturally
+
+**Commands:**
+```
+/buy <item>         - Purchase item
+/buy 3 <item>       - Purchase quantity
+/sell <item>        - Sell item for half price (D&D 5e standard)
+
+Natural language also works:
+"I'll buy the longsword"
+"Can I get 3 healing potions?"
+"I want to sell my old armor"
+```
+
+**Features:**
+- 58 equipment items with accurate D&D 5e prices
+- Fuzzy item matching ("longsword", "long sword" both work)
+- Gold validation and automatic deduction
+- Inventory management (add/remove items)
+- Shopkeeper personality system (friendly, grumpy, mysterious, etc.)
+
+See `SHOP_SYSTEM_GUIDE.md` for detailed examples!
+
+---
+
+### 🎭 Party Mode - Multi-Character Adventures
+
+Play with multiple characters simultaneously:
+
+**Setup:**
+1. Create or load characters
+2. Go to "Party Management" tab
+3. Add characters to party
+4. Switch to "Party Mode" in Play Game tab
+5. GM manages the entire group!
+
+**Features:**
+- GM sees all party member stats, equipment, and abilities
+- Shared party gold and inventory
+- Type actions like "We investigate" or "The party attacks"
+- `/stats` shows full party roster
+- Each character tracked individually in combat
+
+---
+
+### ✅ Reality Check System - Grounded Gameplay
+
+The Reality Check system prevents GM hallucinations by validating player actions:
+
+**How It Works:**
+1. Player inputs action (e.g., "I attack the goblin")
+2. System validates target exists in current game state
+3. Invalid actions get narrated as failures (no hallucinated entities)
+4. Valid actions proceed with accurate context
+
+**Features:**
+- Combat validation (target must exist in scene)
+- Spell validation (character must know the spell)
+- Item validation (item must be in inventory)
+- NPC introduction (GM can introduce contextually appropriate NPCs)
+- Fuzzy matching for flexible input
+
+This keeps the game grounded in actual game state while preserving narrative freedom!
+
+---
+
 ### 💡 How It Works
 
 **Character-Aware Gameplay:**
@@ -544,7 +623,7 @@ Edit `dnd_rag_system/config/settings.py` to customize:
 
 ## 📊 Collections
 
-The system creates 4 ChromaDB collections with **name-weighted retrieval**:
+The system creates 5 ChromaDB collections with **name-weighted retrieval**:
 
 1. **dnd_spells** (~250 chunks)
    - Multiple chunk types per spell: full_spell, quick_reference, by_class
@@ -565,6 +644,11 @@ The system creates 4 ChromaDB collections with **name-weighted retrieval**:
    - 2 chunks per race: description + traits
    - Metadata: ability_increases, size, speed, darkvision, languages
    - Extracted from Player's Handbook PDF
+
+5. **dnd_equipment** (~58 items)
+   - Weapons, armor, adventuring gear, tools, mounts
+   - Metadata: name, cost_gp, weight, category, properties
+   - Used by shop system for transactions
 
 ## 🧪 Development Status
 

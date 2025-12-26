@@ -39,22 +39,36 @@
 
 ## Inventory & Shopping System
 
-- [ ] **Create inventory shop/marketplace tab**
-  - New Gradio tab for browsing and purchasing items
-  - UI for viewing available items with descriptions and prices
+- [x] **Implement GM-driven conversational shop system** ✅ IMPLEMENTED
+  - **Philosophy**: Shop interactions happen through natural conversation with GM-controlled NPC shopkeepers
+  - **Equipment RAG Database**: Parsed 58 equipment items from equipment.txt into ChromaDB
+    - Weapons (swords, axes, bows, etc.) with damage and properties
+    - Armor (leather, chainmail, plate, etc.) with AC and weight
+    - Adventuring gear (rope, torches, rations, potions, etc.)
+    - Tools, mounts, and other equipment
+  - **Shop Transaction System**:
+    - ✅ Purchase validation (checks gold, updates inventory)
+    - ✅ Sell system (half market price, D&D 5e standard)
+    - ✅ Natural language parsing ("/buy longsword", "I'll take the rope", etc.)
+    - ✅ Gold deduction and inventory management
+    - ✅ Fuzzy item matching for flexible user input
+  - **NPC Shopkeeper Integration**:
+    - GM controls shopkeeper personality (friendly, grumpy, mysterious, greedy, etc.)
+    - Players converse naturally: ask about prices, haggle, request recommendations
+    - System processes transactions automatically via chat commands
+    - GM narrates transaction outcomes naturally
+    - Shopkeeper context generator for GM prompts
+  - **Testing**: Comprehensive test suite (test_shop_system.py) - ALL TESTS PASSING
+  - **Files**:
+    - Equipment loader: `dnd_rag_system/loaders/equipment_loader.py`
+    - Shop system: `dnd_rag_system/systems/shop_system.py`
+    - Tests: `test_shop_system.py`
+    - Equipment data: `web/equipment.txt`
 
-- [ ] **Add shop inventory with D&D items**
-  - Weapons (Longsword, Shortsword, Greataxe, etc.)
-  - Armor (Leather, Chainmail, Plate, etc.)
-  - Potions (Healing, Greater Healing, etc.)
-  - Adventuring gear (Rope, Torches, Rations, etc.)
-  - Magical items (if applicable)
-
-- [ ] **Implement buy/sell transactions**
-  - Update character/party gold on purchases
-  - Add items to character/party inventory
-  - Sell items back to shop
-  - Transaction validation (enough gold, inventory space)
+- [ ] **Optional: Create dedicated shop UI tab** (Low Priority)
+  - Current system works entirely through GM chat (preferred!)
+  - Could add visual inventory browser as enhancement
+  - Not required - chat interaction is more immersive
 
 ## RAG-Based Character Creation
 
@@ -108,6 +122,34 @@
   - Update ability scores automatically with racial bonuses
   - Show calculated stats (HP, AC, modifiers) with all bonuses applied
   - Save complete character with proper D&D 5e features
+
+## Context Grounding / Reality Check
+
+- [x] **Implement "Reality Check" for player actions before GM LLM generation** ✅ IMPLEMENTED
+  - **Goal**: Prevent the GM LLM from hallucinating entities or actions inconsistent with the current game state.
+  - **Implementation**: Created hybrid "tagging" system in `dnd_rag_system/systems/action_validator.py`
+    - **Intent Analysis**: Parses player input to identify action type (combat, spell, conversation, item use, exploration)
+    - **State Validation**: Validates actions against `GameSession` state
+      - Combat: Verifies targets exist in `npcs_present` or `combat.initiative_order`
+      - Spells: Checks if spell is known by character (with fuzzy matching)
+      - Items: Validates items exist in character inventory
+      - Conversations: Allows NPC introduction for contextually appropriate NPCs
+    - **Context-Aware Prompting**: Enhances GM prompts with validation guidance
+      - Valid actions: Proceed normally
+      - Invalid actions: Instructs GM to narrate failure without introducing non-existent entities
+      - NPC introductions: Allows GM to introduce NPCs that make contextual sense
+    - **Fuzzy Matching**: Handles partial matches (e.g., "goblin" → "Goblin Scout")
+  - **NPC Conversation Features**:
+    - Encourages dynamic NPC introduction in appropriate contexts
+    - Auto-adds NPCs to `npcs_present` when GM introduces them
+    - Rejects NPC interactions that don't make contextual sense
+  - **Integration**: Fully integrated into `gm_dialogue_unified.py.generate_response()`
+  - **Testing**: Comprehensive test suite in `test_reality_check.py` (all tests passing)
+  - **Files**:
+    - Core logic: `dnd_rag_system/systems/action_validator.py`
+    - Integration: `dnd_rag_system/systems/gm_dialogue_unified.py`
+    - Tests: `test_reality_check.py`
+
 
 ## Implementation Notes
 

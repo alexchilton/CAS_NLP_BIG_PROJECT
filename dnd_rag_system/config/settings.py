@@ -42,7 +42,8 @@ COLLECTION_NAMES = {
     "spells": "dnd_spells",
     "monsters": "dnd_monsters",
     "classes": "dnd_classes",
-    "races": "dnd_races"
+    "races": "dnd_races",
+    "equipment": "dnd_equipment"
 }
 
 # Collection metadata
@@ -62,6 +63,10 @@ COLLECTION_METADATA = {
     "dnd_races": {
         "description": "D&D 5e race traits, subraces, and lore",
         "source": "Player's Handbook - Races"
+    },
+    "dnd_equipment": {
+        "description": "D&D 5e equipment, weapons, armor, gear, tools, and prices",
+        "source": "Player's Handbook - Equipment"
     }
 }
 
