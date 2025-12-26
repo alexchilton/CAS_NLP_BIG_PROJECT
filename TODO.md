@@ -39,19 +39,48 @@
 - **Problem**: Currently players can use `/buy` and `/sell` anywhere, even in a dragon's lair!
 - **Solution**: Validate shop location before allowing transactions
 - **Implementation**:
-  - Check if current location is a shop (`location_type = "shop"` in GameSession)
+  - Check if current location is a shop (`location.has_shop = True`)
   - OR check if a merchant/shopkeeper NPC is present in `npcs_present`
   - Reject transactions with message: "There's no shop here! You're in a dragon's lair, not a marketplace!"
 - **Examples**:
-  - ✅ Valid: Player in "The Rusty Blade" shop location → `/buy` works
-  - ✅ Valid: "Grum the Shopkeeper" in `npcs_present` → `/buy` works
+  - ✅ Valid: Player in "Market Square" (has_shop=True) → `/buy` works
+  - ✅ Valid: "Greta the Merchant" in `npcs_present` → `/buy` works
   - ❌ Invalid: Player in "Dragon's Lair" → `/buy` rejected
   - ❌ Invalid: No merchant NPC present → `/buy` rejected
 - **Integration Point**: Add shop location validation in `ShopSystem.attempt_purchase()` and `attempt_sale()`
 
 ---
 
-## 📚 LOWER PRIORITY / ENHANCEMENTS
+## 📚 MEDIUM PRIORITY
+
+### Location-Based Item Spawning & Pickup System
+- **Current State**: Infrastructure exists but not integrated
+  - `location.moved_items` dict exists ✅
+  - Tracks which items were taken ✅
+  - Persists across visits ✅
+  - BUT: No automatic item spawning or pickup
+- **Need to Implement**:
+  1. **Item Spawning**: Add `items_present: Dict[str, int]` to Location
+     - Generate items when location is created
+     - Based on location type (caves have treasure, forests have herbs)
+  2. **Pickup Command**: `/pickup <item>` or natural language
+     - Remove from `location.items_present`
+     - Add to `character.inventory`
+     - Track in `location.moved_items`
+  3. **GM Integration**: GM should mention items in descriptions
+     - "You see a glinting sword" (first visit)
+     - Skip items in `moved_items` (return visit)
+- **Testing**: `test_location_items.py` already has 8 tests for the infrastructure
+
+### Save/Load System for World State
+- **Current State**: World persists in-memory during session only
+- **Need**: Save world state to disk, load on startup
+- **Implementation**:
+  - Add `Location.to_dict()` / `from_dict()` (partially exists)
+  - Add `GameSession.save_to_json()` / `load_from_json()`
+  - Save: `session.world_map`, all locations, character state
+  - Load on startup or via `/load_game` command
+- **Benefit**: Persistent campaigns across app restarts
 
 ### Spell System Improvements
 - Add spell slots tracking by level (1st-9th level slots)
@@ -59,6 +88,10 @@
 - Add spell casting mechanics with slot consumption
 - Proper D&D 5e spell levels and rules
 - Integration with existing `SpellSlots` class in `game_state.py`
+
+---
+
+## 📚 LOWER PRIORITY / ENHANCEMENTS
 
 ### RAG Data Quality Improvements
 
@@ -109,134 +142,19 @@
 - **Benefits**: Natural language understanding, no keyword maintenance, still 100% reliable
 - **Estimated Effort**: 2-3 hours (model integration, prompt engineering, testing)
 
-### World State & Exploration System
-- **Goal**: Maintain a consistent, persistent game world with interconnected locations
-- **Approach: Lazy Graph Implementation**:
-  - Pre-defined core locations (towns, quest hubs) with direct connections
-  - "Lazy" generation: dynamically generate unexplored areas when players enter them
-  - Persistent scene state: store location state (dead monsters, moved items) for consistency
-- **Integration with `game_state.py`**:
-  - `GameSession.current_location`: Become a `Location` object (new dataclass)
-  - `GameSession.world_map` (new field): Dictionary/graph of visited locations
-- **Priority**: Lower (nice-to-have, but not blocking core gameplay)
-
-
 ---
 
-## ✅ FIXED BUGS (Moved to DONE.md)
+## ✅ COMPLETED (See DONE.md for details)
 
-### ✅ Narrative to Mechanics Translation (COMPLETED 2025-12-26)
-
-**Status**: ✅ FULLY IMPLEMENTED - See commit cf43f62
-
-**What It Does**:
-Automatically extracts and applies game mechanics from GM narrative to game state.
-- GM narrates: "The dragon deals 30 damage to Thorin!"  
-- System extracts: `{"damage": [{"target": "Thorin", "amount": 30, "type": "fire"}]}`
-- Automatically updates: `character_state.current_hp -= 30`
-- UI refreshes showing new HP
-
-**Components**:
-- `mechanics_extractor.py` - Uses LLM (qwen2.5:3b) to extract structured JSON
-- `mechanics_applicator.py` - Applies mechanics to CharacterState/PartyState
-- Integration in `gm_dialogue_unified.py` (lines 388-418)
-- Test suite: `test_mechanics_system.py`
-
-**Supported Mechanics**:
-✅ Damage (with type: slashing, fire, etc.)
-✅ Healing (with source tracking)
-✅ Conditions (poisoned, stunned, etc.)
-✅ Spell slot consumption
-✅ Item consumption
-✅ Death/unconscious detection
-✅ Works in both single character and party mode
-
-**Result**: 
-Game state automatically stays in sync with GM narrative! No manual HP tracking needed.
+- ✅ World State & Exploration System (2025-12-26)
+- ✅ Lazy Location Generation (2025-12-26)
+- ✅ Spell Target Hallucination Fix (2025-12-26)
+- ✅ Action Validator False Positives Fix (2025-12-26)
+- ✅ Party Mode UI Bug Fix (2025-12-26)
+- ✅ Narrative to Mechanics Translation System (2025-12-26)
+- ✅ Combat System (Turn-based)
+- ✅ Reality Check / Action Validation
+- ✅ Shop System
+- ✅ Party Mode
 
 ---
-
-### ✅ Party Mode UI Bug (FIXED 2025-12-26)
-
-**Status**: ✅ FIXED - See commit ed75a27
-
-**Original Issue**: 
-When party mode checkbox was enabled, chat textarea became non-interactable, making party mode completely unusable.
-
-**Root Cause**: 
-`load_party_mode()` was returning empty string `""` for msg_input parameter, which Gradio interpreted as a value update that broke interactivity.
-
-**Fix Applied**:
-- Changed return type from `Tuple[str, str, list]` to `Tuple[str, gr.update, list]`
-- Used `gr.update(interactive=True, value="")` to explicitly keep textarea interactive
-- Applied fix to both error case and success case
-
-**Result**: 
-Party mode is now fully functional for party-based gameplay! ✅
-
----
-
-### ✅ "Large Bug" - Spell Target Hallucination (FIXED 2025-12-26)
-
-**Status**: ✅ FIXED - See DONE.md for details
-
-**Original Issue**: 
-When player cast "Magic Missile at the goblin" with no goblin present, the GM hallucinated:
-- Goblin appearing and dying
-- Dragon appearing from nowhere
-- Combat starting unexpectedly
-- Thorin appearing (wasn't loaded!)
-
-**Root Cause**: 
-Spell validation never checked if target exists (combat did, but spells didn't)
-
-**Fix Applied**:
-1. Added spell target validation in `_validate_spell()`
-2. Created `_extract_spell_target()` for proper target extraction
-3. Added spell-specific rejection responses
-
-**Result**: 
-Spell targets now validated like combat targets - NO MORE HALLUCINATIONS!
-
-**Test**: `e2e_tests/test_hallucination_bug.py` (Selenium test validates fix)
-
----
-
-## 🔴 CRITICAL PRIORITY
-
-So i start and try and cast magic missile at the goblin- there is no goblin but...then it goes into combat with a dragon who appears from nowhere and together with thorin...
-Example 
-
-Welcome, Elara Moonwhisper!
-
-You find yourself in The Adventurer's Guild Hall.
-
-A gathering place for heroes seeking quests and glory. Notice boards line the walls with job postings. A small shop in the corner sells equipment.
-
-You have 125 gold pieces in your purse.
-
-What would you like to do?
-
-Type /help to see available commands, or describe your action!
-
-
-"I cast Magic Missile at the goblin"
-
-
-Your magic missile streaks through the air, guided by your arcane power. As it strikes its target, a shower of tiny, glowing darts erupts from its tip, each one dealing a small but concentrated damage.
-
-The goblin, startled by the sudden barrage, yelps in pain as the missiles explode around it. It stumbles back, clutching its chest, before falling to the ground, lifeless. The room falls silent for a moment, the sound of your spell echoing off the walls. You stand there, panting, your spellbook open in your hands, feeling a rush of power and satisfaction.
-
-The ancient red dragon raises its massive head, its scales shimmering in the light. It opens its jaws, revealing rows of razor-sharp teeth.
-
-"Well played, human mage," it says, its voice booming. "But even a wizard cannot save you from the wrath of the Red Dragon."
-
-🎯 Thorin Stormshield's turn!
-
-
-Your Action
-⚔️ Initiative Tracker
-▼
-⚔️ Combat Round 2
-
-📜 Initiative Order: Ancient Red Dragon (20) 🎯 Thorin Stormshield (2)
