@@ -100,7 +100,9 @@ def load_character(driver, character_name="Thorin"):
                 btn.click()
                 break
 
-        time.sleep(3)
+        # Wait longer for Gradio backend to process character loading
+        # (Gradio event handlers are async, need time to update gm.session.character_state)
+        time.sleep(7)
         print(f"✓ Loaded character: {character_name}")
         return True
     except Exception as e:
