@@ -6,9 +6,12 @@ Automatically updates HP, conditions, inventory, spell slots, etc.
 """
 
 import logging
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, TYPE_CHECKING
 from dnd_rag_system.systems.game_state import CharacterState, PartyState, Condition
 from dnd_rag_system.systems.mechanics_extractor import ExtractedMechanics
+
+if TYPE_CHECKING:
+    from dnd_rag_system.systems.game_state import GameSession
 
 logger = logging.getLogger(__name__)
 
@@ -211,6 +214,40 @@ class MechanicsApplicator:
             all_feedback.extend(feedback)
 
         return all_feedback
+
+    def apply_npcs_to_session(
+        self,
+        mechanics: ExtractedMechanics,
+        game_session: "GameSession"
+    ) -> List[str]:
+        """
+        Apply NPC introductions to game session.
+
+        Args:
+            mechanics: Extracted mechanics
+            game_session: GameSession to update
+
+        Returns:
+            List of feedback messages
+        """
+        feedback = []
+
+        if not mechanics.npcs_introduced:
+            return feedback
+
+        # Add each extracted NPC to npcs_present
+        for npc_data in mechanics.npcs_introduced:
+            npc_name = npc_data.get("name", "").strip().title()
+            npc_type = npc_data.get("type", "neutral")
+
+            if npc_name and npc_name not in game_session.npcs_present:
+                game_session.npcs_present.append(npc_name)
+                feedback.append(f"🎭 {npc_name} has appeared ({npc_type})")
+
+                if self.debug:
+                    logger.debug(f"🎭 Added NPC to scene: {npc_name} (type: {npc_type})")
+
+        return feedback
 
     def apply_with_logging(
         self,
