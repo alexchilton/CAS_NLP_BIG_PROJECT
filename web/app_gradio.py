@@ -404,26 +404,106 @@ def create_character(name: str, race: str, char_class: str, level: int,
     )
 
 
-def chat(message: str, history: list) -> list:
-    """Handle chat messages."""
+def get_initiative_tracker() -> Tuple[str, bool]:
+    """
+    Get initiative tracker display and combat status.
+
+    Returns:
+        Tuple of (initiative_display_text, is_in_combat)
+    """
+    if gm.combat_manager.is_in_combat():
+        # Get initiative tracker with party info if in party mode
+        if gameplay_mode == "party" and party_characters:
+            tracker = gm.combat_manager.get_initiative_tracker(gm.session.party)
+        else:
+            tracker = gm.combat_manager.get_initiative_tracker()
+
+        return tracker, True
+    else:
+        return "⚔️ Not currently in combat\n\nUse `/start_combat Goblin, Orc` to begin combat", False
+
+
+def handle_next_turn(history: list) -> Tuple[list, str, bool]:
+    """
+    Handle Next Turn button click.
+
+    Returns:
+        Tuple of (updated_history, initiative_display, is_in_combat)
+    """
+    if not gm.combat_manager.is_in_combat():
+        return (
+            history + [
+                {"role": "assistant", "content": "⚠️ Not in combat! Use `/start_combat` to begin."}
+            ],
+            *get_initiative_tracker()
+        )
+
+    # Advance turn
+    response = gm.generate_response("/next_turn", use_rag=False)
+
+    new_history = history + [
+        {"role": "assistant", "content": response}
+    ]
+
+    return (new_history, *get_initiative_tracker())
+
+
+def handle_end_combat(history: list) -> Tuple[list, str, bool]:
+    """
+    Handle End Combat button click.
+
+    Returns:
+        Tuple of (updated_history, initiative_display, is_in_combat)
+    """
+    if not gm.combat_manager.is_in_combat():
+        return (
+            history + [
+                {"role": "assistant", "content": "⚠️ Not in combat!"}
+            ],
+            *get_initiative_tracker()
+        )
+
+    # End combat
+    response = gm.generate_response("/end_combat", use_rag=False)
+
+    new_history = history + [
+        {"role": "assistant", "content": response}
+    ]
+
+    return (new_history, *get_initiative_tracker())
+
+
+def chat(message: str, history: list) -> Tuple[list, str, bool]:
+    """
+    Handle chat messages.
+
+    Returns:
+        Tuple of (updated_history, initiative_display, is_in_combat)
+    """
     global conversation_history, gameplay_mode
 
     # Check if in party mode or character mode
     if gameplay_mode == "party":
         if not party_characters:
-            return history + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": "⚠️ Please load party mode first (add characters in Party Management tab)"}
-            ]
+            return (
+                history + [
+                    {"role": "user", "content": message},
+                    {"role": "assistant", "content": "⚠️ Please load party mode first (add characters in Party Management tab)"}
+                ],
+                *get_initiative_tracker()
+            )
     else:
         if not current_character:
-            return history + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": "⚠️ Please load a character first"}
-            ]
+            return (
+                history + [
+                    {"role": "user", "content": message},
+                    {"role": "assistant", "content": "⚠️ Please load a character first"}
+                ],
+                *get_initiative_tracker()
+            )
 
     if not message.strip():
-        return history
+        return (history, *get_initiative_tracker())
 
     # Handle special commands
     if message.startswith("/"):
@@ -435,68 +515,96 @@ def chat(message: str, history: list) -> list:
 - `/context` - Show current scene context
 - `/stats` - Show character stats
 - `/rag <query>` - Search D&D rules (e.g., `/rag fireball`)
+- `/start_combat <enemies>` - Start combat with initiative rolls
+- `/next_turn` or `/next` - Advance to next turn in combat
+- `/initiative` - Show initiative tracker
+- `/end_combat` - End combat
 
 Otherwise, just type your action and press Enter!"""
-            return history + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": help_text}
-            ]
+            return (
+                history + [
+                    {"role": "user", "content": message},
+                    {"role": "assistant", "content": help_text}
+                ],
+                *get_initiative_tracker()
+            )
 
         elif cmd == "/context":
             context_text = gm.session.context
-            return history + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": f"**Current Context:**\n\n{context_text}"}
-            ]
+            return (
+                history + [
+                    {"role": "user", "content": message},
+                    {"role": "assistant", "content": f"**Current Context:**\n\n{context_text}"}
+                ],
+                *get_initiative_tracker()
+            )
 
         elif cmd == "/stats":
             if gameplay_mode == "party":
                 stats = format_party_sheet()
             else:
                 stats = format_character_sheet()
-            return history + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": stats}
-            ]
+            return (
+                history + [
+                    {"role": "user", "content": message},
+                    {"role": "assistant", "content": stats}
+                ],
+                *get_initiative_tracker()
+            )
 
         elif cmd.startswith("/rag "):
             query = cmd[5:].strip()
             if query:
                 results = gm.search_rag(query, n_results=2)
                 formatted = gm.format_rag_context(results)
-                return history + [
-                    {"role": "user", "content": message},
-                    {"role": "assistant", "content": f"**RAG Search Results:**\n\n{formatted}"}
-                ]
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": f"**RAG Search Results:**\n\n{formatted}"}
+                    ],
+                    *get_initiative_tracker()
+                )
             else:
-                return history + [
-                    {"role": "user", "content": message},
-                    {"role": "assistant", "content": "Usage: `/rag <query>` (e.g., `/rag magic missile`)"}
-                ]
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "Usage: `/rag <query>` (e.g., `/rag magic missile`)"}
+                    ],
+                    *get_initiative_tracker()
+                )
 
         else:
-            return history + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": f"Unknown command: {cmd}\nType `/help` for available commands"}
-            ]
+            return (
+                history + [
+                    {"role": "user", "content": message},
+                    {"role": "assistant", "content": f"Unknown command: {cmd}\nType `/help` for available commands"}
+                ],
+                *get_initiative_tracker()
+            )
 
     # Generate GM response
     try:
         response = gm.generate_response(message, use_rag=True)
         conversation_history.append((message, response))
-        return history + [
-            {"role": "user", "content": message},
-            {"role": "assistant", "content": response}
-        ]
+        return (
+            history + [
+                {"role": "user", "content": message},
+                {"role": "assistant", "content": response}
+            ],
+            *get_initiative_tracker()
+        )
     except Exception as e:
         error_msg = f"Error: {str(e)}"
         # Only add Ollama instructions if running locally
         if not (os.getenv("SPACE_ID") or os.getenv("SPACE_AUTHOR_NAME") or os.getenv("HF_SPACE")):
             error_msg += "\n\nMake sure Ollama is running and the model is installed:\n`ollama pull hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M`"
-        return history + [
-            {"role": "user", "content": message},
-            {"role": "assistant", "content": error_msg}
-        ]
+        return (
+            history + [
+                {"role": "user", "content": message},
+                {"role": "assistant", "content": error_msg}
+            ],
+            *get_initiative_tracker()
+        )
 
 
 def clear_history() -> list:
@@ -718,6 +826,14 @@ with demo:
                 with gr.Column(scale=2):
                     gr.Markdown("## Game Session")
 
+                    # Initiative Tracker (visible when in combat)
+                    with gr.Accordion("⚔️ Initiative Tracker", open=False, visible=False) as combat_accordion:
+                        initiative_display = gr.Markdown("Not in combat")
+
+                        with gr.Row():
+                            next_turn_btn = gr.Button("⏭️ Next Turn", variant="secondary", scale=1)
+                            end_combat_btn = gr.Button("🛑 End Combat", variant="stop", scale=1)
+
                     chatbot = gr.Chatbot(
                         height=500,
                         label="Game Master",
@@ -930,10 +1046,11 @@ with demo:
         outputs=[delete_status]
     )
 
+    # Chat submit handlers - update both chat and initiative tracker
     submit_btn.click(
         chat,
         inputs=[msg_input, chatbot],
-        outputs=[chatbot]
+        outputs=[chatbot, initiative_display, combat_accordion]
     ).then(
         lambda: "",
         outputs=[msg_input]
@@ -942,10 +1059,23 @@ with demo:
     msg_input.submit(
         chat,
         inputs=[msg_input, chatbot],
-        outputs=[chatbot]
+        outputs=[chatbot, initiative_display, combat_accordion]
     ).then(
         lambda: "",
         outputs=[msg_input]
+    )
+
+    # Combat control button handlers
+    next_turn_btn.click(
+        handle_next_turn,
+        inputs=[chatbot],
+        outputs=[chatbot, initiative_display, combat_accordion]
+    )
+
+    end_combat_btn.click(
+        handle_end_combat,
+        inputs=[chatbot],
+        outputs=[chatbot, initiative_display, combat_accordion]
     )
 
     clear_btn.click(
