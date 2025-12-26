@@ -283,21 +283,40 @@ class GameMaster:
             combat_command_handled = True
 
         elif lower_input == '/map':
+            # Show world map - current location + discovered locations
             current_loc = self.session.get_current_location_obj()
+            discovered = self.session.get_discovered_locations()
+            
             if current_loc:
+                combat_feedback = f"🗺️ **WORLD MAP**\n\n"
+                combat_feedback += f"📍 **Current Location**: {self.session.current_location}\n"
+                combat_feedback += f"   {current_loc.description[:100]}...\n\n"
+                
+                # Show connections from current location
                 destinations = self.session.get_available_destinations()
                 if destinations:
-                    combat_feedback = f"📍 **Current Location**: {self.session.current_location}\n\n"
-                    combat_feedback += f"**You can travel to**:\n"
+                    combat_feedback += f"**🧭 You can travel to**:\n"
                     for dest in destinations:
                         dest_loc = self.session.get_location(dest)
                         if dest_loc and dest_loc.is_discovered:
-                            combat_feedback += f"  - {dest} ({dest_loc.location_type.value})\n"
+                            safe_marker = "✅" if dest_loc.is_safe else "⚔️"
+                            combat_feedback += f"  {safe_marker} {dest} ({dest_loc.location_type.value})\n"
                         elif dest_loc:
-                            combat_feedback += f"  - ??? (undiscovered)\n"
-                    combat_feedback += f"\nUse `/travel <location>` to move."
-                else:
-                    combat_feedback = f"📍 You are in {self.session.current_location}. No connections from here."
+                            combat_feedback += f"  ❓ ??? (undiscovered area)\n"
+                    combat_feedback += f"\n"
+                
+                # Show all discovered locations
+                if discovered and len(discovered) > 1:
+                    combat_feedback += f"**🌍 All Discovered Locations** ({len(discovered)}):\n"
+                    for loc_name in sorted(discovered):
+                        loc = self.session.get_location(loc_name)
+                        if loc:
+                            current_marker = "👉" if loc_name == self.session.current_location else "  "
+                            safe_marker = "✅" if loc.is_safe else "⚔️"
+                            visits = f" [{loc.visit_count}x]" if loc.visit_count > 1 else ""
+                            combat_feedback += f"{current_marker} {safe_marker} {loc_name} ({loc.location_type.value}){visits}\n"
+                
+                combat_feedback += f"\n💡 Use `/travel <location>` to move, `/explore` to discover new areas."
             else:
                 combat_feedback = "📍 Current location not found in world map."
             combat_command_handled = True
@@ -522,6 +541,10 @@ class GameMaster:
 
                     # Apply to game state if any mechanics found
                     if mechanics.has_mechanics():
+                        # Apply NPCs to session (add introduced NPCs to npcs_present)
+                        npc_feedback = self.mechanics_applicator.apply_npcs_to_session(mechanics, self.session)
+
+                        # Apply damage/healing/conditions to characters
                         if self.session.party and len(self.session.party.characters) > 0:
                             # Apply to party
                             feedback = self.mechanics_applicator.apply_to_party(mechanics, self.session.party)
@@ -529,10 +552,13 @@ class GameMaster:
                             # Apply to single character
                             feedback = self.mechanics_applicator.apply_to_character(mechanics, self.session.character_state)
 
-                        if DEBUG_PROMPTS and feedback:
+                        # Combine NPC and character feedbacks
+                        all_feedback = npc_feedback + feedback
+
+                        if DEBUG_PROMPTS and all_feedback:
                             logger.debug("=" * 80)
                             logger.debug("MECHANICS AUTO-APPLIED TO GAME STATE:")
-                            for msg in feedback:
+                            for msg in all_feedback:
                                 logger.debug(f"  {msg}")
                             logger.debug("=" * 80)
 

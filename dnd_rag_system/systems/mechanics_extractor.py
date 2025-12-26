@@ -66,6 +66,9 @@ class ExtractedMechanics:
     # Character knocked unconscious: [{"character": "character_name"}]
     unconscious: List[Dict[str, Any]] = field(default_factory=list)
 
+    # NPCs/Monsters introduced: [{"name": "Goblin", "description": "rusty sword wielding goblin"}]
+    npcs_introduced: List[Dict[str, Any]] = field(default_factory=list)
+
     def has_mechanics(self) -> bool:
         """Check if any mechanics were extracted."""
         return any([
@@ -76,7 +79,8 @@ class ExtractedMechanics:
             self.spell_slots_used,
             self.items_consumed,
             self.deaths,
-            self.unconscious
+            self.unconscious,
+            self.npcs_introduced
         ])
 
     def to_dict(self) -> Dict[str, Any]:
@@ -89,7 +93,8 @@ class ExtractedMechanics:
             "spell_slots_used": self.spell_slots_used,
             "items_consumed": self.items_consumed,
             "deaths": self.deaths,
-            "unconscious": self.unconscious
+            "unconscious": self.unconscious,
+            "npcs_introduced": self.npcs_introduced
         }
 
     @classmethod
@@ -103,7 +108,8 @@ class ExtractedMechanics:
             spell_slots_used=data.get("spell_slots_used", []),
             items_consumed=data.get("items_consumed", []),
             deaths=data.get("deaths", []),
-            unconscious=data.get("unconscious", [])
+            unconscious=data.get("unconscious", []),
+            npcs_introduced=data.get("npcs_introduced", [])
         )
 
 
@@ -233,6 +239,9 @@ Extract mechanics and output as JSON with this exact schema:
   ],
   "unconscious": [
     {{"character": "character_name"}}
+  ],
+  "npcs_introduced": [
+    {{"name": "Goblin", "type": "enemy"}}
   ]
 }}
 
@@ -242,7 +251,9 @@ RULES:
 - Use exact character names from the narrative
 - Damage types: slashing, piercing, bludgeoning, fire, cold, lightning, poison, acid, etc.
 - Conditions: poisoned, stunned, paralyzed, frightened, charmed, etc.
-- If no mechanics found, return {{"damage": [], "healing": []}}
+- NPCs: Extract ANY creatures/monsters/NPCs mentioned (Goblin, Dragon, Merchant, Guard, etc.)
+- NPC types: "enemy" for hostile creatures, "friendly" for allies, "neutral" for NPCs
+- If no mechanics found, return {{"damage": [], "healing": [], "npcs_introduced": []}}
 
 JSON:"""
 
@@ -342,6 +353,8 @@ JSON:"""
                 print(f"  ☠️  Deaths: {mechanics.deaths}")
             if mechanics.unconscious:
                 print(f"  😵 Unconscious: {mechanics.unconscious}")
+            if mechanics.npcs_introduced:
+                print(f"  🎭 NPCs Introduced: {mechanics.npcs_introduced}")
 
             print("=" * 80)
         else:
