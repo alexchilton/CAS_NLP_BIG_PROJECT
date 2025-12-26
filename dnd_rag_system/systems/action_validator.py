@@ -103,6 +103,17 @@ class ActionValidator:
         """
         lower_input = user_input.lower().strip()
 
+        # Check for spell casting FIRST (before combat, to avoid "fireball" matching "fire")
+        if any(keyword in lower_input for keyword in self.SPELL_KEYWORDS):
+            target = self._extract_target(lower_input, self.SPELL_KEYWORDS)
+            spell = self._extract_spell(lower_input)
+            return ActionIntent(
+                action_type=ActionType.SPELL_CAST,
+                target=target,
+                resource=spell,
+                raw_input=user_input
+            )
+
         # Check for combat actions
         if any(keyword in lower_input for keyword in self.COMBAT_KEYWORDS):
             target = self._extract_target(lower_input, self.COMBAT_KEYWORDS)
@@ -111,17 +122,6 @@ class ActionValidator:
                 action_type=ActionType.COMBAT,
                 target=target,
                 resource=weapon,  # Store weapon in resource field
-                raw_input=user_input
-            )
-
-        # Check for spell casting
-        if any(keyword in lower_input for keyword in self.SPELL_KEYWORDS):
-            target = self._extract_target(lower_input, self.SPELL_KEYWORDS)
-            spell = self._extract_spell(lower_input)
-            return ActionIntent(
-                action_type=ActionType.SPELL_CAST,
-                target=target,
-                resource=spell,
                 raw_input=user_input
             )
 
@@ -379,8 +379,28 @@ class ActionValidator:
 
         # Check inventory
         inventory_items = [item.lower() for item in char_state.inventory]
+        item_lower = item_name.lower()
 
-        if item_name.lower() not in inventory_items and inventory_items:
+        # Exact match - item is in inventory
+        if item_lower in inventory_items:
+            return ValidationReport(
+                result=ValidationResult.VALID,
+                action=intent,
+                message=f"Player uses {item_name}. Describe the item's effect or outcome."
+            )
+
+        # Check for generic category terms (e.g., "weapon" matches "longsword")
+        matched_item = self._match_item_category(item_lower, inventory_items)
+        if matched_item:
+            return ValidationReport(
+                result=ValidationResult.VALID,
+                action=intent,
+                matched_entity=matched_item,
+                message=f"Player uses {matched_item} (they said '{item_name}'). Describe the item's effect or outcome."
+            )
+
+        # Item not found
+        if inventory_items:
             return ValidationReport(
                 result=ValidationResult.INVALID,
                 action=intent,
@@ -526,6 +546,43 @@ class ActionValidator:
             potential_weapon = using_match.group(2)
             if potential_weapon in common_weapons:
                 return potential_weapon.title()
+
+        return None
+
+    def _match_item_category(self, generic_term: str, inventory: List[str]) -> Optional[str]:
+        """
+        Match generic category terms to specific items in inventory.
+        Examples:
+        - "weapon" matches "longsword", "bow", "dagger", etc.
+        - "sword" matches "longsword", "shortsword", "greatsword", etc.
+        - "armor" matches "plate armor", "leather armor", etc.
+
+        Args:
+            generic_term: Generic category term (e.g., "weapon", "sword", "armor")
+            inventory: List of inventory items (lowercase)
+
+        Returns:
+            First matching item title-cased, or None
+        """
+        # Define category mappings
+        weapon_categories = {
+            'weapon': ['sword', 'bow', 'axe', 'mace', 'dagger', 'spear', 'hammer', 'staff', 'club', 'javelin', 'crossbow', 'knife', 'rapier', 'scimitar', 'halberd', 'pike', 'quarterstaff', 'warhammer', 'maul', 'sling'],
+            'sword': ['longsword', 'shortsword', 'greatsword', 'scimitar', 'rapier'],
+            'bow': ['longbow', 'shortbow', 'crossbow'],
+            'axe': ['battleaxe', 'handaxe', 'greataxe'],
+            'armor': ['leather', 'hide', 'chain', 'scale', 'plate', 'splint', 'studded', 'breastplate', 'half plate', 'ring mail'],
+            'shield': ['shield'],
+        }
+
+        # Check if generic term matches a category
+        if generic_term in weapon_categories:
+            category_items = weapon_categories[generic_term]
+            for inv_item in inventory:
+                # Check if any category item is contained in the inventory item
+                for cat_item in category_items:
+                    if cat_item in inv_item:
+                        # Return the title-cased version
+                        return inv_item.title()
 
         return None
 
