@@ -33,6 +33,7 @@
     "Component Pouch",
     "Scholar's Pack"
   ],
+  "gold": 125,
   "spells": [
     "Fire Bolt",
     "Mage Hand",

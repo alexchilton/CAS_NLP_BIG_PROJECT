@@ -169,6 +169,9 @@ class CharacterState:
     # Inventory (item_name: quantity)
     inventory: Dict[str, int] = field(default_factory=dict)
 
+    # Gold
+    gold: int = 50  # Starting gold
+
     # Character progression
     experience_points: int = 0
     level: int = 1
@@ -572,6 +575,7 @@ class CharacterState:
             "hit_dice_current": self.hit_dice_current,
             "hit_dice_max": self.hit_dice_max,
             "inventory": self.inventory,
+            "gold": self.gold,
             "experience_points": self.experience_points,
             "level": self.level,
             "conditions": self.conditions,
@@ -597,6 +601,7 @@ class CharacterState:
             hit_dice_current=data.get("hit_dice_current", 0),
             hit_dice_max=data.get("hit_dice_max", 0),
             inventory=data.get("inventory", {}),
+            gold=data.get("gold", 50),
             experience_points=data.get("experience_points", 0),
             level=data.get("level", 1),
             conditions=data.get("conditions", []),

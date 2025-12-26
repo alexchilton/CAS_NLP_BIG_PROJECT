@@ -44,6 +44,15 @@ party = PartyState(party_name="Adventuring Party")
 party_characters = {}  # {char_name: Character} for display
 gameplay_mode = "character"  # "character" or "party"
 
+# Starting locations for new games
+STARTING_LOCATIONS = [
+    ("The Prancing Pony Inn", "A cozy tavern bustling with travelers and merchants. The smell of roasted meat and ale fills the air. A shopkeeper behind the bar sells basic supplies."),
+    ("The Market Square", "A busy marketplace with stalls selling adventuring gear, potions, and supplies. Merchants call out their wares. Perfect for shopping before an adventure!"),
+    ("The Town Gates", "The entrance to town, where the road stretches out toward adventure. Guards keep watch. A general store sits just inside the gates."),
+    ("The Adventurer's Guild Hall", "A gathering place for heroes seeking quests and glory. Notice boards line the walls with job postings. A small shop in the corner sells equipment."),
+    ("The Temple District", "A peaceful area with temples to various gods. Clerics offer healing and blessings. A holy merchant sells potions and religious items."),
+]
+
 
 def load_character_from_json(filepath: Path) -> Optional[Character]:
     """Load character from JSON file."""
@@ -160,6 +169,7 @@ def load_character(character_choice: str) -> Tuple[str, str, list, Optional[str]
         current_hp=char.hit_points,
         level=char.level,
         inventory={item: 1 for item in char.equipment},  # Convert equipment list to inventory dict
+        gold=getattr(char, 'gold', 50)  # Load gold from character JSON or default to 50
     )
 
     # Add race and class for personality-driven responses
@@ -173,6 +183,10 @@ def load_character(character_choice: str) -> Tuple[str, str, list, Optional[str]
     # Load into game session
     gm.session.character_state = char_state
     gm.session.npcs_present = []  # Clear NPCs when loading new character
+
+    # Set random starting location
+    location_name, location_desc = random.choice(STARTING_LOCATIONS)
+    gm.set_location(location_name, location_desc)
 
     # Set GM context
     mods = char.get_modifiers()
@@ -197,8 +211,22 @@ EQUIPMENT: {', '.join(char.equipment[:5])}
     if char.image_path and Path(char.image_path).exists():
         char_image = char.image_path
 
-    # Return character sheet, clear input, empty chat, and image
-    return format_character_sheet(), "", [], char_image
+    # Create welcome message with starting location
+    welcome_message = f"""**Welcome, {char.name}!**
+
+You find yourself in **{location_name}**.
+
+{location_desc}
+
+You have **{char_state.gold} gold pieces** in your purse.
+
+What would you like to do?
+
+*Type `/help` to see available commands, or describe your action!*"""
+
+    # Return character sheet, clear input, chat with welcome message, and image
+    initial_chat = [{"role": "assistant", "content": welcome_message}]
+    return format_character_sheet(), "", initial_chat, char_image
 
 
 def load_party_mode() -> Tuple[str, gr.update, list]:
@@ -214,6 +242,10 @@ def load_party_mode() -> Tuple[str, gr.update, list]:
             gr.update(interactive=True),  # Keep msg_input interactive
             []
         )
+
+    # Set random starting location for the party
+    location_name, location_desc = random.choice(STARTING_LOCATIONS)
+    gm.set_location(location_name, location_desc)
 
     # Build party context for GM
     party_info = []
@@ -234,11 +266,28 @@ Party Gold: {party.gold} GP"""
 
     gm.set_context(context)
 
-    # Return party summary - use gr.update() to keep msg_input unchanged and interactive
+    # Create welcome message for party mode
+    party_names = ", ".join(party_characters.keys())
+    welcome_message = f"""**🎭 Welcome, Adventurers!**
+
+Your party of {len(party_characters)} finds themselves in **{location_name}**.
+
+**Party Members:** {party_names}
+
+{location_desc}
+
+The party has **{party.gold} gold pieces** in the shared purse.
+
+What would you like your party to do?
+
+*Type `/help` to see available commands, or describe your party's action!*"""
+
+    # Return party summary, interactive input, and welcome message
+    initial_chat = [{"role": "assistant", "content": welcome_message}]
     return (
         format_party_sheet(),
         gr.update(interactive=True, value=""),  # Explicitly keep it interactive
-        []
+        initial_chat  # Add welcome message to chat
     )
 
 
@@ -282,6 +331,7 @@ def format_character_sheet() -> str:
 - **HP**: {char.hit_points}
 - **AC**: {char.armor_class}
 - **Proficiency Bonus**: +{char.proficiency_bonus}
+- **Gold**: {getattr(char, 'gold', 0)} GP
 
 ### Ability Scores
 | Ability | Score | Modifier |
@@ -350,7 +400,8 @@ def create_character(name: str, race: str, char_class: str, level: int,
         wisdom=wis_val,
         charisma=cha_val,
         background=background,
-        alignment=alignment
+        alignment=alignment,
+        gold=100  # Starting gold for new characters
     )
 
     # Calculate derived stats
@@ -573,16 +624,9 @@ Otherwise, just type your action and press Enter!"""
                     *get_initiative_tracker()
                 )
 
-        else:
-            return (
-                history + [
-                    {"role": "user", "content": message},
-                    {"role": "assistant", "content": f"Unknown command: {cmd}\nType `/help` for available commands"}
-                ],
-                *get_initiative_tracker()
-            )
+        # Let other commands (like /buy, /sell, /start_combat, etc.) pass through to GM
 
-    # Generate GM response
+    # Generate GM response (handles /buy, /sell, combat commands, and regular actions)
     try:
         response = gm.generate_response(message, use_rag=True)
         conversation_history.append((message, response))

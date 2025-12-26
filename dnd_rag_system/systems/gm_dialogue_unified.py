@@ -27,6 +27,8 @@ from dnd_rag_system.systems.action_validator import (
 )
 from dnd_rag_system.systems.shop_system import ShopSystem
 from dnd_rag_system.systems.combat_manager import CombatManager
+from dnd_rag_system.systems.mechanics_extractor import MechanicsExtractor
+from dnd_rag_system.systems.mechanics_applicator import MechanicsApplicator
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -84,6 +86,10 @@ class GameMaster:
         self.action_validator = ActionValidator(debug=DEBUG_PROMPTS)  # Reality check system
         self.shop = ShopSystem(db_manager, debug=DEBUG_PROMPTS)  # Shop transaction system
         self.combat_manager = CombatManager(self.session.combat, debug=DEBUG_PROMPTS)  # Combat system
+
+        # Narrative to Mechanics Translation System
+        self.mechanics_extractor = MechanicsExtractor(debug=DEBUG_PROMPTS)
+        self.mechanics_applicator = MechanicsApplicator(debug=DEBUG_PROMPTS)
 
         # Auto-detect environment
         self.use_hf_api = is_huggingface_space()
@@ -378,6 +384,38 @@ class GameMaster:
 
             # Step 5: Post-process response (e.g., auto-add NPCs introduced in conversation)
             self._post_process_response(response, validation)
+
+            # Step 5.3: Extract mechanics from narrative and auto-update game state
+            if self.session.character_state or (self.session.party and len(self.session.party.characters) > 0):
+                try:
+                    # Get character names for better extraction
+                    char_names = []
+                    if self.session.party and len(self.session.party.characters) > 0:
+                        char_names = list(self.session.party.characters.keys())
+                    elif self.session.character_state:
+                        char_names = [self.session.character_state.character_name]
+
+                    # Extract mechanics from GM response
+                    mechanics = self.mechanics_extractor.extract(response, char_names)
+
+                    # Apply to game state if any mechanics found
+                    if mechanics.has_mechanics():
+                        if self.session.party and len(self.session.party.characters) > 0:
+                            # Apply to party
+                            feedback = self.mechanics_applicator.apply_to_party(mechanics, self.session.party)
+                        else:
+                            # Apply to single character
+                            feedback = self.mechanics_applicator.apply_to_character(mechanics, self.session.character_state)
+
+                        if DEBUG_PROMPTS and feedback:
+                            logger.debug("=" * 80)
+                            logger.debug("MECHANICS AUTO-APPLIED TO GAME STATE:")
+                            for msg in feedback:
+                                logger.debug(f"  {msg}")
+                            logger.debug("=" * 80)
+
+                except Exception as e:
+                    logger.error(f"Mechanics extraction/application failed: {e}")
 
             # Step 5.5: Auto-advance turn in combat mode after character acts
             if self.combat_manager.is_in_combat():
