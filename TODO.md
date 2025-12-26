@@ -49,6 +49,15 @@
   - ❌ Invalid: No merchant NPC present → `/buy` rejected
 - **Integration Point**: Add shop location validation in `ShopSystem.attempt_purchase()` and `attempt_sale()`
 
+### Update Inventory Display After Shop Transactions
+- **Problem**: After `/buy` or `/sell` commands, inventory shown in GUI is not updated
+- **Solution**: Refresh the inventory display component after successful purchase/sale
+- **Implementation**:
+  - Update Gradio inventory component after `ShopSystem.attempt_purchase()` succeeds
+  - Update Gradio inventory component after `ShopSystem.attempt_sale()` succeeds
+  - Ensure gold and item quantities reflect current state immediately
+- **User Experience**: Players should see inventory change in real-time without manual refresh
+
 ---
 
 ## 📚 MEDIUM PRIORITY
@@ -71,6 +80,32 @@
      - "You see a glinting sword" (first visit)
      - Skip items in `moved_items` (return visit)
 - **Testing**: `test_location_items.py` already has 8 tests for the infrastructure
+
+### World State & Exploration System
+**STATUS: PARTIALLY IMPLEMENTED** 🚧
+
+#### Infrastructure Completed ✅
+- World state manager with location tracking
+- Lazy location generation system
+- Location visit tracking and state persistence
+- Item placement and removal system
+- NPC and creature persistence per location
+- Random encounter system with Monster RAG integration
+- Comprehensive selenium tests created
+- Documentation in `docs/world_state_guide.md`
+
+#### Broken/Not Working ❌
+- **`/map` command**: GM intercepts and hallucinates instead of showing locations
+  - Symptom: Returns goblin narrative instead of location list
+  - **FIX NEEDED**: Make `/map` bypass GM and query world state directly
+- **`/travel` command**: Not tested yet, may have similar issues
+- **`/explore` command**: Not tested with lazy generation
+- **GM narrative integration**: GM doesn't mention visited locations correctly
+
+#### Not Yet Implemented
+- Save/load world state to disk
+- Automatic item spawning in new locations
+- Integration with combat system (dead enemies persistence)
 
 ### Save/Load System for World State
 - **Current State**: World persists in-memory during session only
@@ -146,8 +181,6 @@
 
 ## ✅ COMPLETED (See DONE.md for details)
 
-- ✅ World State & Exploration System (2025-12-26)
-- ✅ Lazy Location Generation (2025-12-26)
 - ✅ Spell Target Hallucination Fix (2025-12-26)
 - ✅ Action Validator False Positives Fix (2025-12-26)
 - ✅ Party Mode UI Bug Fix (2025-12-26)
@@ -156,5 +189,7 @@
 - ✅ Reality Check / Action Validation
 - ✅ Shop System
 - ✅ Party Mode
+- ✅ Random Encounter System with Monster RAG Integration (2025-12-26)
+- ✅ Selenium Test Character Loading Fixed (2025-12-26)
 
 ---
