@@ -60,6 +60,43 @@ This file tracks completed and working features that have been implemented and t
 
 ---
 
+## ✅ Action Validator Bug Fixes ✅ COMPLETED (2025-12-26)
+
+### Fixed Action Validator False Positives & Combat State Bugs
+- **Issue 1**: "ready for battle" incorrectly parsed as ITEM_USE
+  - **Problem**: Phrase matched "ready" keyword but extracted "for battle" as item name
+  - **Fix**: Added filtering to skip matches where word after action keyword is a preposition (for, to, if, when, as, because)
+  - **Result**: "ready for battle" → EXPLORATION, "ready my shield" → ITEM_USE (still works)
+  
+- **Issue 2**: "swing at dragon" failed to detect target
+  - **Problem**: Articles like "the" prevented fuzzy matching with "Ancient Red Dragon"
+  - **Fix**: Enhanced fuzzy matching to strip articles (the, a, an) before comparison
+  - **Result**: All variations ("swing at dragon", "attack the dragon") now correctly match entity names
+  
+- **Issue 3**: Combat state persistence bug causing crashes
+  - **Problem**: Code referenced non-existent `game_session.combat_state` attribute (should be `game_session.combat`)
+  - **Fix**: Corrected attribute reference in `_validate_combat()` method
+  - **Result**: Combat validation no longer crashes during state checks
+
+- **🔥 Issue 4**: **CRITICAL - Spell target hallucination (ROOT CAUSE of "large bug")**
+  - **Problem**: Spell validation never checked if TARGET exists, only if spell is known
+  - **Symptom**: "I cast Magic Missile at the goblin" → GM hallucinated goblin death, dragon, Thorin, combat cascade
+  - **Root Cause**: `_validate_spell()` missing target existence check
+  - **Fix Applied**:
+    1. Added target validation in `_validate_spell()` - checks npcs_present and combat state
+    2. Created `_extract_spell_target()` - properly extracts target after spell name
+    3. Added spell-specific invalid target response - deterministic rejection message
+  - **Result**: Spell targets now validated like combat targets - prevents ALL hallucinations
+  - **Testing**: "cast Magic Missile at goblin" (no goblin) → INVALID ✅
+  
+- **Testing**: All existing tests pass, comprehensive edge case testing confirms no regressions
+- **Files Modified**: 
+  - `dnd_rag_system/systems/action_validator.py` (spell target validation added)
+  - `dnd_rag_system/systems/gm_dialogue_unified.py` (spell target rejection responses)
+- **E2E Test Created**: `e2e_tests/test_hallucination_bug.py` - validates fix prevents hallucination cascade
+
+---
+
 ## ✅ Context Grounding / Reality Check System ✅ FULLY IMPLEMENTED
 
 ### "Reality Check" for Player Actions

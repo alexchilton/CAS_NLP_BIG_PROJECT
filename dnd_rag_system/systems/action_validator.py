@@ -153,8 +153,8 @@ class ActionValidator:
 
         # Check for spell casting FIRST (before combat, to avoid "fireball" matching "fire")
         if any(keyword in lower_input for keyword in self.SPELL_KEYWORDS):
-            target = self._extract_target(lower_input, self.SPELL_KEYWORDS)
             spell = self._extract_spell(lower_input)
+            target = self._extract_spell_target(lower_input, spell)  # NEW: spell-aware target extraction
             return ActionIntent(
                 action_type=ActionType.SPELL_CAST,
                 target=target,
@@ -282,9 +282,9 @@ class ActionValidator:
             matched = intent.target
             if target_lower in combatants:
                 # Find actual name from combat state
-                for c in game_session.combat_state.initiative_order:
-                    if c.name.lower() == target_lower:
-                        matched = c.name
+                for name, init in game_session.combat.initiative_order:
+                    if name.lower() == target_lower:
+                        matched = name
                         break
             return ValidationReport(
                 result=ValidationResult.VALID,
@@ -358,7 +358,7 @@ class ActionValidator:
         )
 
     def _validate_spell(self, intent: ActionIntent, game_session) -> ValidationReport:
-        """Validate spell casting - check spell known and slots available"""
+        """Validate spell casting - check spell known, slots available, AND target exists"""
 
         if not game_session.character_state:
             return ValidationReport(
@@ -396,14 +396,56 @@ class ActionValidator:
                 suggestions=known_spells[:5]  # Show first 5 known spells
             )
 
+        # CRITICAL: Validate target exists if spell has a target
+        # This prevents hallucination of non-existent enemies!
+        if intent.target:
+            # Check if target exists in current game state
+            combatants = []
+            if game_session.combat and game_session.combat.initiative_order:
+                combatants = [c[0].lower() for c in game_session.combat.initiative_order]
+            
+            npcs = [npc.lower() for npc in game_session.npcs_present]
+            all_targets = combatants + npcs
+            target_lower = intent.target.lower()
+            
+            # Exact match
+            if target_lower in all_targets:
+                matched = intent.target
+                return ValidationReport(
+                    result=ValidationResult.VALID,
+                    action=intent,
+                    matched_entity=matched,
+                    message=f"Player casts {spell_name} at {matched}. Describe the spell's effects and outcome."
+                )
+            
+            # Fuzzy match
+            fuzzy_match = self._fuzzy_match(target_lower, all_targets)
+            if fuzzy_match:
+                return ValidationReport(
+                    result=ValidationResult.FUZZY_MATCH,
+                    action=intent,
+                    matched_entity=fuzzy_match,
+                    message=f"Player casts {spell_name} at {fuzzy_match}. Describe the spell's effects and outcome."
+                )
+            
+            # No match - target doesn't exist!
+            available = ", ".join([n.title() for n in all_targets]) if all_targets else "none"
+            return ValidationReport(
+                result=ValidationResult.INVALID,
+                action=intent,
+                message=f"Player tries to cast '{spell_name}' at '{intent.target}', but no such target is present. "
+                       f"Available targets: {available}. Narrate that the target doesn't exist.",
+                suggestions=all_targets[:5]
+            )
+
         # TODO: Check spell slots when spell slot tracking is fully implemented
         # For now, assume spell slots are available
 
-        target_msg = f" at {intent.target}" if intent.target else ""
+        # Spell valid, no specific target
         return ValidationReport(
             result=ValidationResult.VALID,
             action=intent,
-            message=f"Player casts {spell_name}{target_msg}. Describe the spell's effects and outcome."
+            message=f"Player casts {spell_name}. Describe the spell's effects and outcome."
         )
 
     def _validate_item(self, intent: ActionIntent, game_session) -> ValidationReport:
@@ -524,6 +566,39 @@ class ActionValidator:
 
         return None
 
+    def _extract_spell_target(self, text: str, spell_name: Optional[str]) -> Optional[str]:
+        """
+        Extract target for a spell, looking AFTER the spell name.
+        
+        For "I cast Magic Missile at the goblin", extract "goblin"
+        
+        Args:
+            text: Lower-case user input
+            spell_name: The spell name (if detected)
+        
+        Returns:
+            Target name or None
+        """
+        # Look for "at X", "on X", "towards X" patterns
+        target_patterns = [
+            r'\bat\s+(?:the\s+)?(\w+(?:\s+\w+)?)',
+            r'\bon\s+(?:the\s+)?(\w+(?:\s+\w+)?)',
+            r'\btowards?\s+(?:the\s+)?(\w+(?:\s+\w+)?)',
+            r'\btargeting\s+(?:the\s+)?(\w+(?:\s+\w+)?)',
+        ]
+        
+        for pattern in target_patterns:
+            match = re.search(pattern, text)
+            if match:
+                target = match.group(1).strip()
+                # Don't return if it's just the spell name again
+                if spell_name and target.lower() != spell_name.lower():
+                    return target
+                elif not spell_name:
+                    return target
+        
+        return None
+
     def _extract_spell(self, text: str) -> Optional[str]:
         """Extract spell name from text"""
         # Common spell names (could expand this or use RAG)
@@ -584,7 +659,14 @@ class ActionValidator:
                 # Take first 1-3 words
                 words = after.split()[:3]
                 if words:
-                    return ' '.join(words).strip('.,!?').title()
+                    item_name = ' '.join(words).strip('.,!?')
+                    # Filter out non-item phrases (e.g., "ready for battle", "ready to fight")
+                    # Check if this looks like an actual item vs a state/condition
+                    non_item_phrases = ['for', 'to', 'if', 'when', 'as', 'because']
+                    first_word = words[0].lower()
+                    if first_word in non_item_phrases:
+                        continue  # Skip this match, try next pattern
+                    return item_name.title()
 
         return None
 
@@ -666,19 +748,25 @@ class ActionValidator:
     def _fuzzy_match(self, target: str, entities: List[str], threshold: float = 0.6) -> Optional[str]:
         """
         Attempt fuzzy matching for target against entity list.
-        e.g., "goblin" matches "Goblin Scout"
+        e.g., "goblin" matches "Goblin Scout", "the dragon" matches "Ancient Red Dragon"
         """
         target = target.lower()
+        # Remove common articles that might interfere
+        target_clean = re.sub(r'\b(the|a|an)\b\s*', '', target).strip()
 
         for entity in entities:
             entity_lower = entity.lower()
             # Substring match
-            if target in entity_lower or entity_lower in target:
+            if target_clean in entity_lower or entity_lower in target_clean:
                 return entity
 
-            # Word overlap
-            target_words = set(target.split())
+            # Word overlap (using cleaned target)
+            target_words = set(target_clean.split())
             entity_words = set(entity_lower.split())
+            # Filter out articles from comparison
+            target_words = {w for w in target_words if w not in ['the', 'a', 'an']}
+            entity_words = {w for w in entity_words if w not in ['the', 'a', 'an']}
+            
             overlap = len(target_words & entity_words)
 
             if overlap > 0 and overlap / max(len(target_words), len(entity_words)) >= threshold:

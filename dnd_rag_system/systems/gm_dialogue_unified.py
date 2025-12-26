@@ -681,7 +681,27 @@ GM RESPONSE:"""
 
         # Spell casting responses - THIS IS WHERE WE CAN BE BLUNT!
         elif action.action_type == ActionType.SPELL_CAST:
-            if action.resource:
+            # Check if it's a target validation issue
+            is_target_missing = "no such target" in validation.message.lower() or "target doesn't exist" in validation.message.lower()
+            
+            if is_target_missing and action.target:
+                # Spell target doesn't exist - different from spell unknown!
+                if char_race == 'elf':
+                    return (
+                        f"You channel your arcane energy and prepare to cast {action.resource}, "
+                        f"but you quickly realize there's no {action.target} here to target. "
+                        f"The spell fizzles harmlessly as you release the energy. "
+                        f"Perhaps you should look around more carefully before casting?"
+                    )
+                else:
+                    return (
+                        f"You begin the incantation for {action.resource}, arcane energy building around you... "
+                        f"but then you realize: there's no {action.target} here! "
+                        f"The spell dissipates harmlessly as you stop mid-cast. "
+                        f"You can't target something that isn't there."
+                    )
+            elif action.resource:
+                # Spell validation failed (unknown spell or non-caster)
                 if char_class in ['Fighter', 'Barbarian', 'Rogue', 'Monk']:
                     # Be colorfully insulting for non-casters trying to cast spells
                     if char_race == 'dwarf' and char_class == 'Fighter':

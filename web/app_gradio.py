@@ -191,10 +191,11 @@ def load_character(character_choice: str) -> Tuple[str, str, list, Optional[str]
     # Set GM context
     mods = char.get_modifiers()
 
+    # Use dynamic HP from character state
     context = f"""The player is {char.name}, a level {char.level} {char.race} {char.character_class}.
 
 PLAYER CHARACTER STATS:
-- HP: {char.hit_points}/{char.hit_points}  |  AC: {char.armor_class}  |  Prof Bonus: +{char.proficiency_bonus}
+- HP: {char_state.current_hp}/{char_state.max_hp}  |  AC: {char.armor_class}  |  Prof Bonus: +{char.proficiency_bonus}
 - STR: {char.strength} ({mods['strength']:+d})  |  DEX: {char.dexterity} ({mods['dexterity']:+d})  |  CON: {char.constitution} ({mods['constitution']:+d})
 - INT: {char.intelligence} ({mods['intelligence']:+d})  |  WIS: {char.wisdom} ({mods['wisdom']:+d})  |  CHA: {char.charisma} ({mods['charisma']:+d})
 
@@ -251,9 +252,17 @@ def load_party_mode() -> Tuple[str, gr.update, list]:
     party_info = []
     for char_name, char in party_characters.items():
         mods = char.get_modifiers()
+
+        # Get dynamic HP from party state
+        char_state = party.get_character(char_name)
+        if char_state:
+            hp_display = f"{char_state.current_hp}/{char_state.max_hp}"
+        else:
+            hp_display = f"{char.hit_points}/{char.hit_points}"
+
         party_info.append(f"""
 **{char.name}** - {char.race} {char.character_class}, Level {char.level}
-- HP: {char.hit_points}  |  AC: {char.armor_class}  |  Prof Bonus: +{char.proficiency_bonus}
+- HP: {hp_display}  |  AC: {char.armor_class}  |  Prof Bonus: +{char.proficiency_bonus}
 - STR: {char.strength} ({mods['strength']:+d})  |  DEX: {char.dexterity} ({mods['dexterity']:+d})  |  CON: {char.constitution} ({mods['constitution']:+d})
 - INT: {char.intelligence} ({mods['intelligence']:+d})  |  WIS: {char.wisdom} ({mods['wisdom']:+d})  |  CHA: {char.charisma} ({mods['charisma']:+d})
 - Equipment: {', '.join(char.equipment[:3])}""")
@@ -304,9 +313,17 @@ def format_party_sheet() -> str:
 
     for char_name, char in party_characters.items():
         mods = char.get_modifiers()
+
+        # Get dynamic HP from party state
+        char_state = party.get_character(char_name)
+        if char_state:
+            hp_display = f"{char_state.current_hp}/{char_state.max_hp}"
+        else:
+            hp_display = str(char.hit_points)
+
         sheet += f"### {char.name}\n"
         sheet += f"*{char.race} {char.character_class}, Level {char.level}*\n"
-        sheet += f"- HP: {char.hit_points} | AC: {char.armor_class}\n"
+        sheet += f"- HP: {hp_display} | AC: {char.armor_class}\n"
         sheet += f"- STR {char.strength} ({mods['strength']:+d}) | DEX {char.dexterity} ({mods['dexterity']:+d}) | CON {char.constitution} ({mods['constitution']:+d})\n"
         sheet += f"- INT {char.intelligence} ({mods['intelligence']:+d}) | WIS {char.wisdom} ({mods['wisdom']:+d}) | CHA {char.charisma} ({mods['charisma']:+d})\n\n"
 
@@ -321,6 +338,12 @@ def format_character_sheet() -> str:
     char = current_character
     mods = char.get_modifiers()
 
+    # Get dynamic HP from game state if available
+    char_state = gm.session.character_state
+    current_hp = char_state.current_hp if char_state else char.hit_points
+    max_hp = char_state.max_hp if char_state else char.hit_points
+    gold = char_state.gold if char_state and hasattr(char_state, 'gold') else getattr(char, 'gold', 0)
+
     sheet = f"""# {char.name}
 **{char.race} {char.character_class}, Level {char.level}**
 *{char.background} | {char.alignment}*
@@ -328,10 +351,10 @@ def format_character_sheet() -> str:
 ---
 
 ### Combat Stats
-- **HP**: {char.hit_points}
+- **HP**: {current_hp}/{max_hp}
 - **AC**: {char.armor_class}
 - **Proficiency Bonus**: +{char.proficiency_bonus}
-- **Gold**: {getattr(char, 'gold', 0)} GP
+- **Gold**: {gold} GP
 
 ### Ability Scores
 | Ability | Score | Modifier |
@@ -474,19 +497,20 @@ def get_initiative_tracker() -> Tuple[str, gr.update]:
         return "⚔️ Not currently in combat\n\nUse `/start_combat Goblin, Orc` to begin combat", gr.update(visible=False)
 
 
-def handle_next_turn(history: list) -> Tuple[list, str, gr.update]:
+def handle_next_turn(history: list) -> Tuple[list, str, gr.update, str]:
     """
     Handle Next Turn button click.
 
     Returns:
-        Tuple of (updated_history, initiative_display, accordion_update)
+        Tuple of (updated_history, initiative_display, accordion_update, character_sheet)
     """
     if not gm.combat_manager.is_in_combat():
         return (
             history + [
                 {"role": "assistant", "content": "⚠️ Not in combat! Use `/start_combat` to begin."}
             ],
-            *get_initiative_tracker()
+            *get_initiative_tracker(),
+                get_current_sheet()
         )
 
     # Advance turn
@@ -496,22 +520,24 @@ def handle_next_turn(history: list) -> Tuple[list, str, gr.update]:
         {"role": "assistant", "content": response}
     ]
 
-    return (new_history, *get_initiative_tracker())
+    return (new_history, *get_initiative_tracker(),
+                get_current_sheet())
 
 
-def handle_end_combat(history: list) -> Tuple[list, str, gr.update]:
+def handle_end_combat(history: list) -> Tuple[list, str, gr.update, str]:
     """
     Handle End Combat button click.
 
     Returns:
-        Tuple of (updated_history, initiative_display, accordion_update)
+        Tuple of (updated_history, initiative_display, accordion_update, character_sheet)
     """
     if not gm.combat_manager.is_in_combat():
         return (
             history + [
                 {"role": "assistant", "content": "⚠️ Not in combat!"}
             ],
-            *get_initiative_tracker()
+            *get_initiative_tracker(),
+                get_current_sheet()
         )
 
     # End combat
@@ -521,15 +547,24 @@ def handle_end_combat(history: list) -> Tuple[list, str, gr.update]:
         {"role": "assistant", "content": response}
     ]
 
-    return (new_history, *get_initiative_tracker())
+    return (new_history, *get_initiative_tracker(),
+                get_current_sheet())
 
 
-def chat(message: str, history: list) -> Tuple[list, str, gr.update]:
+def get_current_sheet() -> str:
+    """Helper to get current character/party sheet based on mode."""
+    if gameplay_mode == "party":
+        return format_party_sheet()
+    else:
+        return format_character_sheet()
+
+
+def chat(message: str, history: list) -> Tuple[list, str, gr.update, str]:
     """
     Handle chat messages.
 
     Returns:
-        Tuple of (updated_history, initiative_display, accordion_update)
+        Tuple of (updated_history, initiative_display, accordion_update, character_sheet)
     """
     global conversation_history, gameplay_mode
 
@@ -541,7 +576,8 @@ def chat(message: str, history: list) -> Tuple[list, str, gr.update]:
                     {"role": "user", "content": message},
                     {"role": "assistant", "content": "⚠️ Please load party mode first (add characters in Party Management tab)"}
                 ],
-                *get_initiative_tracker()
+                *get_initiative_tracker(),
+                get_current_sheet()
             )
     else:
         if not current_character:
@@ -550,11 +586,12 @@ def chat(message: str, history: list) -> Tuple[list, str, gr.update]:
                     {"role": "user", "content": message},
                     {"role": "assistant", "content": "⚠️ Please load a character first"}
                 ],
-                *get_initiative_tracker()
+                *get_initiative_tracker(),
+                get_current_sheet()
             )
 
     if not message.strip():
-        return (history, *get_initiative_tracker())
+        return (history, *get_initiative_tracker(), get_current_sheet())
 
     # Handle special commands
     if message.startswith("/"):
@@ -577,7 +614,8 @@ Otherwise, just type your action and press Enter!"""
                     {"role": "user", "content": message},
                     {"role": "assistant", "content": help_text}
                 ],
-                *get_initiative_tracker()
+                *get_initiative_tracker(),
+                get_current_sheet()
             )
 
         elif cmd == "/context":
@@ -587,7 +625,8 @@ Otherwise, just type your action and press Enter!"""
                     {"role": "user", "content": message},
                     {"role": "assistant", "content": f"**Current Context:**\n\n{context_text}"}
                 ],
-                *get_initiative_tracker()
+                *get_initiative_tracker(),
+                get_current_sheet()
             )
 
         elif cmd == "/stats":
@@ -600,7 +639,8 @@ Otherwise, just type your action and press Enter!"""
                     {"role": "user", "content": message},
                     {"role": "assistant", "content": stats}
                 ],
-                *get_initiative_tracker()
+                *get_initiative_tracker(),
+                get_current_sheet()
             )
 
         elif cmd.startswith("/rag "):
@@ -613,7 +653,8 @@ Otherwise, just type your action and press Enter!"""
                         {"role": "user", "content": message},
                         {"role": "assistant", "content": f"**RAG Search Results:**\n\n{formatted}"}
                     ],
-                    *get_initiative_tracker()
+                    *get_initiative_tracker(),
+                get_current_sheet()
                 )
             else:
                 return (
@@ -621,7 +662,8 @@ Otherwise, just type your action and press Enter!"""
                         {"role": "user", "content": message},
                         {"role": "assistant", "content": "Usage: `/rag <query>` (e.g., `/rag magic missile`)"}
                     ],
-                    *get_initiative_tracker()
+                    *get_initiative_tracker(),
+                get_current_sheet()
                 )
 
         # Let other commands (like /buy, /sell, /start_combat, etc.) pass through to GM
@@ -635,7 +677,8 @@ Otherwise, just type your action and press Enter!"""
                 {"role": "user", "content": message},
                 {"role": "assistant", "content": response}
             ],
-            *get_initiative_tracker()
+            *get_initiative_tracker(),
+                get_current_sheet()
         )
     except Exception as e:
         error_msg = f"Error: {str(e)}"
@@ -647,7 +690,8 @@ Otherwise, just type your action and press Enter!"""
                 {"role": "user", "content": message},
                 {"role": "assistant", "content": error_msg}
             ],
-            *get_initiative_tracker()
+            *get_initiative_tracker(),
+                get_current_sheet()
         )
 
 
@@ -739,9 +783,15 @@ def get_party_summary() -> str:
         char_state = party.get_character(char_name)
         status = "✅ Ready" if char_state and char_state.is_alive() else "❌ Dead"
 
+        # Get dynamic HP
+        if char_state:
+            hp_display = f"{char_state.current_hp}/{char_state.max_hp}"
+        else:
+            hp_display = str(char.hit_points)
+
         summary += f"### {char.name} ({status})\n"
         summary += f"**{char.race} {char.character_class}, Level {char.level}**\n"
-        summary += f"- HP: {char.hit_points} | AC: {char.armor_class}\n"
+        summary += f"- HP: {hp_display} | AC: {char.armor_class}\n"
         summary += f"- Background: {char.background}\n\n"
 
     if party.shared_inventory:
@@ -770,12 +820,19 @@ def format_character_sheet_for_char(char: Character) -> str:
     """Format character sheet for a specific character."""
     mods = char.get_modifiers()
 
+    # Get dynamic HP from party state
+    char_state = party.get_character(char.name)
+    if char_state:
+        hp_display = f"{char_state.current_hp}/{char_state.max_hp}"
+    else:
+        hp_display = str(char.hit_points)
+
     sheet = f"""# {char.name}
 **{char.race} {char.character_class}, Level {char.level}**
 *{char.background} | {char.alignment}*
 
 ### Combat Stats
-- **HP**: {char.hit_points}
+- **HP**: {hp_display}
 - **AC**: {char.armor_class}
 - **Proficiency Bonus**: +{char.proficiency_bonus}
 
@@ -1094,7 +1151,7 @@ with demo:
     submit_btn.click(
         chat,
         inputs=[msg_input, chatbot],
-        outputs=[chatbot, initiative_display, combat_accordion]
+        outputs=[chatbot, initiative_display, combat_accordion, character_sheet]
     ).then(
         lambda: "",
         outputs=[msg_input]
@@ -1103,7 +1160,7 @@ with demo:
     msg_input.submit(
         chat,
         inputs=[msg_input, chatbot],
-        outputs=[chatbot, initiative_display, combat_accordion]
+        outputs=[chatbot, initiative_display, combat_accordion, character_sheet]
     ).then(
         lambda: "",
         outputs=[msg_input]
@@ -1113,13 +1170,13 @@ with demo:
     next_turn_btn.click(
         handle_next_turn,
         inputs=[chatbot],
-        outputs=[chatbot, initiative_display, combat_accordion]
+        outputs=[chatbot, initiative_display, combat_accordion, character_sheet]
     )
 
     end_combat_btn.click(
         handle_end_combat,
         inputs=[chatbot],
-        outputs=[chatbot, initiative_display, combat_accordion]
+        outputs=[chatbot, initiative_display, combat_accordion, character_sheet]
     )
 
     clear_btn.click(
