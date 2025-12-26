@@ -91,6 +91,10 @@ class GameMaster:
         self.mechanics_extractor = MechanicsExtractor(debug=DEBUG_PROMPTS)
         self.mechanics_applicator = MechanicsApplicator(debug=DEBUG_PROMPTS)
 
+        # Initialize world map with starting locations
+        from dnd_rag_system.systems.world_builder import initialize_world
+        initialize_world(self.session)
+
         # Auto-detect environment
         self.use_hf_api = is_huggingface_space()
 
@@ -265,6 +269,46 @@ class GameMaster:
                 combat_feedback = self.combat_manager.get_initiative_tracker(self.session.party)
             else:
                 combat_feedback = self.combat_manager.get_initiative_tracker()
+            combat_command_handled = True
+
+        # World navigation commands
+        elif lower_input.startswith('/travel '):
+            destination = player_input.split(' ', 1)[1].strip()
+            success, message = self.session.travel_to(destination)
+            combat_feedback = f"🗺️ {message}"
+            combat_command_handled = True
+
+        elif lower_input == '/map':
+            current_loc = self.session.get_current_location_obj()
+            if current_loc:
+                destinations = self.session.get_available_destinations()
+                if destinations:
+                    combat_feedback = f"📍 **Current Location**: {self.session.current_location}\n\n"
+                    combat_feedback += f"**You can travel to**:\n"
+                    for dest in destinations:
+                        dest_loc = self.session.get_location(dest)
+                        if dest_loc and dest_loc.is_discovered:
+                            combat_feedback += f"  - {dest} ({dest_loc.location_type.value})\n"
+                        elif dest_loc:
+                            combat_feedback += f"  - ??? (undiscovered)\n"
+                    combat_feedback += f"\nUse `/travel <location>` to move."
+                else:
+                    combat_feedback = f"📍 You are in {self.session.current_location}. No connections from here."
+            else:
+                combat_feedback = "📍 Current location not found in world map."
+            combat_command_handled = True
+
+        elif lower_input == '/locations':
+            discovered = self.session.get_discovered_locations()
+            if discovered:
+                combat_feedback = "🗺️ **Discovered Locations**:\n"
+                for loc_name in discovered:
+                    loc = self.session.get_location(loc_name)
+                    if loc:
+                        visits = f" (visited {loc.visit_count}x)" if loc.visit_count > 1 else ""
+                        combat_feedback += f"  - {loc_name} ({loc.location_type.value}){visits}\n"
+            else:
+                combat_feedback = "🗺️ No locations discovered yet."
             combat_command_handled = True
 
         # If combat command was handled, return immediately

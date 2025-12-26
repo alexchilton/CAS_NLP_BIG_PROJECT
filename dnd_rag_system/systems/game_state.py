@@ -6,13 +6,136 @@ Comprehensive state tracking for D&D gameplay including:
 - Combat state (initiative, turns, rounds)
 - Party management (multiple characters)
 - Game session (quests, NPCs, location, time)
+- World state (locations, world map, exploration)
 """
 
 from dataclasses import dataclass, field, asdict
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Tuple, Any, Set
 from enum import Enum
 import json
 from pathlib import Path
+
+
+# Location Types
+class LocationType(Enum):
+    """Types of locations in the game world."""
+    TOWN = "town"
+    TAVERN = "tavern"
+    SHOP = "shop"
+    TEMPLE = "temple"
+    DUNGEON = "dungeon"
+    WILDERNESS = "wilderness"
+    CAVE = "cave"
+    FOREST = "forest"
+    MOUNTAIN = "mountain"
+    RUINS = "ruins"
+    CASTLE = "castle"
+    GUILD_HALL = "guild_hall"
+
+
+@dataclass
+class Location:
+    """
+    Represents a location in the game world.
+    
+    Tracks both static metadata and dynamic state changes.
+    """
+    name: str
+    location_type: LocationType
+    description: str
+    
+    # Features
+    has_shop: bool = False
+    has_inn: bool = False
+    is_safe: bool = True  # Can rest here?
+    is_discovered: bool = True  # Has player found this location?
+    
+    # Connections (location names this connects to)
+    connections: List[str] = field(default_factory=list)
+    
+    # Persistent state - tracks what happened here
+    defeated_enemies: Set[str] = field(default_factory=set)  # Dead monsters stay dead
+    moved_items: Dict[str, str] = field(default_factory=dict)  # {item: new_location}
+    completed_events: Set[str] = field(default_factory=set)  # Events that happened here
+    
+    # NPCs that permanently reside here (not combat enemies)
+    resident_npcs: List[str] = field(default_factory=list)
+    
+    # Visit tracking
+    visit_count: int = 0
+    last_visited_day: Optional[int] = None
+    
+    def add_connection(self, location_name: str):
+        """Add a bidirectional connection to another location."""
+        if location_name not in self.connections:
+            self.connections.append(location_name)
+    
+    def remove_connection(self, location_name: str):
+        """Remove a connection to another location."""
+        if location_name in self.connections:
+            self.connections.remove(location_name)
+    
+    def mark_enemy_defeated(self, enemy_name: str):
+        """Mark an enemy as permanently defeated at this location."""
+        self.defeated_enemies.add(enemy_name.lower())
+    
+    def is_enemy_defeated(self, enemy_name: str) -> bool:
+        """Check if an enemy was already defeated here."""
+        return enemy_name.lower() in self.defeated_enemies
+    
+    def mark_event_completed(self, event_id: str):
+        """Mark an event as completed (e.g., quest objective, triggered trap)."""
+        self.completed_events.add(event_id)
+    
+    def is_event_completed(self, event_id: str) -> bool:
+        """Check if an event was already completed."""
+        return event_id in self.completed_events
+    
+    def record_visit(self, current_day: int):
+        """Record a visit to this location."""
+        self.visit_count += 1
+        self.last_visited_day = current_day
+        if not self.is_discovered:
+            self.is_discovered = True
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for serialization."""
+        return {
+            "name": self.name,
+            "location_type": self.location_type.value,
+            "description": self.description,
+            "has_shop": self.has_shop,
+            "has_inn": self.has_inn,
+            "is_safe": self.is_safe,
+            "is_discovered": self.is_discovered,
+            "connections": self.connections,
+            "defeated_enemies": list(self.defeated_enemies),
+            "moved_items": self.moved_items,
+            "completed_events": list(self.completed_events),
+            "resident_npcs": self.resident_npcs,
+            "visit_count": self.visit_count,
+            "last_visited_day": self.last_visited_day
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Location":
+        """Create Location from dictionary."""
+        return cls(
+            name=data["name"],
+            location_type=LocationType(data["location_type"]),
+            description=data["description"],
+            has_shop=data.get("has_shop", False),
+            has_inn=data.get("has_inn", False),
+            is_safe=data.get("is_safe", True),
+            is_discovered=data.get("is_discovered", True),
+            connections=data.get("connections", []),
+            defeated_enemies=set(data.get("defeated_enemies", [])),
+            moved_items=data.get("moved_items", {}),
+            completed_events=set(data.get("completed_events", [])),
+            resident_npcs=data.get("resident_npcs", []),
+            visit_count=data.get("visit_count", 0),
+            last_visited_day=data.get("last_visited_day")
+        )
 
 
 # D&D 5e Official Conditions
@@ -861,6 +984,7 @@ class GameSession:
     High-level game session state.
 
     Tracks location, quests, NPCs, and overall game state.
+    Now includes world map for persistent location tracking.
     """
     session_name: str = "New Adventure"
 
@@ -871,15 +995,16 @@ class GameSession:
     party: PartyState = field(default_factory=PartyState)
     combat: CombatState = field(default_factory=CombatState)
 
-    # Location and scene
+    # Location and world map
     current_location: str = "Unknown"
     scene_description: str = ""
-
+    world_map: Dict[str, Location] = field(default_factory=dict)  # {location_name: Location}
+    
     # Quest tracking
     active_quests: List[Dict[str, str]] = field(default_factory=list)  # [{name, description, status}]
     completed_quests: List[str] = field(default_factory=list)
 
-    # NPCs present
+    # NPCs present (temporary, for current scene)
     npcs_present: List[str] = field(default_factory=list)
 
     # Time tracking (in-game)
@@ -922,11 +1047,114 @@ class GameSession:
             self.time_of_day = times[current_idx + 1]
 
     def set_location(self, location: str, description: str = ""):
-        """Set current location."""
+        """
+        Set current location (legacy method for backward compatibility).
+        
+        If location doesn't exist in world_map, creates it.
+        """
         self.current_location = location
         if description:
             self.scene_description = description
+        
+        # Create location in world map if it doesn't exist
+        if location not in self.world_map:
+            # Try to infer type from name
+            location_type = LocationType.TOWN  # Default
+            if "tavern" in location.lower() or "inn" in location.lower():
+                location_type = LocationType.TAVERN
+            elif "shop" in location.lower() or "market" in location.lower():
+                location_type = LocationType.SHOP
+            elif "temple" in location.lower():
+                location_type = LocationType.TEMPLE
+            elif "guild" in location.lower():
+                location_type = LocationType.GUILD_HALL
+            elif "dungeon" in location.lower() or "cave" in location.lower():
+                location_type = LocationType.DUNGEON
+            
+            self.world_map[location] = Location(
+                name=location,
+                location_type=location_type,
+                description=description or f"You are in {location}."
+            )
+        
+        # Record visit
+        if location in self.world_map:
+            self.world_map[location].record_visit(self.day)
+        
         self.add_note(f"Arrived at {location}")
+    
+    def add_location(self, location: Location):
+        """Add a location to the world map."""
+        self.world_map[location.name] = location
+    
+    def get_location(self, location_name: str) -> Optional[Location]:
+        """Get a location from the world map."""
+        return self.world_map.get(location_name)
+    
+    def get_current_location_obj(self) -> Optional[Location]:
+        """Get the current Location object."""
+        return self.world_map.get(self.current_location)
+    
+    def connect_locations(self, loc1: str, loc2: str):
+        """Create a bidirectional connection between two locations."""
+        if loc1 in self.world_map and loc2 in self.world_map:
+            self.world_map[loc1].add_connection(loc2)
+            self.world_map[loc2].add_connection(loc1)
+    
+    def travel_to(self, destination: str) -> Tuple[bool, str]:
+        """
+        Travel to a connected location.
+        
+        Returns:
+            (success, message)
+        """
+        current_loc = self.get_current_location_obj()
+        
+        if not current_loc:
+            return False, f"Current location '{self.current_location}' not found in world map."
+        
+        # Check if destination is connected
+        if destination not in current_loc.connections:
+            available = ", ".join(current_loc.connections) if current_loc.connections else "none"
+            return False, f"Cannot travel to '{destination}' from here. Available: {available}"
+        
+        # Check if destination exists
+        if destination not in self.world_map:
+            return False, f"Destination '{destination}' doesn't exist."
+        
+        # Travel!
+        dest_loc = self.world_map[destination]
+        self.current_location = destination
+        self.scene_description = dest_loc.description
+        dest_loc.record_visit(self.day)
+        
+        self.add_note(f"Traveled to {destination}")
+        
+        return True, f"You travel to {destination}. {dest_loc.description}"
+    
+    def get_available_destinations(self) -> List[str]:
+        """Get list of locations you can travel to from current location."""
+        current_loc = self.get_current_location_obj()
+        if current_loc:
+            return current_loc.connections
+        return []
+    
+    def get_discovered_locations(self) -> List[str]:
+        """Get list of all discovered locations."""
+        return [name for name, loc in self.world_map.items() if loc.is_discovered]
+    
+    def mark_enemy_defeated_at_current_location(self, enemy_name: str):
+        """Mark an enemy as defeated at the current location."""
+        current_loc = self.get_current_location_obj()
+        if current_loc:
+            current_loc.mark_enemy_defeated(enemy_name)
+    
+    def is_enemy_defeated_here(self, enemy_name: str) -> bool:
+        """Check if an enemy was already defeated at current location."""
+        current_loc = self.get_current_location_obj()
+        if current_loc:
+            return current_loc.is_enemy_defeated(enemy_name)
+        return False
 
     def get_session_summary(self) -> str:
         """Get comprehensive session summary."""
