@@ -172,11 +172,46 @@ def get_character_sheet_hp(driver):
         return None
 
 
+def preload_models():
+    """Preload Ollama models to avoid delays during test."""
+    print("\n🔧 Preloading Ollama models...")
+    import subprocess
+
+    # Preload GM model (qwen2.5:7b)
+    try:
+        print("   Loading GM model (qwen2.5:7b)...")
+        subprocess.run(
+            ['ollama', 'run', 'qwen2.5:7b', 'Hello'],
+            capture_output=True,
+            timeout=60
+        )
+        print("   ✅ GM model loaded")
+    except Exception as e:
+        print(f"   ⚠️  GM model preload failed: {e}")
+
+    # Preload mechanics extraction model (qwen2.5:3b)
+    try:
+        print("   Loading mechanics model (qwen2.5:3b)...")
+        subprocess.run(
+            ['ollama', 'run', 'qwen2.5:3b', 'Test'],
+            capture_output=True,
+            timeout=60
+        )
+        print("   ✅ Mechanics model loaded")
+    except Exception as e:
+        print(f"   ⚠️  Mechanics model preload failed: {e}")
+
+    print("✅ Models preloaded and ready!\n")
+
+
 def test_dragon_combat():
     """Test dragon combat with mechanics extraction."""
     print("\n" + "🐉" * 40)
     print("DRAGON COMBAT TEST - MECHANICS EXTRACTION DEMO")
     print("🐉" * 40)
+
+    # Preload models before starting browser test
+    preload_models()
 
     # Setup Chrome options
     options = webdriver.ChromeOptions()
@@ -211,7 +246,8 @@ def test_dragon_combat():
         print("=" * 80)
 
         # Transition to dragon's lair (establishes location before combat)
-        send_message(driver, "I have traveled to the ancient dragon's lair deep in the mountains. I stand at the entrance to the massive cavern, treasure glittering in the darkness ahead. My shield is raised and my longsword is drawn, ready for battle.")
+        # First message takes longer as model generates initial response
+        send_message(driver, "I have traveled to the ancient dragon's lair deep in the mountains. I stand at the entrance to the massive cavern, treasure glittering in the darkness ahead. My shield is raised and my longsword is drawn, ready for battle.", wait_time=10)
 
         messages = get_chat_messages(driver)
         if messages:
@@ -222,7 +258,7 @@ def test_dragon_combat():
         print("=" * 80)
 
         # Start combat
-        send_message(driver, "/start_combat Ancient Red Dragon")
+        send_message(driver, "/start_combat Ancient Red Dragon", wait_time=8)
 
         messages = get_chat_messages(driver)
         print(f"🎭 GM: {messages[-1]}")
@@ -231,8 +267,8 @@ def test_dragon_combat():
         print("ROUND 1: Thorin Attacks!")
         print("=" * 80)
 
-        # Attack the dragon
-        send_message(driver, "I charge forward and attack the dragon with my longsword, aiming for its neck!")
+        # Attack the dragon (longer wait for combat narrative generation)
+        send_message(driver, "I charge forward and attack the dragon with my longsword, aiming for its neck!", wait_time=10)
 
         messages = get_chat_messages(driver)
         if messages:
@@ -256,7 +292,7 @@ def test_dragon_combat():
         print("=" * 80)
 
         # Advance turn - dragon attacks
-        send_message(driver, "/next_turn", wait_time=8)  # Longer wait for LLM
+        send_message(driver, "/next_turn", wait_time=12)  # Dragon narratives are complex
 
         messages = get_chat_messages(driver)
         if messages:
@@ -283,7 +319,7 @@ def test_dragon_combat():
         print("=" * 80)
 
         # Try to use a healing item
-        send_message(driver, "I quickly drink a healing potion!")
+        send_message(driver, "I quickly drink a healing potion!", wait_time=8)
 
         messages = get_chat_messages(driver)
         if messages:
@@ -310,7 +346,7 @@ def test_dragon_combat():
         print("=" * 80)
 
         # Final attack
-        send_message(driver, "With a mighty roar, I swing my longsword at the dragon's head with all my strength!")
+        send_message(driver, "With a mighty roar, I swing my longsword at the dragon's head with all my strength!", wait_time=10)
 
         messages = get_chat_messages(driver)
         if messages:
