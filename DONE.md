@@ -60,6 +60,23 @@ This file tracks completed and working features that have been implemented and t
 
 ---
 
+## ✅ Party Mode UI Bug Fix ✅ COMPLETED (2025-12-26)
+
+### Fixed Party Mode Chat Textarea Non-Interactive Bug
+- **Issue**: When party mode was enabled or "Load Party" was clicked, the chat textarea became non-interactive, preventing users from sending messages
+- **Impact**: Made party mode completely unusable - users could load party but couldn't play
+- **Root Cause**: `load_party_mode()` was returning empty string `""` for msg_input parameter instead of using `gr.update()`
+- **Gradio Behavior**: Gradio interpreted the empty string as a component value update that accidentally disabled interactivity
+- **Fix Applied**:
+  - Changed return type from `Tuple[str, str, list]` to `Tuple[str, gr.update, list]`
+  - Used `gr.update(interactive=True, value="")` to explicitly keep textarea interactive and clear it
+  - Applied fix to both error case (no party members) and success case
+- **Result**: Party mode is now fully functional - players can send messages and play with their party! ✅
+- **Commit**: ed75a27
+- **File Modified**: `web/app_gradio.py`
+
+---
+
 ## ✅ Action Validator Bug Fixes ✅ COMPLETED (2025-12-26)
 
 ### Fixed Action Validator False Positives & Combat State Bugs

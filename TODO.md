@@ -4,18 +4,6 @@
 
 ---
 
-## 🔴 CRITICAL PRIORITY
-
-### Fix Party Mode UI Bug 🔴 CRITICAL
-- **Issue**: When party mode checkbox is enabled, chat textarea becomes non-interactable
-- **Impact**: Cannot send messages in party mode, makes feature unusable
-- **Root Cause**: Gradio UI state management issue when switching modes
-- **Investigation Needed**: Check `web/app_gradio.py` party mode toggle implementation
-- **Test Case**: `e2e_tests/test_party_mode_logging.py` documents the issue
-- **Priority**: MUST FIX FIRST - blocks all party mode development
-
----
-
 ## 🔥 HIGH PRIORITY
 
 ### Narrative to Mechanics Translation (GM Output Processing)
@@ -171,6 +159,26 @@
 ---
 
 ## ✅ FIXED BUGS (Moved to DONE.md)
+
+### ✅ Party Mode UI Bug (FIXED 2025-12-26)
+
+**Status**: ✅ FIXED - See commit ed75a27
+
+**Original Issue**: 
+When party mode checkbox was enabled, chat textarea became non-interactable, making party mode completely unusable.
+
+**Root Cause**: 
+`load_party_mode()` was returning empty string `""` for msg_input parameter, which Gradio interpreted as a value update that broke interactivity.
+
+**Fix Applied**:
+- Changed return type from `Tuple[str, str, list]` to `Tuple[str, gr.update, list]`
+- Used `gr.update(interactive=True, value="")` to explicitly keep textarea interactive
+- Applied fix to both error case and success case
+
+**Result**: 
+Party mode is now fully functional for party-based gameplay! ✅
+
+---
 
 ### ✅ "Large Bug" - Spell Target Hallucination (FIXED 2025-12-26)
 
