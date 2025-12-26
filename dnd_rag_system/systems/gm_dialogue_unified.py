@@ -387,30 +387,55 @@ GM RESPONSE:"""
 
     def _generate_invalid_action_response(self, validation) -> str:
         """
-        Generate a deterministic response for invalid actions.
+        Generate a deterministic, character-appropriate response for invalid actions.
         Doesn't call LLM since small models are bad at following "do not" instructions.
+
+        Makes responses colorful and personality-driven - we can be blunt/insulting
+        since this is pre-written and not AI-generated!
 
         Args:
             validation: ValidationReport with invalid result
 
         Returns:
-            GM response narrating the impossibility
+            GM response narrating the impossibility with personality
         """
         action = validation.action
+
+        # Get character info for personality
+        char_name = "You"
+        char_race = ""
+        char_class = ""
+        if hasattr(self.session, 'character_state') and self.session.character_state:
+            char_name = getattr(self.session.character_state, 'character_name', 'You')
+            char_race = getattr(self.session.character_state, 'race', '').lower()
+            char_class = getattr(self.session.character_state, 'character_class', '')
 
         # Combat-specific responses
         if action.action_type == ActionType.COMBAT:
             if action.target:
-                return (
-                    f"You swing your weapon at where you think the {action.target} should be, "
-                    f"but there's nothing there. Looking around, you see no enemies - only empty space. "
-                    f"Perhaps you heard something that wasn't there?"
-                )
+                # Personality-driven responses
+                if char_race == 'dwarf':
+                    return (
+                        f"Ye swing yer weapon with all the fury of the mountain halls, but there's nothin' there! "
+                        f"No {action.target}, no enemy - just empty air and yer own embarrassment. "
+                        f"Bah! Ye're seein' things that aren't there, ye daft fool!"
+                    )
+                elif char_race == 'elf':
+                    return (
+                        f"With graceful precision, you strike at... nothing. The {action.target} you imagined "
+                        f"exists only in your mind. Perhaps you should meditate more before battle?"
+                    )
+                else:
+                    return (
+                        f"You swing your weapon at where you think the {action.target} should be, "
+                        f"but there's nothing there. Looking around, you see no enemies - only empty space. "
+                        f"Perhaps you heard something that wasn't there?"
+                    )
             else:
-                return (
-                    "You ready your weapon and look for something to fight, "
-                    "but you don't see any enemies nearby."
-                )
+                if char_race == 'dwarf':
+                    return "Ye ready yer weapon and look fer a fight, but there's nothin' to bash! The cavern's quiet as a tomb."
+                else:
+                    return "You ready your weapon and look for something to fight, but you don't see any enemies nearby."
 
         # Item use responses
         elif action.action_type == ActionType.ITEM_USE:
@@ -422,41 +447,68 @@ GM RESPONSE:"""
                     if inv:
                         inventory_hint = f" You're carrying: {', '.join(inv)}."
 
-                return (
-                    f"You reach for your {action.resource}, but it's not there. "
-                    f"You search your pack but don't find it.{inventory_hint}"
-                )
-            else:
-                return "You search through your belongings, trying to find what you need."
-
-        # Spell casting responses
-        elif action.action_type == ActionType.SPELL_CAST:
-            if action.resource:
-                # Check if character is a spellcaster
-                char_class = ""
-                if hasattr(self.session, 'character_state') and self.session.character_state:
-                    char_class = getattr(self.session.character_state, 'character_class', '')
-
-                if char_class in ['Fighter', 'Barbarian', 'Rogue']:
+                if char_race == 'dwarf':
                     return (
-                        f"You try to recall the words to cast {action.resource}, "
-                        f"but as a {char_class}, you have no magical training. "
-                        f"The arcane words escape you."
+                        f"Ye reach fer yer {action.resource}... but it's not in yer pack, ye forgetful oaf! "
+                        f"Ye search through yer belongings but come up empty.{inventory_hint} "
+                        f"Should've checked before leavin' the tavern!"
                     )
                 else:
                     return (
+                        f"You reach for your {action.resource}, but it's not there. "
+                        f"You search your pack but don't find it.{inventory_hint}"
+                    )
+            else:
+                return "You search through your belongings, trying to find what you need."
+
+        # Spell casting responses - THIS IS WHERE WE CAN BE BLUNT!
+        elif action.action_type == ActionType.SPELL_CAST:
+            if action.resource:
+                if char_class in ['Fighter', 'Barbarian', 'Rogue', 'Monk']:
+                    # Be colorfully insulting for non-casters trying to cast spells
+                    if char_race == 'dwarf' and char_class == 'Fighter':
+                        return (
+                            f"Ye try to cast {action.resource}? Are ye daft?! Ye're a FIGHTER, not some fancy-robed wizard! "
+                            f"The only magic ye know is the magic of a good axe to the skull! "
+                            f"Stop wavin' yer hands around like an idiot and stick to what ye know - FIGHTING!"
+                        )
+                    elif char_class == 'Barbarian':
+                        return (
+                            f"You try to cast {action.resource}... *narrator laughs* You're a BARBARIAN, you fool! "
+                            f"Your idea of magic is hitting things REALLY hard. The mystical words escape you because "
+                            f"you literally don't know any. Stick to raging and smashing!"
+                        )
+                    elif char_class == 'Rogue':
+                        return (
+                            f"You attempt to cast {action.resource} with all the magical aptitude of a wet sock. "
+                            f"You're a ROGUE - your talents lie in sneaking and stabbing, not spellcasting! "
+                            f"The arcane words feel foreign and stupid in your mouth. Maybe stick to your daggers?"
+                        )
+                    else:
+                        return (
+                            f"You try to recall the words to cast {action.resource}, "
+                            f"but as a {char_class}, you have no magical training. "
+                            f"The arcane words escape you. You're not a mage, you idiot!"
+                        )
+                else:
+                    # For actual spellcasters who just don't know the spell
+                    return (
                         f"You try to cast {action.resource}, but you don't know that spell. "
-                        f"You can't recall the proper incantation or gestures."
+                        f"You can't recall the proper incantation or gestures. "
+                        f"Maybe study your spellbook next time?"
                     )
             else:
                 return "You attempt to channel magical energy, but nothing happens."
 
         # Generic invalid action
         else:
-            return (
-                "You attempt the action, but something prevents you from completing it. "
-                "Perhaps you're missing something, or the timing isn't right."
-            )
+            if char_race == 'dwarf':
+                return "Ye try to do... something, but it ain't workin'. Ye're missin' somethin', or the timin's all wrong!"
+            else:
+                return (
+                    "You attempt the action, but something prevents you from completing it. "
+                    "Perhaps you're missing something, or the timing isn't right."
+                )
 
     def _post_process_response(self, response: str, validation) -> None:
         """
