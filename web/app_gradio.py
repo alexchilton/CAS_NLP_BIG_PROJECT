@@ -162,6 +162,10 @@ def load_character(character_choice: str) -> Tuple[str, str, list, Optional[str]
         inventory={item: 1 for item in char.equipment},  # Convert equipment list to inventory dict
     )
 
+    # Add race and class for personality-driven responses
+    char_state.race = char.race
+    char_state.character_class = char.character_class
+
     # Add spells to character state for spell validation
     if char.spells:
         char_state.spells = char.spells  # Add spells attribute dynamically

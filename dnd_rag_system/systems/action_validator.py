@@ -84,7 +84,8 @@ class ActionValidator:
 
     ITEM_KEYWORDS = [
         'use', 'drink', 'eat', 'equip', 'wear', 'wield', 'open',
-        'pull out', 'take out', 'consume', 'apply'
+        'pull out', 'take out', 'consume', 'apply', 'ready', 'draw',
+        'hold', 'grab', 'reach for'
     ]
 
     def __init__(self, debug: bool = False):
@@ -305,8 +306,22 @@ class ActionValidator:
 
         # Check if spell is known (from character's spells list)
         known_spells = [s.lower() for s in getattr(char_state, 'spells', [])]
+        character_class = getattr(char_state, 'character_class', '')
 
-        if spell_name and spell_name.lower() not in known_spells and known_spells:
+        # If character has no spells AND tries to cast one, it's invalid
+        # (e.g., Fighter trying to cast Fireball)
+        if spell_name and not known_spells:
+            non_caster_classes = ['Fighter', 'Barbarian', 'Rogue', 'Monk']
+            if character_class in non_caster_classes:
+                return ValidationReport(
+                    result=ValidationResult.INVALID,
+                    action=intent,
+                    message=f"Player tries to cast '{spell_name}', but as a {character_class}, they have no spellcasting ability. "
+                           f"Narrate the character's inability to use magic.",
+                )
+
+        # If character HAS spells, check if this specific spell is known
+        if spell_name and known_spells and spell_name.lower() not in known_spells:
             return ValidationReport(
                 result=ValidationResult.INVALID,
                 action=intent,
@@ -443,13 +458,15 @@ class ActionValidator:
 
     def _extract_item(self, text: str) -> Optional[str]:
         """Extract item name from text"""
-        item_keywords = ['use', 'drink', 'eat', 'equip', 'wear', 'wield']
+        item_keywords = ['use', 'drink', 'eat', 'equip', 'wear', 'wield', 'ready', 'draw', 'hold', 'grab', 'reach for', 'pull out', 'take out']
 
         for keyword in item_keywords:
             if keyword in text:
                 after = text.split(keyword, 1)[1].strip()
                 # Remove articles
                 after = re.sub(r'^(the|a|an|my)\s+', '', after)
+                # Remove trailing "and..." phrases
+                after = re.sub(r'\s+and\s+.*', '', after)
                 # Take first 1-3 words
                 words = after.split()[:3]
                 if words:

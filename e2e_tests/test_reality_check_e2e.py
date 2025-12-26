@@ -23,6 +23,7 @@ sys.path.insert(0, str(project_root))
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.systems.gm_dialogue_unified import GameMaster
 from dnd_rag_system.systems.character_creator import Character
+from dnd_rag_system.systems.game_state import CharacterState
 
 # Suppress tokenizer warning
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
@@ -70,7 +71,8 @@ def test_invalid_combat_target(gm: GameMaster, char: Character):
     response_lower = response.lower()
     success_indicators = [
         "no goblin", "don't see", "isn't here", "not present",
-        "no one", "nobody", "can't find", "nowhere"
+        "no one", "nobody", "can't find", "nowhere",
+        "nothing there", "no enemies", "empty space", "empty air"
     ]
 
     if any(indicator in response_lower for indicator in success_indicators):
@@ -79,6 +81,7 @@ def test_invalid_combat_target(gm: GameMaster, char: Character):
     else:
         print("\n❌ FAIL: GM may have hallucinated a goblin encounter")
         print(f"   Response should indicate no goblin present")
+        print(f"   Response: {response}")
         return False
 
 
@@ -256,7 +259,21 @@ def run_all_tests():
     db = ChromaDBManager()
     gm = GameMaster(db)
     char = create_thorin()
+
+    # Load CharacterState into GameSession for Reality Check validation
+    char_state = CharacterState(
+        character_name=char.name,
+        max_hp=char.hit_points,
+        current_hp=char.hit_points,
+        level=char.level,
+        inventory={item: 1 for item in char.equipment},
+    )
+    char_state.character_class = char.character_class  # Add for spell validation
+    char_state.race = char.race  # Add for personality-driven responses
+    gm.session.character_state = char_state
+
     print(f"✓ System initialized with character: {char.name}")
+    print(f"✓ Character state loaded with inventory: {list(char_state.inventory.keys())}")
 
     # Run tests
     results = {}
