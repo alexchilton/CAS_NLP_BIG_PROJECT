@@ -238,8 +238,44 @@ class GameMaster:
                 if DEBUG_PROMPTS:
                     logger.debug(f"💵 Sale: {item_name} x{quantity} - {transaction.message}")
 
+        # Step 0.5: Party Mode Character Parsing
+        # If in party mode, extract which character is acting and temporarily set character_state
+        acting_character_name = None
+        original_character_state = None
+        action_input = player_input  # The input to use for action analysis (may have character name stripped)
+
+        if self.session.party and len(self.session.party.characters) > 0:
+            # We're in party mode - set party character names for parsing
+            party_char_names = list(self.session.party.characters.keys())
+            self.action_validator.set_party_characters(party_char_names)
+
+            # Extract which character is acting
+            acting_character_name = self.action_validator.extract_acting_character(player_input)
+
+            if acting_character_name:
+                # Temporarily switch to acting character's state for validation
+                original_character_state = self.session.character_state
+                acting_char_state = self.session.party.get_character(acting_character_name)
+
+                if acting_char_state:
+                    self.session.character_state = acting_char_state
+
+                    # Remove character name from input for action analysis
+                    # e.g., "Thorin attacks the goblin" -> "attacks the goblin"
+                    char_name_lower = acting_character_name.lower()
+                    input_lower = player_input.lower()
+                    if input_lower.startswith(char_name_lower + ' '):
+                        action_input = player_input[len(acting_character_name) + 1:].strip()
+
+                    if DEBUG_PROMPTS:
+                        logger.debug(f"🎭 Party Mode: {acting_character_name} is acting")
+                        logger.debug(f"   Stripped input: '{action_input}'")
+                else:
+                    if DEBUG_PROMPTS:
+                        logger.debug(f"⚠️ Party character '{acting_character_name}' not found in party state")
+
         # Step 1: Reality Check - Validate action against game state
-        action_intent = self.action_validator.analyze_intent(player_input)
+        action_intent = self.action_validator.analyze_intent(action_input)
         validation = self.action_validator.validate_action(action_intent, self.session)
 
         if DEBUG_PROMPTS:
@@ -251,12 +287,20 @@ class GameMaster:
         if validation.result == ValidationResult.INVALID:
             response = self._generate_invalid_action_response(validation)
 
+            # Restore original character_state if we swapped it (AFTER generating response)
+            if original_character_state is not None:
+                self.session.character_state = original_character_state
+
             # Save to history
             self.message_history.append(Message('player', player_input))
             self.message_history.append(Message('gm', response))
             self.session.add_note(f"Invalid action rejected: {validation.action.action_type.value}")
 
             return response
+
+        # Restore original character_state if we swapped it (for valid actions, restore before LLM call)
+        if original_character_state is not None:
+            self.session.character_state = original_character_state
 
         # Step 2: Search RAG if enabled
         if use_rag:

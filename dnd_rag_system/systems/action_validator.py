@@ -90,6 +90,54 @@ class ActionValidator:
 
     def __init__(self, debug: bool = False):
         self.debug = debug
+        self.party_character_names = []  # List of party member names for parsing
+
+    def set_party_characters(self, character_names: List[str]):
+        """
+        Set the list of party character names for parsing.
+
+        Args:
+            character_names: List of character names in the party
+        """
+        self.party_character_names = [name.lower() for name in character_names]
+
+    def extract_acting_character(self, user_input: str) -> Optional[str]:
+        """
+        Extract which character is acting from the player input.
+
+        Looks for patterns like:
+        - "Thorin attacks the goblin" -> "Thorin"
+        - "Elara casts Fire Bolt" -> "Elara"
+        - "Gimli drinks a healing potion" -> "Gimli"
+
+        Args:
+            user_input: Raw player input
+
+        Returns:
+            Character name (title-cased) if found, None otherwise
+        """
+        if not self.party_character_names:
+            return None
+
+        lower_input = user_input.lower().strip()
+
+        # Check if input starts with a character name
+        # e.g., "Thorin attacks", "Elara casts", "Gimli drinks"
+        for char_name in self.party_character_names:
+            # Pattern: "CharName <verb>" (character name at start)
+            if lower_input.startswith(char_name + ' '):
+                # Return title-cased version
+                return char_name.title()
+
+            # Pattern: "<verb> CharName" (less common, but possible)
+            # e.g., "I command Thorin to attack"
+            if char_name in lower_input:
+                # More specific check - char name followed by action verb
+                char_pattern = rf'\b{re.escape(char_name)}\b'
+                if re.search(char_pattern, lower_input):
+                    return char_name.title()
+
+        return None
 
     def analyze_intent(self, user_input: str) -> ActionIntent:
         """
@@ -125,21 +173,22 @@ class ActionValidator:
                 raw_input=user_input
             )
 
+        # Check for item use (BEFORE conversation to catch "use", "drink", etc.)
+        # Use pattern matching instead of keyword list since we updated _extract_item to use patterns
+        item = self._extract_item(lower_input)
+        if item:
+            return ActionIntent(
+                action_type=ActionType.ITEM_USE,
+                resource=item,
+                raw_input=user_input
+            )
+
         # Check for conversation
         if any(keyword in lower_input for keyword in self.CONVERSATION_KEYWORDS):
             target = self._extract_conversation_target(lower_input)
             return ActionIntent(
                 action_type=ActionType.CONVERSATION,
                 target=target,
-                raw_input=user_input
-            )
-
-        # Check for item use
-        if any(keyword in lower_input for keyword in self.ITEM_KEYWORDS):
-            item = self._extract_item(lower_input)
-            return ActionIntent(
-                action_type=ActionType.ITEM_USE,
-                resource=item,
                 raw_input=user_input
             )
 
@@ -418,25 +467,31 @@ class ActionValidator:
     def _extract_target(self, text: str, keywords: List[str]) -> Optional[str]:
         """Extract target entity from text after action keywords"""
         for keyword in keywords:
-            if keyword in text:
+            # Use word boundary regex to avoid matching "attack" inside "attacks"
+            pattern = rf'\b{re.escape(keyword)}\b'
+            match = re.search(pattern, text)
+
+            if match:
                 # Get text after the keyword
-                parts = text.split(keyword, 1)
-                if len(parts) > 1:
-                    # Clean up and extract first noun-like word(s)
-                    after = parts[1].strip()
-                    # Remove common leading prepositions
-                    after = re.sub(r'^(the|at|a|an)\s+', '', after)
-                    # Stop at common prepositions that indicate end of target
-                    # e.g., "goblin with my sword" -> stop at "with"
-                    stop_words = ['with', 'using', 'and', 'then', ',']
-                    for stop in stop_words:
-                        if ' ' + stop + ' ' in ' ' + after:
-                            after = after.split(' ' + stop + ' ')[0]
-                            break
-                    # Take first 1-2 words as target (reduced from 3)
-                    words = after.split()[:2]
-                    if words:
-                        return ' '.join(words).strip('.,!?')
+                start_pos = match.end()
+                after = text[start_pos:].strip()
+
+                # Remove common leading prepositions
+                after = re.sub(r'^(the|at|a|an)\s+', '', after)
+
+                # Stop at common prepositions that indicate end of target
+                # e.g., "goblin with my sword" -> stop at "with"
+                stop_words = ['with', 'using', 'and', 'then', ',']
+                for stop in stop_words:
+                    if ' ' + stop + ' ' in ' ' + after:
+                        after = after.split(' ' + stop + ' ')[0]
+                        break
+
+                # Take first 1-2 words as target
+                words = after.split()[:2]
+                if words:
+                    return ' '.join(words).strip('.,!?')
+
         return None
 
     def _extract_conversation_target(self, text: str) -> Optional[str]:
@@ -475,16 +530,21 @@ class ActionValidator:
         common_spells = [
             'magic missile', 'fireball', 'cure wounds', 'healing word',
             'eldritch blast', 'sacred flame', 'guiding bolt', 'shield',
-            'mage armor', 'detect magic', 'identify', 'sleep', 'charm person'
+            'mage armor', 'detect magic', 'identify', 'sleep', 'charm person',
+            'fire bolt'  # Add Fire Bolt
         ]
 
         for spell in common_spells:
             if spell in text:
                 return spell.title()
 
-        # Try to extract after "cast"
-        if 'cast' in text:
-            after_cast = text.split('cast', 1)[1].strip()
+        # Try to extract after "cast" with word boundaries
+        pattern = r'\bcast(?:s|ing)?\b'
+        match = re.search(pattern, text)
+
+        if match:
+            # Get text after "cast/casts/casting"
+            after_cast = text[match.end():].strip()
             # Remove "at", "on", etc.
             after_cast = re.sub(r'\s+(at|on|towards?)\s+.*', '', after_cast)
             words = after_cast.split()[:3]
@@ -495,13 +555,30 @@ class ActionValidator:
 
     def _extract_item(self, text: str) -> Optional[str]:
         """Extract item name from text"""
-        item_keywords = ['use', 'drink', 'eat', 'equip', 'wear', 'wield', 'ready', 'draw', 'hold', 'grab', 'reach for', 'pull out', 'take out']
+        # Item keywords with patterns to match verb conjugations
+        item_patterns = [
+            r'\b(?:use|uses|using)\b',
+            r'\b(?:drink|drinks|drinking)\b',
+            r'\b(?:eat|eats|eating)\b',
+            r'\b(?:equip|equips|equipping)\b',
+            r'\b(?:wear|wears|wearing)\b',
+            r'\b(?:wield|wields|wielding)\b',
+            r'\b(?:ready|readies|readying)\b',
+            r'\b(?:draw|draws|drawing)\b',
+            r'\b(?:hold|holds|holding)\b',
+            r'\b(?:grab|grabs|grabbing)\b',
+            r'\breach\s+for\b',
+            r'\bpull\s+out\b',
+            r'\btake\s+out\b'
+        ]
 
-        for keyword in item_keywords:
-            if keyword in text:
-                after = text.split(keyword, 1)[1].strip()
-                # Remove articles
-                after = re.sub(r'^(the|a|an|my)\s+', '', after)
+        for pattern in item_patterns:
+            match = re.search(pattern, text)
+
+            if match:
+                after = text[match.end():].strip()
+                # Remove articles and possessives
+                after = re.sub(r'^(the|a|an|my|his|her|their)\s+', '', after)
                 # Remove trailing "and..." phrases
                 after = re.sub(r'\s+and\s+.*', '', after)
                 # Take first 1-3 words
@@ -514,7 +591,7 @@ class ActionValidator:
     def _extract_weapon(self, text: str) -> Optional[str]:
         """
         Extract weapon from combat action.
-        Looks for patterns like "my bow", "with my sword", "using a crossbow"
+        Looks for patterns like "my bow", "with my sword", "using a crossbow", "with her bow"
         """
         # Common weapon names to look for
         common_weapons = [
@@ -529,19 +606,19 @@ class ActionValidator:
 
         # Look for "my X" or "the X" patterns
         for weapon in common_weapons:
-            # Pattern: "my bow", "the bow", "a bow"
-            if re.search(rf'\b(my|the|a|an)\s+{weapon}\b', text):
+            # Pattern: "my bow", "the bow", "a bow", "her bow", "his bow"
+            if re.search(rf'\b(my|the|a|an|her|his|their)\s+{weapon}\b', text):
                 return weapon.title()
 
         # Look for "with X" pattern
-        with_match = re.search(r'\bwith\s+(my|a|the|an)\s+(\w+)', text)
+        with_match = re.search(r'\bwith\s+(my|a|the|an|her|his|their)\s+(\w+)', text)
         if with_match:
             potential_weapon = with_match.group(2)
             if potential_weapon in common_weapons:
                 return potential_weapon.title()
 
         # Look for "using X" pattern
-        using_match = re.search(r'\busing\s+(my|a|the|an)\s+(\w+)', text)
+        using_match = re.search(r'\busing\s+(my|a|the|an|her|his|their)\s+(\w+)', text)
         if using_match:
             potential_weapon = using_match.group(2)
             if potential_weapon in common_weapons:
