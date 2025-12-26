@@ -193,3 +193,119 @@ def create_custom_location(
         description=description,
         **kwargs
     )
+
+
+def generate_random_location(from_location: Location, direction: str = None) -> Location:
+    """
+    Lazily generate a new location based on the current location and context.
+    
+    This creates procedurally generated areas for exploration without
+    pre-defining the entire world.
+    
+    Args:
+        from_location: The location we're exploring from
+        direction: Optional direction/hint for generation (e.g., "north", "deeper")
+    
+    Returns:
+        Newly generated Location
+    """
+    import random
+    
+    # Determine what type of location to generate based on current type
+    if from_location.location_type in [LocationType.TOWN, LocationType.TAVERN, LocationType.SHOP]:
+        # From safe areas, generate wilderness or roads
+        possible_types = [LocationType.FOREST, LocationType.WILDERNESS, LocationType.MOUNTAIN]
+        weights = [0.4, 0.4, 0.2]
+    elif from_location.location_type in [LocationType.FOREST, LocationType.WILDERNESS]:
+        # From wilderness, can find dungeons or more wilderness
+        possible_types = [LocationType.CAVE, LocationType.RUINS, LocationType.FOREST, LocationType.WILDERNESS]
+        weights = [0.3, 0.2, 0.25, 0.25]
+    elif from_location.location_type == LocationType.MOUNTAIN:
+        # Mountains can have caves or castles
+        possible_types = [LocationType.CAVE, LocationType.CASTLE, LocationType.RUINS]
+        weights = [0.5, 0.2, 0.3]
+    else:
+        # Dungeons lead to more dungeons or back to wilderness
+        possible_types = [LocationType.CAVE, LocationType.RUINS, LocationType.DUNGEON]
+        weights = [0.4, 0.3, 0.3]
+    
+    location_type = random.choices(possible_types, weights=weights)[0]
+    
+    # Generate name based on type
+    name_prefixes = {
+        LocationType.FOREST: ["Dark", "Whispering", "Ancient", "Misty", "Shadowed"],
+        LocationType.CAVE: ["Deep", "Hidden", "Crystal", "Forgotten", "Echoing"],
+        LocationType.RUINS: ["Ancient", "Cursed", "Forgotten", "Overgrown", "Crumbling"],
+        LocationType.MOUNTAIN: ["Lonely", "Frozen", "Thunder", "Giant's", "Eagle's"],
+        LocationType.WILDERNESS: ["Barren", "Wild", "Trackless", "Lost", "Windswept"],
+        LocationType.CASTLE: ["Ruined", "Abandoned", "Haunted", "Broken", "Old"],
+        LocationType.DUNGEON: ["Deep", "Dark", "Abandoned", "Ancient", "Cursed"]
+    }
+    
+    name_suffixes = {
+        LocationType.FOREST: ["Woods", "Grove", "Forest", "Thicket"],
+        LocationType.CAVE: ["Cavern", "Grotto", "Cave", "Hollow"],
+        LocationType.RUINS: ["Ruins", "Temple", "Keep", "Monastery"],
+        LocationType.MOUNTAIN: ["Peak", "Summit", "Crag", "Ridge"],
+        LocationType.WILDERNESS: ["Plains", "Moors", "Barrens", "Wastes"],
+        LocationType.CASTLE: ["Castle", "Fortress", "Stronghold", "Citadel"],
+        LocationType.DUNGEON: ["Depths", "Dungeon", "Catacombs", "Labyrinth"]
+    }
+    
+    prefix = random.choice(name_prefixes[location_type])
+    suffix = random.choice(name_suffixes[location_type])
+    name = f"{prefix} {suffix}"
+    
+    # Generate description
+    descriptions = {
+        LocationType.FOREST: [
+            f"A dense forest where sunlight barely penetrates the canopy. Strange sounds echo through the trees.",
+            f"Towering trees surround you, their branches forming a natural cathedral overhead.",
+            f"The forest path winds between ancient oaks. You sense eyes watching from the shadows."
+        ],
+        LocationType.CAVE: [
+            f"A dark cave entrance yawns before you. The air is cold and damp, carrying strange echoes.",
+            f"Natural stone formations create an otherworldly landscape. Water drips somewhere in the darkness.",
+            f"The cave walls glitter with mineral deposits. Deep passages lead into the unknown."
+        ],
+        LocationType.RUINS: [
+            f"Crumbling stone structures speak of a forgotten civilization. Vines reclaim what was once grand.",
+            f"Ancient architecture lies in ruins, yet hints of former glory remain visible.",
+            f"Weathered statues guard empty halls. What secrets lie buried here?"
+        ],
+        LocationType.MOUNTAIN: [
+            f"Rocky crags tower above. The air is thin and cold. Snow clings to the highest peaks.",
+            f"A treacherous mountain path winds upward. One wrong step could be fatal.",
+            f"The mountain looms, stark and imposing. Ancient caves dot its flanks."
+        ],
+        LocationType.WILDERNESS: [
+            f"Empty land stretches endlessly. No roads, no shelter, just raw nature.",
+            f"A desolate expanse where few dare to tread. Wind howls across open ground.",
+            f"Trackless wilderness extends in all directions. Navigation will be difficult."
+        ],
+        LocationType.CASTLE: [
+            f"A ruined castle emerges from the landscape. Its walls are broken but still imposing.",
+            f"Once-mighty fortifications now stand empty. What drove its inhabitants away?",
+            f"The castle's towers lean at dangerous angles. Its halls echo with memory of battles long past."
+        ],
+        LocationType.DUNGEON: [
+            f"Stone stairs descend into darkness. The air smells of decay and ancient evil.",
+            f"Passages extend deeper underground. Torchlight flickers on damp walls.",
+            f"This place was built as a prison, or perhaps a tomb. Either way, it's not welcoming."
+        ]
+    }
+    
+    description = random.choice(descriptions[location_type])
+    
+    # Determine if it's safe (most generated locations are dangerous)
+    is_safe = location_type in [LocationType.TOWN, LocationType.TAVERN, LocationType.SHOP, LocationType.TEMPLE]
+    
+    # Create the location
+    return Location(
+        name=name,
+        location_type=location_type,
+        description=description,
+        is_safe=is_safe,
+        is_discovered=False,  # Newly generated, not yet discovered
+        connections=[from_location.name]  # Connected back to where we came from
+    )
