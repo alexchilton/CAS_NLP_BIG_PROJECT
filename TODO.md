@@ -131,24 +131,75 @@
     - **Intent Analysis**: Parses player input to identify action type (combat, spell, conversation, item use, exploration)
     - **State Validation**: Validates actions against `GameSession` state
       - Combat: Verifies targets exist in `npcs_present` or `combat.initiative_order`
+      - Weapon validation: Checks if weapon used in combat is in inventory
       - Spells: Checks if spell is known by character (with fuzzy matching)
       - Items: Validates items exist in character inventory
       - Conversations: Allows NPC introduction for contextually appropriate NPCs
     - **Context-Aware Prompting**: Enhances GM prompts with validation guidance
       - Valid actions: Proceed normally
-      - Invalid actions: Instructs GM to narrate failure without introducing non-existent entities
+      - Invalid actions: Returns deterministic personality-driven responses (bypasses LLM)
       - NPC introductions: Allows GM to introduce NPCs that make contextual sense
     - **Fuzzy Matching**: Handles partial matches (e.g., "goblin" → "Goblin Scout")
+    - **Personality-Driven Deterministic Responses**: Invalid actions get character-appropriate rejections
+      - Dwarf Fighter: "Ye reach fer yer Bow to attack, but it's not there! Can't attack with a weapon ye don't have, ye daft fool!"
+      - Dwarf Fighter casting spell: "Ye try to cast Fireball? Are ye daft?! Ye're a FIGHTER, not some fancy-robed wizard!"
+      - Shows inventory hints and character class information
   - **NPC Conversation Features**:
     - Encourages dynamic NPC introduction in appropriate contexts
     - Auto-adds NPCs to `npcs_present` when GM introduces them
     - Rejects NPC interactions that don't make contextual sense
   - **Integration**: Fully integrated into `gm_dialogue_unified.py.generate_response()`
-  - **Testing**: Comprehensive test suite in `test_reality_check.py` (all tests passing)
+  - **Testing**:
+    - E2E test suite: `e2e_tests/test_reality_check_e2e.py` (6/6 tests passing)
+    - Browser test suite: `e2e_tests/test_reality_check_browser.py` (Selenium-based)
   - **Files**:
     - Core logic: `dnd_rag_system/systems/action_validator.py`
     - Integration: `dnd_rag_system/systems/gm_dialogue_unified.py`
-    - Tests: `test_reality_check.py`
+    - Tests: `e2e_tests/test_reality_check_e2e.py`, `e2e_tests/test_reality_check_browser.py`
+
+- [ ] **Upgrade Reality Check to use LLM-based NLP Intent Classification** 🎯 ENHANCEMENT
+  - **Problem**: Current keyword-based approach is brittle
+    - Works: "fire my bow", "shoot my bow", "attack with sword"
+    - Fails: "loose an arrow", "nock and release my bowstring", "let fly with my longbow", "discharge my crossbow"
+    - Keyword lists require constant expansion for synonyms and variations
+  - **Proposed Solution**: Use lightweight local LLM for natural language understanding
+    - **Step 1**: Small LLM (3-4B params) classifies intent and extracts entities
+      - Models: **Gemma-3-4B** (recommended!), Qwen2.5-3B-Instruct, Llama-3.2-3B, or Phi-3-mini (3.8B)
+      - Fast inference (50-200ms on CPU with quantization)
+      - Binary classification: COMBAT/SPELL/ITEM/CONVERSATION/EXPLORATION
+      - Extract: action_type, target, weapon/item/spell being used
+    - **Step 2**: Python logic validates LLM's extracted entities against game state
+      - Check if weapon/item exists in inventory
+      - Check if target exists in npcs_present/combat
+      - Check if spell is known
+      - Still deterministic and reliable!
+    - **Step 3**: If valid, big LLM (4B RPG model) generates narrative response
+    - **Step 4**: If invalid, deterministic personality-driven rejection (current system)
+  - **Benefits**:
+    - Natural language understanding - handles all synonyms/variations
+    - No keyword list maintenance required
+    - Still 100% reliable (Python validates LLM's classifications)
+    - Fast (small model for intent, deterministic for rejections)
+  - **Architecture**:
+    ```python
+    # Current: Keyword matching
+    if "fire" in input or "shoot" in input:  # Brittle!
+        return ActionIntent(COMBAT, weapon="bow")
+
+    # Proposed: LLM intent classification
+    intent = small_llm.classify(
+        action="loose an arrow from my bow at the orc",
+        inventory=["Longsword", "Shield"],
+        creatures=["Goblin Scout"]
+    )
+    # Returns: {type: COMBAT, weapon: "bow", target: "orc"}
+
+    # Python validates (still deterministic!)
+    if intent.weapon not in inventory:
+        return deterministic_rejection()
+    ```
+  - **Implementation Priority**: Medium (current system works, but this would make it production-ready)
+  - **Estimated Effort**: 2-3 hours (model integration, prompt engineering, testing)
 
 
 ## Implementation Notes
