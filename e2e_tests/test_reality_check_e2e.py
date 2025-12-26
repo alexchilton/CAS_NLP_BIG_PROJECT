@@ -246,6 +246,33 @@ def test_npc_conversation_introduction(gm: GameMaster, char: Character):
         return True  # Don't fail on ambiguous cases
 
 
+def test_generic_item_term(gm: GameMaster, char: Character):
+    """Test that generic terms like 'weapon' match specific items like 'longsword'."""
+    print("\n" + "="*80)
+    print("TEST 7: Generic Item Term ('weapon' matches 'Longsword')")
+    print("="*80)
+
+    player_input = "I draw my weapon and prepare for combat"
+    print(f"\n🎲 Player: {player_input}")
+
+    response = gm.generate_response(player_input, use_rag=False)
+    print(f"🎭 GM: {response}")
+
+    # Check that response allows using the weapon (not rejected)
+    response_lower = response.lower()
+    rejection_indicators = [
+        "don't have", "no weapon", "not carrying", "not in your pack", "not there"
+    ]
+
+    if not any(indicator in response_lower for indicator in rejection_indicators):
+        print("\n✅ PASS: GM allowed using generic 'weapon' term for longsword")
+        return True
+    else:
+        print("\n❌ FAIL: GM rejected generic 'weapon' term even though character has longsword")
+        print(f"   Character equipment: {char.equipment}")
+        return False
+
+
 def run_all_tests():
     """Run all Reality Check E2E tests."""
     print("\n" + "="*80)
@@ -284,6 +311,7 @@ def run_all_tests():
     results["Valid Combat After Intro"] = test_valid_combat_after_npc_intro(gm, char)
     results["Valid Item Use"] = test_valid_item_use(gm, char)
     results["NPC Conversation"] = test_npc_conversation_introduction(gm, char)
+    results["Generic Item Term"] = test_generic_item_term(gm, char)
 
     # Summary
     print("\n" + "="*80)

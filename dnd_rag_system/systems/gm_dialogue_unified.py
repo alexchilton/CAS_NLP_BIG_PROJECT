@@ -412,9 +412,12 @@ GM RESPONSE:"""
 
         # Combat-specific responses
         if action.action_type == ActionType.COMBAT:
-            # NEW: Check if trying to use a weapon they don't have
-            if action.resource:
-                # Get what they actually have
+            # Check WHY combat is invalid (weapon missing vs target missing)
+            is_weapon_missing = "don't have that weapon" in validation.message.lower()
+            is_target_missing = "no such enemy" in validation.message.lower() or "not present" in validation.message.lower()
+
+            if is_weapon_missing and action.resource:
+                # Weapon validation failed
                 inventory_hint = ""
                 if hasattr(self.session, 'character_state') and self.session.character_state:
                     inv = list(self.session.character_state.inventory.keys())[:3]
@@ -433,7 +436,8 @@ GM RESPONSE:"""
                         f"You search your belt and pack, but can't find it.{inventory_hint}"
                     )
 
-            elif action.target:
+            elif is_target_missing and action.target:
+                # Target validation failed (this should be the most common invalid combat)
                 # No weapon specified, just invalid target
                 if char_race == 'dwarf':
                     return (
