@@ -311,6 +311,37 @@ class GameMaster:
                 combat_feedback = "🗺️ No locations discovered yet."
             combat_command_handled = True
 
+        elif lower_input in ['/explore', '/search']:
+            # Lazy location generation - create a new area to explore
+            current_loc = self.session.get_current_location_obj()
+            if current_loc:
+                from dnd_rag_system.systems.world_builder import generate_random_location
+                
+                # Generate a new location connected to current one
+                new_location = generate_random_location(current_loc)
+                
+                # Check if we already have too many connections from this location
+                if len(current_loc.connections) >= 6:
+                    combat_feedback = "🔍 You search the area but find no new paths. All routes from here have been explored."
+                else:
+                    # Add to world map
+                    self.session.add_location(new_location)
+                    
+                    # Create bidirectional connection
+                    self.session.connect_locations(current_loc.name, new_location.name)
+                    
+                    combat_feedback = f"🔍 **You explore the area and discover a new location!**\n\n"
+                    combat_feedback += f"📍 **{new_location.name}** ({new_location.location_type.value})\n"
+                    combat_feedback += f"{new_location.description}\n\n"
+                    combat_feedback += f"This location is now connected to {current_loc.name}.\n"
+                    combat_feedback += f"Use `/travel {new_location.name}` to visit it."
+                    
+                    if not new_location.is_safe:
+                        combat_feedback += f"\n\n⚠️ **Warning**: This area appears dangerous!"
+            else:
+                combat_feedback = "🔍 Current location not found in world map."
+            combat_command_handled = True
+
         # If combat command was handled, return immediately
         if combat_command_handled:
             self.message_history.append(Message('player', player_input))
