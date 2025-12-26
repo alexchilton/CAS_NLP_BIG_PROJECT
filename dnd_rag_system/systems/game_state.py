@@ -859,6 +859,9 @@ class GameSession:
     """
     session_name: str = "New Adventure"
 
+    # Single character state (for non-party mode)
+    character_state: Optional['CharacterState'] = None
+
     # Party and combat
     party: PartyState = field(default_factory=PartyState)
     combat: CombatState = field(default_factory=CombatState)
