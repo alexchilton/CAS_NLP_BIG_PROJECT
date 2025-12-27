@@ -181,6 +181,11 @@
 
 ## ✅ COMPLETED (See DONE.md for details)
 
+- ✅ NPC Auto-Extraction from GM Responses (2025-12-27)
+  - When GM mentions NPCs in narrative, they're automatically added to `npcs_present`
+  - Uses existing Qwen 2.5 3B mechanics extractor to parse `npcs_introduced`
+  - Fixes bug where GM introduces NPC but it's not tracked in game state
+  - Verified with unit tests and E2E selenium tests with debug logging
 - ✅ Spell Target Hallucination Fix (2025-12-26)
 - ✅ Action Validator False Positives Fix (2025-12-26)
 - ✅ Party Mode UI Bug Fix (2025-12-26)
