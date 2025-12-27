@@ -124,29 +124,32 @@ def get_chat_messages(driver):
 def load_character(driver, char_name="Thorin"):
     """Load a character."""
     print(f"\n📝 Loading character: {char_name}")
+    time.sleep(3)
     
+    # Find dropdown
     dropdowns = driver.find_elements(By.TAG_NAME, "select")
-    char_dropdown = None
-    for dd in dropdowns:
-        if dd.is_displayed():
-            char_dropdown = dd
-            break
+    if not dropdowns:
+        dropdowns = driver.find_elements(By.CSS_SELECTOR, "[role='combobox']")
     
-    if char_dropdown:
-        char_dropdown.click()
-        time.sleep(0.5)
+    if dropdowns:
+        dropdown = dropdowns[0]
+        dropdown.click()
+        time.sleep(1)
         
-        options = char_dropdown.find_elements(By.TAG_NAME, "option")
+        # Find character option
+        options = driver.find_elements(By.CSS_SELECTOR, "[role='option']")
         for opt in options:
-            if char_name.lower() in opt.text.lower():
+            if char_name in opt.text:
                 opt.click()
+                time.sleep(1)
                 break
     
+    # Click Load Character button
     buttons = driver.find_elements(By.TAG_NAME, "button")
     for btn in buttons:
-        if "load character" in btn.text.lower():
+        if "Load Character" in btn.text:
             btn.click()
-            time.sleep(3)
+            time.sleep(7)  # Wait for character to load
             break
     
     print(f"✅ Character loaded")
