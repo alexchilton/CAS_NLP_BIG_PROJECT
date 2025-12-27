@@ -125,6 +125,21 @@ def create_starting_world() -> Dict[str, Location]:
         connections=["Mountain Road"]
     )
     
+    # Mürren - Dangerous mountain village
+    locations["Mürren"] = Location(
+        name="Mürren",
+        location_type=LocationType.MOUNTAIN,
+        description="A remote mountain village perched high in the Alps. The air is thin and cold. Despite its beauty, danger lurks - giants roam the peaks, and deadly ice elementals guard ancient treasures in the glaciers above. Only the brave venture here.",
+        is_safe=False,  # Dangerous!
+        has_shop=True,  # Small trading post for mountaineers
+        has_inn=True,  # Shelter from the cold
+        resident_npcs=["Erik the Mountain Guide", "Heidi the Herbalist"],
+        connections=["Mountain Road"]
+    )
+    
+    # Add Mürren to Mountain Road connections
+    locations["Mountain Road"].add_connection("Mürren")
+    
     return locations
 
 

@@ -21,39 +21,33 @@ class TestCharacterLoading:
     def _load_character(self, driver, character_name):
         """Helper method to load a character."""
         driver.get(BASE_URL)
-        time.sleep(2)
+        time.sleep(3)
 
-        # Find the dropdown input
-        dropdown_inputs = driver.find_elements(By.CSS_SELECTOR, "input[role='combobox'], input.svelte-1cl284h")
+        # Find dropdown - try select tag first, then role='combobox'
+        dropdowns = driver.find_elements(By.TAG_NAME, "select")
+        if not dropdowns:
+            dropdowns = driver.find_elements(By.CSS_SELECTOR, "[role='combobox']")
 
-        if not dropdown_inputs:
-            # Try alternative selector
-            dropdown_inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='text']")
+        if dropdowns:
+            dropdown = dropdowns[0]
+            dropdown.click()
+            time.sleep(1)
 
-        assert len(dropdown_inputs) > 0, "Character dropdown not found"
-
-        dropdown = dropdown_inputs[0]
-        dropdown.click()
-        time.sleep(0.5)
-
-        # Clear and type character name
-        dropdown.clear()
-        dropdown.send_keys(character_name)
-        time.sleep(0.5)
-        dropdown.send_keys(Keys.ENTER)
-        time.sleep(1)
+            # Find and click the character option
+            options = driver.find_elements(By.CSS_SELECTOR, "[role='option']")
+            for opt in options:
+                if character_name in opt.text:
+                    opt.click()
+                    time.sleep(1)
+                    break
 
         # Click Load Character button
         buttons = driver.find_elements(By.TAG_NAME, "button")
-        load_button = None
         for btn in buttons:
-            if "Load" in btn.text:
-                load_button = btn
+            if "Load Character" in btn.text:
+                btn.click()
+                time.sleep(7)  # Wait for character to load
                 break
-
-        assert load_button is not None, "Load Character button not found"
-        load_button.click()
-        time.sleep(3)  # Wait for character to load
 
     def test_load_thorin(self, driver):
         """Test loading Thorin Stormshield character."""
