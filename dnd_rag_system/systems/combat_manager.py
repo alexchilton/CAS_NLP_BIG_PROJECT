@@ -13,6 +13,7 @@ from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 
 from dnd_rag_system.systems.game_state import CombatState, PartyState, CharacterState
+from dnd_rag_system.systems.monster_stat_system import MonsterStatSystem, MonsterInstance
 
 
 @dataclass
@@ -40,6 +41,49 @@ class CombatManager:
         """
         self.combat = combat_state
         self.debug = debug
+
+        # Monster stat system for loading NPC stats
+        self.monster_stats = MonsterStatSystem(debug=debug)
+
+        # Track NPC monster instances in combat {npc_name: MonsterInstance}
+        self.npc_monsters: Dict[str, MonsterInstance] = {}
+
+    def _load_npc_stats(self, npc_names: List[str]) -> Dict[str, int]:
+        """
+        Load monster stats for NPCs and return their DEX modifiers.
+
+        Args:
+            npc_names: List of NPC/monster names
+
+        Returns:
+            Dictionary of {npc_name: dex_modifier}
+        """
+        dex_modifiers = {}
+
+        for npc_name in npc_names:
+            # Try to load monster stats
+            monster = self.monster_stats.create_monster_instance(npc_name)
+
+            if monster:
+                # Store monster instance for HP tracking
+                self.npc_monsters[npc_name] = monster
+
+                # Calculate DEX modifier: (DEX - 10) // 2
+                dex_mod = (monster.dex - 10) // 2
+                dex_modifiers[npc_name] = dex_mod
+
+                if self.debug:
+                    print(f"🐉 Loaded {npc_name} stats:")
+                    print(f"   HP: {monster.current_hp}/{monster.max_hp}")
+                    print(f"   AC: {monster.ac}")
+                    print(f"   DEX mod: +{dex_mod}")
+            else:
+                # Fallback if monster not in database
+                if self.debug:
+                    print(f"⚠️  No stats found for {npc_name}, using default DEX +0")
+                dex_modifiers[npc_name] = 0
+
+        return dex_modifiers
 
     def roll_initiative(self, character_name: str, dex_modifier: int = 0) -> int:
         """
@@ -69,20 +113,23 @@ class CombatManager:
     ) -> str:
         """
         Start combat with initiative rolls for all party members and NPCs.
+        Auto-loads monster stats for NPCs from database.
 
         Args:
             party: The party state with all characters
             npcs: List of NPC/enemy names
-            party_dex_modifiers: {character_name: dex_mod} for party members
-            npc_dex_modifiers: {npc_name: dex_mod} for NPCs/enemies
+            party_dex_modifiers: {character_name: dex_mod} for party members (optional)
+            npc_dex_modifiers: {npc_name: dex_mod} for NPCs/enemies (optional, auto-calculated from stats)
 
         Returns:
             String describing initiative order
         """
         if party_dex_modifiers is None:
             party_dex_modifiers = {}
+
+        # Auto-load NPC stats if modifiers not provided
         if npc_dex_modifiers is None:
-            npc_dex_modifiers = {}
+            npc_dex_modifiers = self._load_npc_stats(npcs)
 
         initiatives = {}
 
@@ -113,18 +160,20 @@ class CombatManager:
     ) -> str:
         """
         Start combat with a single character (non-party mode).
+        Auto-loads monster stats for NPCs from database.
 
         Args:
             character: The character state
             npcs: List of NPC/enemy names
             character_dex_mod: Dexterity modifier for the character
-            npc_dex_modifiers: {npc_name: dex_mod} for NPCs/enemies
+            npc_dex_modifiers: {npc_name: dex_mod} for NPCs/enemies (optional, auto-calculated from stats)
 
         Returns:
             String describing initiative order
         """
+        # Auto-load NPC stats if modifiers not provided
         if npc_dex_modifiers is None:
-            npc_dex_modifiers = {}
+            npc_dex_modifiers = self._load_npc_stats(npcs)
 
         initiatives = {}
 
@@ -148,7 +197,20 @@ class CombatManager:
         if not self.combat.in_combat:
             return "⚠️ Not in combat"
 
-        lines = ["⚔️ **COMBAT BEGINS!**\n"]
+        lines = []
+
+        # Identify NPCs/monsters in combat
+        npcs_in_combat = [name for name in self.npc_monsters.keys()]
+
+        if npcs_in_combat:
+            if len(npcs_in_combat) == 1:
+                lines.append(f"⚔️ **A {npcs_in_combat[0]} appears!**\n")
+            else:
+                npc_list = ", ".join(npcs_in_combat[:-1]) + f" and {npcs_in_combat[-1]}"
+                lines.append(f"⚔️ **{npc_list} appear!**\n")
+        else:
+            lines.append("⚔️ **COMBAT BEGINS!**\n")
+
         lines.append("📜 **Initiative Order:**")
 
         for idx, (name, init) in enumerate(self.combat.initiative_order, 1):
@@ -187,7 +249,7 @@ class CombatManager:
 
     def get_initiative_tracker(self, party: Optional[PartyState] = None) -> str:
         """
-        Get a formatted initiative tracker display.
+        Get a formatted initiative tracker display with HP for both party and NPCs.
 
         Args:
             party: Optional party state to include HP information
@@ -207,13 +269,22 @@ class CombatManager:
             # Marker for current turn
             marker = "🎯 " if name == current_name else "   "
 
-            # Get HP info if party member
+            # Get HP info
             hp_info = ""
+
+            # Check if party member
             if party and name in party.characters:
                 char = party.characters[name]
                 hp_info = f" - HP: {char.current_hp}/{char.max_hp}"
                 if not char.is_conscious():
                     hp_info += " 💀 UNCONSCIOUS"
+
+            # Check if NPC with loaded stats
+            elif name in self.npc_monsters:
+                monster = self.npc_monsters[name]
+                hp_info = f" - HP: {monster.current_hp}/{monster.max_hp}"
+                if not monster.is_alive():
+                    hp_info += " ☠️ DEAD"
 
             lines.append(f"{marker}{name} ({initiative}){hp_info}")
 
@@ -259,6 +330,90 @@ class CombatManager:
             ))
 
         return combatants
+
+    def get_npc_monster(self, npc_name: str) -> Optional[MonsterInstance]:
+        """
+        Get the MonsterInstance for an NPC in combat.
+
+        Args:
+            npc_name: Name of the NPC
+
+        Returns:
+            MonsterInstance or None if not found
+        """
+        return self.npc_monsters.get(npc_name)
+
+    def apply_damage_to_npc(self, npc_name: str, damage: int) -> tuple[int, bool]:
+        """
+        Apply damage to an NPC and check if it died.
+
+        Args:
+            npc_name: Name of the NPC
+            damage: Amount of damage to apply
+
+        Returns:
+            (actual_damage, is_dead) tuple
+        """
+        if npc_name in self.npc_monsters:
+            monster = self.npc_monsters[npc_name]
+            actual_damage, is_dead = monster.take_damage(damage)
+
+            if self.debug:
+                print(f"💥 {npc_name} takes {actual_damage} damage")
+                print(f"   HP: {monster.current_hp}/{monster.max_hp}")
+                if is_dead:
+                    print(f"   ☠️  {npc_name} has died!")
+
+            return (actual_damage, is_dead)
+
+        # Fallback if NPC not tracked
+        if self.debug:
+            print(f"⚠️  NPC '{npc_name}' not found in tracked monsters")
+        return (0, False)
+
+    def get_npc_ac(self, npc_name: str) -> int:
+        """
+        Get the AC (Armor Class) of an NPC.
+
+        Args:
+            npc_name: Name of the NPC
+
+        Returns:
+            AC value, or 10 if not found
+        """
+        if npc_name in self.npc_monsters:
+            return self.npc_monsters[npc_name].ac
+        return 10  # Default AC
+
+    def get_npc_attack_bonus(self, npc_name: str, attack_name: str) -> int:
+        """
+        Get the attack bonus for a specific NPC attack.
+
+        Args:
+            npc_name: Name of the NPC
+            attack_name: Name of the attack
+
+        Returns:
+            Attack bonus, or 0 if not found
+        """
+        if npc_name in self.npc_monsters:
+            return self.npc_monsters[npc_name].get_attack_bonus(attack_name)
+        return 0
+
+    def roll_npc_attack_damage(self, npc_name: str, attack_name: str) -> tuple[int, str]:
+        """
+        Roll damage for an NPC attack.
+
+        Args:
+            npc_name: Name of the NPC
+            attack_name: Name of the attack
+
+        Returns:
+            (damage_amount, damage_type) tuple
+        """
+        if npc_name in self.npc_monsters:
+            return self.npc_monsters[npc_name].roll_attack_damage(attack_name)
+        return (0, "unknown")
 
     def end_combat(self) -> str:
         """
@@ -320,6 +475,109 @@ class CombatManager:
             return f"💀 **{name} has been removed from combat!**"
 
         return f"⚠️ {name} not found in initiative order"
+
+    def generate_npc_attack(self, npc_name: str, target_ac: int = 15) -> str:
+        """
+        Generate an NPC attack using loaded monster stats.
+
+        Args:
+            npc_name: Name of the NPC to attack
+            target_ac: AC of the target (default 15)
+
+        Returns:
+            Description of the attack and result
+        """
+        if npc_name not in self.npc_monsters:
+            return f"⚠️ {npc_name} has no loaded stats for attacking"
+
+        monster = self.npc_monsters[npc_name]
+
+        if not monster.is_alive():
+            return f"☠️ {npc_name} is dead and cannot attack!"
+
+        if not monster.attacks:
+            return f"{npc_name} has no attacks available"
+
+        # Pick a random attack
+        import random
+        attack = random.choice(monster.attacks)
+        attack_name = attack["name"]
+
+        # Roll attack (d20 + to_hit bonus)
+        attack_roll = random.randint(1, 20)
+        attack_bonus = attack.get("to_hit", 0)
+        total_attack = attack_roll + attack_bonus
+
+        # Check if hit
+        if total_attack >= target_ac:
+            # Hit! Roll damage
+            damage, damage_type = monster.roll_attack_damage(attack_name)
+
+            if attack_roll == 20:
+                # Critical hit! Double damage
+                damage *= 2
+                return (
+                    f"🎯 **CRITICAL HIT!** {npc_name} attacks with {attack_name}!\n"
+                    f"Attack: {attack_roll} (natural 20) + {attack_bonus} = {total_attack} vs AC {target_ac}\n"
+                    f"💥 **{damage} {damage_type} damage** (critical!)"
+                )
+            else:
+                return (
+                    f"🎯 **HIT!** {npc_name} attacks with {attack_name}!\n"
+                    f"Attack: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}\n"
+                    f"💥 **{damage} {damage_type} damage**"
+                )
+        else:
+            # Miss
+            if attack_roll == 1:
+                return (
+                    f"❌ **CRITICAL MISS!** {npc_name}'s {attack_name} goes wide!\n"
+                    f"Attack: {attack_roll} (natural 1) + {attack_bonus} = {total_attack} vs AC {target_ac}\n"
+                    f"The {npc_name} stumbles and misses completely!"
+                )
+            else:
+                return (
+                    f"❌ **MISS!** {npc_name} attacks with {attack_name}!\n"
+                    f"Attack: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}\n"
+                    f"The attack misses!"
+                )
+
+    def process_npc_turns(self, target_ac: int = 15) -> List[str]:
+        """
+        Process all consecutive NPC turns automatically.
+
+        Args:
+            target_ac: AC of the target to attack (usually player's AC)
+
+        Returns:
+            List of attack descriptions from all NPCs who took turns
+        """
+        if not self.combat.in_combat:
+            return []
+
+        npc_actions = []
+        current_turn = self.combat.get_current_turn()
+
+        # Keep processing turns while it's an NPC turn
+        while current_turn and current_turn in self.npc_monsters:
+            # Generate NPC attack
+            attack_result = self.generate_npc_attack(current_turn, target_ac)
+            npc_actions.append(attack_result)
+
+            if self.debug:
+                print(f"🎲 NPC Turn: {current_turn}")
+                print(attack_result)
+
+            # Advance to next turn
+            next_char = self.combat.next_turn()
+            current_turn = self.combat.get_current_turn()
+
+            # Safety: prevent infinite loop
+            if len(npc_actions) > 10:
+                npc_actions.append("⚠️ Too many consecutive NPC turns, stopping")
+                break
+
+        return npc_actions
 
 
 def format_combat_status(

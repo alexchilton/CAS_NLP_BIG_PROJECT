@@ -255,6 +255,13 @@ class GameMaster:
                     )
                 else:
                     combat_feedback = "⚠️ No character or party loaded!"
+
+                # Add NPCs to session so they can be targeted by action validator
+                for npc in npc_list:
+                    if npc not in self.session.npcs_present:
+                        self.session.npcs_present.append(npc)
+                        if DEBUG_PROMPTS:
+                            logger.debug(f"🎭 Added {npc} to npcs_present for combat targeting")
             else:
                 combat_feedback = "⚠️ No NPCs specified for combat! Use: `/start_combat Goblin, Orc` or add NPCs with add_npc() first."
 
@@ -575,6 +582,59 @@ class GameMaster:
 
                     if DEBUG_PROMPTS:
                         logger.debug(f"⚔️ Combat turn auto-advanced: {turn_message}")
+
+                    # Step 5.6: Process NPC turns automatically using monster stats
+                    # Get player AC for NPC attack targeting
+                    target_ac = 15  # Default
+                    if self.session.character_state:
+                        # Try to get AC from character (if available)
+                        if hasattr(self.session.character_state, 'armor_class'):
+                            target_ac = self.session.character_state.armor_class
+                    elif self.session.party and len(self.session.party.characters) > 0:
+                        # For party mode, use average AC or first character's AC
+                        first_char = list(self.session.party.characters.values())[0]
+                        if hasattr(first_char, 'armor_class'):
+                            target_ac = first_char.armor_class
+
+                    # Process all consecutive NPC turns
+                    npc_actions = self.combat_manager.process_npc_turns(target_ac)
+
+                    if npc_actions:
+                        # Add NPC attacks to response
+                        combat_feedback += "\n\n**🐉 NPC ACTIONS:**\n" + "\n\n".join(npc_actions)
+
+                        # Apply damage to player/party if NPCs hit
+                        for npc_action in npc_actions:
+                            if "💥" in npc_action and "damage" in npc_action.lower():
+                                # Extract damage from attack result
+                                import re
+                                damage_match = re.search(r'\*\*(\d+)\s+(\w+)\s+damage\*\*', npc_action)
+                                if damage_match:
+                                    damage = int(damage_match.group(1))
+                                    damage_type = damage_match.group(2)
+
+                                    # Apply to character or party
+                                    if self.session.character_state:
+                                        result = self.session.character_state.take_damage(damage, damage_type)
+                                        combat_feedback += f"\n💥 You take {damage} {damage_type} damage! HP: {result['current_hp']}/{self.session.character_state.max_hp}"
+
+                                        if result['unconscious']:
+                                            combat_feedback += "\n☠️ **You fall unconscious!**"
+
+                                    elif self.session.party and len(self.session.party.characters) > 0:
+                                        # For party mode, apply to first character (target should be smarter in future)
+                                        first_char_name = list(self.session.party.characters.keys())[0]
+                                        first_char = self.session.party.characters[first_char_name]
+                                        result = first_char.take_damage(damage, damage_type)
+                                        combat_feedback += f"\n💥 {first_char_name} takes {damage} {damage_type} damage! HP: {result['current_hp']}/{first_char.max_hp}"
+
+                                        if result['unconscious']:
+                                            combat_feedback += f"\n☠️ **{first_char_name} falls unconscious!**"
+
+                        if DEBUG_PROMPTS:
+                            logger.debug(f"🐉 NPC turns processed: {len(npc_actions)} attacks")
+                            for action in npc_actions:
+                                logger.debug(f"   {action}")
 
             # Add shop transaction feedback if any
             if transaction_feedback:
