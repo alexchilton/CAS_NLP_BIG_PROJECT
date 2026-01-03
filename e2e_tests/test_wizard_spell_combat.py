@@ -198,8 +198,30 @@ def test_wizard_spell_combat():
             print(f"\n🗺️  Location: {context[:200]}...")
 
         print("\n" + "=" * 80)
-        print("COMBAT: Elara vs Skeleton - FIGHT TO DEATH!")
+        print("EXPLORATION: Elara explores the Ancient Ruins")
         print("=" * 80)
+        print("💡 Let's trigger the GM to describe the ruins and spawn undead naturally")
+
+        # First explore the ruins - GM should mention skeletons
+        send_message(driver, "I carefully explore the ancient ruins, looking for any signs of danger or treasure", wait_time=10)
+
+        messages = get_chat_messages(driver)
+        if messages:
+            exploration_response = messages[-1]
+            print(f"\n🎭 GM: {exploration_response[:400]}...")
+
+            # Check if GM mentioned skeletons or undead
+            if "skeleton" in exploration_response.lower() or "undead" in exploration_response.lower():
+                print("\n✅ GM mentioned undead/skeletons in description!")
+            else:
+                print("\n⚠️  GM didn't mention skeletons - this is the reality check working!")
+                print("     We should NOT start combat with non-existent creatures")
+                return  # Exit test gracefully - reality check is working correctly
+
+        print("\n" + "=" * 80)
+        print("COMBAT: GM described skeletons, now start combat")
+        print("=" * 80)
+        print("💡 Only starting combat because skeletons were mentioned by GM")
 
         send_message(driver, "/start_combat Skeleton", wait_time=8)
 

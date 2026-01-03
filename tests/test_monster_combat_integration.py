@@ -59,17 +59,15 @@ def test_combat_with_goblin():
 
     # Check if Goblin stats were loaded
     goblin = combat_manager.get_npc_monster("Goblin")
-    if goblin:
-        print("\n✅ Goblin stats loaded successfully!")
-        print(f"   Name: {goblin.name}")
-        print(f"   CR: {goblin.cr}")
-        print(f"   HP: {goblin.current_hp}/{goblin.max_hp}")
-        print(f"   AC: {goblin.ac}")
-        print(f"   DEX: {goblin.dex}")
-        print(f"   Attacks: {', '.join([a['name'] for a in goblin.attacks])}")
-    else:
-        print("❌ ERROR: Goblin stats not loaded!")
-        return False
+    assert goblin is not None, "Goblin stats should be loaded"
+
+    print("\n✅ Goblin stats loaded successfully!")
+    print(f"   Name: {goblin.name}")
+    print(f"   CR: {goblin.cr}")
+    print(f"   HP: {goblin.current_hp}/{goblin.max_hp}")
+    print(f"   AC: {goblin.ac}")
+    print(f"   DEX: {goblin.dex}")
+    print(f"   Attacks: {', '.join([a['name'] for a in goblin.attacks])}")
 
     # Test initiative tracker with NPC HP
     print("\n📜 Initiative Tracker (with NPC HP):")
@@ -138,7 +136,6 @@ def test_combat_with_goblin():
         print(f"Goblin: ☠️  DEAD")
 
     print("\n✅ TEST PASSED: Monster stats integration working!\n")
-    return True
 
 
 def test_multiple_monsters():
@@ -172,17 +169,15 @@ def test_multiple_monsters():
     print("\n📊 Loaded Monster Stats:")
     for npc_name in ["Goblin", "Wolf", "Skeleton"]:
         monster = combat_manager.get_npc_monster(npc_name)
-        if monster:
-            print(f"\n   ✅ {monster.name}")
-            print(f"      CR: {monster.cr}, HP: {monster.current_hp}, AC: {monster.ac}")
-        else:
-            print(f"\n   ❌ {npc_name} - NOT LOADED")
+        assert monster is not None, f"{npc_name} stats should be loaded from database"
+
+        print(f"\n   ✅ {monster.name}")
+        print(f"      CR: {monster.cr}, HP: {monster.current_hp}, AC: {monster.ac}")
 
     print("\n📜 Initiative Tracker:")
     print(combat_manager.get_initiative_tracker())
 
     print("\n✅ TEST PASSED: Multiple monsters loaded!\n")
-    return True
 
 
 def test_dragon_combat():
@@ -214,26 +209,26 @@ def test_dragon_combat():
 
     # Check dragon stats
     dragon = combat_manager.get_npc_monster("Young White Dragon")
-    if dragon:
-        print("\n🐉 Dragon Stats:")
-        print(f"   CR: {dragon.cr}")
-        print(f"   HP: {dragon.current_hp}/{dragon.max_hp}")
-        print(f"   AC: {dragon.ac}")
-        print(f"   Size: {dragon.size}")
-        print(f"   Attacks: {', '.join([a['name'] for a in dragon.attacks])}")
-        print(f"   Traits: {', '.join(dragon.traits)}")
+    assert dragon is not None, "Young White Dragon stats should be loaded from database"
 
-        # Test dragon breath attack
-        print("\n❄️  Dragon uses Cold Breath!")
-        damage, dtype = combat_manager.roll_npc_attack_damage("Young White Dragon", "Cold Breath")
-        print(f"   Damage: {damage} {dtype}")
-        print(f"   (This is MASSIVE damage!)")
+    print("\n🐉 Dragon Stats:")
+    print(f"   CR: {dragon.cr}")
+    print(f"   HP: {dragon.current_hp}/{dragon.max_hp}")
+    print(f"   AC: {dragon.ac}")
+    print(f"   Size: {dragon.size}")
+    print(f"   Attacks: {', '.join([a['name'] for a in dragon.attacks])}")
+    print(f"   Traits: {', '.join(dragon.traits)}")
+
+    # Test dragon breath attack
+    print("\n❄️  Dragon uses Cold Breath!")
+    damage, dtype = combat_manager.roll_npc_attack_damage("Young White Dragon", "Cold Breath")
+    print(f"   Damage: {damage} {dtype}")
+    print(f"   (This is MASSIVE damage!)")
 
     print("\n📜 Initiative Tracker:")
     print(combat_manager.get_initiative_tracker())
 
     print("\n✅ TEST PASSED: Dragon combat works!\n")
-    return True
 
 
 if __name__ == "__main__":

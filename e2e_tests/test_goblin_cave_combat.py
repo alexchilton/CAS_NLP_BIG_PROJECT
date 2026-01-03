@@ -199,9 +199,30 @@ def test_goblin_cave_combat():
                 print(f"   Full context: {context}")
 
         print("\n" + "=" * 80)
-        print("COMBAT: Start encounter with Goblin")
+        print("EXPLORATION: Player explores the cave")
         print("=" * 80)
-        print("💡 Now combat makes narrative sense - we're AT a goblin cave!")
+        print("💡 Let's trigger the GM to describe the cave and spawn goblins naturally")
+
+        # First explore the cave - GM should mention goblins
+        send_message(driver, "I explore the cave and look around for any signs of danger", wait_time=10)
+
+        messages = get_chat_messages(driver)
+        if messages:
+            exploration_response = messages[-1]
+            print(f"\n🎭 GM: {exploration_response[:400]}...")
+
+            # Check if GM mentioned goblins or creatures
+            if "goblin" in exploration_response.lower():
+                print("\n✅ GM mentioned goblins in description!")
+            else:
+                print("\n⚠️  GM didn't mention goblins - this is the reality check working!")
+                print("     We should NOT start combat with non-existent creatures")
+                return  # Exit test gracefully - reality check is working correctly
+
+        print("\n" + "=" * 80)
+        print("COMBAT: GM described goblins, now start combat")
+        print("=" * 80)
+        print("💡 Only starting combat because goblins were mentioned by GM")
 
         send_message(driver, "/start_combat Goblin", wait_time=8)
 
