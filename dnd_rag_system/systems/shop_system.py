@@ -160,7 +160,7 @@ class ShopSystem:
         if not hasattr(character_state, 'inventory'):
             character_state.inventory = {}
 
-        # Get character's gold (use CharacterState.gold field, not inventory)
+        # Get character's gold from dedicated gold field
         character_gold = getattr(character_state, 'gold', 0)
 
         # Check if enough gold
@@ -173,7 +173,7 @@ class ShopSystem:
                 message=f"Not enough gold! {item_name} costs {total_cost} gp ({price_source} price), but you only have {character_gold} gp."
             )
 
-        # Process purchase
+        # Process purchase - deduct gold
         character_state.gold = character_gold - total_cost
 
         # Add item to inventory
@@ -235,7 +235,7 @@ class ShopSystem:
         if character_state.inventory[item_name] <= 0:
             del character_state.inventory[item_name]
 
-        # Add gold (use CharacterState.gold field)
+        # Add gold to character's gold field
         current_gold = getattr(character_state, 'gold', 0)
         character_state.gold = current_gold + sell_price
 

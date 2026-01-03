@@ -49,13 +49,13 @@ def setup_test_environment():
         max_hp=25,
         level=3
     )
+    char.gold = 100  # Starting with 100 gold
     char.inventory = {
-        'Gold': 100,  # Starting with 100 gold
         'Old Sword': 1,
         'Leather Armor': 1
     }
 
-    print(f"\n💰 Test character created with {char.inventory['Gold']} gold")
+    print(f"\n💰 Test character created with {char.gold} gold")
     print(f"📦 Starting inventory: {list(char.inventory.keys())}")
 
     return shop, char, db
@@ -135,7 +135,7 @@ def test_purchase_transactions():
 
     shop, char, db = setup_test_environment()
 
-    initial_gold = char.inventory['Gold']
+    initial_gold = char.gold
     print(f"\n💰 Starting gold: {initial_gold} gp")
 
     # Test 3.1: Successful purchase
@@ -148,23 +148,23 @@ def test_purchase_transactions():
     print(f"Inventory: {char.inventory}")
 
     assert transaction.success, "Purchase should succeed"
-    assert char.inventory['Gold'] < initial_gold, "Gold should decrease"
+    assert char.gold < initial_gold, "Gold should decrease"
     assert 'Longsword' in char.inventory, "Longsword should be in inventory"
     assert char.inventory['Longsword'] == 1, "Should have 1 longsword"
     print("✅ PASSED")
 
     # Test 3.2: Purchase multiple items
     print("\n--- Test 3.2: Buy 3 Healing Potions ---")
-    gold_before = char.inventory['Gold']
+    gold_before = char.gold
     transaction = shop.attempt_purchase(char, "Potion of Healing", quantity=3)
     print(f"Result: {transaction.success}")
     print(f"Message: {transaction.message}")
     print(f"Total cost: {transaction.cost_gp} gp")
-    print(f"Gold before: {gold_before} gp, After: {char.inventory['Gold']} gp")
+    print(f"Gold before: {gold_before} gp, After: {char.gold} gp")
 
     if transaction.success:
         assert char.inventory['Potion of Healing'] == 3, "Should have 3 potions"
-        assert char.inventory['Gold'] == gold_before - transaction.cost_gp, "Gold should match"
+        assert char.gold == gold_before - transaction.cost_gp, "Gold should match"
         print("✅ PASSED")
     else:
         print("⚠️  Not enough gold for this purchase (expected if insufficient funds)")
@@ -195,7 +195,7 @@ def test_sell_transactions():
     shop, char, db = setup_test_environment()
 
     # Character has: Old Sword, Leather Armor
-    initial_gold = char.inventory['Gold']
+    initial_gold = char.gold
     print(f"\n💰 Starting gold: {initial_gold} gp")
     print(f"📦 Starting inventory: {char.inventory}")
 
@@ -205,10 +205,10 @@ def test_sell_transactions():
     print(f"Result: {transaction.success}")
     print(f"Message: {transaction.message}")
     print(f"Gold received: {transaction.cost_gp} gp")
-    print(f"Total gold now: {char.inventory['Gold']} gp")
+    print(f"Total gold now: {char.gold} gp")
 
     if transaction.success:
-        assert char.inventory['Gold'] > initial_gold, "Gold should increase"
+        assert char.gold > initial_gold, "Gold should increase"
         assert 'Old Sword' not in char.inventory, "Old Sword should be removed"
         print("✅ PASSED")
 
@@ -313,7 +313,7 @@ def test_complete_shopping_experience():
 
     shop, char, db = setup_test_environment()
 
-    print(f"\n💰 Starting gold: {char.inventory['Gold']} gp")
+    print(f"\n💰 Starting gold: {char.gold} gp")
     print(f"📦 Starting inventory: {list(char.inventory.keys())}")
 
     # Step 1: Player asks about swords
@@ -346,7 +346,7 @@ def test_complete_shopping_experience():
 
     # Final inventory
     print(f"\n📊 Final Results:")
-    print(f"   💰 Gold: {char.inventory['Gold']} gp")
+    print(f"   💰 Gold: {char.gold} gp")
     print(f"   📦 Inventory: {list(char.inventory.keys())}")
 
     print("\n✅ COMPLETE SHOPPING EXPERIENCE PASSED!")
