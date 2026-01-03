@@ -7,12 +7,19 @@ Tests that spells, monsters, classes, and races can be found via semantic search
 
 import sys
 from pathlib import Path
+import pytest
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.config import settings
+
+
+@pytest.fixture(scope="module")
+def db():
+    """Provide ChromaDB manager instance for tests."""
+    return ChromaDBManager()
 
 
 def test_spell_search(db: ChromaDBManager):
