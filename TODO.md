@@ -181,6 +181,33 @@
 
 ## ✅ COMPLETED (See DONE.md for details)
 
+- ✅ **NPC Combat AI & Auto-Population System (2026-01-03)**
+  - Implemented NPC combat AI with automatic monster attacks during their turns
+  - NPCs now automatically attack when their initiative comes up
+  - Auto-populate NPCs when loading combat locations (e.g., Goblin Cave → 2 Goblins appear)
+  - Fixed bidirectional location matching for proper NPC spawning
+  - Updated welcome message to show NPCs present: "⚠️ **You see:** Goblin, Goblin!"
+  - Fixed `/context` command error (GameSession.scene_description)
+  - Created comprehensive E2E test suite:
+    - `test_goblin_cave_combat.py` - Fighter combat with goblins
+    - `test_wizard_spell_combat.py` - Wizard spell combat with Skeleton
+    - `test_combat_scenarios.py` - Full test suite with 4 scenarios:
+      - Wizard vs Skeleton (Ancient Ruins) - RAG integration
+      - Fighter vs Ogre (Rocky Mountain Pass) - Melee combat
+      - Wizard vs Wolf Pack (Dark Forest) - Multi-enemy
+      - Fighter vs Young Dragon (Dragon's Lair) - Boss fight
+  - All tests fight until death or victory
+  - **Impact**: Combat encounters feel alive with NPCs taking actions
+  - Files: `combat_manager.py`, `gm_dialogue_unified.py`, `app_gradio.py`, E2E tests
+- ✅ **Monster Stats Integration with Combat System (2026-01-03)**
+  - Created monster stats database with 16 D&D 5e creatures (CR 0-17)
+  - Built MonsterStatSystem for creating monster instances with real stats
+  - Integrated with CombatManager to auto-load stats when combat starts
+  - NPC HP tracking in initiative tracker
+  - Real AC, attack bonuses, and damage rolls from stat blocks
+  - Comprehensive test suite with Goblin, Wolf, Skeleton, and Dragon combat
+  - **Impact**: Moves RAG usage from ~10% to ~40% for combat encounters
+  - Files: `dnd_rag_system/data/monster_stats.py`, `dnd_rag_system/systems/monster_stat_system.py`
 - ✅ NPC Auto-Extraction from GM Responses (2025-12-27)
   - When GM mentions NPCs in narrative, they're automatically added to `npcs_present`
   - Uses existing Qwen 2.5 3B mechanics extractor to parse `npcs_introduced`

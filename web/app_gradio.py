@@ -44,13 +44,27 @@ party = PartyState(party_name="Adventuring Party")
 party_characters = {}  # {char_name: Character} for display
 gameplay_mode = "character"  # "character" or "party"
 
-# Starting locations for new games
+# Starting locations for new games - MIX of peaceful and combat-ready locations!
 STARTING_LOCATIONS = [
+    # Peaceful locations (for shopping/rest)
     ("The Prancing Pony Inn", "A cozy tavern bustling with travelers and merchants. The smell of roasted meat and ale fills the air. A shopkeeper behind the bar sells basic supplies."),
     ("The Market Square", "A busy marketplace with stalls selling adventuring gear, potions, and supplies. Merchants call out their wares. Perfect for shopping before an adventure!"),
     ("The Town Gates", "The entrance to town, where the road stretches out toward adventure. Guards keep watch. A general store sits just inside the gates."),
-    ("The Adventurer's Guild Hall", "A gathering place for heroes seeking quests and glory. Notice boards line the walls with job postings. A small shop in the corner sells equipment."),
-    ("The Temple District", "A peaceful area with temples to various gods. Clerics offer healing and blessings. A holy merchant sells potions and religious items."),
+    # Combat-ready locations (for immediate action!)
+    ("Goblin Cave Entrance", "You stand at the mouth of a dark cave. The stench of unwashed goblins wafts out from the darkness. Crude wooden stakes mark goblin territory. You hear chittering and the clang of crude weapons echoing from within."),
+    ("Ancient Ruins", "Crumbling stone pillars rise from overgrown weeds. This was once a great temple, now fallen to ruin. Skeletons and undead are known to haunt these grounds, guarding forgotten treasures."),
+    ("Dark Forest Clearing", "You emerge into a small clearing surrounded by ancient, gnarled trees. The forest floor is littered with bones. Fresh wolf tracks circle the area. This is dangerous territory."),
+]
+
+# Combat-appropriate locations where monsters would naturally appear
+COMBAT_LOCATIONS = [
+    ("Goblin Cave Entrance", "You stand at the mouth of a dark cave. The stench of unwashed goblins wafts out from the darkness. Crude wooden stakes mark goblin territory. You hear chittering and the clang of crude weapons echoing from within."),
+    ("Ancient Ruins", "Crumbling stone pillars rise from overgrown weeds. This was once a great temple, now fallen to ruin. Skeletons and undead are known to haunt these grounds, guarding forgotten treasures."),
+    ("Dark Forest Clearing", "You emerge into a small clearing surrounded by ancient, gnarled trees. The forest floor is littered with bones. Fresh wolf tracks circle the area. This is dangerous territory."),
+    ("Abandoned Mine Shaft", "The entrance to an old mining tunnel, long since abandoned. Support beams creak ominously. Miners' tools lie scattered about. Something moves in the shadows - perhaps giant rats, or worse."),
+    ("Rocky Mountain Pass", "A narrow path winds between towering cliffs. Loose rocks make footing treacherous. Ogres and trolls are known to ambush travelers here, and you can see crude cave entrances dotting the cliff faces."),
+    ("Sunken Graveyard", "An old cemetery, half-swallowed by swamp. Weathered tombstones lean at odd angles. The ground shifts underfoot. On nights like this, the dead sometimes rise from their graves."),
+    ("Dragon's Lair Approach", "You stand before a massive cavern carved into the mountainside. Scorch marks blacken the rocks. A pile of charred bones lies near the entrance. The air shimmers with heat, and you hear the deep, rhythmic breathing of something massive within."),
 ]
 
 
@@ -139,8 +153,17 @@ def delete_character(character_choice: str) -> Tuple[str, gr.update]:
         return f"❌ Error deleting character: {e}", gr.update()
 
 
-def load_character(character_choice: str) -> Tuple[str, str, list, Optional[str]]:
-    """Load selected character and update context."""
+def load_character_with_location(character_choice: str, location_name: Optional[str] = None) -> Tuple[str, str, str]:
+    """
+    Load character and set specific starting location (for testing).
+
+    Args:
+        character_choice: Character selection string
+        location_name: Optional location name (e.g., "Goblin Cave Entrance"). If None, uses random.
+
+    Returns:
+        Tuple of (location_name, location_desc, character_name)
+    """
     global current_character, conversation_history, gameplay_mode
 
     conversation_history = []
@@ -159,7 +182,7 @@ def load_character(character_choice: str) -> Tuple[str, str, list, Optional[str]
     current_character = load_character_from_json(filepath)
 
     if not current_character:
-        return "Error loading character", "", [], None
+        raise ValueError(f"Could not load character from {filepath}")
 
     # Create CharacterState and load into GameSession for Reality Check
     char = current_character
@@ -184,9 +207,71 @@ def load_character(character_choice: str) -> Tuple[str, str, list, Optional[str]
     gm.session.character_state = char_state
     gm.session.npcs_present = []  # Clear NPCs when loading new character
 
-    # Set random starting location
-    location_name, location_desc = random.choice(STARTING_LOCATIONS)
+    # Set starting location - check environment variable first, then parameter, then random
+    env_location = os.getenv("TEST_START_LOCATION")
+    if env_location:
+        location_name = env_location
+        print(f"🧪 Test mode: Starting at {location_name} (from TEST_START_LOCATION env var)")
+
+    if location_name:
+        # Search for location in all available locations
+        all_locations = STARTING_LOCATIONS + COMBAT_LOCATIONS
+        found_location = None
+        for loc_name, loc_desc in all_locations:
+            if loc_name.lower() == location_name.lower() or location_name.lower() in loc_name.lower():
+                found_location = (loc_name, loc_desc)
+                break
+
+        if found_location:
+            location_name, location_desc = found_location
+        else:
+            # Location not found, use first combat location as fallback
+            print(f"⚠️ Location '{location_name}' not found, using default combat location")
+            location_name, location_desc = COMBAT_LOCATIONS[0]
+    else:
+        # Random selection
+        location_name, location_desc = random.choice(STARTING_LOCATIONS)
+
     gm.set_location(location_name, location_desc)
+
+    # Auto-populate NPCs for combat locations
+    location_npc_map = {
+        "Goblin Cave Entrance": ["Goblin", "Goblin"],  # 2 goblins
+        "Goblin Cave": ["Goblin", "Goblin"],
+        "Ancient Ruins": ["Skeleton", "Skeleton"],
+        "Dark Forest Clearing": ["Wolf", "Wolf"],
+        "Abandoned Mine Shaft": ["Giant Rat"],
+        "Rocky Mountain Pass": ["Ogre"],
+        "Sunken Graveyard": ["Zombie", "Zombie"],
+        "Dragon's Lair Approach": ["Young Dragon"],
+    }
+
+    # Add NPCs if this is a known combat location
+    for loc_key, npcs in location_npc_map.items():
+        # Check for bidirectional partial match
+        if loc_key.lower() in location_name.lower() or location_name.lower() in loc_key.lower():
+            for npc in npcs:
+                if npc not in gm.session.npcs_present:
+                    gm.session.npcs_present.append(npc)
+            print(f"🎭 Auto-added NPCs to {location_name}: {npcs}")
+            break
+
+    return location_name, location_desc, char.name
+
+
+def load_character(character_choice: str) -> Tuple[str, str, list, Optional[str]]:
+    """Load selected character and update context (Gradio UI wrapper)."""
+    try:
+        location_name, location_desc, char_name = load_character_with_location(character_choice)
+    except ValueError as e:
+        return f"Error loading character: {e}", "", [], None
+
+    char = current_character
+    if not char:
+        return "Error loading character", "", [], None
+
+    # Get character state from GM session
+    char_state = gm.session.character_state
 
     # Set GM context
     mods = char.get_modifiers()
@@ -219,9 +304,14 @@ You find yourself in **{location_name}**.
 
 {location_desc}
 
-You have **{char_state.gold} gold pieces** in your purse.
+You have **{char_state.gold} gold pieces** in your purse."""
 
-What would you like to do?
+    # Add NPC warning if NPCs are present
+    if gm.session.npcs_present:
+        npc_list = ", ".join(gm.session.npcs_present)
+        welcome_message += f"\n\n⚠️ **You see:** {npc_list}!"
+
+    welcome_message += """\n\nWhat would you like to do?
 
 *Type `/help` to see available commands, or describe your action!*"""
 
@@ -619,7 +709,7 @@ Otherwise, just type your action and press Enter!"""
             )
 
         elif cmd == "/context":
-            context_text = gm.session.context
+            context_text = gm.session.scene_description
             return (
                 history + [
                     {"role": "user", "content": message},
