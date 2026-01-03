@@ -227,7 +227,7 @@ def test_goblin_cave_combat():
         print("COMBAT ROUND 1: Thorin attacks")
         print("=" * 80)
 
-        send_message(driver, "I swing my longsword at the goblin", wait_time=10)
+        send_message(driver, "I attack the goblin", wait_time=10)
 
         messages = get_chat_messages(driver)
         if messages:

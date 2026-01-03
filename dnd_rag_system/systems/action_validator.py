@@ -511,6 +511,7 @@ class ActionValidator:
 
     def _extract_target(self, text: str, keywords: List[str]) -> Optional[str]:
         """Extract target entity from text after action keywords"""
+        print(f"🔍 [ACTION_PARSER DEBUG] _extract_target() called with text: '{text}'")
         if self.debug:
             logger.debug(f"[ACTION_PARSER] _extract_target() called with text: '{text}'")
         for keyword in keywords:
@@ -537,6 +538,7 @@ class ActionValidator:
                 at_match = re.search(r'\bat\s+(?:the\s+)?(\w+(?:\s+\w+)?)', after)
                 if at_match:
                     target = at_match.group(1).strip()
+                    print(f"✅ [ACTION_PARSER DEBUG] Found 'at X' pattern! Returning target: '{target}'")
                     if self.debug:
                         logger.debug(f"[ACTION_PARSER] Found 'at X' pattern. Target: '{target}'")
                     return target
