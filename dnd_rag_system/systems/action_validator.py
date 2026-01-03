@@ -12,6 +12,9 @@ from dataclasses import dataclass
 from typing import Optional, List, Tuple, Dict
 import re
 from enum import Enum
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ActionType(Enum):
@@ -508,6 +511,8 @@ class ActionValidator:
 
     def _extract_target(self, text: str, keywords: List[str]) -> Optional[str]:
         """Extract target entity from text after action keywords"""
+        if self.debug:
+            logger.debug(f"[ACTION_PARSER] _extract_target() called with text: '{text}'")
         for keyword in keywords:
             # Use word boundary regex to avoid matching "attack" inside "attacks"
             pattern = rf'\b{re.escape(keyword)}\b'
@@ -518,16 +523,34 @@ class ActionValidator:
                 start_pos = match.end()
                 after = text[start_pos:].strip()
 
-                # Remove common leading prepositions
-                after = re.sub(r'^(the|at|a|an)\s+', '', after)
+                if self.debug:
+                    logger.debug(f"[ACTION_PARSER] Keyword '{keyword}' matched. Text after: '{after}'")
 
-                # Stop at common prepositions that indicate end of target
+                # Remove possessives and articles at the start
+                # This handles "my longsword at the goblin" → "longsword at the goblin"
+                after = re.sub(r'^(my|his|her|their|the|a|an)\s+', '', after)
+
+                if self.debug:
+                    logger.debug(f"[ACTION_PARSER] After removing possessives: '{after}'")
+
+                # Look for "at X" pattern first - this is a strong indicator of target
+                at_match = re.search(r'\bat\s+(?:the\s+)?(\w+(?:\s+\w+)?)', after)
+                if at_match:
+                    target = at_match.group(1).strip()
+                    if self.debug:
+                        logger.debug(f"[ACTION_PARSER] Found 'at X' pattern. Target: '{target}'")
+                    return target
+
+                # Stop at common prepositions that indicate end of target or start of weapon
                 # e.g., "goblin with my sword" -> stop at "with"
-                stop_words = ['with', 'using', 'and', 'then', ',']
+                stop_words = ['with', 'using', 'and', 'then', ',', 'at']
                 for stop in stop_words:
                     if ' ' + stop + ' ' in ' ' + after:
                         after = after.split(' ' + stop + ' ')[0]
                         break
+
+                # Remove leading articles/prepositions after splitting
+                after = re.sub(r'^(the|a|an)\s+', '', after)
 
                 # Take first 1-2 words as target
                 words = after.split()[:2]
