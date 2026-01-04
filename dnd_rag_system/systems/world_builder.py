@@ -316,13 +316,13 @@ def generate_random_location(from_location: Location, direction: str = None) -> 
     is_safe = location_type in [LocationType.TOWN, LocationType.TAVERN, LocationType.SHOP, LocationType.TEMPLE]
     
     # Create the location
-    # Initially undiscovered - will be marked discovered when added to world_map
+    # Mark as discovered since /explore found it (player knows it exists)
     return Location(
         name=name,
         location_type=location_type,
         description=description,
         is_safe=is_safe,
-        is_discovered=False,  # Will be marked discovered when /explore adds to world_map
+        is_discovered=True,  # Player discovered it exists via /explore
         connections=[from_location.name]  # Connected back to where we came from
     )
 
@@ -436,12 +436,12 @@ Generate the location:"""
         description = fallback_loc.description
     
     # Step 6: Create and return Location
-    # Initially undiscovered - will be marked discovered when added to world_map
+    # Mark as discovered since /explore found it (player knows it exists)
     return Location(
         name=name,
         location_type=location_type,
         description=description,
         is_safe=is_safe,
-        is_discovered=False,  # Will be marked discovered when /explore adds to world_map
+        is_discovered=True,  # Player discovered it exists via /explore
         connections=[from_location.name]
     )
