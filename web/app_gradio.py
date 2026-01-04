@@ -343,6 +343,7 @@ PLAYER CHARACTER STATS:
 - INT: {char.intelligence} ({mods['intelligence']:+d})  |  WIS: {char.wisdom} ({mods['wisdom']:+d})  |  CHA: {char.charisma} ({mods['charisma']:+d})
 
 EQUIPMENT: {', '.join(char.equipment[:5])}
+INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.items() if item not in char.equipment][:5]) or "Empty"}
 """
 
     if char.spells:
@@ -450,6 +451,7 @@ PLAYER CHARACTER STATS:
 - INT: {char.intelligence} ({mods['intelligence']:+d})  |  WIS: {char.wisdom} ({mods['wisdom']:+d})  |  CHA: {char.charisma} ({mods['charisma']:+d})
 
 EQUIPMENT: {', '.join(char.equipment[:5])}
+INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.items() if item not in char.equipment][:5]) or "Empty"}
 """
     
     if char.spells:
@@ -632,6 +634,9 @@ def format_character_sheet() -> str:
 
 ### Equipment
 {chr(10).join('- ' + item for item in char.equipment)}
+
+### Inventory
+{chr(10).join('- ' + f"{item} ({qty})" for item, qty in char_state.inventory.items() if item not in char.equipment) if char_state and char_state.inventory else '- Empty'}
 
 """
 
@@ -883,11 +888,31 @@ Otherwise, just type your action and press Enter!"""
             )
 
         elif cmd == "/context":
-            context_text = gm.session.scene_description
+            # Generate fresh context from current character state
+            if current_character and gm.session.character_state:
+                char = current_character
+                char_state = gm.session.character_state
+                mods = char.get_modifiers()
+                
+                fresh_context = f"""The player is {char.name}, a level {char.level} {char.race} {char.character_class}.
+
+PLAYER CHARACTER STATS:
+- HP: {char_state.current_hp}/{char_state.max_hp}  |  AC: {char.armor_class}  |  Prof Bonus: +{char.proficiency_bonus}
+- STR: {char.strength} ({mods['strength']:+d})  |  DEX: {char.dexterity} ({mods['dexterity']:+d})  |  CON: {char.constitution} ({mods['constitution']:+d})
+- INT: {char.intelligence} ({mods['intelligence']:+d})  |  WIS: {char.wisdom} ({mods['wisdom']:+d})  |  CHA: {char.charisma} ({mods['charisma']:+d})
+
+EQUIPMENT: {', '.join(char.equipment[:5])}
+INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.items() if item not in char.equipment][:5]) or "Empty"}
+"""
+                if char.spells:
+                    fresh_context += f"\nSPELLS: {', '.join(char.spells[:5])}"
+            else:
+                fresh_context = gm.session.scene_description
+            
             return (
                 history + [
                     {"role": "user", "content": message},
-                    {"role": "assistant", "content": f"**Current Context:**\n\n{context_text}"}
+                    {"role": "assistant", "content": f"**Current Context:**\n\n{fresh_context}"}
                 ],
                 *get_initiative_tracker(),
                 get_current_sheet()
@@ -1112,6 +1137,9 @@ def format_character_sheet_for_char(char: Character) -> str:
 
 ### Equipment
 {chr(10).join('- ' + item for item in char.equipment)}
+
+### Inventory
+{chr(10).join('- ' + f"{item} ({qty})" for item, qty in char_state.inventory.items() if item not in char.equipment) if char_state and char_state.inventory else '- Empty'}
 """
 
     if char.spells:

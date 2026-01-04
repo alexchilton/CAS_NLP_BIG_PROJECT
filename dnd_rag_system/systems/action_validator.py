@@ -24,6 +24,7 @@ class ActionType(Enum):
     CONVERSATION = "conversation"  # Talking to NPCs
     ITEM_USE = "item_use"       # Using items/equipment
     EXPLORATION = "exploration" # Looking, searching, moving
+    STEAL = "steal"             # Stealing items (requires stealth check)
     UNKNOWN = "unknown"         # Couldn't determine
 
 
@@ -89,6 +90,11 @@ class ActionValidator:
         'use', 'drink', 'eat', 'equip', 'wear', 'wield', 'open',
         'pull out', 'take out', 'consume', 'apply', 'ready', 'draw',
         'hold', 'grab', 'reach for'
+    ]
+    
+    STEAL_KEYWORDS = [
+        'steal', 'swipe', 'pocket', 'pilfer', 'nick', 'pinch', 'lift',
+        'snatch', 'sneak', 'pickpocket'
     ]
 
     def __init__(self, debug: bool = False):
@@ -162,6 +168,16 @@ class ActionValidator:
                 action_type=ActionType.SPELL_CAST,
                 target=target,
                 resource=spell,
+                raw_input=user_input
+            )
+        
+        # Check for steal actions (before item use, since "steal potion" shouldn't match "use")
+        if any(keyword in lower_input for keyword in self.STEAL_KEYWORDS):
+            item = self._extract_item(lower_input)
+            return ActionIntent(
+                action_type=ActionType.STEAL,
+                target=None,  # No target person, just the item
+                resource=item,  # Item being stolen
                 raw_input=user_input
             )
 
@@ -657,6 +673,7 @@ class ActionValidator:
         """Extract item name from text"""
         # Item keywords with patterns to match verb conjugations
         item_patterns = [
+            r'\b(?:steal|swipe|pilfer|pocket|snatch|lift)\b',
             r'\b(?:use|uses|using)\b',
             r'\b(?:drink|drinks|drinking)\b',
             r'\b(?:eat|eats|eating)\b',
@@ -684,14 +701,14 @@ class ActionValidator:
                 # Take first 1-3 words
                 words = after.split()[:3]
                 if words:
-                    item_name = ' '.join(words).strip('.,!?')
+                    item_name = ' '.join(words).strip('.,!?').lower()
                     # Filter out non-item phrases (e.g., "ready for battle", "ready to fight")
                     # Check if this looks like an actual item vs a state/condition
                     non_item_phrases = ['for', 'to', 'if', 'when', 'as', 'because']
                     first_word = words[0].lower()
                     if first_word in non_item_phrases:
                         continue  # Skip this match, try next pattern
-                    return item_name.title()
+                    return item_name
 
         return None
 
