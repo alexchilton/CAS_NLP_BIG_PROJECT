@@ -221,10 +221,23 @@ You have **two ways** to play:
 Launch the web UI for the best experience:
 
 ```bash
+# Quick start (foreground)
 python web/app_gradio.py
+
+# Or use convenience scripts:
+./start_gradio.sh              # Foreground (Ctrl+C to stop)
+./start_gradio.sh --background # Background (runs in logs)
+./restart_gradio.sh            # Kill old, start new
+./stop_gradio.sh               # Stop server
 ```
 
 Then open http://localhost:7860 in your browser.
+
+**Server Management:**
+- `start_gradio.sh` - Start server (kills existing first)
+- `stop_gradio.sh` - Stop any running server
+- `restart_gradio.sh` - Quick restart after code changes
+- See `docs/GRADIO_SCRIPTS.md` for details
 
 **Features:**
 - 🎭 **Pre-made Characters**: Play as Thorin Stormshield (Dwarf Fighter) or Elara Moonwhisper (Elf Wizard)

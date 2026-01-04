@@ -401,11 +401,14 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
 
         # Step 0: Shop Transaction Processing (before Reality Check)
         # Check for /buy or /sell commands and process transactions
+        is_shop_transaction = False  # Flag to skip mechanics extraction for shop transactions
+        is_steal_attempt = False  # Flag for steal attempts
         if self.session.character_state:
             purchase_intent = self.shop.parse_purchase_intent(player_input)
             sell_intent = self.shop.parse_sell_intent(player_input)
 
             if purchase_intent:
+                is_shop_transaction = True
                 item_name, quantity = purchase_intent
                 transaction = self.shop.attempt_purchase(
                     self.session.character_state,
@@ -418,6 +421,7 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                     logger.debug(f"🛒 Purchase: {item_name} x{quantity} - {transaction.message}")
 
             elif sell_intent:
+                is_shop_transaction = True
                 item_name, quantity = sell_intent
                 transaction = self.shop.attempt_sale(
                     self.session.character_state,
@@ -428,7 +432,7 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
 
                 if DEBUG_PROMPTS:
                     logger.debug(f"💵 Sale: {item_name} x{quantity} - {transaction.message}")
-
+        
         # Step 0.5: Party Mode Character Parsing
         # If in party mode, extract which character is acting and temporarily set character_state
         acting_character_name = None
@@ -473,6 +477,38 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             logger.debug(f"🎯 Action Intent: {action_intent}")
             logger.debug(f"✅ Validation: {validation.result.value} - {validation.message}")
 
+        # Step 1.3: Steal Attempt Handling
+        # Detect steal attempts and add special instructions to prevent monster hallucinations
+        steal_instruction = ""
+        if action_intent and action_intent.action_type == ActionType.STEAL:
+            is_steal_attempt = True
+            item_name = action_intent.resource or "item"
+            
+            # Check if item exists at location
+            current_loc = self.session.get_current_location_obj()
+            item_available = current_loc and current_loc.has_item(item_name)
+            
+            if item_available and self.session.npcs_present:
+                # NPCs present - need stealth check
+                npc_names = ", ".join(self.session.npcs_present)
+                steal_instruction = f"""
+STEAL ATTEMPT: Player is trying to steal {item_name} while {npc_names} is present.
+
+CRITICAL INSTRUCTIONS:
+1. DO NOT spawn random monsters (goblins, orcs, etc.)
+2. ONLY {npc_names} should react
+3. Roll stealth check: d20 + DEX modifier vs DC 15
+4. If SUCCESS: Player sneaks the item away unnoticed
+5. If FAILURE: {npc_names} catches them and reacts with anger/calls guards
+6. DO NOT introduce new NPCs or enemies
+
+"""
+            elif item_available:
+                # No NPCs - auto-succeed
+                steal_instruction = f"Player takes the {item_name}. (No one is watching)"
+            else:
+                steal_instruction = f"The {item_name} is not here."
+
         # Step 1.5: For INVALID actions, return deterministic response without calling LLM
         # Small LLMs are bad at following "do not" instructions, so we handle this ourselves
         if validation.result == ValidationResult.INVALID:
@@ -496,6 +532,7 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
         # Step 1.7: Calculate Player Attack (if attacking)
         # Pre-calculate attack roll and damage so GM can narrate specific numbers
         player_attack_instruction = ""
+        player_attack_damage_feedback = ""
         if (action_intent.action_type == ActionType.COMBAT and 
             action_intent.target and 
             self.session.character_state):
@@ -510,6 +547,32 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                 player_attack_instruction = attack_result
                 if DEBUG_PROMPTS:
                     logger.debug(f"⚔️ Player Attack: {attack_result}")
+                
+                # Parse and apply damage directly (don't rely on mechanics extraction)
+                import re
+                damage_match = re.search(r'💥 (\d+) (\w+) damage', attack_result)
+                if damage_match and "HITS" in attack_result:
+                    damage_amount = int(damage_match.group(1))
+                    damage_type = damage_match.group(2)
+                    target_name = action_intent.target
+                    
+                    # Apply damage to NPC directly
+                    if target_name in self.combat_manager.npc_monsters:
+                        actual_damage, is_dead = self.combat_manager.apply_damage_to_npc(
+                            target_name,
+                            damage_amount
+                        )
+                        
+                        npc = self.combat_manager.npc_monsters[target_name]
+                        if is_dead:
+                            player_attack_damage_feedback = f"💥 {target_name} takes {actual_damage} {damage_type} damage and dies! ☠️"
+                            # Remove from npcs_present
+                            if target_name in self.session.npcs_present:
+                                self.session.npcs_present.remove(target_name)
+                        else:
+                            player_attack_damage_feedback = f"💥 {target_name} takes {actual_damage} {damage_type} damage! (HP: {npc.current_hp}/{npc.max_hp})"
+                elif "MISSES" in attack_result or "CRITICALLY MISSES" in attack_result:
+                    player_attack_damage_feedback = f"❌ Attack missed {action_intent.target}!"
 
         # Step 2: Search RAG if enabled
         if use_rag:
@@ -573,7 +636,7 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                 self.session.turns_since_last_encounter += 1
 
         # Step 3: Build prompt with history, RAG context, validation guidance, encounter, and player attack
-        prompt = self._build_prompt(player_input, rag_context, validation, encounter_instruction, player_attack_instruction)
+        prompt = self._build_prompt(player_input, rag_context, validation, encounter_instruction, player_attack_instruction, steal_instruction)
 
         # Step 4: Get LLM response (route based on mode)
         try:
@@ -594,7 +657,8 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                     logger.debug(f"🎲 Encounter fallback text added (GM didn't mention {encounter.monster_name})")
 
             # Step 5.3: Extract mechanics from narrative and auto-update game state
-            if self.session.character_state or (self.session.party and len(self.session.party.characters) > 0):
+            # SKIP for shop transactions - already handled by shop system
+            if not is_shop_transaction and (self.session.character_state or (self.session.party and len(self.session.party.characters) > 0)):
                 try:
                     # Get character names for better extraction
                     char_names = []
@@ -769,6 +833,10 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             # Add shop transaction feedback if any
             if transaction_feedback:
                 response = transaction_feedback + response
+            
+            # Add player attack damage feedback if any
+            if player_attack_damage_feedback:
+                response = response + f"\n\n**⚙️ MECHANICS:**\n{player_attack_damage_feedback}"
 
             # Add combat feedback if any (turn advancement)
             if combat_feedback:
@@ -900,7 +968,7 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                     f"Narrate the successful strike dealing {damage} damage to {target_name}."
                 )
 
-    def _build_prompt(self, player_input: str, rag_context: str, validation=None, encounter_instruction: str = "", player_attack_instruction: str = "") -> str:
+    def _build_prompt(self, player_input: str, rag_context: str, validation=None, encounter_instruction: str = "", player_attack_instruction: str = "", steal_instruction: str = "") -> str:
         """
         Build complete prompt for LLM with full game state context.
 
@@ -975,6 +1043,12 @@ TIME: Day {self.session.day}, {self.session.time_of_day}
         # Add encounter instruction if present (hidden from player, only GM sees this)
         if encounter_instruction:
             prompt += f"""{encounter_instruction}
+
+"""
+        
+        # Add steal instruction if present (hidden from player, only GM sees this)
+        if steal_instruction:
+            prompt += f"""{steal_instruction}
 
 """
         
