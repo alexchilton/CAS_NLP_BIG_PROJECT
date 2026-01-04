@@ -209,6 +209,8 @@ def load_character_with_location(character_choice: str, location_name: Optional[
 
     # Set starting location - check environment variable first, then parameter, then random
     env_location = os.getenv("TEST_START_LOCATION")
+    env_location_desc = os.getenv("TEST_LOCATION_DESC")
+
     if env_location:
         location_name = env_location
         print(f"🧪 Test mode: Starting at {location_name} (from TEST_START_LOCATION env var)")
@@ -225,36 +227,77 @@ def load_character_with_location(character_choice: str, location_name: Optional[
         if found_location:
             location_name, location_desc = found_location
         else:
-            # Location not found, use first combat location as fallback
-            print(f"⚠️ Location '{location_name}' not found, using default combat location")
-            location_name, location_desc = COMBAT_LOCATIONS[0]
+            # Custom location - check for custom description or create generic one
+            if env_location_desc:
+                location_desc = env_location_desc
+                print(f"🧪 Using custom location description from TEST_LOCATION_DESC")
+            else:
+                location_desc = f"You find yourself at {location_name}. The area is mysterious and unknown."
+                print(f"🧪 Created custom location: {location_name}")
     else:
         # Random selection
         location_name, location_desc = random.choice(STARTING_LOCATIONS)
 
     gm.set_location(location_name, location_desc)
 
-    # Auto-populate NPCs for combat locations
-    location_npc_map = {
-        "Goblin Cave Entrance": ["Goblin", "Goblin"],  # 2 goblins
-        "Goblin Cave": ["Goblin", "Goblin"],
-        "Ancient Ruins": ["Skeleton", "Skeleton"],
-        "Dark Forest Clearing": ["Wolf", "Wolf"],
-        "Abandoned Mine Shaft": ["Giant Rat"],
-        "Rocky Mountain Pass": ["Ogre"],
-        "Sunken Graveyard": ["Zombie", "Zombie"],
-        "Dragon's Lair Approach": ["Young Dragon"],
-    }
+    # NPC spawning logic:
+    # 1. If TEST_NPCS is set → use those (deterministic testing)
+    # 2. Else if town/shop/inn → add friendly NPCs (merchants, shopkeepers)
+    # 3. Else → no NPCs (player discovers combat encounters naturally)
 
-    # Add NPCs if this is a known combat location
-    for loc_key, npcs in location_npc_map.items():
-        # Check for bidirectional partial match
-        if loc_key.lower() in location_name.lower() or location_name.lower() in loc_key.lower():
-            for npc in npcs:
-                if npc not in gm.session.npcs_present:
-                    gm.session.npcs_present.append(npc)
-            print(f"🎭 Auto-added NPCs to {location_name}: {npcs}")
-            break
+    env_npcs = os.getenv("TEST_NPCS")
+    if env_npcs:
+        # TEST MODE: Use deterministic NPCs for testing
+        test_npcs = [npc.strip() for npc in env_npcs.split(',')]
+        for npc in test_npcs:
+            if npc and npc not in gm.session.npcs_present:
+                gm.session.npcs_present.append(npc)
+        print(f"🧪 Added NPCs from TEST_NPCS: {test_npcs}")
+    else:
+        # NORMAL GAMEPLAY: Add friendly NPCs to towns/shops/inns
+        friendly_location_npcs = {
+            "The Prancing Pony Inn": ["Innkeeper Butterbur", "Traveling Merchant"],
+            "The Market Square": ["Merchant", "Blacksmith", "Potion Seller"],
+            "The Town Gates": ["Town Guard", "General Store Shopkeeper"],
+        }
+
+        for loc_key, npcs in friendly_location_npcs.items():
+            if loc_key.lower() in location_name.lower() or location_name.lower() in loc_key.lower():
+                for npc in npcs:
+                    if npc not in gm.session.npcs_present:
+                        gm.session.npcs_present.append(npc)
+                print(f"🏘️ Added friendly NPCs to {location_name}: {npcs}")
+                break
+
+    # Add items to location if specified via TEST_ITEMS environment variable
+    # Format: "Hidden Chest:Magic Ring of Protection, Healing Potion"
+    # This allows setting up test scenarios like "hidden chest with magic ring"
+    env_items = os.getenv("TEST_ITEMS")
+    if env_items:
+        # Parse items - can be simple list or container:items format
+        if ':' in env_items:
+            # Format: "Hidden Chest:Magic Ring, Gold Coins"
+            container, items_str = env_items.split(':', 1)
+            items = [item.strip() for item in items_str.split(',')]
+
+            # Add container to location description
+            if "hidden chest" in container.lower():
+                gm.session.scene_description += f"\n\n🎁 There appears to be a {container} here."
+            else:
+                gm.session.scene_description += f"\n\n{container} can be found here."
+
+            # Track items in session (for reality check)
+            if not hasattr(gm.session, 'location_items'):
+                gm.session.location_items = {}
+            gm.session.location_items[container] = items
+            print(f"🧪 Added {container} with items: {items}")
+        else:
+            # Simple comma-separated items
+            items = [item.strip() for item in env_items.split(',')]
+            if not hasattr(gm.session, 'location_items'):
+                gm.session.location_items = {}
+            gm.session.location_items['ground'] = items
+            print(f"🧪 Added items to location: {items}")
 
     return location_name, location_desc, char.name
 

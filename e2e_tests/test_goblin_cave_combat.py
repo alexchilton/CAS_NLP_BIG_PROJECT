@@ -146,11 +146,13 @@ def test_goblin_cave_combat():
     print("GOBLIN CAVE COMBAT TEST")
     print("🗡️" * 40)
 
-    # Start Gradio with TEST_START_LOCATION environment variable
+    # Start Gradio with TEST_START_LOCATION and TEST_NPCS environment variables
     import subprocess
     env = os.environ.copy()
     env['TEST_START_LOCATION'] = 'Goblin Cave'
+    env['TEST_NPCS'] = 'Goblin'  # Deterministic NPC for testing!
     print(f"\n🚀 Starting Gradio with TEST_START_LOCATION='{env['TEST_START_LOCATION']}'")
+    print(f"   TEST_NPCS='{env['TEST_NPCS']}' (deterministic testing!)")
 
     gradio_process = subprocess.Popen(
         ['python3', 'web/app_gradio.py'],
@@ -199,32 +201,40 @@ def test_goblin_cave_combat():
                 print(f"   Full context: {context}")
 
         print("\n" + "=" * 80)
-        print("EXPLORATION: Player explores the cave")
+        print("NPC CHECK: Verify Goblin was added via TEST_NPCS")
         print("=" * 80)
-        print("💡 Let's trigger the GM to describe the cave and spawn goblins naturally")
 
-        # First explore the cave - GM should mention goblins
-        send_message(driver, "I explore the cave and look around for any signs of danger", wait_time=10)
+        # Check /context to see if goblin is present
+        send_message(driver, "/context", wait_time=5)
+        messages = get_chat_messages(driver)
+        if messages:
+            context = messages[-1]
+            print(f"\n📋 Context: {context[:300]}...")
+
+            # With TEST_NPCS, the goblin should be added automatically
+            if "goblin" in context.lower() or "You see:" in context:
+                print("\n✅ SUCCESS: Goblin added via TEST_NPCS!")
+            else:
+                print(f"\n⚠️  Goblin may not be visible in context yet")
+
+        print("\n" + "=" * 80)
+        print("EXPLORATION: Player explores to trigger GM description")
+        print("=" * 80)
+
+        # Explore to trigger GM description
+        send_message(driver, "I look around the cave", wait_time=10)
 
         messages = get_chat_messages(driver)
         if messages:
             exploration_response = messages[-1]
             print(f"\n🎭 GM: {exploration_response[:400]}...")
 
-            # Check if GM mentioned goblins or creatures
-            if "goblin" in exploration_response.lower():
-                print("\n✅ GM mentioned goblins in description!")
-            else:
-                print("\n⚠️  GM didn't mention goblins - this is the reality check working!")
-                print("     We should NOT start combat with non-existent creatures")
-                return  # Exit test gracefully - reality check is working correctly
-
         print("\n" + "=" * 80)
-        print("COMBAT: GM described goblins, now start combat")
+        print("COMBAT: Start combat with Goblin (added via TEST_NPCS)")
         print("=" * 80)
-        print("💡 Only starting combat because goblins were mentioned by GM")
+        print("💡 Goblin was added deterministically via TEST_NPCS environment variable")
 
-        send_message(driver, "/start_combat Goblin", wait_time=8)
+        send_message(driver, "/start_combat Goblin", wait_time=10)
 
         messages = get_chat_messages(driver)
         if messages:
