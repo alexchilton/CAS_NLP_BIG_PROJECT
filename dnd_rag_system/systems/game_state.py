@@ -1227,3 +1227,34 @@ class GameSession:
                     lines.append(f"  - {quest['name']}: {quest['description']}")
 
         return "\n".join(lines)
+
+
+# Helper functions for spell slot initialization
+def initialize_spell_slots_from_class(character_class: str, character_level: int) -> SpellSlots:
+    """
+    Initialize spell slots based on character class and level.
+    
+    Uses D&D 5e spell slot progression tables.
+    
+    Args:
+        character_class: Character class (e.g., "Wizard", "Paladin")
+        character_level: Character level (1-20)
+    
+    Returns:
+        SpellSlots object with appropriate slots for class/level
+    """
+    # Import here to avoid circular dependency
+    from dnd_rag_system.core.chroma_manager import ChromaDBManager
+    from dnd_rag_system.systems.spell_manager import SpellManager
+    
+    # Get spell slot progression
+    db = ChromaDBManager()
+    spell_mgr = SpellManager(db)
+    slots_dict = spell_mgr.get_spell_slots_for_level(character_class, character_level)
+    
+    # Create SpellSlots object
+    kwargs = {}
+    for spell_level, num_slots in slots_dict.items():
+        kwargs[f"level_{spell_level}"] = num_slots
+    
+    return SpellSlots(**kwargs)
