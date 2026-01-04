@@ -316,11 +316,132 @@ def generate_random_location(from_location: Location, direction: str = None) -> 
     is_safe = location_type in [LocationType.TOWN, LocationType.TAVERN, LocationType.SHOP, LocationType.TEMPLE]
     
     # Create the location
+    # Mark as discovered since /explore found it (player knows it exists)
     return Location(
         name=name,
         location_type=location_type,
         description=description,
         is_safe=is_safe,
-        is_discovered=False,  # Newly generated, not yet discovered
+        is_discovered=True,  # Player discovered it exists via /explore
         connections=[from_location.name]  # Connected back to where we came from
+    )
+
+
+def generate_llm_enhanced_location(
+    from_location: Location,
+    llm_generate_func,
+    game_context: dict = None
+) -> Location:
+    """
+    Generate a new location with LLM-created name and description.
+    
+    Uses Python for structure (type, safety, connections) and LLM for flavor
+    (unique name and rich description based on context).
+    
+    Args:
+        from_location: The location we're exploring from
+        llm_generate_func: Function that calls LLM and returns response string
+        game_context: Optional dict with game state context (npcs, defeated_enemies, etc.)
+    
+    Returns:
+        Newly generated Location with LLM-enhanced name and description
+    """
+    import random
+    import re
+    
+    # Step 1: Python determines structure (same logic as generate_random_location)
+    if from_location.location_type in [LocationType.TOWN, LocationType.TAVERN, LocationType.SHOP]:
+        possible_types = [LocationType.FOREST, LocationType.WILDERNESS, LocationType.MOUNTAIN]
+        weights = [0.4, 0.4, 0.2]
+    elif from_location.location_type in [LocationType.FOREST, LocationType.WILDERNESS]:
+        possible_types = [LocationType.CAVE, LocationType.RUINS, LocationType.FOREST, LocationType.WILDERNESS]
+        weights = [0.3, 0.2, 0.25, 0.25]
+    elif from_location.location_type == LocationType.MOUNTAIN:
+        possible_types = [LocationType.CAVE, LocationType.CASTLE, LocationType.RUINS]
+        weights = [0.5, 0.2, 0.3]
+    else:
+        possible_types = [LocationType.CAVE, LocationType.RUINS, LocationType.DUNGEON]
+        weights = [0.4, 0.3, 0.3]
+    
+    location_type = random.choices(possible_types, weights=weights)[0]
+    is_safe = location_type in [LocationType.TOWN, LocationType.TAVERN, LocationType.SHOP, LocationType.TEMPLE]
+    
+    # Step 2: Build context for LLM
+    context_parts = []
+    context_parts.append(f"Current location: {from_location.name} ({from_location.location_type.value})")
+    
+    if game_context:
+        if game_context.get('npcs_present'):
+            context_parts.append(f"NPCs nearby: {', '.join(game_context['npcs_present'])}")
+        if game_context.get('defeated_enemies'):
+            context_parts.append(f"Recent battles: Defeated {', '.join(list(game_context['defeated_enemies'])[:3])}")
+        if game_context.get('time_of_day'):
+            context_parts.append(f"Time: {game_context['time_of_day']}")
+        if game_context.get('weather'):
+            context_parts.append(f"Weather: {game_context['weather']}")
+    
+    context_str = "\n".join(context_parts)
+    
+    # Step 3: LLM prompt for name and description
+    prompt = f"""You are exploring from {from_location.name}. Generate a NEW location discovery.
+
+CONTEXT:
+{context_str}
+
+NEW LOCATION TYPE: {location_type.value}
+SAFETY: {'SAFE area (town, temple, shop)' if is_safe else 'DANGEROUS wilderness/dungeon'}
+
+Generate EXACTLY in this format:
+NAME: [Unique, evocative name for this {location_type.value}]
+DESCRIPTION: [2-3 vivid sentences describing what you see, hear, smell. Make it atmospheric and specific to the context.]
+
+Requirements:
+- Name should be unique and memorable (not generic like "Dark Cave")
+- Description should reference the context (e.g., mention recent battles, weather, time of day)
+- Keep it concise but evocative
+- Make it feel like D&D exploration
+
+Generate the location:"""
+    
+    # Step 4: Call LLM
+    try:
+        llm_response = llm_generate_func(prompt)
+        
+        # Step 5: Parse LLM response
+        name_match = re.search(r'NAME:\s*(.+?)(?:\n|$)', llm_response, re.IGNORECASE)
+        desc_match = re.search(r'DESCRIPTION:\s*(.+?)(?:\n\n|$)', llm_response, re.IGNORECASE | re.DOTALL)
+        
+        if name_match and desc_match:
+            name = name_match.group(1).strip()
+            description = desc_match.group(1).strip()
+            
+            # Clean up any quotes or extra whitespace
+            name = name.strip('"\'')
+            description = description.strip()
+            
+        else:
+            # Fallback to template if parsing fails
+            import logging
+            logging.warning(f"Failed to parse LLM location response, using template fallback")
+            fallback_loc = generate_random_location(from_location)
+            name = fallback_loc.name
+            description = fallback_loc.description
+    
+    except Exception as e:
+        # If LLM fails, fallback to template
+        import logging
+        logging.error(f"LLM location generation failed: {e}, using template fallback")
+        fallback_loc = generate_random_location(from_location)
+        name = fallback_loc.name
+        description = fallback_loc.description
+    
+    # Step 6: Create and return Location
+    # Mark as discovered since /explore found it (player knows it exists)
+    return Location(
+        name=name,
+        location_type=location_type,
+        description=description,
+        is_safe=is_safe,
+        is_discovered=True,  # Player discovered it exists via /explore
+        connections=[from_location.name]
     )

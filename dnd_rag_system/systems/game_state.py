@@ -115,8 +115,8 @@ class Location:
         return False
     
     def has_item(self, item_name: str) -> bool:
-        """Check if item is currently at this location."""
-        return item_name in self.available_items
+        """Check if item is currently at this location (case-insensitive)."""
+        return any(item.lower() == item_name.lower() for item in self.available_items)
     
     def record_visit(self, current_day: int):
         """Record a visit to this location."""
@@ -1148,14 +1148,26 @@ class GameSession:
         if not current_loc:
             return False, f"Current location '{self.current_location}' not found in world map."
         
-        # Check if destination is connected
-        if destination not in current_loc.connections:
+        # Try case-insensitive matching for user convenience
+        destination_lower = destination.lower()
+        matched_destination = None
+        
+        # Check connections case-insensitively
+        for conn in current_loc.connections:
+            if conn.lower() == destination_lower:
+                matched_destination = conn
+                break
+        
+        if not matched_destination:
             available = ", ".join(current_loc.connections) if current_loc.connections else "none"
             return False, f"Cannot travel to '{destination}' from here. Available: {available}"
         
-        # Check if destination exists
-        if destination not in self.world_map:
-            return False, f"Destination '{destination}' doesn't exist."
+        # Check if destination exists (use matched name)
+        if matched_destination not in self.world_map:
+            return False, f"Destination '{matched_destination}' doesn't exist."
+        
+        # Update destination to use correct casing
+        destination = matched_destination
         
         # Travel!
         dest_loc = self.world_map[destination]
