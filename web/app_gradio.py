@@ -868,10 +868,23 @@ def chat(message: str, history: list) -> Tuple[list, str, gr.update, str]:
 
         if cmd == "/help":
             help_text = """**Available Commands:**
+
+**Information:**
 - `/help` - Show this help
-- `/context` - Show current scene context
 - `/stats` - Show character stats
+- `/context` - Show current scene context
 - `/rag <query>` - Search D&D rules (e.g., `/rag fireball`)
+
+**World Navigation:**
+- `/map` - Show world map and discovered locations
+- `/explore` - Discover new locations from current area
+- `/travel <location>` - Travel to a connected location
+
+**Shopping:**
+- `/buy <item>` - Purchase an item from a shop
+- `/sell <item>` - Sell an item from your inventory
+
+**Combat:**
 - `/start_combat <enemies>` - Start combat with initiative rolls
 - `/next_turn` or `/next` - Advance to next turn in combat
 - `/initiative` - Show initiative tracker
@@ -1253,7 +1266,7 @@ with demo:
 
                     with gr.Row():
                         clear_btn = gr.Button("Clear History")
-                        gr.Markdown("**Quick Commands:** `/help` | `/context` | `/stats` | `/rag <query>`")
+                        gr.Markdown("**Quick Commands:** `/help` | `/stats` | `/map` | `/explore` | `/buy <item>` | `/sell <item>`")
 
             gr.Markdown("""
             ---
