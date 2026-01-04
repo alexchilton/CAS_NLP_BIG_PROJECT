@@ -45,6 +45,75 @@ class EncounterSystem:
         "temple": 0.02,       # 2% - Sacred ground
     }
     
+    # Map location types to D&D environment keywords for RAG queries
+    LOCATION_TO_ENVIRONMENT = {
+        "cave": ["underground", "cave", "subterranean", "dark"],
+        "dungeon": ["underground", "dungeon", "underdark", "dark"],
+        "forest": ["forest", "woodland", "sylvan", "trees"],
+        "wilderness": ["grassland", "plains", "wild", "open"],
+        "mountain": ["mountain", "alpine", "peaks", "high altitude"],
+        "ruins": ["ruins", "ancient", "abandoned", "crumbling"],
+        "swamp": ["swamp", "marsh", "wetland", "bog"],
+        "desert": ["desert", "arid", "sand", "wasteland"],
+        "coast": ["coastal", "beach", "shore", "aquatic"],
+        "urban": ["urban", "city", "town", "civilized"],
+        "road": ["road", "path", "traveling", "open"],
+    }
+    
+    # Location-appropriate monster types (fallback when RAG unavailable)
+    MONSTERS_BY_LOCATION_AND_CR = {
+        "cave": {
+            0.25: ["Goblin", "Kobold", "Giant Bat"],
+            0.5: ["Hobgoblin", "Orc Scout", "Giant Spider"],
+            1: ["Bugbear", "Duergar", "Quaggoth"],
+            2: ["Ogre", "Cave Troll", "Minotaur"],
+            3: ["Hook Horror", "Umber Hulk Spawn", "Phase Spider"],
+            5: ["Troll", "Umber Hulk", "Roper"],
+            8: ["Cloaker", "Mind Flayer", "Purple Worm (young)"],
+        },
+        "forest": {
+            0.125: ["Wolf", "Boar", "Giant Badger"],
+            0.25: ["Goblin", "Bandit", "Stirge"],
+            0.5: ["Orc", "Gnoll", "Brown Bear"],
+            1: ["Dire Wolf", "Bugbear", "Dryad"],
+            2: ["Werewolf", "Owlbear", "Green Hag"],
+            5: ["Troll", "Treant", "Shambling Mound"],
+        },
+        "mountain": {
+            0.25: ["Kobold", "Stirge", "Eagle"],
+            0.5: ["Orc", "Gnoll", "Giant Goat"],
+            1: ["Harpy", "Hippogriff", "Peryton"],
+            2: ["Ogre", "Ettercap", "Griffon"],
+            3: ["Manticore", "Basilisk", "Chimera"],
+            5: ["Hill Giant", "Stone Giant", "Wyvern"],
+            8: ["Young Dragon (any color)", "Cloud Giant", "Frost Giant"],
+        },
+        "ruins": {
+            0.25: ["Skeleton", "Zombie", "Giant Rat"],
+            0.5: ["Shadow", "Ghoul", "Animated Armor"],
+            1: ["Specter", "Wight", "Gargoyle"],
+            2: ["Mimic", "Ghast", "Will-o'-Wisp"],
+            3: ["Mummy", "Wraith", "Flameskull"],
+            5: ["Ghost", "Vampire Spawn", "Revenant"],
+        },
+        "dungeon": {
+            0.25: ["Goblin", "Skeleton", "Giant Rat"],
+            0.5: ["Hobgoblin", "Zombie", "Ghoul"],
+            1: ["Bugbear", "Specter", "Animated Armor"],
+            2: ["Ogre", "Mimic", "Gelatinous Cube"],
+            3: ["Basilisk", "Mummy", "Hell Hound"],
+            5: ["Vampire Spawn", "Troll", "Beholder Spawn"],
+        },
+        "wilderness": {
+            0.125: ["Wolf", "Hyena", "Jackal"],
+            0.25: ["Goblin", "Bandit", "Gnoll"],
+            0.5: ["Orc", "Hobgoblin", "Brown Bear"],
+            1: ["Dire Wolf", "Bugbear", "Gnoll Pack Lord"],
+            2: ["Ogre", "Ettercap", "Ankheg"],
+            3: ["Owlbear", "Manticore", "Bulette"],
+        },
+    }
+    
     # CR ranges by character level for balanced encounters
     CR_BY_LEVEL = {
         1: (0, 1),      # Level 1: CR 0-1 (rats, goblins)
@@ -67,6 +136,7 @@ class EncounterSystem:
             chromadb_manager: ChromaDB manager for querying monsters
         """
         self.chromadb = chromadb_manager
+        self.location_spawn_cache = {}  # Remember what spawned where
         
     def should_encounter(self, location_type: str) -> bool:
         """
@@ -103,9 +173,103 @@ class EncounterSystem:
             # High level characters
             return (character_level - 3, character_level + 2)
     
+    def query_monster_by_location(
+        self, 
+        location_type: str,
+        min_cr: float = 0, 
+        max_cr: float = 5
+    ) -> Optional[Dict]:
+        """
+        Query a monster appropriate for the location type.
+        
+        Uses RAG to find monsters that match both CR range AND environment.
+        
+        Args:
+            location_type: Type of location (cave, forest, mountain, etc.)
+            min_cr: Minimum challenge rating
+            max_cr: Maximum challenge rating
+            
+        Returns:
+            Monster data dict or None
+        """
+        if not self.chromadb:
+            return self._get_fallback_monster_by_location(location_type, min_cr, max_cr)
+        
+        try:
+            # Get environment keywords for this location type
+            location_type_norm = location_type.lower()
+            env_keywords = self.LOCATION_TO_ENVIRONMENT.get(
+                location_type_norm,
+                ["wilderness"]  # Default
+            )
+            
+            # Build query that combines environment and CR
+            query_text = f"{' '.join(env_keywords)} monster challenge rating {min_cr} to {max_cr}"
+            
+            # Query monsters collection
+            results = self.chromadb.query_collection(
+                collection_name="monsters",
+                query_text=query_text,
+                n_results=30  # Get more to filter
+            )
+            
+            if results and len(results['documents']) > 0:
+                # Filter by CR and prefer monsters with matching environment
+                valid_monsters = []
+                for i, (doc, metadata) in enumerate(zip(results['documents'], results.get('metadatas', []))):
+                    # Extract CR
+                    cr = self._extract_cr_from_metadata_or_doc(metadata, doc)
+                    if cr is None or not (min_cr <= cr <= max_cr):
+                        continue
+                    
+                    # Check if environment matches (if available)
+                    monster_env = metadata.get('environment', '').lower() if metadata else ''
+                    env_match = any(keyword in monster_env for keyword in env_keywords)
+                    
+                    monster_data = {
+                        'name': self._extract_name_from_doc(doc),
+                        'description': doc,
+                        'cr': cr,
+                        'env_match': env_match
+                    }
+                    valid_monsters.append(monster_data)
+                
+                if valid_monsters:
+                    # Prefer environment matches, but don't exclude others
+                    env_matches = [m for m in valid_monsters if m['env_match']]
+                    if env_matches:
+                        return random.choice(env_matches)
+                    else:
+                        return random.choice(valid_monsters)
+            
+            # Fallback if RAG fails
+            return self._get_fallback_monster_by_location(location_type, min_cr, max_cr)
+            
+        except Exception as e:
+            print(f"⚠️  Encounter system: RAG query failed: {e}")
+            return self._get_fallback_monster_by_location(location_type, min_cr, max_cr)
+    
+    def _extract_cr_from_metadata_or_doc(self, metadata: Dict, doc: str) -> Optional[float]:
+        """Extract CR from metadata first, fallback to document parsing."""
+        if metadata and 'challenge_rating' in metadata:
+            try:
+                cr_str = metadata['challenge_rating']
+                # Handle fractions like "1/4"
+                if '/' in str(cr_str):
+                    parts = str(cr_str).split('/')
+                    return float(parts[0]) / float(parts[1])
+                return float(cr_str)
+            except (ValueError, ZeroDivisionError):
+                pass
+        
+        # Fallback to document parsing
+        return self._extract_cr_from_doc(doc)
+    
     def query_random_monster(self, min_cr: float = 0, max_cr: float = 5) -> Optional[Dict]:
         """
         Query a random monster from ChromaDB within CR range.
+        
+        DEPRECATED: Use query_monster_by_location() for better results.
         
         Args:
             min_cr: Minimum challenge rating
@@ -183,6 +347,38 @@ class EncounterSystem:
             return ' '.join(words)
         return "Unknown Creature"
     
+    def _get_fallback_monster_by_location(
+        self, 
+        location_type: str, 
+        min_cr: float, 
+        max_cr: float
+    ) -> Dict:
+        """Get location-appropriate fallback monster when RAG unavailable."""
+        location_type_norm = location_type.lower()
+        
+        # Get monsters for this location type
+        location_monsters = self.MONSTERS_BY_LOCATION_AND_CR.get(
+            location_type_norm,
+            {}  # Will fallback to generic
+        )
+        
+        # Find monsters in CR range for this location
+        valid_monsters = []
+        for cr, monster_list in location_monsters.items():
+            if min_cr <= cr <= max_cr:
+                valid_monsters.extend([(name, cr) for name in monster_list])
+        
+        # If no location-specific monsters, use generic fallback
+        if not valid_monsters:
+            return self._get_fallback_monster(min_cr, max_cr)
+        
+        name, cr = random.choice(valid_monsters)
+        return {
+            'name': name,
+            'cr': cr,
+            'description': f'A dangerous {name.lower()} (CR {cr}), native to {location_type} regions.'
+        }
+    
     def _get_fallback_monster(self, min_cr: float, max_cr: float) -> Dict:
         """Fallback monsters when RAG unavailable."""
         monsters_by_cr = {
@@ -227,8 +423,10 @@ class EncounterSystem:
         """
         Main method: Check for encounter and generate if needed.
         
+        Now uses location-aware monster selection for thematic consistency.
+        
         Args:
-            location_type: Current location type
+            location_type: Current location type (cave, forest, mountain, etc.)
             character_level: Player character level
             
         Returns:
@@ -241,8 +439,8 @@ class EncounterSystem:
         # Step 2: Determine appropriate CR
         min_cr, max_cr = self.get_appropriate_cr_range(character_level)
         
-        # Step 3: Select monster
-        monster = self.query_random_monster(min_cr, max_cr)
+        # Step 3: Select monster (LOCATION-AWARE!)
+        monster = self.query_monster_by_location(location_type, min_cr, max_cr)
         if not monster:
             return None
         

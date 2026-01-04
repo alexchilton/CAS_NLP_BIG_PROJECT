@@ -363,19 +363,43 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             combat_command_handled = True
 
         elif lower_input in ['/explore', '/search']:
-            # Lazy location generation - create a new area to explore
+            # Lazy location generation with LLM-enhanced descriptions
             current_loc = self.session.get_current_location_obj()
             if current_loc:
-                from dnd_rag_system.systems.world_builder import generate_random_location
-                
-                # Generate a new location connected to current one
-                new_location = generate_random_location(current_loc)
-                
                 # Check if we already have too many connections from this location
                 if len(current_loc.connections) >= 6:
                     combat_feedback = "🔍 You search the area but find no new paths. All routes from here have been explored."
                 else:
-                    # Add to world map
+                    from dnd_rag_system.systems.world_builder import generate_llm_enhanced_location
+                    
+                    # Build game context for LLM
+                    game_context = {
+                        'npcs_present': self.session.npcs_present,
+                        'defeated_enemies': current_loc.defeated_enemies if current_loc.defeated_enemies else set(),
+                        'time_of_day': self.session.time_of_day,
+                        'day': self.session.day
+                    }
+                    
+                    # LLM wrapper function - uses existing LLM setup
+                    def llm_generate(prompt: str) -> str:
+                        """Call LLM with location generation prompt."""
+                        try:
+                            response = self.llm.invoke(prompt)
+                            if hasattr(response, 'content'):
+                                return response.content
+                            return str(response)
+                        except Exception as e:
+                            logger.error(f"LLM call failed in location generation: {e}")
+                            return ""  # Will trigger fallback in generate_llm_enhanced_location
+                    
+                    # Generate location with LLM enhancement
+                    new_location = generate_llm_enhanced_location(
+                        from_location=current_loc,
+                        llm_generate_func=llm_generate,
+                        game_context=game_context
+                    )
+                    
+                    # Add to world map (CACHED - won't regenerate on revisit)
                     self.session.add_location(new_location)
                     
                     # Create bidirectional connection
@@ -537,9 +561,12 @@ CRITICAL INSTRUCTIONS:
             action_intent.target and 
             self.session.character_state):
             
+            # Use fuzzy-matched target name if available, otherwise use original
+            target_name = validation.matched_entity if validation and validation.matched_entity else action_intent.target
+            
             # Calculate player's attack
             attack_result = self._calculate_player_attack(
-                action_intent.target,
+                target_name,
                 self.session.character_state
             )
             
@@ -554,7 +581,7 @@ CRITICAL INSTRUCTIONS:
                 if damage_match and "HITS" in attack_result:
                     damage_amount = int(damage_match.group(1))
                     damage_type = damage_match.group(2)
-                    target_name = action_intent.target
+                    # Use matched target name (already calculated above)
                     
                     # Apply damage to NPC directly
                     if target_name in self.combat_manager.npc_monsters:
@@ -572,7 +599,7 @@ CRITICAL INSTRUCTIONS:
                         else:
                             player_attack_damage_feedback = f"💥 {target_name} takes {actual_damage} {damage_type} damage! (HP: {npc.current_hp}/{npc.max_hp})"
                 elif "MISSES" in attack_result or "CRITICALLY MISSES" in attack_result:
-                    player_attack_damage_feedback = f"❌ Attack missed {action_intent.target}!"
+                    player_attack_damage_feedback = f"❌ Attack missed {target_name}!"
 
         # Step 2: Search RAG if enabled
         if use_rag:
@@ -668,33 +695,51 @@ CRITICAL INSTRUCTIONS:
                         char_names = [self.session.character_state.character_name]
 
                     # Extract mechanics from GM response
-                    mechanics = self.mechanics_extractor.extract(response, char_names)
+                    mechanics = self.mechanics_extractor.extract(
+                        response, 
+                        char_names,
+                        existing_npcs=self.session.npcs_present  # Pass existing NPCs to avoid re-adding them
+                    )
 
                     # Apply to game state if any mechanics found
                     if mechanics.has_mechanics():
-                        # Apply NPCs to session (add introduced NPCs to npcs_present)
-                        # BUT: If we just generated an encounter, prevent adding monsters with different names
-                        if encounter and mechanics.npcs_introduced:
-                            # Check if GM hallucinated a different monster name
+                        # Filter NPCs: Remove hallucinations and already-present NPCs
+                        if mechanics.npcs_introduced:
                             original_count = len(mechanics.npcs_introduced)
                             filtered_npcs = []
+                            existing_lower = [npc.lower() for npc in self.session.npcs_present]
                             
                             for npc in mechanics.npcs_introduced:
-                                npc_name = npc.get('name', '').strip().lower()
-                                encounter_name = encounter.monster_name.strip().lower()
+                                npc_name = npc.get('name', '').strip()
+                                npc_name_lower = npc_name.lower()
                                 
-                                # Allow the actual encounter monster
-                                if npc_name == encounter_name:
-                                    filtered_npcs.append(npc)
-                                # Allow non-monster NPCs (merchants, guards, etc.) if type is not "enemy"
-                                elif npc.get('type') != 'enemy':
-                                    filtered_npcs.append(npc)
-                                else:
-                                    # This is a hallucinated enemy - skip it
+                                # Skip if already present
+                                if npc_name_lower in existing_lower:
                                     if DEBUG_PROMPTS:
-                                        logger.debug(f"🔧 Filtered hallucinated enemy '{npc_name}' - actual encounter is '{encounter_name}'")
+                                        logger.debug(f"🔧 Filtered NPC '{npc_name}' - already present")
+                                    continue
+                                
+                                # If there's an encounter, only allow the encounter monster or non-enemy NPCs
+                                if encounter:
+                                    encounter_name = encounter.monster_name.strip().lower()
+                                    
+                                    # Allow the actual encounter monster
+                                    if npc_name_lower == encounter_name:
+                                        filtered_npcs.append(npc)
+                                    # Allow non-monster NPCs (merchants, guards, etc.) if type is not "enemy"
+                                    elif npc.get('type') != 'enemy':
+                                        filtered_npcs.append(npc)
+                                    else:
+                                        # This is a hallucinated enemy - skip it
+                                        if DEBUG_PROMPTS:
+                                            logger.debug(f"🔧 Filtered hallucinated enemy '{npc_name}' - actual encounter is '{encounter_name}'")
+                                else:
+                                    # No encounter - just add the NPC
+                                    filtered_npcs.append(npc)
                             
                             mechanics.npcs_introduced = filtered_npcs
+                            if DEBUG_PROMPTS and original_count != len(filtered_npcs):
+                                logger.debug(f"🔧 Filtered {original_count - len(filtered_npcs)} NPC(s) from mechanics extraction")
                         
                         npc_feedback = self.mechanics_applicator.apply_npcs_to_session(mechanics, self.session)
 
@@ -1046,12 +1091,6 @@ TIME: Day {self.session.day}, {self.session.time_of_day}
 
 """
         
-        # Add steal instruction if present (hidden from player, only GM sees this)
-        if steal_instruction:
-            prompt += f"""{steal_instruction}
-
-"""
-        
         # Add player attack instruction if present (hidden from player, only GM sees this)
         if player_attack_instruction:
             prompt += f"""{player_attack_instruction}
@@ -1067,6 +1106,21 @@ TIME: Day {self.session.day}, {self.session.time_of_day}
 6. If rules are unclear, use standard D&D 5e mechanics
 
 """
+
+        # Add steal instruction PROMINENTLY before GM response (like INVALID validation)
+        if steal_instruction:
+            prompt += f"""
+═══════════════════════════════════════════════════════════════════
+🎯 STEAL ATTEMPT MECHANICS 🎯
+═══════════════════════════════════════════════════════════════════
+
+{steal_instruction}
+
+DO NOT create random monsters or encounters. ONLY the NPCs listed above should react.
+═══════════════════════════════════════════════════════════════════
+
+GM RESPONSE:"""
+            return prompt
 
         # Add validation guidance RIGHT BEFORE response - most prominent position
         if validation:

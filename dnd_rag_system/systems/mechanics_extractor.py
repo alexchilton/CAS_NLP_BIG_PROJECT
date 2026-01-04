@@ -20,7 +20,9 @@ logger = logging.getLogger(__name__)
 
 # Default model for mechanics extraction
 # Change this in one place to switch models across the entire system
-DEFAULT_MECHANICS_MODEL = "qwen2.5:3b"  # Fast and accurate for structured extraction
+# gemma3:4b is newer and better at following complex instructions than qwen2.5:3b
+# 4B parameters with excellent instruction following for structured extraction
+DEFAULT_MECHANICS_MODEL = "gemma3:4b"  # Google Gemma 3 4B - optimized for instruction following
 
 
 class MechanicType(Enum):
@@ -158,7 +160,8 @@ class MechanicsExtractor:
     def extract(
         self,
         narrative: str,
-        character_names: Optional[List[str]] = None
+        character_names: Optional[List[str]] = None,
+        existing_npcs: Optional[List[str]] = None
     ) -> ExtractedMechanics:
         """
         Extract game mechanics from narrative text.
@@ -166,6 +169,7 @@ class MechanicsExtractor:
         Args:
             narrative: GM narrative response
             character_names: List of character names in the party (helps with extraction)
+            existing_npcs: List of NPCs already present (to avoid re-adding them)
 
         Returns:
             ExtractedMechanics object with all extracted mechanics
@@ -174,7 +178,7 @@ class MechanicsExtractor:
             return ExtractedMechanics()
 
         # Build extraction prompt
-        prompt = self._build_extraction_prompt(narrative, character_names)
+        prompt = self._build_extraction_prompt(narrative, character_names, existing_npcs)
 
         if self.debug:
             logger.debug("=" * 80)
@@ -193,6 +197,19 @@ class MechanicsExtractor:
 
             # Parse JSON response
             mechanics = self._parse_response(raw_response)
+            
+            # Post-process: Filter out NPCs that are already present
+            # The LLM sometimes includes them despite instructions
+            if mechanics.npcs_introduced and existing_npcs:
+                existing_lower = [npc.lower() for npc in existing_npcs]
+                filtered_npcs = []
+                for npc in mechanics.npcs_introduced:
+                    npc_name = npc.get('name', '').strip()
+                    if npc_name.lower() not in existing_lower:
+                        filtered_npcs.append(npc)
+                    elif self.debug:
+                        logger.debug(f"🔧 Filtered already-present NPC: {npc_name}")
+                mechanics.npcs_introduced = filtered_npcs
 
             if self.debug and mechanics.has_mechanics():
                 logger.debug("EXTRACTED MECHANICS:")
@@ -207,50 +224,55 @@ class MechanicsExtractor:
     def _build_extraction_prompt(
         self,
         narrative: str,
-        character_names: Optional[List[str]] = None
+        character_names: Optional[List[str]] = None,
+        existing_npcs: Optional[List[str]] = None
     ) -> str:
         """Build the extraction prompt for the LLM."""
 
         char_context = ""
         if character_names:
             char_context = f"\nKNOWN CHARACTERS: {', '.join(character_names)}\n"
+        
+        npc_context = ""
+        if existing_npcs:
+            npc_context = f"\nALREADY PRESENT NPCs: {', '.join(existing_npcs)}\n**IMPORTANT**: Do NOT add these NPCs to npcs_introduced - they already exist!\n"
 
         prompt = f"""Extract D&D game mechanics from this narrative. Output ONLY valid JSON, no other text.
 
 NARRATIVE:
 {narrative}
-{char_context}
+{char_context}{npc_context}
 Extract mechanics and output as JSON with this exact schema:
 {{
   "damage": [
-    {{"target": "character_name", "amount": 8, "type": "slashing"}}
+    {{"target": "TARGET_NAME", "amount": NUMBER, "type": "DAMAGE_TYPE"}}
   ],
   "healing": [
-    {{"target": "character_name", "amount": 5, "source": "potion"}}
+    {{"target": "TARGET_NAME", "amount": NUMBER, "source": "SOURCE"}}
   ],
   "conditions_added": [
-    {{"target": "character_name", "condition": "poisoned", "duration": 3}}
+    {{"target": "TARGET_NAME", "condition": "CONDITION_NAME", "duration": NUMBER}}
   ],
   "conditions_removed": [
-    {{"target": "character_name", "condition": "stunned"}}
+    {{"target": "TARGET_NAME", "condition": "CONDITION_NAME"}}
   ],
   "spell_slots_used": [
-    {{"caster": "character_name", "level": 2, "spell": "hold person"}}
+    {{"caster": "CASTER_NAME", "level": NUMBER, "spell": "SPELL_NAME"}}
   ],
   "items_consumed": [
-    {{"character": "character_name", "item": "health potion", "quantity": 1}}
+    {{"character": "CHARACTER_NAME", "item": "ITEM_NAME", "quantity": NUMBER}}
   ],
   "items_acquired": [
-    {{"character": "character_name", "item": "rope", "quantity": 1}}
+    {{"character": "CHARACTER_NAME", "item": "ITEM_NAME", "quantity": NUMBER}}
   ],
   "deaths": [
-    {{"character": "character_name"}}
+    {{"character": "CHARACTER_NAME"}}
   ],
   "unconscious": [
-    {{"character": "character_name"}}
+    {{"character": "CHARACTER_NAME"}}
   ],
   "npcs_introduced": [
-    {{"name": "Goblin", "type": "enemy"}}
+    {{"name": "NPC_NAME", "type": "NPC_TYPE"}}
   ]
 }}
 
@@ -273,9 +295,22 @@ RULES:
 - Conditions: poisoned, stunned, paralyzed, frightened, charmed, etc.
 - Items consumed: When character drinks potion, eats food, uses consumable
 - Items acquired: When character picks up, takes, finds, or receives items
-- NPCs: Extract ANY creatures/monsters/NPCs mentioned (Goblin, Dragon, Merchant, Guard, etc.)
+- NPCs: Extract ONLY NEW creatures/monsters/NPCs that PHYSICALLY APPEAR in THIS narrative
+  - CRITICAL: ONLY include if the NPC actually SHOWS UP and is PRESENT in this scene
+
+NPC APPEARANCE EXAMPLES:
+- "A goblin jumps out!" → {{"name": "Goblin", "type": "enemy"}} (goblin appears)
+- "Guards arrive and surround you" → {{"name": "Guards", "type": "neutral"}} (guards appear)
+- "Guards are called" → NO NPC (just mentioned, not present yet)
+- "Someone shouts for the guards" → NO NPC (not present yet)
+- "The innkeeper watches" → NO NPC if innkeeper is in ALREADY PRESENT list above
+
+IMPORTANT NPC RULES:
+- "The innkeeper watches" → DO NOT include if already in ALREADY PRESENT NPCs list
+- DO NOT extract NPCs that were already present (see ALREADY PRESENT NPCs above)
+- DO NOT hallucinate or invent NPCs not explicitly mentioned
 - NPC types: "enemy" for hostile creatures, "friendly" for allies, "neutral" for NPCs
-- If no mechanics found, return {{"damage": [], "healing": [], "npcs_introduced": []}}
+- If no NEW mechanics found, return {{"damage": [], "healing": [], "npcs_introduced": []}}
 
 JSON:"""
 

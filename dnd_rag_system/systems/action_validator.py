@@ -253,6 +253,10 @@ class ActionValidator:
         if intent.action_type == ActionType.ITEM_USE:
             return self._validate_item(intent, game_session)
 
+        # Validate steal actions
+        if intent.action_type == ActionType.STEAL:
+            return self._validate_steal(intent, game_session)
+
         # Unknown action - let GM handle
         return ValidationReport(
             result=ValidationResult.VALID,
@@ -287,13 +291,17 @@ class ActionValidator:
 
         # Check combat state first
         combatants = []
+        combatants_original_case = []
         if game_session.combat and game_session.combat.initiative_order:
+            combatants_original_case = [c[0] for c in game_session.combat.initiative_order]  # Keep original casing
             combatants = [c[0].lower() for c in game_session.combat.initiative_order]  # initiative_order is list of tuples (name, init)
 
         # Check NPCs present
+        npcs_original_case = game_session.npcs_present  # Keep original casing
         npcs = [npc.lower() for npc in game_session.npcs_present]
 
         all_targets = combatants + npcs
+        all_targets_original_case = combatants_original_case + npcs_original_case
         target_lower = intent.target.lower()
 
         # Exact match
@@ -313,7 +321,7 @@ class ActionValidator:
             )
 
         # Fuzzy match (e.g., "goblin" → "Goblin Scout")
-        fuzzy_match = self._fuzzy_match(target_lower, all_targets)
+        fuzzy_match = self._fuzzy_match(target_lower, all_targets_original_case)
         if fuzzy_match:
             return ValidationReport(
                 result=ValidationResult.FUZZY_MATCH,
@@ -523,6 +531,44 @@ class ActionValidator:
             result=ValidationResult.VALID,
             action=intent,
             message=f"Player uses {item_name}. Describe the item's effect or outcome."
+        )
+
+    def _validate_steal(self, intent: ActionIntent, game_session) -> ValidationReport:
+        """Validate steal action - check if item exists at location"""
+        
+        item_name = intent.resource
+        if not item_name:
+            return ValidationReport(
+                result=ValidationResult.INVALID,
+                action=intent,
+                message="Player wants to steal something but didn't specify what. Ask for clarification."
+            )
+        
+        # Check if item exists at location
+        current_loc = game_session.get_current_location_obj()
+        if not current_loc:
+            return ValidationReport(
+                result=ValidationResult.INVALID,
+                action=intent,
+                message=f"Player tries to steal {item_name}, but location isn't loaded. Narrate failure."
+            )
+        
+        # Check if item exists at location
+        if not current_loc.has_item(item_name):
+            available_items = ", ".join(current_loc.available_items) if current_loc.available_items else "none"
+            return ValidationReport(
+                result=ValidationResult.INVALID,
+                action=intent,
+                message=f"Player tries to steal '{item_name}', but it's not here. "
+                       f"Available items: {available_items}. Narrate that the item doesn't exist.",
+                suggestions=current_loc.available_items[:5] if current_loc.available_items else []
+            )
+        
+        # Item exists - steal is valid (GM will handle stealth check)
+        return ValidationReport(
+            result=ValidationResult.VALID,
+            action=intent,
+            message=f"Player attempts to steal {item_name}. Apply stealth check mechanics."
         )
 
     def _extract_target(self, text: str, keywords: List[str]) -> Optional[str]:
