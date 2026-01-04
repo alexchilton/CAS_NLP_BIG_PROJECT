@@ -37,7 +37,8 @@ class MechanicsApplicator:
     def apply_to_character(
         self,
         mechanics: ExtractedMechanics,
-        character_state: CharacterState
+        character_state: CharacterState,
+        game_session: Optional['GameSession'] = None
     ) -> List[str]:
         """
         Apply mechanics to a single character.
@@ -45,6 +46,7 @@ class MechanicsApplicator:
         Args:
             mechanics: Extracted mechanics
             character_state: Character to update
+            game_session: Optional game session for location item tracking
 
         Returns:
             List of feedback messages describing what was applied
@@ -162,6 +164,27 @@ class MechanicsApplicator:
                         logger.debug(f"🎒 Removed {quantity}x {item_name} from {char_name}'s inventory")
                 else:
                     feedback.append(f"⚠️ {char_name} doesn't have {quantity}x {item_name}")
+        
+        # Apply item acquisition
+        for item in mechanics.items_acquired:
+            acquirer = item.get("character", "").lower()
+            if char_name.lower() in acquirer or acquirer == "you":
+                item_name = item.get("item", "item")
+                quantity = item.get("quantity", 1)
+
+                character_state.add_item(item_name, quantity)
+                feedback.append(f"📦 {char_name} acquired {quantity}x {item_name}")
+
+                # Remove from location if game session provided
+                if game_session:
+                    current_loc = game_session.get_current_location_obj()
+                    if current_loc and current_loc.has_item(item_name):
+                        current_loc.remove_item(item_name, moved_to=f"{char_name}'s inventory")
+                        if self.debug:
+                            logger.debug(f"📦 Removed {item_name} from {current_loc.name}")
+
+                if self.debug:
+                    logger.debug(f"📦 Added {quantity}x {item_name} to {char_name}'s inventory")
 
         # Handle death
         for death in mechanics.deaths:
@@ -246,6 +269,69 @@ class MechanicsApplicator:
 
                 if self.debug:
                     logger.debug(f"🎭 Added NPC to scene: {npc_name} (type: {npc_type})")
+
+        return feedback
+
+    def apply_damage_to_npcs(
+        self,
+        mechanics: ExtractedMechanics,
+        combat_manager,
+        game_session: "GameSession"
+    ) -> List[str]:
+        """
+        Apply damage to NPCs (enemies) from player attacks.
+
+        Args:
+            mechanics: Extracted mechanics with damage info
+            combat_manager: CombatManager to track NPC HP
+            game_session: GameSession for NPC tracking
+
+        Returns:
+            List of feedback messages about NPC damage
+        """
+        feedback = []
+
+        if not mechanics.damage:
+            return feedback
+
+        # Get list of NPCs that could be damaged (enemies in combat)
+        present_npcs = game_session.npcs_present
+
+        for dmg in mechanics.damage:
+            target = dmg.get("target", "").strip()
+            amount = dmg.get("amount", 0)
+            dmg_type = dmg.get("type", "untyped")
+
+            # Check if target is an NPC (not "you" or player character name)
+            if target.lower() not in ["you", "yourself"]:
+                # Try to find matching NPC
+                matched_npc = None
+                for npc in present_npcs:
+                    if npc.lower() in target.lower() or target.lower() in npc.lower():
+                        matched_npc = npc
+                        break
+
+                if matched_npc:
+                    # Apply damage to NPC via combat manager
+                    actual_damage, is_dead = combat_manager.apply_damage_to_npc(matched_npc, amount)
+                    
+                    if actual_damage > 0:
+                        if is_dead:
+                            feedback.append(f"💥 {matched_npc} takes {actual_damage} {dmg_type} damage and dies! ☠️")
+                            # Remove from NPCs present
+                            if matched_npc in game_session.npcs_present:
+                                game_session.npcs_present.remove(matched_npc)
+                        else:
+                            # Get current HP for display
+                            monster = combat_manager.npc_monsters.get(matched_npc)
+                            if monster:
+                                hp_display = f"HP: {monster.current_hp}/{monster.max_hp}"
+                                feedback.append(f"💥 {matched_npc} takes {actual_damage} {dmg_type} damage! ({hp_display})")
+                            else:
+                                feedback.append(f"💥 {matched_npc} takes {actual_damage} {dmg_type} damage!")
+
+                        if self.debug:
+                            logger.debug(f"💥 Applied {actual_damage} damage to {matched_npc} (dead: {is_dead})")
 
         return feedback
 

@@ -59,6 +59,9 @@ class ExtractedMechanics:
 
     # Items consumed: [{"character": "character_name", "item": "health potion", "quantity": 1}]
     items_consumed: List[Dict[str, Any]] = field(default_factory=list)
+    
+    # Items acquired/picked up: [{"character": "character_name", "item": "rope", "quantity": 1}]
+    items_acquired: List[Dict[str, Any]] = field(default_factory=list)
 
     # Character deaths: [{"character": "character_name"}]
     deaths: List[Dict[str, Any]] = field(default_factory=list)
@@ -78,6 +81,7 @@ class ExtractedMechanics:
             self.conditions_removed,
             self.spell_slots_used,
             self.items_consumed,
+            self.items_acquired,
             self.deaths,
             self.unconscious,
             self.npcs_introduced
@@ -92,6 +96,7 @@ class ExtractedMechanics:
             "conditions_removed": self.conditions_removed,
             "spell_slots_used": self.spell_slots_used,
             "items_consumed": self.items_consumed,
+            "items_acquired": self.items_acquired,
             "deaths": self.deaths,
             "unconscious": self.unconscious,
             "npcs_introduced": self.npcs_introduced
@@ -107,6 +112,7 @@ class ExtractedMechanics:
             conditions_removed=data.get("conditions_removed", []),
             spell_slots_used=data.get("spell_slots_used", []),
             items_consumed=data.get("items_consumed", []),
+            items_acquired=data.get("items_acquired", []),
             deaths=data.get("deaths", []),
             unconscious=data.get("unconscious", []),
             npcs_introduced=data.get("npcs_introduced", [])
@@ -234,6 +240,9 @@ Extract mechanics and output as JSON with this exact schema:
   "items_consumed": [
     {{"character": "character_name", "item": "health potion", "quantity": 1}}
   ],
+  "items_acquired": [
+    {{"character": "character_name", "item": "rope", "quantity": 1}}
+  ],
   "deaths": [
     {{"character": "character_name"}}
   ],
@@ -245,12 +254,25 @@ Extract mechanics and output as JSON with this exact schema:
   ]
 }}
 
+DAMAGE EXAMPLES (who receives damage):
+- "Thorin strikes the goblin" → {{"target": "goblin", "amount": X}}
+- "The goblin hits Thorin" → {{"target": "Thorin", "amount": X}}
+- "Your sword cuts the wolf" → {{"target": "wolf", "amount": X}}
+- "The wolf bites you" → {{"target": "you", "amount": X}}
+- "Arrow embeds into the orc" → {{"target": "orc", "amount": X}}
+
 RULES:
 - Only include fields where something happened
 - Empty arrays are OK
-- Use exact character names from the narrative
+- Use exact names from the narrative for target/character fields
+- **DAMAGE TARGET**: Who RECEIVES damage, not who deals it
+  - "Thorin strikes the goblin" → target: "Goblin" (goblin receives damage)
+  - "The goblin hits you" → target: "you" or player name (player receives damage)
+  - "Your sword cuts the wolf" → target: "Wolf" (wolf receives damage)
 - Damage types: slashing, piercing, bludgeoning, fire, cold, lightning, poison, acid, etc.
 - Conditions: poisoned, stunned, paralyzed, frightened, charmed, etc.
+- Items consumed: When character drinks potion, eats food, uses consumable
+- Items acquired: When character picks up, takes, finds, or receives items
 - NPCs: Extract ANY creatures/monsters/NPCs mentioned (Goblin, Dragon, Merchant, Guard, etc.)
 - NPC types: "enemy" for hostile creatures, "friendly" for allies, "neutral" for NPCs
 - If no mechanics found, return {{"damage": [], "healing": [], "npcs_introduced": []}}
@@ -349,6 +371,8 @@ JSON:"""
                 print(f"  ✨ Spells Cast: {mechanics.spell_slots_used}")
             if mechanics.items_consumed:
                 print(f"  🎒 Items Used: {mechanics.items_consumed}")
+            if mechanics.items_acquired:
+                print(f"  📦 Items Acquired: {mechanics.items_acquired}")
             if mechanics.deaths:
                 print(f"  ☠️  Deaths: {mechanics.deaths}")
             if mechanics.unconscious:

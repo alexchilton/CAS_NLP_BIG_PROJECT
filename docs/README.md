@@ -45,6 +45,13 @@ Debug logging system documentation:
 - Debug modes
 - Performance tips
 
+#### [BUG_FIXES.md](BUG_FIXES.md)
+Bug tracking and resolution documentation:
+- Wolf/Goblin hallucination fix (2026-01-04)
+- Root cause analyses
+- Testing verification
+- Future improvement ideas
+
 #### [plan_progress.md](plan_progress.md)
 Development progress tracking:
 - Feature roadmap

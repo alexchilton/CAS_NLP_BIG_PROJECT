@@ -12,6 +12,7 @@ This test simulates a full adventure:
 
 import time
 import random
+import re
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -41,14 +42,29 @@ def wait_for_response(driver, previous_count, timeout=30):
     return previous_count
 
 def get_chat_messages(driver):
-    """Get all chat messages."""
-    messages = driver.find_elements(By.CSS_SELECTOR, '.message')
-    return [msg.text for msg in messages if msg.text and "Loading" not in msg.text]
+    """Get all chat messages from Gradio chatbot."""
+    try:
+        # Gradio uses data-testid for message identification
+        bot_messages = driver.find_elements(By.CSS_SELECTOR, '[data-testid="bot"]')
+        user_messages = driver.find_elements(By.CSS_SELECTOR, '[data-testid="user"]')
+        
+        # Get text from bot messages
+        messages = []
+        for msg in bot_messages:
+            text = msg.text
+            if text and "Loading" not in text and text not in messages:  # Avoid duplicates
+                messages.append(text)
+        
+        return messages
+    except Exception as e:
+        print(f"Warning: Could not get messages: {e}")
+        return []
 
 def send_message(driver, text):
-    """Send a message and wait for response."""
-    # Get current message count
-    messages_before = len(get_chat_messages(driver))
+    """Send a message and wait for NEW response."""
+    # Get current bot messages BEFORE sending
+    messages_before = get_chat_messages(driver)
+    count_before = len(messages_before)
     
     # Find and fill input
     textarea = driver.find_element(By.CSS_SELECTOR, 'textarea[placeholder*="Type"]')
@@ -59,29 +75,59 @@ def send_message(driver, text):
     submit_btn = driver.find_element(By.CSS_SELECTOR, 'button.primary')
     submit_btn.click()
     
-    # Wait for response
-    time.sleep(2)
-    messages_after = wait_for_response(driver, messages_before, timeout=30)
+    # Wait for NEW bot message to appear
+    max_wait = 30
+    for i in range(max_wait):
+        time.sleep(1)
+        messages_after = get_chat_messages(driver)
+        count_after = len(messages_after)
+        
+        # Check if we have a new message
+        if count_after > count_before:
+            # Return the newest message (last in list)
+            return messages_after[-1]
     
-    # Get latest response
+    # Timeout - return what we have
+    print(f"⚠️ Timeout waiting for response to: {text[:50]}")
     all_messages = get_chat_messages(driver)
     return all_messages[-1] if all_messages else ""
 
 def get_hp_from_sheet(driver):
-    """Extract HP from character sheet."""
+    """Extract HP from character sheet (not chat history)."""
     try:
-        # Look for HP in character sheet
-        sheet = driver.find_element(By.CSS_SELECTOR, 'textarea[label="Character Sheet"]')
-        text = sheet.get_attribute('value')
+        # HP is in the character sheet under "Combat Stats" heading
+        # Structure: <h3>Combat Stats</h3> <ul> <li><strong>HP</strong>: 28/28</li>
         
-        # Parse HP: "HP: 28/28" or "HP: 0/28 💀"
-        for line in text.split('\n'):
-            if 'HP:' in line:
-                hp_part = line.split('HP:')[1].strip()
-                current = hp_part.split('/')[0].strip()
-                # Remove emoji and extra text
-                current = ''.join(c for c in current if c.isdigit() or c == '-')
-                return int(current) if current else 0
+        # Find all h3 elements
+        h3_elements = driver.find_elements(By.TAG_NAME, "h3")
+        
+        for h3 in h3_elements:
+            if "Combat Stats" in h3.text:
+                # Found the Combat Stats section
+                # Now find the next <ul> sibling and look for HP there
+                parent = h3.find_element(By.XPATH, "..")
+                ul_elements = parent.find_elements(By.TAG_NAME, "ul")
+                
+                for ul in ul_elements:
+                    ul_text = ul.text
+                    if "HP" in ul_text:
+                        # Parse HP from this specific list
+                        match = re.search(r'HP[:\s]+(\d+)/(\d+)', ul_text)
+                        if match:
+                            current_hp = int(match.group(1))
+                            return current_hp
+        
+        # Fallback: search for HP in markdown container (avoid chat)
+        # Look for elements with specific structure but not in chat
+        markdown_divs = driver.find_elements(By.CSS_SELECTOR, "[class*='markdown']")
+        for div in markdown_divs:
+            text = div.text
+            # Only use if it contains "Combat Stats" (character sheet marker)
+            if "Combat Stats" in text and "HP" in text:
+                match = re.search(r'HP[:\s]+(\d+)/(\d+)', text)
+                if match:
+                    return int(match.group(1))
+            
     except Exception as e:
         print(f"⚠️  Could not parse HP: {e}")
     return None

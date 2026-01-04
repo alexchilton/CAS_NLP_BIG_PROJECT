@@ -557,12 +557,31 @@ class CombatManager:
 
         npc_actions = []
         current_turn = self.combat.get_current_turn()
+        processed_npcs = set()  # Track which NPCs have acted this round
 
         # Keep processing turns while it's an NPC turn
         while current_turn and current_turn in self.npc_monsters:
+            monster = self.npc_monsters[current_turn]
+            
+            # Skip dead NPCs - advance turn without attacking
+            if not monster.is_alive():
+                if self.debug:
+                    print(f"⏭️  Skipping dead NPC: {current_turn}")
+                # Advance to next turn without adding to actions
+                next_char = self.combat.next_turn()
+                current_turn = self.combat.get_current_turn()
+                continue
+            
+            # Prevent same NPC from acting twice (infinite loop protection)
+            if current_turn in processed_npcs:
+                if self.debug:
+                    print(f"⚠️  {current_turn} already acted this batch, stopping")
+                break
+            
             # Generate NPC attack
             attack_result = self.generate_npc_attack(current_turn, target_ac)
             npc_actions.append(attack_result)
+            processed_npcs.add(current_turn)
 
             if self.debug:
                 print(f"🎲 NPC Turn: {current_turn}")

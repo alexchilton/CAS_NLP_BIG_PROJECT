@@ -225,6 +225,27 @@ class GameMaster:
         transaction_feedback = ""
         combat_feedback = ""
 
+        # Step 0: Check if player is unconscious and prevent actions
+        if self.session.character_state:
+            from dnd_rag_system.systems.game_state import Condition
+            if Condition.UNCONSCIOUS.value in self.session.character_state.conditions:
+                # Only allow certain commands while unconscious
+                allowed_commands = ['/help', '/stats', '/character', '/context', '/death_save', '/initiative']
+                if not any(player_input.lower().strip().startswith(cmd) for cmd in allowed_commands):
+                    return """⚠️ **You are unconscious and cannot take actions!**
+
+You have fallen unconscious (0 HP). According to D&D 5e rules:
+- You cannot move, speak, or take any actions
+- Enemies may continue attacking you
+- You must make death saving throws
+
+**What you can do:**
+- Type `/death_save` to make a death saving throw (not yet implemented)
+- Type `/stats` to see your character condition
+- Wait for healing from allies or stabilization
+
+*Note: Death saving throw system coming soon. For now, ask GM for healing or revival.*"""
+
         # Step -1: Combat Command Processing
         # Handle combat commands like /start_combat, /next_turn, /end_combat, /initiative
         combat_command_handled = False
@@ -472,6 +493,24 @@ class GameMaster:
         if original_character_state is not None:
             self.session.character_state = original_character_state
 
+        # Step 1.7: Calculate Player Attack (if attacking)
+        # Pre-calculate attack roll and damage so GM can narrate specific numbers
+        player_attack_instruction = ""
+        if (action_intent.action_type == ActionType.COMBAT and 
+            action_intent.target and 
+            self.session.character_state):
+            
+            # Calculate player's attack
+            attack_result = self._calculate_player_attack(
+                action_intent.target,
+                self.session.character_state
+            )
+            
+            if attack_result:
+                player_attack_instruction = attack_result
+                if DEBUG_PROMPTS:
+                    logger.debug(f"⚔️ Player Attack: {attack_result}")
+
         # Step 2: Search RAG if enabled
         if use_rag:
             rag_results = self.search_rag(player_input)
@@ -487,9 +526,19 @@ class GameMaster:
                                'leave', 'continue', 'follow', 'look around', 'investigate']
         is_exploring = any(keyword in player_input.lower() for keyword in exploration_keywords)
         
-        if (is_exploring and 
-            not self.combat_manager.is_in_combat() and 
-            self.session.character_state is not None):
+        # Encounter cooldown: Only check every 5+ turns OR when changing locations
+        # This prevents encounter spam (goblin -> owlbear -> manticore in 3 turns)
+        # IMPORTANT: Don't trigger on first action (last_encounter_location is empty initially)
+        location_changed = (
+            self.session.last_encounter_location != "" and
+            self.session.last_encounter_location != self.session.current_location
+        )
+        encounter_cooldown_met = (self.session.turns_since_last_encounter >= 5)
+
+        if (is_exploring and
+            not self.combat_manager.is_in_combat() and
+            self.session.character_state is not None and
+            (encounter_cooldown_met or location_changed)):
             
             # Get current location info
             current_loc = self.session.get_current_location_obj()
@@ -500,6 +549,10 @@ class GameMaster:
             encounter = self.encounter_system.generate_encounter(location_type, character_level)
             
             if encounter:
+                # Reset cooldown
+                self.session.turns_since_last_encounter = 0
+                self.session.last_encounter_location = self.session.current_location
+                
                 # Add monster to NPCs present
                 self.add_npc(encounter.monster_name)
                 
@@ -511,9 +564,16 @@ class GameMaster:
                     logger.debug(f"   Location: {location_type}, Character Level: {character_level}")
                     if encounter.surprise:
                         logger.debug(f"   💥 SURPRISE ATTACK!")
+            else:
+                # No encounter this turn, increment cooldown
+                self.session.turns_since_last_encounter += 1
+        else:
+            # Increment turn counter even when not exploring (for cooldown tracking)
+            if not self.combat_manager.is_in_combat():
+                self.session.turns_since_last_encounter += 1
 
-        # Step 3: Build prompt with history, RAG context, validation guidance, and encounter
-        prompt = self._build_prompt(player_input, rag_context, validation, encounter_instruction)
+        # Step 3: Build prompt with history, RAG context, validation guidance, encounter, and player attack
+        prompt = self._build_prompt(player_input, rag_context, validation, encounter_instruction, player_attack_instruction)
 
         # Step 4: Get LLM response (route based on mode)
         try:
@@ -549,6 +609,29 @@ class GameMaster:
                     # Apply to game state if any mechanics found
                     if mechanics.has_mechanics():
                         # Apply NPCs to session (add introduced NPCs to npcs_present)
+                        # BUT: If we just generated an encounter, prevent adding monsters with different names
+                        if encounter and mechanics.npcs_introduced:
+                            # Check if GM hallucinated a different monster name
+                            original_count = len(mechanics.npcs_introduced)
+                            filtered_npcs = []
+                            
+                            for npc in mechanics.npcs_introduced:
+                                npc_name = npc.get('name', '').strip().lower()
+                                encounter_name = encounter.monster_name.strip().lower()
+                                
+                                # Allow the actual encounter monster
+                                if npc_name == encounter_name:
+                                    filtered_npcs.append(npc)
+                                # Allow non-monster NPCs (merchants, guards, etc.) if type is not "enemy"
+                                elif npc.get('type') != 'enemy':
+                                    filtered_npcs.append(npc)
+                                else:
+                                    # This is a hallucinated enemy - skip it
+                                    if DEBUG_PROMPTS:
+                                        logger.debug(f"🔧 Filtered hallucinated enemy '{npc_name}' - actual encounter is '{encounter_name}'")
+                            
+                            mechanics.npcs_introduced = filtered_npcs
+                        
                         npc_feedback = self.mechanics_applicator.apply_npcs_to_session(mechanics, self.session)
 
                         # Apply damage/healing/conditions to characters
@@ -556,11 +639,27 @@ class GameMaster:
                             # Apply to party
                             feedback = self.mechanics_applicator.apply_to_party(mechanics, self.session.party)
                         else:
-                            # Apply to single character
-                            feedback = self.mechanics_applicator.apply_to_character(mechanics, self.session.character_state)
+                            # Apply to single character (pass session for item tracking)
+                            feedback = self.mechanics_applicator.apply_to_character(
+                                mechanics, 
+                                self.session.character_state,
+                                game_session=self.session
+                            )
+                        
+                        # Apply damage to NPCs (enemies) - NEW!
+                        npc_damage_feedback = self.mechanics_applicator.apply_damage_to_npcs(
+                            mechanics,
+                            self.combat_manager,
+                            self.session
+                        )
 
-                        # Combine NPC and character feedbacks
-                        all_feedback = npc_feedback + feedback
+                        # Combine all feedbacks
+                        all_feedback = npc_feedback + feedback + npc_damage_feedback
+                        
+                        # Add mechanics feedback to combat output
+                        if all_feedback:
+                            mechanics_output = "\n\n**⚙️ MECHANICS:**\n" + "\n".join(all_feedback)
+                            combat_feedback += mechanics_output
 
                         if DEBUG_PROMPTS and all_feedback:
                             logger.debug("=" * 80)
@@ -572,15 +671,46 @@ class GameMaster:
                 except Exception as e:
                     logger.error(f"Mechanics extraction/application failed: {e}")
 
-            # Step 5.5: Auto-advance turn in combat mode after character acts
-            if self.combat_manager.is_in_combat():
-                # Only advance if this was an actual action (not conversation/exploration)
-                if action_intent.action_type in [ActionType.COMBAT, ActionType.SPELL_CAST, ActionType.ITEM_USE]:
-                    turn_message = self.combat_manager.advance_turn()
-                    if turn_message:
-                        combat_feedback = f"\n\n{turn_message}"
+            # Step 5.4: Extract location changes from GM narrative
+            # Parse patterns like "You find yourself in X", "You travel to X", "You are in X"
+            self._extract_and_update_location(response)
 
+            # Step 5.4.5: Auto-start combat if player attacks an NPC
+            # Check if this is an attack action and NPCs are present
+            from dnd_rag_system.systems.game_state import Condition
+            if (action_intent.action_type == ActionType.COMBAT and 
+                self.session.npcs_present and 
+                not self.combat_manager.is_in_combat()):
+                
+                # Auto-start combat with present NPCs
+                if self.session.character_state:
+                    combat_feedback = self.combat_manager.start_combat_with_character(
+                        self.session.character_state,
+                        self.session.npcs_present
+                    )
                     if DEBUG_PROMPTS:
+                        logger.debug(f"⚔️ Auto-started combat with: {', '.join(self.session.npcs_present)}")
+
+            # Step 5.5: Auto-advance turn in combat mode after character acts
+            # In D&D combat: NPCs attack EVERY round regardless of what player does
+            # Player tries to run? NPCs get attacks of opportunity
+            # Player talks? NPCs still attack
+            # Player uses item? NPCs still attack
+            player_unconscious = False
+            if self.session.character_state:
+                player_unconscious = Condition.UNCONSCIOUS.value in self.session.character_state.conditions
+            
+            if self.combat_manager.is_in_combat():
+                # In combat, ALWAYS advance turn after player action (or auto-skip if unconscious)
+                # This ensures NPCs attack every round, even if player runs/talks/etc.
+                turn_message = self.combat_manager.advance_turn()
+                if turn_message:
+                    combat_feedback = f"\n\n{turn_message}"
+
+                if DEBUG_PROMPTS:
+                    if player_unconscious:
+                        logger.debug(f"⚔️ Combat turn auto-advanced (player unconscious)")
+                    else:
                         logger.debug(f"⚔️ Combat turn auto-advanced: {turn_message}")
 
                     # Step 5.6: Process NPC turns automatically using monster stats
@@ -654,7 +784,123 @@ class GameMaster:
         except Exception as e:
             return f"Error generating response: {e}"
 
-    def _build_prompt(self, player_input: str, rag_context: str, validation=None, encounter_instruction: str = "") -> str:
+    def _calculate_player_attack(self, target_name: str, character_state) -> str:
+        """
+        Calculate player's attack roll and damage against a target.
+        Pre-calculates the mechanics so GM can narrate specific numbers.
+        
+        Args:
+            target_name: Name of the NPC being attacked
+            character_state: CharacterState object (has character name and equipped items)
+            
+        Returns:
+            Formatted instruction string for GM, or empty string if calculation fails
+        """
+        import random
+        
+        # Get base character stats from session (has ability scores, equipment, etc.)
+        if not character_state:
+            return ""
+        
+        character_name = character_state.character_name
+        if character_name not in self.session.base_character_stats:
+            return ""
+            
+        character = self.session.base_character_stats[character_name]
+        
+        # Simple weapon damage table (weapon_name: (damage_dice, damage_die_count, damage_die_size, damage_type))
+        # Format: "1d8" = (1, 8), "2d6" = (2, 6)
+        WEAPON_DAMAGE = {
+            "longsword": (1, 8, "slashing"),
+            "greatsword": (2, 6, "slashing"),
+            "shortsword": (1, 6, "piercing"),
+            "dagger": (1, 4, "piercing"),
+            "battleaxe": (1, 8, "slashing"),
+            "greataxe": (1, 12, "slashing"),
+            "mace": (1, 6, "bludgeoning"),
+            "warhammer": (1, 8, "bludgeoning"),
+            "rapier": (1, 8, "piercing"),
+            "scimitar": (1, 6, "slashing"),
+            "quarterstaff": (1, 6, "bludgeoning"),
+            "spear": (1, 6, "piercing"),
+            "bow": (1, 8, "piercing"),
+            "longbow": (1, 8, "piercing"),
+            "shortbow": (1, 6, "piercing"),
+            "crossbow": (1, 8, "piercing"),
+            "hand crossbow": (1, 6, "piercing"),
+            # Unarmed as fallback
+            "unarmed": (1, 4, "bludgeoning"),
+        }
+        
+        # Find equipped weapon in character's equipment
+        weapon_name = "unarmed"
+        weapon_found = False
+        
+        if hasattr(character, 'equipment') and character.equipment:
+            for item in character.equipment:
+                item_lower = item.lower()
+                for weapon_key in WEAPON_DAMAGE.keys():
+                    if weapon_key in item_lower:
+                        weapon_name = weapon_key
+                        weapon_found = True
+                        break
+                if weapon_found:
+                    break
+        
+        # Get weapon stats
+        dice_count, die_size, damage_type = WEAPON_DAMAGE.get(weapon_name, (1, 4, "bludgeoning"))
+        
+        # Calculate attack bonus (STR mod + proficiency for melee weapons)
+        str_mod = character.get_ability_modifier(character.strength)
+        attack_bonus = str_mod + character.proficiency_bonus
+        
+        # Get target AC (check if NPC exists in combat manager)
+        target_ac = 12  # Default AC
+        if target_name in self.combat_manager.npc_monsters:
+            target_ac = self.combat_manager.npc_monsters[target_name].ac
+        
+        # Roll attack (d20 + attack bonus)
+        attack_roll = random.randint(1, 20)
+        total_attack = attack_roll + attack_bonus
+        
+        # Check if hit
+        if attack_roll == 1:
+            # Critical miss
+            return (
+                f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} but CRITICALLY MISSES (rolled natural 1)! "
+                f"Attack roll: 1 + {attack_bonus} = {total_attack} vs AC {target_ac}. "
+                f"Narrate an embarrassing miss or fumble. NO DAMAGE."
+            )
+        elif total_attack < target_ac and attack_roll != 20:
+            # Normal miss
+            return (
+                f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} but MISSES. "
+                f"Attack roll: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}. "
+                f"Narrate the attack missing. NO DAMAGE."
+            )
+        else:
+            # Hit! Roll damage
+            damage = sum(random.randint(1, die_size) for _ in range(dice_count))
+            damage += str_mod  # Add STR modifier to damage
+            
+            if attack_roll == 20:
+                # Critical hit! Double damage
+                damage *= 2
+                return (
+                    f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} and scores a CRITICAL HIT (natural 20)! "
+                    f"Attack roll: 20 (critical!) + {attack_bonus} = {total_attack} vs AC {target_ac}. "
+                    f"💥 {damage} {damage_type} damage (CRITICAL DOUBLE DAMAGE!). "
+                    f"Narrate an epic, devastating strike that deals {damage} damage to {target_name}."
+                )
+            else:
+                return (
+                    f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} and HITS! "
+                    f"Attack roll: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}. "
+                    f"💥 {damage} {damage_type} damage. "
+                    f"Narrate the successful strike dealing {damage} damage to {target_name}."
+                )
+
+    def _build_prompt(self, player_input: str, rag_context: str, validation=None, encounter_instruction: str = "", player_attack_instruction: str = "") -> str:
         """
         Build complete prompt for LLM with full game state context.
 
@@ -729,6 +975,12 @@ TIME: Day {self.session.day}, {self.session.time_of_day}
         # Add encounter instruction if present (hidden from player, only GM sees this)
         if encounter_instruction:
             prompt += f"""{encounter_instruction}
+
+"""
+        
+        # Add player attack instruction if present (hidden from player, only GM sees this)
+        if player_attack_instruction:
+            prompt += f"""{player_attack_instruction}
 
 """
 
@@ -974,6 +1226,60 @@ GM RESPONSE:"""
                     "You attempt the action, but something prevents you from completing it. "
                     "Perhaps you're missing something, or the timing isn't right."
                 )
+
+    def _extract_and_update_location(self, response: str) -> None:
+        """
+        Extract location from GM narrative and update session state.
+        
+        CRITICAL: Do NOT allow location changes during combat!
+        
+        Patterns detected:
+        - "You find yourself in X"
+        - "You are in X"  
+        - "You travel to X"
+        - "You arrive at X"
+        - "You enter X"
+        
+        Args:
+            response: GM's narrative response
+        """
+        import re
+        
+        # CRITICAL: Prevent location changes during combat
+        if self.combat_manager.is_in_combat():
+            if DEBUG_PROMPTS:
+                logger.debug("🔒 Location locked - in combat, ignoring any location mentions in GM response")
+            return
+        
+        # Patterns for location mentions
+        patterns = [
+            r'[Yy]ou find yourself (?:in|at) (?:the )?([A-Z][^.!?\n]+?)(?:\.|!|\?|,|\n)',
+            r'[Yy]ou (?:are|\'re) (?:now )?(?:in|at) (?:the )?([A-Z][^.!?\n]+?)(?:\.|!|\?|,|\n)',
+            r'[Yy]ou travel to (?:the )?([A-Z][^.!?\n]+?)(?:\.|!|\?|,|\n)',
+            r'[Yy]ou arrive (?:at|in) (?:the )?([A-Z][^.!?\n]+?)(?:\.|!|\?|,|\n)',
+            r'[Yy]ou enter (?:the )?([A-Z][^.!?\n]+?)(?:\.|!|\?|,|\n)',
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, response)
+            if match:
+                new_location = match.group(1).strip()
+                
+                # Clean up common artifacts
+                new_location = new_location.rstrip('.,!?')
+                
+                # Only update if it's actually different
+                if new_location != self.session.current_location:
+                    old_location = self.session.current_location
+                    self.session.current_location = new_location
+                    
+                    if DEBUG_PROMPTS:
+                        logger.debug(f"📍 Location changed: '{old_location}' → '{new_location}'")
+                    
+                    self.session.add_note(f"Traveled to: {new_location}")
+                
+                # Only match first occurrence
+                break
 
     def _post_process_response(self, response: str, validation) -> None:
         """
