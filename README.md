@@ -311,6 +311,61 @@ alone by the fireplace...
 
 ---
 
+**Quick Commands:**
+```
+/character      - Show full character sheet
+/stats          - Quick stats view (HP, AC, modifiers)
+/context        - View current scene and character context
+```
+
+**RAG Commands:**
+```
+/rag <query>    - Search D&D knowledge base
+                  Examples:
+                  /rag Magic Missile    - Look up spell details
+                  /rag Goblin          - Look up monster stats
+                  /rag Fighter         - Look up class features
+                  /rag Elf             - Look up race traits
+```
+
+**Session Commands:**
+```
+/help           - Show all available commands
+/history        - Show conversation history
+/save <file>    - Save session to JSON
+/quit           - Exit the game
+```
+
+---
+
+### 🧪 Debug Mode - Testing Scenarios
+
+For developers and testers, debug mode provides predefined combat/NPC scenarios for manual testing.
+
+**Enable Debug Mode:**
+1. Edit `dnd_rag_system/config/settings.py`
+2. Set `DEBUG_MODE = True`
+3. Restart Gradio app
+
+**Features:**
+- 🧪 Debug scenario dropdown appears in UI (after character selection)
+- 8 predefined scenarios: Goblin Fight, Wolf Pack, Dragon Encounter, etc.
+- Pre-spawns monsters, NPCs, and items at specific locations
+- Ideal for testing combat mechanics, NPC hallucination fixes, and location stability
+
+**Available Scenarios:**
+- **Goblin Fight** - Test basic combat
+- **Goblin with Treasure** - Test combat + looting
+- **Wolf Pack** - Multi-enemy combat
+- **Skeleton Guardian** - Undead encounter
+- **Dragon Encounter** - High-CR challenge
+- **Safe Inn** - NPC dialogue testing
+- **Shopping District** - Shop system testing
+
+See [`docs/DEBUG_MODE.md`](docs/DEBUG_MODE.md) for full documentation!
+
+---
+
 ### 🎮 Commands Reference
 
 **Character Commands:**

@@ -268,15 +268,23 @@ class EncounterSystem:
         """
         if encounter.surprise:
             return (
-                f"\n[ENCOUNTER ALERT: A {encounter.monster_name} (CR {encounter.monster_cr}) "
-                f"suddenly appears and catches the party by surprise! "
-                f"Describe the monster appearing dramatically and attacking immediately.]"
+                f"\n═══════════════════════════════════════════════════════════════════\n"
+                f"🎲 MANDATORY ENCOUNTER - USE THIS EXACT MONSTER NAME 🎲\n"
+                f"═══════════════════════════════════════════════════════════════════\n"
+                f"A {encounter.monster_name} (CR {encounter.monster_cr}) suddenly appears!\n"
+                f"CRITICAL: You MUST say '{encounter.monster_name}' (not any other creature).\n"
+                f"Describe the {encounter.monster_name} appearing dramatically and attacking immediately.\n"
+                f"═══════════════════════════════════════════════════════════════════\n"
             )
         else:
             return (
-                f"\n[ENCOUNTER ALERT: A {encounter.monster_name} (CR {encounter.monster_cr}) "
-                f"is nearby. Describe it appearing, approaching, or being spotted by the player. "
-                f"Make it threatening and dramatic!]"
+                f"\n═══════════════════════════════════════════════════════════════════\n"
+                f"🎲 MANDATORY ENCOUNTER - USE THIS EXACT MONSTER NAME 🎲\n"
+                f"═══════════════════════════════════════════════════════════════════\n"
+                f"A {encounter.monster_name} (CR {encounter.monster_cr}) is nearby!\n"
+                f"CRITICAL: You MUST say '{encounter.monster_name}' (not any other creature).\n"
+                f"Describe it appearing, approaching, or being spotted by the player.\n"
+                f"═══════════════════════════════════════════════════════════════════\n"
             )
     
     def format_encounter_fallback(self, encounter: EncounterResult) -> str:

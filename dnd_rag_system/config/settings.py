@@ -118,7 +118,19 @@ SPELL_LEVELS = list(range(0, 10))  # Cantrips (0) through 9th level
 # ============================================================================
 
 # Ollama model for GM dialogue
+# Testing different models:
+# - Qwen3-4B-RPG-Roleplay-V2 (4B) - Good for roleplay, trained on RPG data
+# - qwen2.5:7b (7B) - Better instruction following but less roleplay
+# - Impish_QWEN_7B-1M (7B) - RPG-focused, 1M context
+
+# Reverting to RPG-optimized model
 OLLAMA_MODEL_NAME = "hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M"
+
+# To try the 7B RPG model, download it first:
+# ollama pull hf.co/SicariusSicariiStuff/Impish_QWEN_7B-1M:Q4_K_M
+# Then uncomment:
+# OLLAMA_MODEL_NAME = "hf.co/SicariusSicariiStuff/Impish_QWEN_7B-1M:Q4_K_M"
+
 OLLAMA_BASE_URL = "http://localhost:11434"  # Default Ollama API endpoint
 OLLAMA_TIMEOUT = 30  # Timeout in seconds for model responses
 
@@ -173,7 +185,7 @@ LOG_FILE = PROJECT_ROOT / "dnd_rag_system.log"
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 # Debug mode (verbose output, validation checks)
-DEBUG_MODE = False
+DEBUG_MODE = True
 
 # ============================================================================
 # PERFORMANCE SETTINGS

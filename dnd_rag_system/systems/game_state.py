@@ -56,6 +56,7 @@ class Location:
     # Persistent state - tracks what happened here
     defeated_enemies: Set[str] = field(default_factory=set)  # Dead monsters stay dead
     moved_items: Dict[str, str] = field(default_factory=dict)  # {item: new_location}
+    available_items: List[str] = field(default_factory=list)  # Items currently at this location
     completed_events: Set[str] = field(default_factory=set)  # Events that happened here
     
     # NPCs that permanently reside here (not combat enemies)
@@ -90,6 +91,32 @@ class Location:
     def is_event_completed(self, event_id: str) -> bool:
         """Check if an event was already completed."""
         return event_id in self.completed_events
+    
+    def add_item(self, item_name: str):
+        """Add an item to this location."""
+        if item_name not in self.available_items:
+            self.available_items.append(item_name)
+    
+    def remove_item(self, item_name: str, moved_to: str = "inventory") -> bool:
+        """
+        Remove an item from this location (picked up by player).
+        
+        Args:
+            item_name: Name of item to remove
+            moved_to: Where the item went (default: "inventory")
+        
+        Returns:
+            True if item was removed, False if not found
+        """
+        if item_name in self.available_items:
+            self.available_items.remove(item_name)
+            self.moved_items[item_name] = moved_to
+            return True
+        return False
+    
+    def has_item(self, item_name: str) -> bool:
+        """Check if item is currently at this location."""
+        return item_name in self.available_items
     
     def record_visit(self, current_day: int):
         """Record a visit to this location."""
@@ -988,6 +1015,10 @@ class GameSession:
     """
     session_name: str = "New Adventure"
 
+    # Base character stats (STR, DEX, equipment) - keyed by character name
+    # Works for both solo and party mode
+    base_character_stats: Dict[str, Any] = field(default_factory=dict)  # {name: Character from character_creator}
+
     # Single character state (for non-party mode)
     character_state: Optional['CharacterState'] = None
 
@@ -1010,6 +1041,10 @@ class GameSession:
     # Time tracking (in-game)
     day: int = 1
     time_of_day: str = "morning"  # morning, afternoon, evening, night
+
+    # Encounter tracking (prevents encounter spam)
+    turns_since_last_encounter: int = 0
+    last_encounter_location: str = ""
 
     # Session notes
     notes: List[str] = field(default_factory=list)

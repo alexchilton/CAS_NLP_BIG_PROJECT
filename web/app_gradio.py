@@ -67,6 +67,20 @@ COMBAT_LOCATIONS = [
     ("Dragon's Lair Approach", "You stand before a massive cavern carved into the mountainside. Scorch marks blacken the rocks. A pile of charred bones lies near the entrance. The air shimmers with heat, and you hear the deep, rhythmic breathing of something massive within."),
 ]
 
+# DEBUG TEST SCENARIOS - For manual testing combat/features
+# Format: (scenario_name, location_name, npcs_to_spawn, items_to_add)
+DEBUG_SCENARIOS = [
+    ("Random Start", None, [], []),  # Default - random location
+    ("Goblin Fight", "Goblin Cave Entrance", ["Goblin"], []),
+    ("Goblin with Treasure", "Goblin Cave Entrance", ["Goblin"], ["Hidden Chest"]),
+    ("Goblin Wolf Rider", "Forest Ambush Site", ["Goblin", "Wolf"], ["Rope", "Torch"]),  # Multi-enemy test
+    ("Wolf Pack", "Dark Forest Clearing", ["Wolf", "Wolf"], []),
+    ("Skeleton Guardian", "Ancient Ruins", ["Skeleton"], ["Ancient Sword"]),
+    ("Dragon Encounter", "Dragon's Lair Approach", ["Young Red Dragon"], ["Dragon Hoard"]),
+    ("Safe Inn", "The Prancing Pony Inn", ["Innkeeper Butterbur"], ["Healing Potion"]),
+    ("Shopping District", "The Market Square", ["Merchant", "Blacksmith"], []),
+]
+
 
 def load_character_from_json(filepath: Path) -> Optional[Character]:
     """Load character from JSON file."""
@@ -204,6 +218,7 @@ def load_character_with_location(character_choice: str, location_name: Optional[
         char_state.spells = char.spells  # Add spells attribute dynamically
 
     # Load into game session
+    gm.session.base_character_stats[char.name] = char  # Store base character stats by name
     gm.session.character_state = char_state
     gm.session.npcs_present = []  # Clear NPCs when loading new character
 
@@ -357,6 +372,122 @@ You have **{char_state.gold} gold pieces** in your purse."""
     welcome_message += """\n\nWhat would you like to do?
 
 *Type `/help` to see available commands, or describe your action!*"""
+
+    # Return character sheet, clear input, chat with welcome message, and image
+    initial_chat = [{"role": "assistant", "content": welcome_message}]
+    return format_character_sheet(), "", initial_chat, char_image
+
+
+def load_character_with_debug(character_choice: str, scenario_choice: Optional[str]) -> Tuple[str, str, list, Optional[str]]:
+    """
+    Load character - routes to debug scenario if one is selected, otherwise normal load.
+    
+    Args:
+        character_choice: Which character to load
+        scenario_choice: Optional debug scenario (e.g., "Goblin Fight")
+        
+    Returns:
+        Tuple of (character_sheet, status_message, chat_history, character_image)
+    """
+    global conversation_history
+    
+    # Clear global conversation history to prevent old messages from showing
+    conversation_history = []
+    
+    # If no scenario selected or not in debug mode, use normal load
+    if not scenario_choice or scenario_choice == "":
+        return load_character(character_choice)
+    
+    # Load debug scenario
+    global current_character
+    
+    # Find the scenario
+    scenario = None
+    for s in DEBUG_SCENARIOS:
+        if s[0] == scenario_choice:
+            scenario = s
+            break
+    
+    if not scenario:
+        return ("", "Invalid scenario", [], None)
+    
+    scenario_name, location_name, npcs, items = scenario
+    
+    # CRITICAL: Clear old session state before loading new scenario
+    # This prevents Goblin/Wolf from previous scenario appearing in Shopping District
+    gm.session.npcs_present = []  # Clear all NPCs
+    gm.combat_manager.end_combat()  # End any active combat
+    gm.message_history = []  # Clear chat history
+    
+    # Load character with specific location
+    load_character_with_location(character_choice, location_name)
+    
+    # Add NPCs for this scenario (fresh list, not appending to old)
+    gm.session.npcs_present = npcs.copy()  # Replace, don't append
+    
+    # Add items to location's persistent tracking
+    if items:
+        # Get or create Location object for current location
+        current_loc = gm.session.get_current_location_obj()
+        if current_loc:
+            # Add items to location's available_items list
+            for item in items:
+                current_loc.add_item(item)
+        else:
+            # Fallback: use session-level tracking (deprecated but for compatibility)
+            gm.session.location_items = items.copy()
+    
+    # Set GM context
+    char = current_character
+    mods = char.get_modifiers()
+    char_state = gm.session.character_state
+    
+    context = f"""The player is {char.name}, a level {char.level} {char.race} {char.character_class}.
+
+PLAYER CHARACTER STATS:
+- HP: {char_state.current_hp}/{char_state.max_hp}  |  AC: {char.armor_class}  |  Prof Bonus: +{char.proficiency_bonus}
+- STR: {char.strength} ({mods['strength']:+d})  |  DEX: {char.dexterity} ({mods['dexterity']:+d})  |  CON: {char.constitution} ({mods['constitution']:+d})
+- INT: {char.intelligence} ({mods['intelligence']:+d})  |  WIS: {char.wisdom} ({mods['wisdom']:+d})  |  CHA: {char.charisma} ({mods['charisma']:+d})
+
+EQUIPMENT: {', '.join(char.equipment[:5])}
+"""
+    
+    if char.spells:
+        context += f"\nSPELLS: {', '.join(char.spells[:5])}"
+    
+    gm.set_context(context)
+    
+    # Create welcome message
+    location = gm.session.current_location
+    desc = gm.session.scene_description
+    
+    npcs_text = f"\n⚠️  **You see:** {', '.join(npcs)}!" if npcs else ""
+    # Better item display - describe what's available
+    if items:
+        if len(items) == 1:
+            items_text = f"\n🎒 **You notice:** A {items[0]} is here."
+        else:
+            items_list = ', '.join(items[:-1]) + f" and {items[-1]}"
+            items_text = f"\n🎒 **You notice:** {items_list} are here."
+    else:
+        items_text = ""
+    
+    welcome_message = f"""🧪 **DEBUG SCENARIO: {scenario_name}**
+
+Welcome, {char.name}!
+You find yourself in **{location}**.
+{desc}
+{npcs_text}{items_text}
+
+You have **{char_state.gold} gold pieces** in your purse.
+
+What would you like to do?
+*Type `/help` to see available commands, or describe your action!*"""
+
+    # Get character image if exists
+    char_image = None
+    if char.image_path and Path(char.image_path).exists():
+        char_image = str(char.image_path)
 
     # Return character sheet, clear input, chat with welcome message, and image
     initial_chat = [{"role": "assistant", "content": welcome_message}]
@@ -1035,6 +1166,15 @@ with demo:
                         visible=True
                     )
 
+                    # Debug scenario dropdown (only visible in debug mode)
+                    debug_scenario_dropdown = gr.Dropdown(
+                        choices=[s[0] for s in DEBUG_SCENARIOS],
+                        value=None,
+                        label="🧪 Debug Scenario (Optional)",
+                        info="Load character in specific test scenario for combat testing",
+                        visible=settings.DEBUG_MODE
+                    )
+
                     with gr.Row():
                         load_btn = gr.Button("Load Character", variant="primary", scale=2)
                         delete_btn = gr.Button("🗑️ Delete", variant="stop", scale=1)
@@ -1260,8 +1400,8 @@ with demo:
     )
 
     load_btn.click(
-        load_character,
-        inputs=[character_dropdown],
+        load_character_with_debug,
+        inputs=[character_dropdown, debug_scenario_dropdown],
         outputs=[character_sheet, msg_input, chatbot, char_image]
     )
 
