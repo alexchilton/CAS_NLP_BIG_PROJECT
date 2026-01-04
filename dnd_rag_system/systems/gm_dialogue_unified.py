@@ -501,7 +501,7 @@ class GameMaster:
             
             if encounter:
                 # Add monster to NPCs present
-                self.session.add_npc(encounter.monster_name)
+                self.add_npc(encounter.monster_name)
                 
                 # Create hidden instruction for GM
                 encounter_instruction = self.encounter_system.format_encounter_for_gm(encounter)
