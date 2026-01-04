@@ -20,9 +20,9 @@ logger = logging.getLogger(__name__)
 
 # Default model for mechanics extraction
 # Change this in one place to switch models across the entire system
-# gemma3:4b is newer and better at following complex instructions than qwen2.5:3b
-# 4B parameters with excellent instruction following for structured extraction
-DEFAULT_MECHANICS_MODEL = "gemma3:4b"  # Google Gemma 3 4B - optimized for instruction following
+# qwen2.5:3b is fast and reliable for structured extraction
+# Note: gemma3:4b was tested but is slower; qwen models are optimized for JSON output
+DEFAULT_MECHANICS_MODEL = "qwen2.5:3b"  # Fast, reliable JSON extraction (1.9GB)
 
 
 class MechanicType(Enum):
