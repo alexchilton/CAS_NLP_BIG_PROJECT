@@ -38,7 +38,7 @@ print(f"  Is Discovered: {new_loc.is_discovered}")
 print(f"  Connections: {new_loc.connections}")
 
 assert new_loc.name != "Town Square", "Generated location should have unique name"
-assert new_loc.is_discovered == False, "New locations should start undiscovered"
+assert new_loc.is_discovered == True, "Generated locations from /explore should be discovered (player found them)"
 assert town_square.name in new_loc.connections, "Should connect back to origin"
 
 # Test 3: Add generated location to world
