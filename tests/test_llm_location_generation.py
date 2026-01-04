@@ -43,7 +43,7 @@ DESCRIPTION: A misty marshland where twisted trees emerge from murky waters. Str
         assert loc.location_type in [LocationType.FOREST, LocationType.WILDERNESS, LocationType.MOUNTAIN]
         assert "Test Town" in loc.connections
         assert loc.is_safe == False  # Wilderness should be dangerous
-        assert loc.is_discovered == False
+        assert loc.is_discovered == True  # Discovered via /explore command
         
         print(f"✅ Generated: {loc.name}")
         print(f"   Type: {loc.location_type.value}")

@@ -398,7 +398,7 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                         llm_generate_func=llm_generate,
                         game_context=game_context
                     )
-                    
+
                     # Add to world map (CACHED - won't regenerate on revisit)
                     self.session.add_location(new_location)
                     
