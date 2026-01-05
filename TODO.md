@@ -165,20 +165,34 @@ If time is limited, start with essentials:
 - **Implementation**: Add character name parser to `action_validator.py`
 
 ### Party Member Interactions
-- **Character-to-Character Actions**:
-  - Healing: "Elara casts Cure Wounds on Thorin"
-  - Buffs: "Gandalf casts Bless on the entire party"
-  - Item sharing: "Thorin hands his rope to Legolas"
-  - Coordinated attacks: "Aragorn and Gimli attack together"
-- **Validation**:
-  - Check if target party member exists
-  - Check if healer has the spell/ability
-  - Update target's HP/status
+**STATUS: PARTIALLY IMPLEMENTED** 🚧
+
+**✅ COMPLETED (2026-01-05)**:
+- ✅ **Single-target healing**: `/cast Cure Wounds on Thorin` works
+- ✅ **Target validation**: Checks if target party member exists
+- ✅ **Self-healing fallback**: Defaults to self if no target specified
+- ✅ **Spell slot consumption**: Properly tracks and consumes slots
+- ✅ **Test suite**: 5 passing tests in `tests/test_party_member_interactions.py`
+- **Files**: `spell_manager.py:cast_healing_spell()`, `gm_dialogue_unified.py:475-510`
+
+**❌ NOT YET IMPLEMENTED**:
+- **Party-wide buffs**: "Gandalf casts Bless on the entire party"
+  - Need to detect "party", "everyone", "all" keywords
+  - Apply buff to all party members in `session.party` list
+  - Track concentration and duration
+- **Item sharing**: "Thorin hands his rope to Legolas"
+  - Add `/give <item> to <character>` command
+  - Validate item in giver's inventory
+  - Transfer item between party members
+  - Update both inventories
+- **Coordinated attacks**: "Aragorn and Gimli attack together"
+  - Parse multi-character actions
+  - Grant advantage or bonus damage
+  - Require both characters have actions available
 - **Social Interactions**:
   - Party member conversations
   - Strategy discussions
-  - Roleplaying between characters
-- **Technical**: Extend `action_validator.py` to handle party-member-as-target
+  - Roleplaying between characters (not mechanically enforced)
 
 ### Integrate Shop Reality Check
 - **Problem**: Currently players can use `/buy` and `/sell` anywhere, even in a dragon's lair!
@@ -325,6 +339,25 @@ If time is limited, start with essentials:
 ---
 
 ## ✅ COMPLETED (See DONE.md for details)
+
+- ✅ **Party Member Healing & Targeting (2026-01-05)** [PARTIAL]
+  - Single-target healing spells work (`/cast Cure Wounds on Thorin`)
+  - Target validation checks if party member exists
+  - Self-healing fallback when no target specified
+  - Spell slot consumption properly tracked
+  - 5 passing tests in `tests/test_party_member_interactions.py`
+  - **Still needed**: Party-wide buffs, item sharing, coordinated attacks
+  - Files: `spell_manager.py`, `gm_dialogue_unified.py:475-510`, `tests/test_party_member_interactions.py`
+
+- ✅ **DM Guide RAG Ingestion with Quality Tests (2026-01-05)**
+  - Added complete DM Guide (286 pages) to RAG system
+  - 95 chunks with intelligent page grouping (3 pages per chunk)
+  - Auto-detection of magic item content (53/95 chunks tagged)
+  - Comprehensive test suite: 26 tests validating retrieval quality
+  - Total RAG coverage: 1,098 documents (was 1,003)
+  - Magic items, treasure tables, and rules now searchable
+  - Query response times < 2s
+  - Files: `ingest_dm_guide.py`, `dm_guide.pdf`, `tests/test_dm_guide_rag_quality.py`
 
 - ✅ **Level Up System with Auto-Leveling (2026-01-05)**
   - Implemented automatic level-up on XP threshold
