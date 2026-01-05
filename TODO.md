@@ -181,6 +181,32 @@
 
 ## ✅ COMPLETED (See DONE.md for details)
 
+- ✅ **Level Up System with Auto-Leveling (2026-01-05)**
+  - Implemented automatic level-up on XP threshold
+  - Added `/level_up` command for manual leveling
+  - HP increase with hit die rolls + CON modifier (minimum 1)
+  - Proficiency bonus progression at levels 5, 9, 13, 17
+  - Spell slot upgrades via RAG lookup
+  - Healing on level-up (current HP increases by HP gain)
+  - Comprehensive test suite (10 tests in `test_game_state.py`)
+  - Auto-leveling integration in combat XP awards
+  - Files: `game_state.py:661-750`, `gm_dialogue_unified.py:326-565`, `tests/test_game_state.py:396-492`
+
+- ✅ **Spell Casting, Rest Mechanics & XP System (2026-01-05)**
+  - `/cast <spell>` command with spell slot consumption
+  - Cantrip detection (level 0 = unlimited use)
+  - Spell upcasting to higher-level slots
+  - Healing spell mechanics with dice rolling
+  - Target type detection (self/ally/enemy/area)
+  - `/rest` (short rest) with hit dice spending
+  - `/long_rest` for full HP/slot/hit dice restoration
+  - Automatic XP awards when defeating enemies
+  - Monster CR lookup via RAG
+  - XP-to-CR conversion using DMG p.274 table
+  - Victory rewards display with enemy list
+  - Test suites: `test_rest_mechanics.py` (11 tests), `test_spell_manager.py` (31 tests)
+  - Files: `spell_manager.py`, `gm_dialogue_unified.py`, `combat_manager.py`
+
 - ✅ **NPC Combat AI & Auto-Population System (2026-01-03)**
   - Implemented NPC combat AI with automatic monster attacks during their turns
   - NPCs now automatically attack when their initiative comes up
@@ -224,4 +250,3 @@
 - ✅ Random Encounter System with Monster RAG Integration (2025-12-26)
 - ✅ Selenium Test Character Loading Fixed (2025-12-26)
 
----

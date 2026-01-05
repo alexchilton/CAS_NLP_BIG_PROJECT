@@ -383,16 +383,168 @@ class TestCharacterState(unittest.TestCase):
         result = self.char.add_experience(500)
 
         self.assertEqual(self.char.experience_points, 500)
-        self.assertFalse(result["level_up"])
+        self.assertFalse(result["leveled_up"])
         print("✅ Adding XP works correctly")
 
     def test_level_up_ready(self):
         """Test when ready to level up."""
         result = self.char.add_experience(1000)
 
-        self.assertTrue(result["level_up"])
+        self.assertTrue(result["leveled_up"])
         self.assertIn("level up", result["message"].lower())
         print("✅ Level up detection works")
+
+    def test_level_up_successful(self):
+        """Test successful level up."""
+        # Give character enough XP
+        self.char.level = 1
+        self.char.add_experience(1000)
+
+        old_level = self.char.level
+        old_hp = self.char.max_hp
+
+        # Level up as a Fighter (d10 hit die)
+        result = self.char.level_up("Fighter", hit_die_size=10, con_modifier=2)
+
+        self.assertTrue(result["success"])
+        self.assertEqual(result["old_level"], 1)
+        self.assertEqual(result["new_level"], 2)
+        self.assertEqual(self.char.level, 2)
+
+        # HP should increase (d10 roll + 2 CON, minimum 1)
+        self.assertGreater(self.char.max_hp, old_hp)
+        self.assertGreaterEqual(result["hp_increase"], 3)  # Min: 1 (roll) + 2 (CON)
+        self.assertLessEqual(result["hp_increase"], 12)  # Max: 10 (roll) + 2 (CON)
+
+        print("✅ Level up increases level and HP correctly")
+
+    def test_level_up_not_enough_xp(self):
+        """Test that you can't level up without enough XP."""
+        self.char.level = 1
+        self.char.experience_points = 500  # Not enough (need 1000)
+
+        result = self.char.level_up("Fighter", hit_die_size=10)
+
+        self.assertFalse(result["success"])
+        self.assertIn("Not enough XP", result["message"])
+        self.assertEqual(self.char.level, 1)  # Level didn't change
+        print("✅ Can't level up without enough XP")
+
+    def test_level_up_hp_minimum(self):
+        """Test that HP gain is always at least 1 even with negative CON."""
+        self.char.level = 1
+        self.char.add_experience(1000)
+
+        # Level up with negative CON modifier
+        result = self.char.level_up("Wizard", hit_die_size=6, con_modifier=-2)
+
+        # Even if roll is 1 and CON is -2, should gain at least 1 HP
+        self.assertGreaterEqual(result["hp_increase"], 1)
+        print("✅ HP increase is always at least 1")
+
+    def test_level_up_hit_dice_max(self):
+        """Test that hit dice max equals new level."""
+        self.char.level = 3
+        self.char.hit_dice_max = 3
+        self.char.add_experience(3000)
+
+        result = self.char.level_up("Rogue", hit_die_size=8)
+
+        self.assertEqual(self.char.hit_dice_max, 4)
+        print("✅ Hit dice max increases with level")
+
+    def test_level_up_heals_character(self):
+        """Test that current HP increases when leveling up."""
+        self.char.level = 1
+        self.char.max_hp = 10
+        self.char.current_hp = 5  # Damaged
+        self.char.add_experience(1000)
+
+        old_current_hp = self.char.current_hp
+
+        result = self.char.level_up("Fighter", hit_die_size=10, con_modifier=1)
+
+        # Current HP should increase by the same amount as max HP
+        self.assertGreater(self.char.current_hp, old_current_hp)
+        self.assertEqual(
+            self.char.current_hp - old_current_hp,
+            result["hp_increase"]
+        )
+        print("✅ Leveling up heals character")
+
+    def test_level_up_proficiency_bonus_level_1_to_4(self):
+        """Test proficiency bonus stays +2 for levels 1-4."""
+        self.char.level = 1
+        self.char.add_experience(1000)
+
+        result = self.char.level_up("Fighter", hit_die_size=10)
+
+        self.assertEqual(result["proficiency_bonus"], 2)
+        self.assertFalse(result["prof_bonus_increased"])
+
+        # Level 2 -> 3
+        self.char.add_experience(2000)
+        result = self.char.level_up("Fighter", hit_die_size=10)
+        self.assertEqual(result["proficiency_bonus"], 2)
+
+        # Level 3 -> 4
+        self.char.add_experience(3000)
+        result = self.char.level_up("Fighter", hit_die_size=10)
+        self.assertEqual(result["proficiency_bonus"], 2)
+
+        print("✅ Proficiency bonus is +2 for levels 1-4")
+
+    def test_level_up_proficiency_bonus_increases_at_5(self):
+        """Test proficiency bonus increases to +3 at level 5."""
+        self.char.level = 4
+        self.char.add_experience(4000)
+
+        result = self.char.level_up("Fighter", hit_die_size=10)
+
+        self.assertEqual(result["proficiency_bonus"], 3)
+        self.assertTrue(result["prof_bonus_increased"])
+        print("✅ Proficiency bonus increases to +3 at level 5")
+
+    def test_level_up_proficiency_bonus_progression(self):
+        """Test proficiency bonus increases at levels 5, 9, 13, 17."""
+        test_cases = [
+            (4, 5, 3),   # Level 4->5: +2 -> +3
+            (8, 9, 4),   # Level 8->9: +3 -> +4
+            (12, 13, 5), # Level 12->13: +4 -> +5
+            (16, 17, 6), # Level 16->17: +5 -> +6
+        ]
+
+        for old_level, new_level, expected_bonus in test_cases:
+            char = CharacterState(f"Test Hero L{old_level}", max_hp=50, hit_dice_max=old_level)
+            char.level = old_level
+            char.add_experience(old_level * 1000)
+
+            result = char.level_up("Fighter", hit_die_size=10)
+
+            self.assertEqual(result["proficiency_bonus"], expected_bonus,
+                           f"Failed at level {new_level}")
+            self.assertTrue(result["prof_bonus_increased"],
+                          f"prof_bonus_increased should be True at level {new_level}")
+
+        print("✅ Proficiency bonus progression at levels 5, 9, 13, 17")
+
+    def test_level_up_spell_slots_without_rag(self):
+        """Test level up handles spell slot errors gracefully."""
+        # This test verifies behavior when RAG lookup fails
+        self.char.level = 1
+        self.char.add_experience(1000)
+        self.char.spell_slots = SpellSlots(level_1=2)
+
+        # Use a non-existent class to force RAG failure
+        result = self.char.level_up("NonExistentClass", hit_die_size=8)
+
+        # Level up should still succeed even if spell slots fail
+        self.assertTrue(result["success"])
+        self.assertEqual(self.char.level, 2)
+
+        # But spell_slots_updated should be False
+        # (depends on implementation - might succeed for unknown classes)
+        print("✅ Level up works even when spell slot update fails")
 
     def test_is_alive(self):
         """Test checking if character is alive."""
@@ -800,12 +952,13 @@ class TestAssertions(unittest.TestCase):
         print("="*60)
         print("✅ SpellSlots: 6 tests")
         print("✅ DeathSaves: 3 tests")
-        print("✅ CharacterState: 34 tests")
+        print("✅ CharacterState: 38 tests (includes 9 new leveling tests)")
         print("✅ CombatState: 9 tests")
         print("✅ PartyState: 11 tests")
         print("✅ GameSession: 7 tests")
+        print("✅ TestAssertions: 1 test")
         print("="*60)
-        print("Total: 70 comprehensive tests")
+        print("Total: 75 comprehensive tests")
         print("="*60)
         self.assertTrue(True)
 

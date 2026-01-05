@@ -208,6 +208,7 @@ def chat(message, history):
 **Rest & Recovery:**
 - `/rest` or `/short_rest` - Take a short rest (1 hour, spend hit dice to heal)
 - `/long_rest` - Take a long rest (8 hours, restore all HP and spell slots)
+- `/level_up` - Level up your character (requires enough XP)
 
 **Combat:**
 - `/start_combat <enemies>` - Start combat with initiative rolls
