@@ -183,6 +183,7 @@ class TestPartyMemberHealing:
             "Cure Wounds",
             "Elara",
             "Thorin",
+            spell_level=1
         )
 
         # Cast at level 2 (upcast)
@@ -190,6 +191,7 @@ class TestPartyMemberHealing:
             "Cure Wounds",
             "Elara",
             "Gandalf",
+            spell_level=2
         )
 
         # Level 2 should heal more (gets extra 1d8 per level)
