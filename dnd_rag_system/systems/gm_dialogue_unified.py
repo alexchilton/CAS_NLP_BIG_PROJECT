@@ -326,8 +326,48 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                     xp_feedback += f"✨ {xp_result['message']}"
 
                     if xp_result.get('leveled_up'):
-                        new_level = xp_result.get('new_level', 0)
-                        xp_feedback += f"\n\n🎉 **LEVEL UP!** You are now level {new_level}!"
+                        # Auto-level up! Get character info and call level_up()
+                        char_name = self.session.character_state.character_name
+                        if char_name in self.session.base_character_stats:
+                            base_char = self.session.base_character_stats[char_name]
+                            character_class = base_char.character_class
+
+                            # Determine hit die size based on class
+                            HIT_DIE_BY_CLASS = {
+                                "Barbarian": 12,
+                                "Fighter": 10, "Paladin": 10, "Ranger": 10,
+                                "Bard": 8, "Cleric": 8, "Druid": 8, "Monk": 8, "Rogue": 8, "Warlock": 8,
+                                "Sorcerer": 6, "Wizard": 6
+                            }
+                            hit_die_size = HIT_DIE_BY_CLASS.get(character_class, 8)
+                            con_modifier = base_char.get_ability_modifier(base_char.constitution)
+
+                            # Automatically level up!
+                            level_up_result = self.session.character_state.level_up(character_class, hit_die_size, con_modifier)
+
+                            if level_up_result['success']:
+                                xp_feedback += f"\n\n🎉 **LEVEL UP!** You are now level {level_up_result['new_level']}!\n\n"
+                                xp_feedback += f"**Hit Points:**\n"
+                                xp_feedback += f"- Rolled {level_up_result['hp_roll']} on d{hit_die_size}\n"
+                                xp_feedback += f"- CON modifier: +{con_modifier}\n"
+                                xp_feedback += f"- HP gained: +{level_up_result['hp_increase']}\n"
+                                xp_feedback += f"- New Max HP: {level_up_result['new_max_hp']}\n\n"
+
+                                if level_up_result['prof_bonus_increased']:
+                                    xp_feedback += f"**Proficiency Bonus:** +{level_up_result['proficiency_bonus']} (increased!)\n\n"
+
+                                # Show spell slot upgrades if applicable
+                                if level_up_result['spell_slots_updated'] and level_up_result['new_spell_slots']:
+                                    xp_feedback += f"**Spell Slots Upgraded:**\n"
+                                    slot_display = ", ".join([f"L{lvl}: {curr}/{max_}" for lvl, (curr, max_) in level_up_result['new_spell_slots'].items()])
+                                    xp_feedback += f"{slot_display}\n\n"
+
+                                if DEBUG_PROMPTS:
+                                    logger.debug(f"🎉 Auto-leveled up: {char_name} L{level_up_result['old_level']} → L{level_up_result['new_level']}")
+                        else:
+                            # Fallback: just show basic message if we can't auto-level
+                            new_level = xp_result.get('new_level', 0)
+                            xp_feedback += f"\n\n🎉 **LEVEL UP!** You are now level {new_level}!\n\n💡 *Type `/level_up` to roll for HP and upgrade spell slots*"
 
             # End combat (this clears defeated_enemies tracking)
             combat_feedback = self.combat_manager.end_combat()
@@ -454,6 +494,75 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                     logger.debug(f"🌙 Long rest: {rest_result['hp_restored']} HP restored, {rest_result['hit_dice_restored']} hit dice restored, spell slots recharged")
 
                 combat_command_handled = True
+
+        elif lower_input in ['/level_up', '/levelup']:
+            # Level up character with HP increase and spell slot upgrades
+            if not self.session.character_state:
+                combat_feedback = "⚠️ No character state loaded!"
+                combat_command_handled = True
+            else:
+                char_state = self.session.character_state
+                char_name = char_state.character_name
+
+                # Get base character stats for class and hit die info
+                if char_name not in self.session.base_character_stats:
+                    combat_feedback = "⚠️ Character base stats not found!"
+                    combat_command_handled = True
+                else:
+                    base_char = self.session.base_character_stats[char_name]
+                    character_class = base_char.character_class
+
+                    # Determine hit die size based on class
+                    HIT_DIE_BY_CLASS = {
+                        "Barbarian": 12,
+                        "Fighter": 10, "Paladin": 10, "Ranger": 10,
+                        "Bard": 8, "Cleric": 8, "Druid": 8, "Monk": 8, "Rogue": 8, "Warlock": 8,
+                        "Sorcerer": 6, "Wizard": 6
+                    }
+                    hit_die_size = HIT_DIE_BY_CLASS.get(character_class, 8)
+
+                    # Calculate CON modifier
+                    con_modifier = base_char.get_ability_modifier(base_char.constitution)
+
+                    # Attempt level up
+                    level_up_result = char_state.level_up(character_class, hit_die_size, con_modifier)
+
+                    if level_up_result['success']:
+                        # Build success message
+                        combat_feedback = f"🎉 **LEVEL UP!**\n\n"
+                        combat_feedback += f"**{char_name}** advances to level {level_up_result['new_level']}!\n\n"
+
+                        combat_feedback += f"**Hit Points:**\n"
+                        combat_feedback += f"- Rolled {level_up_result['hp_roll']} on d{hit_die_size}\n"
+                        combat_feedback += f"- CON modifier: +{con_modifier}\n"
+                        combat_feedback += f"- HP gained: +{level_up_result['hp_increase']}\n"
+                        combat_feedback += f"- New Max HP: {level_up_result['new_max_hp']}\n\n"
+
+                        if level_up_result['prof_bonus_increased']:
+                            combat_feedback += f"**Proficiency Bonus:** +{level_up_result['proficiency_bonus']} (increased!)\n\n"
+                        else:
+                            combat_feedback += f"**Proficiency Bonus:** +{level_up_result['proficiency_bonus']}\n\n"
+
+                        # Show spell slot upgrades if applicable
+                        if level_up_result['spell_slots_updated'] and level_up_result['new_spell_slots']:
+                            combat_feedback += f"**Spell Slots Upgraded:**\n"
+                            slot_display = ", ".join([f"L{lvl}: {curr}/{max_}" for lvl, (curr, max_) in level_up_result['new_spell_slots'].items()])
+                            combat_feedback += f"{slot_display}\n\n"
+
+                        combat_feedback += f"✨ *Congratulations! You're now level {level_up_result['new_level']}!*"
+
+                        if DEBUG_PROMPTS:
+                            logger.debug(f"🎉 Level up: {char_name} L{level_up_result['old_level']} → L{level_up_result['new_level']}, HP +{level_up_result['hp_increase']}")
+                    else:
+                        # Not enough XP
+                        combat_feedback = f"⚠️ {level_up_result['message']}\n\n"
+                        combat_feedback += f"**Current Status:**\n"
+                        combat_feedback += f"- Level: {char_state.level}\n"
+                        combat_feedback += f"- XP: {char_state.experience_points}\n"
+                        combat_feedback += f"- XP for next level: {char_state.level * 1000}\n\n"
+                        combat_feedback += f"💡 *Defeat more enemies to gain XP!*"
+
+                    combat_command_handled = True
 
         elif lower_input.startswith('/cast '):
             # Cast a spell: /cast <spell> or /cast <spell> on <target>

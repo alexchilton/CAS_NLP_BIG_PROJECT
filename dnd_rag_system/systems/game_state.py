@@ -661,7 +661,8 @@ class CharacterState:
             return {
                 "xp_gained": xp,
                 "total_xp": self.experience_points,
-                "level_up": True,
+                "leveled_up": True,  # Changed to match convention
+                "new_level": self.level + 1,  # What level they can advance to
                 "message": f"Gained {xp} XP! Ready to level up!"
             }
 
@@ -669,9 +670,95 @@ class CharacterState:
             "xp_gained": xp,
             "total_xp": self.experience_points,
             "xp_to_next_level": xp_for_next - self.experience_points,
-            "level_up": False,
+            "leveled_up": False,
             "message": f"Gained {xp} XP ({self.experience_points}/{xp_for_next})"
         }
+
+    def level_up(self, character_class: str, hit_die_size: int = 8, con_modifier: int = 0) -> Dict[str, Any]:
+        """
+        Level up the character.
+
+        Args:
+            character_class: Character class for spell slot lookup (e.g., "Wizard")
+            hit_die_size: Size of hit die (d6=6, d8=8, d10=10, d12=12)
+            con_modifier: Constitution modifier for HP calculation
+
+        Returns:
+            Dict with level-up results
+        """
+        # Check if character has enough XP
+        xp_needed = self.level * 1000
+        if self.experience_points < xp_needed:
+            return {
+                "success": False,
+                "message": f"Not enough XP to level up! Need {xp_needed}, have {self.experience_points}"
+            }
+
+        old_level = self.level
+        new_level = old_level + 1
+
+        # Roll for HP increase (hit die + CON modifier, minimum 1)
+        import random
+        hp_roll = random.randint(1, hit_die_size)
+        hp_increase = max(1, hp_roll + con_modifier)
+
+        # Update character stats
+        self.level = new_level
+        self.max_hp += hp_increase
+        self.current_hp += hp_increase  # Heal character when leveling up
+        self.hit_dice_max = new_level  # Hit dice max equals level
+
+        # Update proficiency bonus (increases at levels 5, 9, 13, 17)
+        old_prof_bonus = 2 + ((old_level - 1) // 4)
+        new_prof_bonus = 2 + ((new_level - 1) // 4)
+        prof_bonus_increased = (new_prof_bonus > old_prof_bonus)
+
+        # Update spell slots using RAG lookup
+        spell_slots_updated = False
+        new_spell_slots = None
+        try:
+            # Import here to avoid circular dependency
+            new_spell_slots = initialize_spell_slots_from_class(character_class, new_level)
+
+            # Copy over current spell slot usage from old slots
+            # Only update max slots, preserve current usage where possible
+            for level_num in range(1, 10):
+                new_max = getattr(new_spell_slots, f"level_{level_num}")
+                old_max = getattr(self.spell_slots, f"level_{level_num}")
+                old_current = getattr(self.spell_slots, f"current_{level_num}")
+
+                if new_max > old_max:
+                    # Gained new slots - give them fully charged
+                    setattr(new_spell_slots, f"current_{level_num}", new_max)
+                elif new_max == old_max:
+                    # Same number of slots - preserve current usage
+                    setattr(new_spell_slots, f"current_{level_num}", old_current)
+                else:
+                    # Lost slots (shouldn't happen) - cap at new max
+                    setattr(new_spell_slots, f"current_{level_num}", min(old_current, new_max))
+
+            self.spell_slots = new_spell_slots
+            spell_slots_updated = True
+        except Exception as e:
+            # If spell slot lookup fails, keep existing slots
+            spell_slots_updated = False
+
+        # Build result message
+        result = {
+            "success": True,
+            "old_level": old_level,
+            "new_level": new_level,
+            "hp_roll": hp_roll,
+            "hp_increase": hp_increase,
+            "new_max_hp": self.max_hp,
+            "proficiency_bonus": new_prof_bonus,
+            "prof_bonus_increased": prof_bonus_increased,
+            "spell_slots_updated": spell_slots_updated,
+            "new_spell_slots": new_spell_slots.get_available() if new_spell_slots else None,
+            "message": f"Level up! Now level {new_level}. HP +{hp_increase} (rolled {hp_roll}+{con_modifier})"
+        }
+
+        return result
 
     # State queries
     def is_alive(self) -> bool:
