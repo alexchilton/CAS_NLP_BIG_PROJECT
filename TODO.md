@@ -6,6 +6,151 @@
 
 ## 🔥 HIGH PRIORITY
 
+### Improve RAG Data for Equipment, Abilities & Class Features
+**STATUS: PLANNED - NOT STARTED** 📋
+
+#### Current State Analysis
+- **Equipment Collection**: 58 docs ⚠️ - Only basic weapons/armor, NO magic items
+- **Classes Collection**: 11 docs ⚠️ - Only class overviews, NO structured class features
+- **Spells Collection**: 586 docs ✅ - Good coverage
+- **Monsters Collection**: 332 docs ✅ - Good coverage + structured monster_stats.py
+
+#### Critical Missing Data
+1. **Magic Items & Equipment**:
+   - Rings (Ring of Protection, Ring of Invisibility, etc.)
+   - Cloaks (Cloak of Elvenkind, Cloak of Protection)
+   - Boots (Boots of Speed, Boots of Elvenkind)
+   - Wondrous items (Bag of Holding, Rope of Climbing, etc.)
+   - Magic weapons (+1, +2, Flametongue, Vorpal Sword)
+   - Magic armor (+1, Armor of Resistance, Plate of the Ethereal)
+   - Advanced potions (Potion of Invisibility, Potion of Flying, etc.)
+
+2. **Class Features & Abilities**:
+   - Rogue: Sneak Attack, Cunning Action, Uncanny Dodge, Evasion, Reliable Talent
+   - Fighter: Action Surge, Second Wind, Extra Attack (1-4), Indomitable
+   - Barbarian: Rage, Reckless Attack, Danger Sense, Fast Movement
+   - Monk: Ki points, Flurry of Blows, Stunning Strike, Deflect Missiles, Slow Fall
+   - Paladin: Divine Smite, Lay on Hands, Divine Sense, Channel Divinity
+   - Ranger: Hunter's Mark, Favored Enemy, Natural Explorer, Primeval Awareness
+   - All classes: Class features by level (1-20)
+
+3. **Feats & General Abilities**:
+   - Feats (Great Weapon Master, Sharpshooter, Lucky, Alert, etc.)
+   - Conditions (Grappled, Restrained, Paralyzed, Stunned mechanics)
+   - Status effects with mechanical impact
+
+#### Implementation Plan (Follow monster_stats.py Pattern)
+
+**Phase 1: Create Structured Data Files** (3-4 hours)
+1. Create `dnd_rag_system/data/magic_items.py`:
+   - Rings (15+ common magic rings)
+   - Wondrous items (20+ items: Bag of Holding, Immovable Rod, etc.)
+   - Magic weapons (10+ weapons: +1/+2/+3, Flametongue, Vorpal, etc.)
+   - Magic armor (8+ armors: +1/+2/+3, Armor of Resistance, etc.)
+   - Potions (12+ potions beyond healing)
+   - Structure: name, rarity, attunement, effects, description
+
+2. Create `dnd_rag_system/data/class_features.py`:
+   - All 12 classes with features by level
+   - Each feature: name, level, class, description, mechanics, usage
+   - Example structure:
+     ```python
+     "Sneak Attack": {
+         "class": "Rogue",
+         "level": 1,
+         "damage_by_level": {1: "1d6", 3: "2d6", 5: "3d6", ...},
+         "trigger": "advantage or ally within 5 feet",
+         "description": "...",
+         "mechanics": "Once per turn, deal extra damage..."
+     }
+     ```
+
+3. Create `dnd_rag_system/data/feats.py`:
+   - All PHB feats (~40 feats)
+   - Structure: name, prerequisites, benefits, description
+
+**Phase 2: Create Management Systems** (2-3 hours)
+1. Create `dnd_rag_system/systems/magic_item_manager.py`:
+   - `lookup_magic_item(name)` - Get item details
+   - `get_items_by_rarity(rarity)` - Filter by rarity
+   - `check_attunement(item)` - Check if attunement required
+   - Integration with inventory system
+
+2. Create `dnd_rag_system/systems/class_feature_manager.py`:
+   - `get_class_features(class_name, level)` - Get features for class/level
+   - `lookup_feature_mechanics(feature_name)` - Get detailed mechanics
+   - `calculate_feature_effect(feature, level)` - Scale by level (e.g., Sneak Attack damage)
+
+3. Create `dnd_rag_system/systems/feat_manager.py`:
+   - `lookup_feat(name)` - Get feat details
+   - `check_prerequisites(feat, character)` - Validate prerequisites
+
+**Phase 3: Integrate with Game Systems** (2-3 hours)
+1. **Equipment System Integration**:
+   - Add magic item effects to `CharacterState`
+   - Auto-apply item bonuses (Ring of Protection → +1 AC)
+   - Handle attunement slots (max 3 attuned items)
+   - Add `/equip` and `/unequip` commands for magic items
+
+2. **Class Feature Integration**:
+   - Auto-apply class features on level-up
+   - Add commands: `/sneak_attack`, `/action_surge`, `/rage`
+   - Integrate with action validator (validate feature usage)
+   - Track usage (Action Surge: 1/rest, Ki points, Rage: X/day)
+
+3. **Reality Check Enhancement**:
+   - Validate class feature usage in action parser
+   - Example: "I use Sneak Attack" → Check if Rogue, check advantage/ally
+   - Example: "I use Action Surge" → Check if Fighter, check uses remaining
+
+**Phase 4: Comprehensive Testing** (2-3 hours)
+1. Create `tests/test_magic_item_manager.py`:
+   - Test magic item lookup
+   - Test rarity filtering
+   - Test attunement system
+   - Test item effect application (25+ tests)
+
+2. Create `tests/test_class_feature_manager.py`:
+   - Test class feature lookup by level
+   - Test feature scaling (Sneak Attack damage)
+   - Test feature prerequisites
+   - Test all 12 classes (30+ tests)
+
+3. Create `tests/test_feat_manager.py`:
+   - Test feat lookup
+   - Test prerequisite checking
+   - Test feat effects (10+ tests)
+
+4. Integration tests:
+   - Test equipping magic items and stat changes
+   - Test using class features in combat
+   - Test level-up feature grants
+
+#### Benefits
+- **Rogue players** can use Sneak Attack, Cunning Action, Uncanny Dodge
+- **Fighters** can use Action Surge and Second Wind
+- **All classes** get their signature abilities with proper mechanics
+- **Magic items** work with proper effects (Ring of Protection → +1 AC/saves)
+- **Equipment system** becomes fully functional with RAG support
+- **Reality check** can validate class-specific actions
+- **40-60% more RAG coverage** for character abilities and items
+
+#### Estimated Total Effort
+- **Phase 1**: 3-4 hours (data entry)
+- **Phase 2**: 2-3 hours (management systems)
+- **Phase 3**: 2-3 hours (integration)
+- **Phase 4**: 2-3 hours (testing)
+- **Total**: 10-13 hours
+
+#### Alternative: Quick Win Approach (3-4 hours)
+If time is limited, start with essentials:
+1. Magic items data file (top 20 most common items)
+2. Class features for top 4 classes (Rogue, Fighter, Wizard, Cleric)
+3. Basic integration with existing systems
+4. Core tests (15-20 tests)
+
+---
+
 ### Character-Specific Action Parsing for Party Mode
 - **Problem**: When player says "Elara casts Fire Bolt", system needs to know Elara is acting
 - **Solution**: Parse character names from player input
