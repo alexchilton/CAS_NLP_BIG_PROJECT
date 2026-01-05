@@ -43,7 +43,8 @@ COLLECTION_NAMES = {
     "monsters": "dnd_monsters",
     "classes": "dnd_classes",
     "races": "dnd_races",
-    "equipment": "dnd_equipment"
+    "equipment": "dnd_equipment",
+    "dm_guide": "dm_guide"
 }
 
 # Collection metadata
@@ -67,6 +68,10 @@ COLLECTION_METADATA = {
     "dnd_equipment": {
         "description": "D&D 5e equipment, weapons, armor, gear, tools, and prices",
         "source": "Player's Handbook - Equipment"
+    },
+    "dm_guide": {
+        "description": "Dungeon Master's Guide - rules, magic items, treasure, world-building",
+        "source": "Dungeon Master's Guide"
     }
 }
 
