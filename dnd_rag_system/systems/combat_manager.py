@@ -9,11 +9,14 @@ Extends CombatState with:
 """
 
 import random
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
 from dataclasses import dataclass
 
 from dnd_rag_system.systems.game_state import CombatState, PartyState, CharacterState
 from dnd_rag_system.systems.monster_stat_system import MonsterStatSystem, MonsterInstance
+
+if TYPE_CHECKING:
+    from dnd_rag_system.systems.spell_manager import SpellManager
 
 
 @dataclass
@@ -31,15 +34,22 @@ class CombatantInfo:
 class CombatManager:
     """Manages turn-based combat for party mode."""
 
-    def __init__(self, combat_state: CombatState, debug: bool = False):
+    def __init__(
+        self,
+        combat_state: CombatState,
+        spell_manager: Optional['SpellManager'] = None,
+        debug: bool = False
+    ):
         """
         Initialize combat manager.
 
         Args:
             combat_state: The CombatState instance to manage
+            spell_manager: Optional SpellManager for XP/CR lookups
             debug: Enable debug output
         """
         self.combat = combat_state
+        self.spell_manager = spell_manager
         self.debug = debug
 
         # Monster stat system for loading NPC stats
@@ -47,6 +57,9 @@ class CombatManager:
 
         # Track NPC monster instances in combat {npc_name: MonsterInstance}
         self.npc_monsters: Dict[str, MonsterInstance] = {}
+
+        # Track defeated enemies for XP awards {npc_name: (cr, xp_value)}
+        self.defeated_enemies: Dict[str, tuple[float, int]] = {}
 
     def _load_npc_stats(self, npc_names: List[str]) -> Dict[str, int]:
         """
@@ -346,6 +359,7 @@ class CombatManager:
     def apply_damage_to_npc(self, npc_name: str, damage: int) -> tuple[int, bool]:
         """
         Apply damage to an NPC and check if it died.
+        Automatically records defeated enemies for XP awards.
 
         Args:
             npc_name: Name of the NPC
@@ -364,12 +378,130 @@ class CombatManager:
                 if is_dead:
                     print(f"   ☠️  {npc_name} has died!")
 
+            # Record defeated enemy for XP calculation
+            if is_dead and npc_name not in self.defeated_enemies:
+                self._record_enemy_defeat(npc_name)
+
             return (actual_damage, is_dead)
 
         # Fallback if NPC not tracked
         if self.debug:
             print(f"⚠️  NPC '{npc_name}' not found in tracked monsters")
         return (0, False)
+
+    def _record_enemy_defeat(self, npc_name: str) -> None:
+        """
+        Record a defeated enemy for XP calculation.
+
+        Args:
+            npc_name: Name of the defeated NPC/monster
+        """
+        if not self.spell_manager:
+            if self.debug:
+                print(f"⚠️  SpellManager not available, cannot calculate XP for {npc_name}")
+            return
+
+        # Look up CR using SpellManager
+        cr = self.spell_manager.lookup_monster_cr(npc_name)
+
+        if cr is not None:
+            # Calculate XP for this CR
+            xp = self.spell_manager.get_xp_for_cr(cr)
+
+            # Store defeated enemy
+            self.defeated_enemies[npc_name] = (cr, xp)
+
+            if self.debug:
+                print(f"💰 Recorded defeat: {npc_name} (CR {cr}) = {xp} XP")
+        else:
+            if self.debug:
+                print(f"⚠️  Could not determine CR for {npc_name}")
+
+    def get_total_combat_xp(self) -> int:
+        """
+        Get total XP earned from all defeated enemies in this combat.
+
+        Returns:
+            Total XP value
+        """
+        total_xp = sum(xp for _, xp in self.defeated_enemies.values())
+        return total_xp
+
+    def get_defeated_enemies_summary(self) -> str:
+        """
+        Get a formatted summary of defeated enemies and their XP values.
+
+        Returns:
+            Formatted string listing defeated enemies
+        """
+        if not self.defeated_enemies:
+            return "No enemies defeated"
+
+        lines = ["**Defeated Enemies:**"]
+        for npc_name, (cr, xp) in self.defeated_enemies.items():
+            lines.append(f"- {npc_name} (CR {cr}): {xp} XP")
+
+        total = self.get_total_combat_xp()
+        lines.append(f"\n**Total XP:** {total}")
+
+        return "\n".join(lines)
+
+    def award_xp_to_character(self, character: CharacterState) -> Dict[str, any]:
+        """
+        Award combat XP to a single character.
+
+        Args:
+            character: The character to award XP to
+
+        Returns:
+            Dictionary with XP award results from character.add_experience()
+        """
+        total_xp = self.get_total_combat_xp()
+
+        if total_xp <= 0:
+            return {
+                "xp_gained": 0,
+                "leveled_up": False,
+                "message": "No XP to award"
+            }
+
+        # Award XP to character
+        result = character.add_experience(total_xp)
+
+        if self.debug:
+            print(f"💰 Awarded {total_xp} XP to {character.character_name}")
+            if result.get("leveled_up"):
+                print(f"   🎉 LEVEL UP! Now level {result['new_level']}")
+
+        return result
+
+    def award_xp_to_party(self, party: PartyState) -> Dict[str, Dict]:
+        """
+        Award combat XP to all party members (divided equally).
+
+        Args:
+            party: The party to award XP to
+
+        Returns:
+            Dictionary of {character_name: xp_result}
+        """
+        total_xp = self.get_total_combat_xp()
+
+        if total_xp <= 0:
+            return {char_name: {"xp_gained": 0, "leveled_up": False}
+                    for char_name in party.characters.keys()}
+
+        # Use PartyState's distribute_xp method
+        results = party.distribute_xp(total_xp)
+
+        if self.debug:
+            print(f"💰 Distributed {total_xp} XP among party")
+            for char_name, result in results.items():
+                print(f"   {char_name}: +{result['xp_gained']} XP")
+                if result.get("leveled_up"):
+                    print(f"      🎉 LEVEL UP! Now level {result['new_level']}")
+
+        return results
 
     def get_npc_ac(self, npc_name: str) -> int:
         """
@@ -415,9 +547,12 @@ class CombatManager:
             return self.npc_monsters[npc_name].roll_attack_damage(attack_name)
         return (0, "unknown")
 
-    def end_combat(self) -> str:
+    def end_combat(self, clear_xp_tracking: bool = True) -> str:
         """
         End combat and return a message.
+
+        Args:
+            clear_xp_tracking: Whether to clear defeated enemies tracking (default True)
 
         Returns:
             String announcing combat end
@@ -427,6 +562,10 @@ class CombatManager:
 
         rounds = self.combat.round_number
         self.combat.end_combat()
+
+        # Clear defeated enemies tracking for next combat
+        if clear_xp_tracking:
+            self.defeated_enemies.clear()
 
         return f"⚔️ **Combat has ended!** (lasted {rounds} rounds)"
 
