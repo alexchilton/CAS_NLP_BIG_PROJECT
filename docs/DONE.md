@@ -4,6 +4,70 @@ This file tracks completed and working features that have been implemented and t
 
 ---
 
+## ✅ Party Member Interactions - Healing & Targeting ✅ IMPLEMENTED (2026-01-05)
+
+### Party Member Healing System
+- **Goal**: Allow party members to cast healing spells and buffs on each other
+- **Status**: ✅ IMPLEMENTED - Healing other party members works
+
+**Implementation**:
+1. **Heal Other Party Members** (gm_dialogue_unified.py:475-510):
+   - `/cast Cure Wounds on Thorin` - heals target party member
+   - Parser extracts target name after "on" keyword
+   - Looks up target in `session.party` list
+   - Applies healing to target's HP
+   - Shows feedback: "Elara casts Cure Wounds on Thorin, healing 8 HP"
+
+2. **Target Validation**:
+   - Checks if target party member exists in party
+   - Falls back to self-targeting if no target specified
+   - Works for both cantrips and leveled spells
+   - Validates spell level before casting
+
+3. **Spell Slot Consumption**:
+   - Properly consumes spell slots when healing allies
+   - Prevents casting without available slots
+   - Cantrips (level 0) don't consume slots
+
+**Supported Actions**:
+- ✅ Single-target healing: `/cast Cure Wounds on Thorin`
+- ✅ Self-healing: `/cast Cure Wounds` (defaults to self)
+- ✅ Healing multiple party members sequentially
+- ✅ Upcasting healing spells: `/cast Cure Wounds` (uses higher slot automatically)
+- ❌ Party-wide buffs: "cast Bless on the entire party" (NOT YET IMPLEMENTED)
+- ❌ Item sharing: "Thorin hands his rope to Legolas" (NOT YET IMPLEMENTED)
+- ❌ Coordinated attacks: "Aragorn and Gimli attack together" (NOT YET IMPLEMENTED)
+
+**Testing**:
+- `tests/test_party_member_interactions.py` - 5 passing tests ✅
+  - Test casting healing spell on party member
+  - Test healing increases target HP
+  - Test healing cannot exceed max HP
+  - Test self-healing when no target specified
+  - Test healing multiple party members sequentially
+
+**Example Usage**:
+```
+Player: /cast Cure Wounds on Thorin
+GM: ⚕️ Elara casts Cure Wounds on Thorin, healing 6 HP
+
+[Thorin's HP: 15 → 21]
+[Elara's Spell Slots: Level 1: 3/4 remaining]
+```
+
+**Files**:
+- Core logic: `dnd_rag_system/systems/spell_manager.py:cast_healing_spell()`
+- Integration: `dnd_rag_system/systems/gm_dialogue_unified.py:475-510`
+- Tests: `tests/test_party_member_interactions.py`
+
+**Next Steps** (NOT YET IMPLEMENTED):
+- Party-wide buff spells (`/cast Bless on party`)
+- Item sharing between party members (`/give rope to Legolas`)
+- Coordinated multi-character attacks
+- Social interactions tracking
+
+---
+
 ## ✅ World State & Exploration System ✅ FULLY IMPLEMENTED (2025-12-26)
 
 ### Complete Persistent World with Lazy Generation
