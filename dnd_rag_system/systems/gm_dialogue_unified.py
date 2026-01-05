@@ -30,6 +30,7 @@ from dnd_rag_system.systems.combat_manager import CombatManager
 from dnd_rag_system.systems.mechanics_extractor import MechanicsExtractor
 from dnd_rag_system.systems.mechanics_applicator import MechanicsApplicator
 from dnd_rag_system.systems.encounter_system import EncounterSystem
+from dnd_rag_system.systems.spell_manager import SpellManager
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -86,12 +87,13 @@ class GameMaster:
         self.message_history: List[Message] = []  # Separate conversation history
         self.action_validator = ActionValidator(debug=DEBUG_PROMPTS)  # Reality check system
         self.shop = ShopSystem(db_manager, debug=DEBUG_PROMPTS)  # Shop transaction system
-        self.combat_manager = CombatManager(self.session.combat, debug=DEBUG_PROMPTS)  # Combat system
+        self.spell_manager = SpellManager(db_manager)  # Spell and resource management
+        self.combat_manager = CombatManager(self.session.combat, spell_manager=self.spell_manager, debug=DEBUG_PROMPTS)  # Combat system with XP tracking
 
         # Narrative to Mechanics Translation System
         self.mechanics_extractor = MechanicsExtractor(debug=DEBUG_PROMPTS)
         self.mechanics_applicator = MechanicsApplicator(debug=DEBUG_PROMPTS)
-        
+
         # Random Encounter System
         self.encounter_system = EncounterSystem(chromadb_manager=db_manager)
 
@@ -293,7 +295,47 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             combat_command_handled = True
 
         elif lower_input == '/end_combat':
+            # Award XP before ending combat
+            xp_feedback = ""
+
+            if self.combat_manager.get_total_combat_xp() > 0:
+                # Get defeated enemies summary
+                enemies_summary = self.combat_manager.get_defeated_enemies_summary()
+
+                # Award XP to character or party
+                if self.session.party and len(self.session.party.characters) > 0:
+                    # Party mode - distribute XP among party
+                    xp_results = self.combat_manager.award_xp_to_party(self.session.party)
+
+                    xp_feedback = f"\n\n💰 **VICTORY REWARDS**\n\n{enemies_summary}\n\n**XP Awards:**\n"
+                    for char_name, result in xp_results.items():
+                        xp_gained = result.get('xp_gained', 0)
+                        xp_feedback += f"- {char_name}: +{xp_gained} XP"
+
+                        if result.get('leveled_up'):
+                            new_level = result.get('new_level', 0)
+                            xp_feedback += f" 🎉 **LEVEL UP!** Now level {new_level}!"
+
+                        xp_feedback += "\n"
+
+                elif self.session.character_state:
+                    # Single character mode
+                    xp_result = self.combat_manager.award_xp_to_character(self.session.character_state)
+
+                    xp_feedback = f"\n\n💰 **VICTORY REWARDS**\n\n{enemies_summary}\n\n"
+                    xp_feedback += f"✨ {xp_result['message']}"
+
+                    if xp_result.get('leveled_up'):
+                        new_level = xp_result.get('new_level', 0)
+                        xp_feedback += f"\n\n🎉 **LEVEL UP!** You are now level {new_level}!"
+
+            # End combat (this clears defeated_enemies tracking)
             combat_feedback = self.combat_manager.end_combat()
+
+            # Add XP feedback if any
+            if xp_feedback:
+                combat_feedback += xp_feedback
+
             combat_command_handled = True
 
         elif lower_input == '/initiative':
@@ -302,6 +344,284 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             else:
                 combat_feedback = self.combat_manager.get_initiative_tracker()
             combat_command_handled = True
+
+        elif lower_input.startswith('/use '):
+            # Parse item name from command: /use healing potion
+            item_name = player_input.split(' ', 1)[1].strip() if ' ' in player_input else ""
+
+            if not item_name:
+                combat_feedback = "⚠️ Usage: `/use <item>` (e.g., `/use healing potion`)"
+                combat_command_handled = True
+            elif not self.session.character_state:
+                combat_feedback = "⚠️ No character state loaded!"
+                combat_command_handled = True
+            else:
+                # Check if item is in inventory
+                has_item = self.session.character_state.has_item(item_name, 1)
+
+                if not has_item:
+                    # List inventory for convenience
+                    inv_list = ", ".join(list(self.session.character_state.inventory.keys())[:5]) if self.session.character_state.inventory else "empty"
+                    combat_feedback = f"⚠️ You don't have '{item_name}' in your inventory.\n\nYour inventory: {inv_list}"
+                    combat_command_handled = True
+                else:
+                    # Try to use as potion
+                    potion_result = self.spell_manager.use_potion(item_name)
+
+                    if potion_result["success"]:
+                        # Apply healing
+                        healing_amount = potion_result["amount"]
+                        heal_result = self.session.character_state.heal(healing_amount)
+
+                        # Remove item from inventory
+                        self.session.character_state.remove_item(item_name, 1)
+
+                        # Format response
+                        combat_feedback = f"🧪 **{potion_result['message']}**\n\n"
+                        combat_feedback += f"✨ {heal_result['message']}"
+
+                        if DEBUG_PROMPTS:
+                            logger.debug(f"🧪 Used {item_name}: {potion_result['dice_formula']} = {potion_result['rolls']} = {healing_amount} HP")
+                    else:
+                        # Not a recognized potion - generic use
+                        combat_feedback = f"You use {item_name}, but nothing special happens. (Not a recognized potion)"
+                        # Still remove from inventory
+                        self.session.character_state.remove_item(item_name, 1)
+
+                    combat_command_handled = True
+
+        elif lower_input in ['/rest', '/short_rest']:
+            # Short rest - spend hit dice to heal
+            if not self.session.character_state:
+                combat_feedback = "⚠️ No character state loaded!"
+                combat_command_handled = True
+            else:
+                char_state = self.session.character_state
+
+                # Check if character has hit dice to spend
+                if char_state.hit_dice_current <= 0:
+                    combat_feedback = f"⚠️ You have no hit dice remaining!\n\n"
+                    combat_feedback += f"Hit Dice: {char_state.hit_dice_current}/{char_state.hit_dice_max}\n\n"
+                    combat_feedback += f"You need a long rest to recover hit dice."
+                    combat_command_handled = True
+                elif char_state.current_hp >= char_state.max_hp:
+                    combat_feedback = f"⚠️ You're already at full HP ({char_state.current_hp}/{char_state.max_hp})!\n\n"
+                    combat_feedback += f"Short rests are primarily for healing. You don't need one right now."
+                    combat_command_handled = True
+                else:
+                    # Spend 1 hit die to heal
+                    rest_result = char_state.short_rest(hit_dice_spent=1)
+
+                    combat_feedback = f"🛏️ **Short Rest (1 hour)**\n\n"
+                    combat_feedback += f"{rest_result['message']}\n\n"
+                    combat_feedback += f"**Current Status:**\n"
+                    combat_feedback += f"- HP: {char_state.current_hp}/{char_state.max_hp}\n"
+                    combat_feedback += f"- Hit Dice: {char_state.hit_dice_current}/{char_state.hit_dice_max}\n\n"
+                    combat_feedback += f"💡 *You can take another short rest if needed, or `/long_rest` to fully recover.*"
+
+                    if DEBUG_PROMPTS:
+                        logger.debug(f"🛏️ Short rest: {rest_result['hit_dice_spent']} hit dice spent, {rest_result['hp_restored']} HP restored")
+
+                    combat_command_handled = True
+
+        elif lower_input in ['/long_rest', '/longrest']:
+            # Long rest - restore all HP, spell slots, and half of hit dice
+            if not self.session.character_state:
+                combat_feedback = "⚠️ No character state loaded!"
+                combat_command_handled = True
+            else:
+                char_state = self.session.character_state
+
+                # Perform long rest
+                rest_result = char_state.long_rest()
+
+                combat_feedback = f"🌙 **Long Rest (8 hours)**\n\n"
+                combat_feedback += f"{rest_result['message']}\n\n"
+                combat_feedback += f"**Fully Restored:**\n"
+                combat_feedback += f"- HP: {char_state.current_hp}/{char_state.max_hp} ✓\n"
+                combat_feedback += f"- Hit Dice: {char_state.hit_dice_current}/{char_state.hit_dice_max} (+{rest_result['hit_dice_restored']})\n"
+
+                # Show spell slots if character has any
+                available_slots = char_state.spell_slots.get_available()
+                if available_slots:
+                    combat_feedback += f"- Spell Slots: Fully restored ✓\n"
+                    slot_display = ", ".join([f"L{lvl}: {curr}/{max_}" for lvl, (curr, max_) in available_slots.items()])
+                    combat_feedback += f"  ({slot_display})\n"
+
+                combat_feedback += f"\n✨ *You feel refreshed and ready for adventure!*"
+
+                if DEBUG_PROMPTS:
+                    logger.debug(f"🌙 Long rest: {rest_result['hp_restored']} HP restored, {rest_result['hit_dice_restored']} hit dice restored, spell slots recharged")
+
+                combat_command_handled = True
+
+        elif lower_input.startswith('/cast '):
+            # Cast a spell: /cast <spell> or /cast <spell> on <target>
+            # Parse spell name and target
+            cmd_parts = player_input.split(' ', 1)[1].strip() if ' ' in player_input else ""
+
+            if not cmd_parts:
+                combat_feedback = "⚠️ Usage: `/cast <spell>` or `/cast <spell> on <target>` (e.g., `/cast cure wounds on Thorin`)"
+                combat_command_handled = True
+            else:
+                # Parse "spell on target" or just "spell"
+                spell_name = cmd_parts
+                target_name = None
+
+                if ' on ' in cmd_parts.lower():
+                    parts = cmd_parts.split(' on ', 1)
+                    spell_name = parts[0].strip()
+                    target_name = parts[1].strip().title()  # Capitalize target name
+
+                # Determine caster (single character or party member)
+                caster_state = None
+                caster_name = None
+
+                if self.session.party and len(self.session.party.characters) > 0:
+                    # Party mode - need to know who's casting
+                    # For now, use first character or extract from input
+                    # TODO: Better handling for "Elara casts cure wounds on Thorin"
+                    if self.session.character_state:
+                        caster_state = self.session.character_state
+                        caster_name = caster_state.character_name
+                    else:
+                        # Use first party member
+                        caster_name = list(self.session.party.characters.keys())[0]
+                        caster_state = self.session.party.characters[caster_name]
+                elif self.session.character_state:
+                    caster_state = self.session.character_state
+                    caster_name = caster_state.character_name
+                else:
+                    combat_feedback = "⚠️ No character state loaded!"
+                    combat_command_handled = True
+
+                if caster_state:
+                    # Check if caster knows this spell (check base character stats)
+                    knows_spell = False
+                    if caster_name in self.session.base_character_stats:
+                        base_char = self.session.base_character_stats[caster_name]
+                        if hasattr(base_char, 'spells') and base_char.spells:
+                            # Case-insensitive spell check
+                            spell_lower = spell_name.lower()
+                            for known_spell in base_char.spells:
+                                if known_spell.lower() == spell_lower:
+                                    spell_name = known_spell  # Use correct casing
+                                    knows_spell = True
+                                    break
+
+                    if not knows_spell:
+                        combat_feedback = f"⚠️ {caster_name} doesn't know the spell '{spell_name}'."
+                        combat_command_handled = True
+                    else:
+                        # Look up spell level
+                        spell_level = self.spell_manager.lookup_spell_level(spell_name)
+
+                        if spell_level is None:
+                            combat_feedback = f"⚠️ Could not find spell level for '{spell_name}' in RAG database."
+                            combat_command_handled = True
+                        else:
+                            # Check if cantrip (level 0)
+                            if spell_level == 0:
+                                # Cantrips don't consume spell slots
+                                # Look up target type to determine if it's healing
+                                target_type = self.spell_manager.lookup_spell_target_type(spell_name)
+
+                                if target_type in ["ally", "self"]:
+                                    # Try to cast as healing spell
+                                    healing_result = self.spell_manager.cast_healing_spell(
+                                        spell_name,
+                                        caster_name,
+                                        target_name or caster_name,
+                                        spell_level=0
+                                    )
+
+                                    if healing_result["success"]:
+                                        # Apply healing to target
+                                        target_char = None
+                                        if target_name and self.session.party:
+                                            target_char = self.session.party.get_character(target_name)
+                                        elif not target_name:
+                                            target_char = caster_state
+
+                                        if target_char:
+                                            heal_result = target_char.heal(healing_result["amount"])
+                                            combat_feedback = f"✨ **{healing_result['message']}**\n"
+                                            combat_feedback += f"{heal_result['message']}\n\n"
+                                            combat_feedback += f"💡 *{spell_name} is a cantrip (no spell slot consumed)*"
+                                        else:
+                                            combat_feedback = f"⚠️ Target '{target_name}' not found in party."
+                                    else:
+                                        combat_feedback = healing_result["message"]
+                                else:
+                                    # Damage/utility cantrip - just acknowledge
+                                    combat_feedback = f"✨ {caster_name} casts {spell_name} (cantrip)!"
+                                    combat_feedback += f"\n\n💡 *Cantrips don't consume spell slots*"
+
+                                combat_command_handled = True
+                            else:
+                                # Leveled spell - check spell slot availability
+                                if not caster_state.spell_slots.has_slot(spell_level):
+                                    available_slots = caster_state.spell_slots.get_available()
+                                    slot_display = ", ".join([f"L{lvl}: {curr}/{max_}" for lvl, (curr, max_) in available_slots.items()]) if available_slots else "none"
+
+                                    combat_feedback = f"⚠️ {caster_name} has no level {spell_level} spell slots remaining!\n\n"
+                                    combat_feedback += f"**Available Spell Slots:** {slot_display}"
+                                    combat_command_handled = True
+                                else:
+                                    # Determine target type
+                                    target_type = self.spell_manager.lookup_spell_target_type(spell_name)
+
+                                    if target_type in ["ally", "self"]:
+                                        # Healing/buff spell - apply effect
+                                        healing_result = self.spell_manager.cast_healing_spell(
+                                            spell_name,
+                                            caster_name,
+                                            target_name or caster_name,
+                                            spell_level=spell_level
+                                        )
+
+                                        if healing_result["success"]:
+                                            # Consume spell slot
+                                            cast_result = caster_state.cast_spell(spell_level, spell_name)
+
+                                            # Apply healing to target
+                                            target_char = None
+                                            if target_name:
+                                                if self.session.party:
+                                                    target_char = self.session.party.get_character(target_name)
+                                                elif target_name.lower() == caster_name.lower():
+                                                    target_char = caster_state
+                                            else:
+                                                target_char = caster_state
+
+                                            if target_char:
+                                                heal_result = target_char.heal(healing_result["amount"])
+
+                                                combat_feedback = f"✨ **{healing_result['message']}**\n\n"
+                                                combat_feedback += f"{heal_result['message']}\n\n"
+                                                combat_feedback += f"**Spell Slot Used:** Level {spell_level} ({cast_result['remaining_slots']} remaining)"
+
+                                                if DEBUG_PROMPTS:
+                                                    logger.debug(f"✨ {caster_name} cast {spell_name}: {healing_result['dice_formula']} = {healing_result['amount']} HP to {target_name or caster_name}")
+                                            else:
+                                                combat_feedback = f"⚠️ Target '{target_name}' not found."
+                                        else:
+                                            combat_feedback = healing_result["message"]
+
+                                        combat_command_handled = True
+                                    else:
+                                        # Damage/utility spell - consume slot but let GM narrate effect
+                                        cast_result = caster_state.cast_spell(spell_level, spell_name)
+
+                                        target_display = f" at {target_name}" if target_name else ""
+                                        combat_feedback = f"✨ {caster_name} casts **{spell_name}**{target_display}!\n\n"
+                                        combat_feedback += f"**Spell Slot Used:** Level {spell_level} ({cast_result['remaining_slots']} remaining)\n\n"
+                                        combat_feedback += f"💡 *The GM will narrate the spell's effect*"
+
+                                        if DEBUG_PROMPTS:
+                                            logger.debug(f"✨ {caster_name} cast {spell_name} (level {spell_level}) at {target_name or 'no target'}")
+
+                                        combat_command_handled = True
 
         # World navigation commands
         elif lower_input.startswith('/travel '):

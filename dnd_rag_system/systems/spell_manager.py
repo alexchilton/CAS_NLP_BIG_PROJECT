@@ -439,3 +439,147 @@ class SpellManager:
                     pass
 
         return 1  # Default CR
+
+    def lookup_spell_target_type(self, spell_name: str) -> str:
+        """
+        Look up a spell's target type using RAG.
+
+        Args:
+            spell_name: Name of spell
+
+        Returns:
+            "self", "ally", "enemy", or "area"
+        """
+        results = self.db.search(
+            settings.COLLECTION_NAMES['spells'],
+            f"{spell_name} target range",
+            n_results=1
+        )
+
+        if not results or not results.get('documents') or not results['documents'][0]:
+            return "enemy"  # Default
+
+        doc = results['documents'][0][0].lower()
+
+        # Check for healing/buff keywords
+        if any(keyword in doc for keyword in ['heal', 'cure', 'restore', 'bless', 'shield', 'enhance']):
+            if 'self' in doc or 'yourself' in doc:
+                return "self"
+            return "ally"
+
+        # Check for area spells
+        if any(keyword in doc for keyword in ['area', 'radius', 'sphere', 'cone', 'line', 'cube']):
+            return "area"
+
+        # Default to enemy for attack spells
+        return "enemy"
+
+    def get_spell_healing_amount(self, spell_name: str, caster_level: int = 1) -> Optional[Tuple[str, int]]:
+        """
+        Get healing amount for a healing spell using RAG.
+
+        Args:
+            spell_name: Name of spell (e.g., "Cure Wounds")
+            caster_level: Caster's character level (for scaling)
+
+        Returns:
+            Tuple of (dice_formula, healing_amount) or None if not a healing spell
+        """
+        results = self.db.search(
+            settings.COLLECTION_NAMES['spells'],
+            f"{spell_name} healing dice damage",
+            n_results=1
+        )
+
+        if not results or not results.get('documents') or not results['documents'][0]:
+            return None
+
+        doc = results['documents'][0][0].lower()
+
+        # Common healing spell patterns
+        healing_patterns = {
+            "cure wounds": "1d8",  # PHB: 1d8 + spellcasting modifier
+            "healing word": "1d4",  # PHB: 1d4 + spellcasting modifier
+            "prayer of healing": "2d8",  # PHB: 2d8 + spellcasting modifier
+            "mass cure wounds": "3d8",  # PHB: 3d8 + spellcasting modifier
+            "heal": "70",  # PHB: 70 hit points
+        }
+
+        # Check if it's a known healing spell
+        spell_lower = spell_name.lower()
+        for spell_key, dice_formula in healing_patterns.items():
+            if spell_key in spell_lower:
+                # Roll healing
+                if "d" in dice_formula:
+                    healing, rolls = self.roll_dice(dice_formula)
+                else:
+                    healing = int(dice_formula)
+                    rolls = []
+
+                return (dice_formula, healing)
+
+        # Try to extract dice formula from RAG document
+        dice_match = re.search(r'(\d+d\d+(?:[+-]\d+)?)', doc)
+        if dice_match and ('heal' in doc or 'cure' in doc or 'restore' in doc):
+            dice_formula = dice_match.group(1)
+            healing, rolls = self.roll_dice(dice_formula)
+            return (dice_formula, healing)
+
+        return None
+
+    def cast_healing_spell(
+        self,
+        spell_name: str,
+        caster_name: str,
+        target_name: str,
+        spell_level: int = 1
+    ) -> Dict[str, Any]:
+        """
+        Cast a healing spell on a target.
+
+        Args:
+            spell_name: Name of spell
+            caster_name: Name of caster
+            target_name: Name of target to heal
+            spell_level: Spell slot level used (for upcasting)
+
+        Returns:
+            Dictionary with:
+            - success: whether spell was cast
+            - amount: healing amount
+            - message: description of spell effect
+        """
+        # Look up healing amount
+        healing_result = self.get_spell_healing_amount(spell_name)
+
+        if not healing_result:
+            return {
+                "success": False,
+                "message": f"{spell_name} is not a healing spell"
+            }
+
+        dice_formula, base_healing = healing_result
+
+        # Upcast healing (add 1 die per spell level above minimum)
+        # This is a simplification - in D&D, each spell has specific upcasting rules
+        min_spell_level = self.lookup_spell_level(spell_name)
+        if min_spell_level is not None and spell_level > min_spell_level:
+            extra_dice = spell_level - min_spell_level
+            # Add extra healing for upcasting
+            if "d" in dice_formula:
+                # Extract die size
+                die_match = re.search(r'd(\d+)', dice_formula)
+                if die_match:
+                    die_size = int(die_match.group(1))
+                    extra_healing, _ = self.roll_dice(f"{extra_dice}d{die_size}")
+                    base_healing += extra_healing
+
+        return {
+            "success": True,
+            "amount": base_healing,
+            "dice_formula": dice_formula,
+            "caster": caster_name,
+            "target": target_name,
+            "spell_level": spell_level,
+            "message": f"{caster_name} casts {spell_name} on {target_name}, healing {base_healing} HP"
+        }

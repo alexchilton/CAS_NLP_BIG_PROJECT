@@ -884,6 +884,17 @@ def chat(message: str, history: list) -> Tuple[list, str, gr.update, str]:
 - `/buy <item>` - Purchase an item from a shop
 - `/sell <item>` - Sell an item from your inventory
 
+**Items & Potions:**
+- `/use <item>` - Use a potion or item (e.g., `/use healing potion`)
+
+**Spellcasting:**
+- `/cast <spell>` - Cast a spell on yourself (e.g., `/cast shield`)
+- `/cast <spell> on <target>` - Cast a spell on a target (e.g., `/cast cure wounds on Thorin`)
+
+**Rest & Recovery:**
+- `/rest` or `/short_rest` - Take a short rest (1 hour, spend hit dice to heal)
+- `/long_rest` - Take a long rest (8 hours, restore all HP and spell slots)
+
 **Combat:**
 - `/start_combat <enemies>` - Start combat with initiative rolls
 - `/next_turn` or `/next` - Advance to next turn in combat
