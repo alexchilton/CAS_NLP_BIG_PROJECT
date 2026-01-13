@@ -151,18 +151,18 @@ If time is limited, start with essentials:
 
 ---
 
-### Character-Specific Action Parsing for Party Mode
-- **Problem**: When player says "Elara casts Fire Bolt", system needs to know Elara is acting
-- **Solution**: Parse character names from player input
-  - Extract character name from prefix: "Thorin attacks the goblin"
-  - Use character name to set `gm.session.character_state` to correct party member
-  - Validate action against THAT character's stats/inventory/spells
-- **Examples**:
-  - "Thorin attacks the dragon with his longsword" → Set active character to Thorin, validate longsword
-  - "Elara casts Fire Bolt at the dragon" → Set active character to Elara, validate Fire Bolt spell
-  - "Gimli drinks a healing potion" → Set active character to Gimli, validate potion in inventory
-- **Fallback**: If no character name detected, use current turn's character from initiative order
-- **Implementation**: Add character name parser to `action_validator.py`
+### ✅ Character-Specific Action Parsing - ALREADY WORKING (Verified 2026-01-13)
+- **First-Person Pronouns** ("I cast Fire Bolt"):
+  - When you say "**I cast Fire Bolt**" → No character name extracted → Uses current `character_state` ✅
+  - Works automatically in both single-character and party mode
+  - System defaults to current turn's character from initiative order
+
+- **Third-Person** ("Elara casts Fire Bolt"):
+  - When you say "**Elara casts Fire Bolt**" → Extracts "Elara" → Switches to Elara's state ✅
+  - Character name parser already implemented in `action_validator.py:extract_acting_character()`
+  - Integrated in `gm_dialogue_unified.py:900-918`
+
+- **Status**: ✅ FULLY WORKING - No action needed
 
 ### Party Member Interactions
 **STATUS: PARTIALLY IMPLEMENTED** 🚧
@@ -240,10 +240,9 @@ If time is limited, start with essentials:
      - Skip items in `moved_items` (return visit)
 - **Testing**: `test_location_items.py` already has 8 tests for the infrastructure
 
-### World State & Exploration System
-**STATUS: PARTIALLY IMPLEMENTED** 🚧
+### ✅ World State & Exploration System - FULLY WORKING (Verified 2026-01-13)
 
-#### Infrastructure Completed ✅
+**Infrastructure Completed**:
 - World state manager with location tracking
 - Lazy location generation system
 - Location visit tracking and state persistence
@@ -253,18 +252,17 @@ If time is limited, start with essentials:
 - Comprehensive selenium tests created
 - Documentation in `docs/world_state_guide.md`
 
-#### Broken/Not Working ❌
-- **`/map` command**: GM intercepts and hallucinates instead of showing locations
-  - Symptom: Returns goblin narrative instead of location list
-  - **FIX NEEDED**: Make `/map` bypass GM and query world state directly
-- **`/travel` command**: Not tested yet, may have similar issues
-- **`/explore` command**: Not tested with lazy generation
-- **GM narrative integration**: GM doesn't mention visited locations correctly
+**Commands Working**:
+- ✅ **`/map` command**: Shows world map with discovered locations (gm_dialogue_unified.py:742-779)
+- ✅ **`/travel` command**: Case-insensitive travel between locations (tested in test_case_sensitivity_fixes.py)
+- ✅ **`/explore` command**: Lazy generation creates new locations (tested in test_lazy_generation.py)
+- ✅ **`/locations` command**: Lists all discovered locations
 
-#### Not Yet Implemented
+**Status**: ✅ FULLY IMPLEMENTED - See DONE.md for complete documentation
+
+**Still TODO**:
 - Save/load world state to disk
-- Automatic item spawning in new locations
-- Integration with combat system (dead enemies persistence)
+- Automatic item spawning in new locations (infrastructure exists, not auto-spawning yet)
 
 ### Save/Load System for World State
 - **Current State**: World persists in-memory during session only
