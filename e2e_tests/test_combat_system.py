@@ -75,7 +75,7 @@ def test_combat_system():
 
     # Set up combat encounter
     gm.set_location("Ancient Ruins", "Crumbling stone walls surround you")
-    gm.add_npc("Goblin Scout")
+    gm.add_npc("Goblin")
     gm.add_npc("Orc Warrior")
 
     print("✅ Party created:")
@@ -83,7 +83,7 @@ def test_combat_system():
     print(f"   - Elara (Wizard)")
     print(f"   - Gimli (Cleric)")
     print(f"\nEnemies:")
-    print(f"   - Goblin Scout")
+    print(f"   - Goblin")
     print(f"   - Orc Warrior")
 
     # TEST 1: Start combat
@@ -91,7 +91,7 @@ def test_combat_system():
     print("TEST 1: Starting combat with /start_combat command")
     print("=" * 80)
 
-    response = gm.generate_response("/start_combat Goblin Scout, Orc Warrior", use_rag=False)
+    response = gm.generate_response("/start_combat Goblin, Orc Warrior", use_rag=False)
     print(f"\n💬 GM Response:\n{response}\n")
 
     assert gm.combat_manager.is_in_combat(), "Combat should have started"
@@ -155,7 +155,7 @@ def test_combat_system():
     print(f"\n🎯 Current turn: {current_character}")
 
     # Perform an attack action (character name will be parsed from current turn)
-    action = f"{current_character} attacks the Goblin Scout"
+    action = f"{current_character} attacks the Goblin"
     print(f"   Action: {action}")
 
     old_turn = current_character
@@ -231,7 +231,7 @@ def test_combat_system():
     print("TEST 9: Start combat again and test conversation doesn't advance turn")
     print("=" * 80)
 
-    response = gm.generate_response("/start_combat Goblin Scout, Orc Warrior", use_rag=False)
+    response = gm.generate_response("/start_combat Goblin, Orc Warrior", use_rag=False)
     print(f"\n💬 Combat started:\n{response[:150]}...\n")
 
     old_turn = gm.combat_manager.get_current_turn_name()

@@ -84,7 +84,7 @@ def test_party_character_parsing():
 
     # Set up combat encounter
     gm.set_location("Dragon's Lair", "A vast cavern filled with treasure and danger")
-    gm.add_npc("Goblin Scout")
+    gm.add_npc("Goblin")
     gm.add_npc("Ancient Red Dragon")
 
     print("✅ Party created:")
@@ -97,7 +97,7 @@ def test_party_character_parsing():
     print("TEST 1: Thorin attacks with longsword (should be VALID)")
     print("=" * 80)
 
-    response = gm.generate_response("Thorin attacks the Goblin Scout with his longsword", use_rag=False)
+    response = gm.generate_response("Thorin attacks the Goblin with his longsword", use_rag=False)
     print(f"\n💬 GM Response: {response}\n")
 
     assert "daft" not in response.lower(), "Response should NOT be an invalid action rejection"
@@ -108,7 +108,7 @@ def test_party_character_parsing():
     print("TEST 2: Elara casts Fire Bolt (should be VALID)")
     print("=" * 80)
 
-    response = gm.generate_response("Elara casts Fire Bolt at the Goblin Scout", use_rag=False)
+    response = gm.generate_response("Elara casts Fire Bolt at the Goblin", use_rag=False)
     print(f"\n💬 GM Response: {response}\n")
 
     assert "daft" not in response.lower(), "Response should NOT be an invalid action rejection"
