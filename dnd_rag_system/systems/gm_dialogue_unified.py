@@ -1631,10 +1631,22 @@ GM RESPONSE:"""
         action = validation.action
 
         # Get character info for personality
+        # IMPORTANT: Use the acting character's stats, not just character_state!
         char_name = "You"
         char_race = ""
         char_class = ""
-        if hasattr(self.session, 'character_state') and self.session.character_state:
+
+        # First, try to extract which character is acting (for party mode)
+        acting_character_name = self.action_validator.extract_acting_character(action.raw_input)
+
+        if acting_character_name and acting_character_name in self.session.base_character_stats:
+            # Use the specific character's stats (e.g., Elara's stats when "Elara casts...")
+            base_char = self.session.base_character_stats[acting_character_name]
+            char_name = base_char.name
+            char_race = getattr(base_char, 'race', '').lower()
+            char_class = getattr(base_char, 'character_class', '')
+        elif hasattr(self.session, 'character_state') and self.session.character_state:
+            # Fallback: use session character_state (single player mode)
             char_name = getattr(self.session.character_state, 'character_name', 'You')
             char_race = getattr(self.session.character_state, 'race', '').lower()
             char_class = getattr(self.session.character_state, 'character_class', '')

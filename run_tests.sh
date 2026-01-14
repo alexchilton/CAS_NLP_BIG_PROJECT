@@ -31,11 +31,31 @@ run_e2e_programmatic() {
     echo -e "${YELLOW}Running Programmatic E2E Tests...${NC}"
     echo "---"
 
-    PROGRAMMATIC_TESTS=(
-        "e2e_tests/test_combat_system.py"
-        "e2e_tests/test_adventure_simulation.py"
-        "e2e_tests/test_party_mode_logging.py"
+    # Find all test files in e2e_tests that don't require Selenium
+    # Exclude Selenium tests (those will be run separately)
+    SELENIUM_EXCLUDE=(
+        "test_goblin_cave_combat.py"
+        "test_wizard_spell_combat.py"
+        "test_ui_loading.py"
+        "test_character_creation.py"
+        "test_stat_rolling_ui.py"
+        "test_shop_selenium.py"
+        "test_party_dragon_selenium.py"
+        "test_reality_check_browser.py"
+        "test_shop_ui.py"
+        "test_adventure_simulation.py"  # Interactive - requires manual start
+        "test_party_mode_logging.py"    # Interactive - infinite loop for manual inspection
     )
+    
+    # Get all test files
+    PROGRAMMATIC_TESTS=()
+    for test in e2e_tests/test_*.py; do
+        basename_test=$(basename "$test")
+        # Check if it's not in the exclude list
+        if [[ ! " ${SELENIUM_EXCLUDE[@]} " =~ " ${basename_test} " ]]; then
+            PROGRAMMATIC_TESTS+=("$test")
+        fi
+    done
 
     for test in "${PROGRAMMATIC_TESTS[@]}"; do
         if [ -f "$test" ]; then
