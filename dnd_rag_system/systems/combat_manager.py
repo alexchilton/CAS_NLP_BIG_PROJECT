@@ -212,8 +212,9 @@ class CombatManager:
 
         lines = []
 
-        # Identify NPCs/monsters in combat
-        npcs_in_combat = [name for name in self.npc_monsters.keys()]
+        # Identify NPCs/monsters in combat (from initiative order, not from all loaded monsters)
+        npcs_in_combat = [name for name, init in self.combat.initiative_order
+                          if name in self.npc_monsters]
 
         if npcs_in_combat:
             if len(npcs_in_combat) == 1:
@@ -566,6 +567,9 @@ class CombatManager:
         # Clear defeated enemies tracking for next combat
         if clear_xp_tracking:
             self.defeated_enemies.clear()
+
+        # Clear loaded monster instances for next combat
+        self.npc_monsters.clear()
 
         return f"⚔️ **Combat has ended!** (lasted {rounds} rounds)"
 
