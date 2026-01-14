@@ -164,7 +164,7 @@ def test_ui_combat_integration():
         print("TEST 2: Start combat with /start_combat command")
         print("=" * 80)
 
-        send_message(driver, "/start_combat Goblin Scout, Orc Warrior")
+        send_message(driver, "/start_combat Goblin, Orc Warrior")
 
         time.sleep(2)
 
@@ -212,7 +212,7 @@ def test_ui_combat_integration():
         print("TEST 4: Send combat action")
         print("=" * 80)
 
-        send_message(driver, "I attack the Goblin Scout with my longsword")
+        send_message(driver, "I attack the Goblin with my longsword")
 
         messages = get_chat_messages(driver)
         print(f"\n💬 Latest response:")

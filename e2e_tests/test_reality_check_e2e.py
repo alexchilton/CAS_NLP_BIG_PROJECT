@@ -151,9 +151,9 @@ def test_valid_combat_after_npc_intro(gm: GameMaster, char: Character):
     print("="*80)
 
     # First, introduce a goblin to the scene
-    gm.add_npc("Goblin Scout")
+    gm.add_npc("Goblin")
     gm.set_location("Forest Path", "A narrow path winds through dense trees.")
-    print("📍 Setup: GM introduces Goblin Scout to the scene")
+    print("📍 Setup: GM introduces Goblin to the scene")
 
     # Now attack should be valid
     player_input = "I attack the goblin with my longsword"
