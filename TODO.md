@@ -7,15 +7,23 @@
 ## 🔥 HIGH PRIORITY
 
 ### Improve RAG Data for Equipment, Abilities & Class Features
-**STATUS: PLANNED - NOT STARTED** 📋
+**STATUS: ✅ COMPLETED (2026-01-14)**
 
-#### Current State Analysis
+#### Implementation Summary
+- ✅ **Magic Items**: 30+ items added to `dnd_rag_system/data/magic_items.py`
+- ✅ **Class Features**: 6 classes, 60+ features in `dnd_rag_system/data/class_features.py`
+- ✅ **Equipment System**: Full integration with `/equip`, `/unequip`, `/equipment` commands
+- ✅ **Tests**: 70+ unit tests + integration tests (all passing)
+- ✅ **E2E Tests**: Created browser-based tests for live game verification
+- **See**: `docs/EQUIPMENT_SYSTEM.md` for full documentation
+
+#### Previous State Analysis
 - **Equipment Collection**: 58 docs ⚠️ - Only basic weapons/armor, NO magic items
 - **Classes Collection**: 11 docs ⚠️ - Only class overviews, NO structured class features
 - **Spells Collection**: 586 docs ✅ - Good coverage
 - **Monsters Collection**: 332 docs ✅ - Good coverage + structured monster_stats.py
 
-#### Critical Missing Data
+#### What Was Missing (NOW FIXED)
 1. **Magic Items & Equipment**:
    - Rings (Ring of Protection, Ring of Invisibility, etc.)
    - Cloaks (Cloak of Elvenkind, Cloak of Protection)
@@ -142,27 +150,31 @@
 - **Phase 4**: 2-3 hours (testing)
 - **Total**: 10-13 hours
 
-#### Alternative: Quick Win Approach (3-4 hours)
-If time is limited, start with essentials:
-1. Magic items data file (top 20 most common items)
-2. Class features for top 4 classes (Rogue, Fighter, Wizard, Cleric)
-3. Basic integration with existing systems
-4. Core tests (15-20 tests)
+#### What Was Actually Implemented (Quick Win Approach)
+✅ Completed in ~4 hours:
+1. **Magic Items**: 30+ items (rings, cloaks, weapons, armor, potions)
+2. **Class Features**: 6 classes (Fighter, Wizard, Rogue, Cleric, Barbarian, Paladin)
+3. **Equipment Integration**: Full system with `/equip`, `/unequip`, `/equipment` commands
+4. **Tests**: 70+ unit tests + integration test + 2 E2E tests
+5. **Documentation**: `docs/EQUIPMENT_SYSTEM.md`
+
+**Files Created**:
+- `dnd_rag_system/data/magic_items.py` (30+ items)
+- `dnd_rag_system/data/class_features.py` (6 classes, 60+ features)
+- `dnd_rag_system/systems/magic_item_manager.py`
+- `dnd_rag_system/systems/class_feature_manager.py`
+- `dnd_rag_system/systems/character_equipment.py`
+- `tests/test_magic_item_manager.py` (15 tests)
+- `tests/test_class_feature_manager.py` (20 tests)
+- `tests/test_character_equipment.py` (35 tests)
+- `ingest_game_content.py` (RAG ingestion)
+- `e2e_tests/test_equipment_system_e2e.py`
+- `e2e_tests/test_magic_item_rag_e2e.py`
+
+**Files Modified**:
+- `web/app_gradio.py` (added equipment commands)
 
 ---
-
-### ✅ Character-Specific Action Parsing - ALREADY WORKING (Verified 2026-01-13)
-- **First-Person Pronouns** ("I cast Fire Bolt"):
-  - When you say "**I cast Fire Bolt**" → No character name extracted → Uses current `character_state` ✅
-  - Works automatically in both single-character and party mode
-  - System defaults to current turn's character from initiative order
-
-- **Third-Person** ("Elara casts Fire Bolt"):
-  - When you say "**Elara casts Fire Bolt**" → Extracts "Elara" → Switches to Elara's state ✅
-  - Character name parser already implemented in `action_validator.py:extract_acting_character()`
-  - Integrated in `gm_dialogue_unified.py:900-918`
-
-- **Status**: ✅ FULLY WORKING - No action needed
 
 ### Party Member Interactions
 **STATUS: PARTIALLY IMPLEMENTED** 🚧
@@ -208,15 +220,6 @@ If time is limited, start with essentials:
   - ❌ Invalid: No merchant NPC present → `/buy` rejected
 - **Integration Point**: Add shop location validation in `ShopSystem.attempt_purchase()` and `attempt_sale()`
 
-### Update Inventory Display After Shop Transactions
-- **Problem**: After `/buy` or `/sell` commands, inventory shown in GUI is not updated
-- **Solution**: Refresh the inventory display component after successful purchase/sale
-- **Implementation**:
-  - Update Gradio inventory component after `ShopSystem.attempt_purchase()` succeeds
-  - Update Gradio inventory component after `ShopSystem.attempt_sale()` succeeds
-  - Ensure gold and item quantities reflect current state immediately
-- **User Experience**: Players should see inventory change in real-time without manual refresh
-
 ---
 
 ## 📚 MEDIUM PRIORITY
@@ -239,30 +242,6 @@ If time is limited, start with essentials:
      - "You see a glinting sword" (first visit)
      - Skip items in `moved_items` (return visit)
 - **Testing**: `test_location_items.py` already has 8 tests for the infrastructure
-
-### ✅ World State & Exploration System - FULLY WORKING (Verified 2026-01-13)
-
-**Infrastructure Completed**:
-- World state manager with location tracking
-- Lazy location generation system
-- Location visit tracking and state persistence
-- Item placement and removal system
-- NPC and creature persistence per location
-- Random encounter system with Monster RAG integration
-- Comprehensive selenium tests created
-- Documentation in `docs/world_state_guide.md`
-
-**Commands Working**:
-- ✅ **`/map` command**: Shows world map with discovered locations (gm_dialogue_unified.py:742-779)
-- ✅ **`/travel` command**: Case-insensitive travel between locations (tested in test_case_sensitivity_fixes.py)
-- ✅ **`/explore` command**: Lazy generation creates new locations (tested in test_lazy_generation.py)
-- ✅ **`/locations` command**: Lists all discovered locations
-
-**Status**: ✅ FULLY IMPLEMENTED - See DONE.md for complete documentation
-
-**Still TODO**:
-- Save/load world state to disk
-- Automatic item spawning in new locations (infrastructure exists, not auto-spawning yet)
 
 ### Save/Load System for World State
 - **Current State**: World persists in-memory during session only
@@ -334,95 +313,4 @@ If time is limited, start with essentials:
 - **Benefits**: Natural language understanding, no keyword maintenance, still 100% reliable
 - **Estimated Effort**: 2-3 hours (model integration, prompt engineering, testing)
 
----
-
-## ✅ COMPLETED (See DONE.md for details)
-
-- ✅ **Party Member Healing & Targeting (2026-01-05)** [PARTIAL]
-  - Single-target healing spells work (`/cast Cure Wounds on Thorin`)
-  - Target validation checks if party member exists
-  - Self-healing fallback when no target specified
-  - Spell slot consumption properly tracked
-  - 5 passing tests in `tests/test_party_member_interactions.py`
-  - **Still needed**: Party-wide buffs, item sharing, coordinated attacks
-  - Files: `spell_manager.py`, `gm_dialogue_unified.py:475-510`, `tests/test_party_member_interactions.py`
-
-- ✅ **DM Guide RAG Ingestion with Quality Tests (2026-01-05)**
-  - Added complete DM Guide (286 pages) to RAG system
-  - 95 chunks with intelligent page grouping (3 pages per chunk)
-  - Auto-detection of magic item content (53/95 chunks tagged)
-  - Comprehensive test suite: 26 tests validating retrieval quality
-  - Total RAG coverage: 1,098 documents (was 1,003)
-  - Magic items, treasure tables, and rules now searchable
-  - Query response times < 2s
-  - Files: `ingest_dm_guide.py`, `dm_guide.pdf`, `tests/test_dm_guide_rag_quality.py`
-
-- ✅ **Level Up System with Auto-Leveling (2026-01-05)**
-  - Implemented automatic level-up on XP threshold
-  - Added `/level_up` command for manual leveling
-  - HP increase with hit die rolls + CON modifier (minimum 1)
-  - Proficiency bonus progression at levels 5, 9, 13, 17
-  - Spell slot upgrades via RAG lookup
-  - Healing on level-up (current HP increases by HP gain)
-  - Comprehensive test suite (10 tests in `test_game_state.py`)
-  - Auto-leveling integration in combat XP awards
-  - Files: `game_state.py:661-750`, `gm_dialogue_unified.py:326-565`, `tests/test_game_state.py:396-492`
-
-- ✅ **Spell Casting, Rest Mechanics & XP System (2026-01-05)**
-  - `/cast <spell>` command with spell slot consumption
-  - Cantrip detection (level 0 = unlimited use)
-  - Spell upcasting to higher-level slots
-  - Healing spell mechanics with dice rolling
-  - Target type detection (self/ally/enemy/area)
-  - `/rest` (short rest) with hit dice spending
-  - `/long_rest` for full HP/slot/hit dice restoration
-  - Automatic XP awards when defeating enemies
-  - Monster CR lookup via RAG
-  - XP-to-CR conversion using DMG p.274 table
-  - Victory rewards display with enemy list
-  - Test suites: `test_rest_mechanics.py` (11 tests), `test_spell_manager.py` (31 tests)
-  - Files: `spell_manager.py`, `gm_dialogue_unified.py`, `combat_manager.py`
-
-- ✅ **NPC Combat AI & Auto-Population System (2026-01-03)**
-  - Implemented NPC combat AI with automatic monster attacks during their turns
-  - NPCs now automatically attack when their initiative comes up
-  - Auto-populate NPCs when loading combat locations (e.g., Goblin Cave → 2 Goblins appear)
-  - Fixed bidirectional location matching for proper NPC spawning
-  - Updated welcome message to show NPCs present: "⚠️ **You see:** Goblin, Goblin!"
-  - Fixed `/context` command error (GameSession.scene_description)
-  - Created comprehensive E2E test suite:
-    - `test_goblin_cave_combat.py` - Fighter combat with goblins
-    - `test_wizard_spell_combat.py` - Wizard spell combat with Skeleton
-    - `test_combat_scenarios.py` - Full test suite with 4 scenarios:
-      - Wizard vs Skeleton (Ancient Ruins) - RAG integration
-      - Fighter vs Ogre (Rocky Mountain Pass) - Melee combat
-      - Wizard vs Wolf Pack (Dark Forest) - Multi-enemy
-      - Fighter vs Young Dragon (Dragon's Lair) - Boss fight
-  - All tests fight until death or victory
-  - **Impact**: Combat encounters feel alive with NPCs taking actions
-  - Files: `combat_manager.py`, `gm_dialogue_unified.py`, `app_gradio.py`, E2E tests
-- ✅ **Monster Stats Integration with Combat System (2026-01-03)**
-  - Created monster stats database with 16 D&D 5e creatures (CR 0-17)
-  - Built MonsterStatSystem for creating monster instances with real stats
-  - Integrated with CombatManager to auto-load stats when combat starts
-  - NPC HP tracking in initiative tracker
-  - Real AC, attack bonuses, and damage rolls from stat blocks
-  - Comprehensive test suite with Goblin, Wolf, Skeleton, and Dragon combat
-  - **Impact**: Moves RAG usage from ~10% to ~40% for combat encounters
-  - Files: `dnd_rag_system/data/monster_stats.py`, `dnd_rag_system/systems/monster_stat_system.py`
-- ✅ NPC Auto-Extraction from GM Responses (2025-12-27)
-  - When GM mentions NPCs in narrative, they're automatically added to `npcs_present`
-  - Uses existing Qwen 2.5 3B mechanics extractor to parse `npcs_introduced`
-  - Fixes bug where GM introduces NPC but it's not tracked in game state
-  - Verified with unit tests and E2E selenium tests with debug logging
-- ✅ Spell Target Hallucination Fix (2025-12-26)
-- ✅ Action Validator False Positives Fix (2025-12-26)
-- ✅ Party Mode UI Bug Fix (2025-12-26)
-- ✅ Narrative to Mechanics Translation System (2025-12-26)
-- ✅ Combat System (Turn-based)
-- ✅ Reality Check / Action Validation
-- ✅ Shop System
-- ✅ Party Mode
-- ✅ Random Encounter System with Monster RAG Integration (2025-12-26)
-- ✅ Selenium Test Character Loading Fixed (2025-12-26)
 
