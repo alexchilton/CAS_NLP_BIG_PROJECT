@@ -72,6 +72,14 @@ COLLECTION_METADATA = {
     "dm_guide": {
         "description": "Dungeon Master's Guide - rules, magic items, treasure, world-building",
         "source": "Dungeon Master's Guide"
+    },
+    "magic_items": {
+        "description": "D&D 5e magic items with effects, rarity, and attunement requirements",
+        "source": "Dungeon Master's Guide"
+    },
+    "class_features": {
+        "description": "D&D 5e class features, abilities, and level progression",
+        "source": "Player's Handbook - Classes"
     }
 }
 

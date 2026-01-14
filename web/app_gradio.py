@@ -26,6 +26,7 @@ from dnd_rag_system.systems.character_creator import Character, CharacterCreator
 from dnd_rag_system.systems.gm_dialogue_unified import GameMaster
 from dnd_rag_system.systems.game_state import CharacterState, PartyState, SpellSlots
 from dnd_rag_system.systems.racial_bonuses import load_racial_traits, get_racial_bonus_summary
+from dnd_rag_system.systems.character_equipment import CharacterEquipment
 from dnd_rag_system.config import settings
 
 # Initialize system
@@ -884,6 +885,11 @@ def chat(message: str, history: list) -> Tuple[list, str, gr.update, str]:
 - `/buy <item>` - Purchase an item from a shop
 - `/sell <item>` - Sell an item from your inventory
 
+**Equipment:**
+- `/equip <item>` - Equip a magic item from your inventory
+- `/unequip <slot>` - Unequip an item from a slot (e.g., ring_left, neck, armor)
+- `/equipment` - Show all equipped items and bonuses
+
 **Items & Potions:**
 - `/use <item>` - Use a potion or item (e.g., `/use healing potion`)
 
@@ -978,6 +984,97 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
                     ],
                     *get_initiative_tracker(),
                 get_current_sheet()
+                )
+
+        elif cmd == "/equipment":
+            # Show equipped items and bonuses
+            if gm.session.character_state:
+                equipment_manager = CharacterEquipment(gm.session.character_state)
+                equipment_summary = equipment_manager.get_equipment_summary()
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": equipment_summary}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+            else:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "⚠️ No character loaded"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+        elif cmd.startswith("/equip "):
+            # Equip an item
+            item_name = message[7:].strip()  # Get item name after "/equip "
+            if not item_name:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "Usage: `/equip <item>` (e.g., `/equip Ring of Protection`)"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+            if gm.session.character_state:
+                equipment_manager = CharacterEquipment(gm.session.character_state)
+                success, response_msg = equipment_manager.equip_item(item_name)
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": response_msg}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+            else:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "⚠️ No character loaded"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+        elif cmd.startswith("/unequip "):
+            # Unequip an item from a slot
+            slot = message[9:].strip()  # Get slot name after "/unequip "
+            if not slot:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "Usage: `/unequip <slot>` (e.g., `/unequip ring_left`, `/unequip neck`)\n\nValid slots: ring_left, ring_right, neck, armor, main_hand, off_hand, head, hands, feet, back, waist"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+            if gm.session.character_state:
+                equipment_manager = CharacterEquipment(gm.session.character_state)
+                success, response_msg = equipment_manager.unequip_item(slot)
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": response_msg}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+            else:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "⚠️ No character loaded"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
                 )
 
         # Let other commands (like /buy, /sell, /start_combat, etc.) pass through to GM

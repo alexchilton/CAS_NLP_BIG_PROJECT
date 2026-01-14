@@ -406,6 +406,27 @@ GM: ⚕️ Elara casts Cure Wounds on Thorin, healing 6 HP
   - Tests: `test_shop_system.py`
   - Equipment data: `web/equipment.txt`
 
+### Real-Time Inventory Display Updates ✅ IMPLEMENTED (2026-01-13)
+- **Goal**: Automatically refresh inventory display in UI after `/buy` and `/sell` transactions
+- **Status**: ✅ ALREADY WORKING - Inventory updates automatically via Gradio's reactive output system
+- **How It Works**:
+  1. Shop transactions update `char_state.inventory` (shop_system.py:164-177)
+  2. The `chat()` function returns `character_sheet` on every message (app_gradio.py:995)
+  3. Gradio's reactive system auto-updates UI components (app_gradio.py:1480,1489)
+  4. `format_character_sheet()` reads live data from `char_state.inventory` (app_gradio.py:639)
+- **Flow**: `/buy longsword` → shop updates inventory → chat returns updated sheet → UI refreshes automatically
+- **Testing**: Comprehensive shop tests verify inventory updates (test_shop_system.py:130-187)
+  - Test 3.1: Purchase adds item to inventory (line 152-153)
+  - Test 3.2: Multiple item purchases update inventory correctly (line 166)
+  - Test 4.1: Sales remove items from inventory (line 212)
+  - Test 7: Complete shopping experience validates full flow (line 307-352)
+- **Files**:
+  - Shop logic: `dnd_rag_system/systems/shop_system.py`
+  - UI integration: `web/app_gradio.py:599-648` (format_character_sheet)
+  - Chat handler: `web/app_gradio.py:831-995` (returns character_sheet)
+  - Gradio wiring: `web/app_gradio.py:1477-1493` (event handlers)
+  - Tests: `tests/test_shop_system.py`
+
 ---
 
 ## ✅ RAG-Based Character Creation (Partial)
