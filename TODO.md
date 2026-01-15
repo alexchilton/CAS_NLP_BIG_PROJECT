@@ -179,17 +179,9 @@
 - **✅ Refactored**: 
   - `gm_dialogue_unified.py`: Using `Commands` constants
   - `action_validator.py`: Using `ActionKeywords` constants
+  - All SRD code: Using `CharacterClasses` and `CharacterRaces` constants
 - **✅ Tests**: `tests/test_constants.py` - 30 passing tests
 - **Impact**: Typos now caught at import time, easier refactoring, IDE autocomplete
-  ```
-- **Fix**: Create constants file:
-  ```python
-  class Commands:
-      HELP = '/help'
-      ATTACK = '/attack'
-      CAST = '/cast'
-  ```
-- **Impact**: Refactoring safer, typos caught at import time
 
 ---
 
@@ -197,66 +189,87 @@
 
 ### ✅ RAG Data Quality Improvements - COMPLETED (2026-01-15)
 
-#### ✅ Parse SRD-OGL_V5.1.pdf and Ingest to ChromaDB
-**OFFICIAL D&D 5E RULES** - Use authoritative SRD data instead of hardcoded approximations
+**OFFICIAL D&D 5E RULES** - Full SRD integration with auto-applied character features
+
+#### ✅ SRD PDF Parsing & Ingestion
 - **✅ Created**: `scripts/parse_srd_pdf.py` (332 lines)
   - Extracts 12 classes with hit dice, proficiencies, saving throws
   - Extracts 24+ spells with level, school, descriptions
-  - Extracts 9 races with traits
+  - Extracts 9 races with ability score bonuses and traits
   - Outputs to `dnd_rag_system/data/extracted/srd/` as JSON
 - **✅ Created**: `scripts/ingest_srd_to_chromadb.py` (137 lines)
   - Ingests parsed data into ChromaDB collection `dnd5e_srd`
   - 45+ documents with structured metadata
-  - Queryable for character creation and gameplay
+  - Auto-runs on first use via `chroma_manager.py._ensure_srd_data()`
+
+#### ✅ RAG-Powered Character Creation
 - **✅ Created**: `dnd_rag_system/systems/rag_character_enhancer.py` (322 lines)
   - Auto-applies class features during character creation
   - Sets correct hit dice (Barbarian: d12, Wizard: d6, etc.)
   - Applies proficiencies (armor, weapons, tools, saving throws)
   - Adds class abilities by level
-  - Sets spell slots for caster classes (full/half/pact magic)
+  - Sets spell slots for caster classes (full/half/pact magic) levels 1-20
   - Looks up and suggests appropriate spells from RAG database
-- **✅ Tests**: `tests/test_rag_character_enhancer.py` - 16 passing tests
-- **✅ Documentation**: `docs/SRD_RAG_INTEGRATION.md` - Complete implementation guide
-- **✅ Dependencies**: Added `PyPDF2>=3.0.0` to `requirements.txt`
-- **Impact**: 
-  - Accurate character creation using official D&D 5e SRD rules
-  - Reduces manual errors and LLM hallucinations
-  - Single source of truth for class features
-  - Easy to update if new SRD versions released
+- **✅ Modified**: `character_creator.py`
+  - Fixed HP calculation to scale with level (not just level 1)
+  - `_apply_race_traits()` queries ChromaDB for racial bonuses
+  - `_apply_class_features()` calls RAG enhancement
+  - Uses constants instead of magic strings
 
-#### Fix Racial Data in ChromaDB
-- Current problem: All races showing same ability scores (CHA +1, DEX +1) due to OCR errors
-- Need to re-parse or manually add correct racial bonuses:
-  - Dwarf: CON +2
-  - Elf: DEX +2
-  - Halfling: DEX +2
-  - Human: All abilities +1
-  - Dragonborn: STR +2, CHA +1
-  - Gnome: INT +2
-  - Half-Elf: CHA +2, two others +1
-  - Half-Orc: STR +2, CON +1
-  - Tiefling: CHA +2, INT +1
-- Note: Currently using fallback hardcoded data, so not critical
+#### ✅ Constants & Code Quality
+- **✅ Created**: `dnd_rag_system/constants.py`
+  - `CharacterClasses` - All 12 D&D classes
+  - `CharacterRaces` - All 9 PHB races  
+  - Eliminates magic strings throughout codebase
+- **✅ Refactored**: All SRD code uses constants
+  - `CharacterClasses.WIZARD` instead of `'Wizard'`
+  - `CharacterRaces.ELF` instead of `'Elf'`
 
-#### Improve Class Features Data in RAG
-- Current state: Class descriptions exist but lack structured metadata
-- Need to add structured metadata for each class:
-  - Hit dice (d6, d8, d10, d12)
-  - Proficiencies (armor types, weapon types, saving throws, skills)
-  - Starting equipment lists
-  - Class features by level (e.g., Fighter gets Second Wind at level 1)
-  - Spell slots for caster classes
-- Options:
-  1. Parse existing PDF text more thoroughly
-  2. Add structured JSON data manually for 12 classes
-  3. Use additional source files with structured class data
+#### ✅ GUI Enhancements
+- **✅ Modified**: `web/app_gradio.py` character creation display
+  - Shows racial bonuses breakdown: "STR: 10 + 2 = 12 (+1)"
+  - Shows hit die and HP calculation
+  - Shows class features and proficiencies
+  - Shows spell slots for all 9 spell levels (when applicable)
+  - "✨ Enhanced with D&D 5e SRD data" badge
 
-#### Auto-apply Class Features During Character Creation
-- Query ChromaDB for class information during character creation
-- Set correct hit dice (d6/d8/d10/d12)
-- Apply proficiencies (armor, weapons, tools, saving throws)
-- Add class abilities by level
-- Set spell slots for caster classes
+#### ✅ Comprehensive Testing
+- **✅ Created**: `tests/test_rag_character_enhancer.py` - 16 unit tests
+- **✅ Created**: `tests/test_srd_character_creation_integration.py` - 16 integration tests
+- **✅ Created**: `tests/test_complete_character_creation_e2e.py` - 2 E2E tests
+- **✅ Created**: `tests/test_all_classes_races_creation.py` - 60 comprehensive tests
+  - All 12 classes at levels 1, 5, 10
+  - All 9 races with Wizard and Fighter
+  - Classic combinations (Elf Wizard, Half-Orc Barbarian, Human Cleric)
+  - Edge cases (level 20, low CON, non-casters)
+  - Validates: HP scaling, spell slots 1-20, proficiencies, racial bonuses
+- **Total**: 94 tests passing
+
+#### ✅ Bug Fixes
+- **✅ HP Calculation**: Fixed to account for all levels, not just level 1
+  - Formula: Level 1 (hit_die + CON) + (level-1) × (avg_roll + CON)
+  - Level 10 Wizard now gets 22 HP instead of 4
+- **✅ Spell Slots**: Added complete tables for levels 1-20 (was only 1-5)
+- **✅ Proficiency Parsing**: Fixed regex to stop at next field (was capturing paragraphs)
+- **✅ Page Indexing**: Corrected PDF page numbers (physical page - 1 for 0-indexed array)
+- **✅ Spellcasting Detection**: Fixed `/spells` button showing "not a spellcaster" for Wizards
+  - Now sets `CharacterState.spellcasting_class` when loading characters
+  - Works in both solo and party mode
+
+#### ✅ Documentation & Dependencies
+- **✅ Updated**: `docs/README.md` with RAG Character Creation section
+- **✅ Updated**: `requirements.txt` - Added `PyPDF2>=3.0.0`
+- **✅ Updated**: `pytest.ini` - Tests run to completion instead of stopping on first failure
+
+#### Impact Summary
+- ✅ Accurate character creation using official D&D 5e SRD rules
+- ✅ Reduces manual errors and LLM hallucinations  
+- ✅ Single source of truth for class features
+- ✅ No magic strings - all constants-based
+- ✅ GUI shows all racial/class bonuses
+- ✅ Easy to update if new SRD versions released
+- ✅ Fully automated like other ChromaDB systems
+- ✅ Comprehensive test coverage (94 tests)
 
 ### ✅ Upgrade Reality Check with LLM-based NLP Intent Classification - COMPLETED (2026-01-14)
 - **Problem**: Current keyword-based approach is brittle
