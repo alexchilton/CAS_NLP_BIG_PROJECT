@@ -284,7 +284,7 @@ The system understands:
 - **Equipment Loader**: `dnd_rag_system/loaders/equipment_loader.py`
 - **Shop System**: `dnd_rag_system/systems/shop_system.py`
 - **Tests**: `test_shop_system.py` (run with `python3 test_shop_system.py`)
-- **Equipment Data**: `web/equipment.txt` (D&D 5e equipment tables)
+- **Equipment Data**: `dnd_rag_system/data/equipment.txt` (D&D 5e equipment tables)
 
 ## Future Enhancements
 

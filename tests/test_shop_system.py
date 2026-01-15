@@ -32,7 +32,7 @@ def setup_test_environment():
     db = ChromaDBManager()
 
     # Load equipment data
-    equipment_file = Path(__file__).parent / "web" / "equipment.txt"
+    equipment_file = Path(__file__).parent.parent / "dnd_rag_system" / "data" / "equipment.txt"
     if equipment_file.exists():
         print(f"\n📦 Loading equipment from {equipment_file}")
         num_items = load_equipment_to_chromadb(db, equipment_file)
