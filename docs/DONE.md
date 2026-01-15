@@ -4,6 +4,124 @@ This file tracks completed and working features that have been implemented and t
 
 ---
 
+## ✅ Code Quality & Refactoring ✅ COMPLETED (2026-01-14 to 2026-01-15)
+
+### Extract Magic Strings to Constants
+**MAINTAINABILITY** - Commands and keywords hardcoded everywhere
+- **Status**: ✅ FULLY IMPLEMENTED with 30 passing tests
+- **Date**: 2026-01-15
+
+**Problem Solved**: Magic strings scattered throughout codebase made refactoring error-prone and didn't leverage IDE autocomplete.
+
+**Created Files**:
+- `dnd_rag_system/constants.py` - Centralized constants for all D&D 5e data and game mechanics
+  - `Commands`: All slash commands (`/help`, `/attack`, `/cast`, `/buy`, `/sell`, etc.)
+  - `ActionKeywords`: Intent detection keywords (attack, spell, steal, etc.)
+  - `ItemEffects`: Magic item effect types (healing, damage, buff)
+  - `EquipmentSlots`: Character equipment locations (weapon, armor, ring, etc.)
+  - `LocationTypes`: World location categories (town, dungeon, wilderness, etc.)
+  - `DamageTypes`: D&D damage types (fire, cold, piercing, slashing, etc.)
+  - `Conditions`: Status conditions (poisoned, stunned, blessed, etc.)
+  - `CharacterClasses`: All 12 D&D classes (Wizard, Fighter, Rogue, etc.)
+  - `CharacterRaces`: All 9 PHB races (Elf, Dwarf, Human, etc.)
+
+**Refactored Files**:
+- `gm_dialogue_unified.py`: Using `Commands` constants for command routing
+- `action_validator.py`: Using `ActionKeywords` constants for intent detection
+- `parse_srd_pdf.py`: Using `CharacterClasses` and `CharacterRaces` constants
+- `rag_character_enhancer.py`: Using class/race constants
+- `character_creator.py`: Using class/race constants
+
+**Testing**:
+- `tests/test_constants.py` - 30 passing tests validating all constant classes
+
+**Impact**:
+- ✅ Typos caught at import time instead of runtime
+- ✅ IDE autocomplete for all constants
+- ✅ Safer refactoring (rename propagates automatically)
+- ✅ Single source of truth for game mechanics strings
+- ✅ Easier to add new classes/races/commands
+
+**Example**:
+```python
+# Before (magic strings)
+if cmd == '/help':
+if character_class == 'Wizard':
+
+# After (constants)
+if cmd == Commands.HELP:
+if character_class == CharacterClasses.WIZARD:
+```
+
+---
+
+### Rename GameSession to ConversationSession
+**NAMING CLARITY** - Resolved naming conflict between two different session classes
+- **Status**: ✅ FULLY IMPLEMENTED
+- **Date**: 2026-01-15
+
+**Problem Solved**: Two classes named `GameSession` serving completely different purposes caused confusion.
+
+**Files Modified**:
+- `dnd_rag_system/systems/gm_dialogue.py:30-47` - Renamed to `ConversationSession`
+  - Simple dialogue system class tracking LLM conversation history
+  - Used by 2 standalone scripts for RAG-based Q&A
+  - Added clarifying docstring explaining distinction from `game_state.GameSession`
+
+**Analysis**:
+- **ConversationSession** (`gm_dialogue.py`): Lightweight conversation history for simple RAG dialogue
+  - Fields: `conversation_history`, `context`, `character_name`
+  - Purpose: Track LLM conversation for simple Q&A scripts
+- **GameSession** (`game_state.py:1386-1713`): Comprehensive D&D game state
+  - Fields: `character_state`, `npcs_present`, `location`, `combat_tracker`, `inventory`, etc.
+  - Purpose: Full game state for web app and unified system
+
+**Impact**:
+- ✅ Eliminates naming confusion
+- ✅ Clarifies architecture (two distinct systems)
+- ✅ Backward compatible (scripts don't import directly)
+- ✅ Better code documentation
+
+---
+
+### LLM-based NLP Intent Classification
+**NATURAL LANGUAGE UNDERSTANDING** - Handle creative phrasings beyond keyword matching
+- **Status**: ✅ FULLY IMPLEMENTED with comprehensive test suite
+- **Date**: 2026-01-14
+
+**Problem Solved**: Keyword-based intent detection failed on creative phrasings like "loose an arrow", "nock and release my bowstring", "let fly with my longbow".
+
+**Implementation** (Parallel, not replacing):
+- **Keyword Classifier**: Fast, reliable, keyword-based (DEFAULT)
+- **LLM Classifier**: Handles creative language using Qwen2.5-3B
+- **Runtime Toggle**: Switch via `classifier_type="llm"` parameter
+- **Comparison Mode**: Run both and log differences for validation
+- **Graceful Fallback**: LLM errors automatically fall back to keyword-based
+
+**Created Files**:
+- `dnd_rag_system/config.py` - Configuration for intent classifiers
+- `tests/test_llm_intent_classifier.py` - Comprehensive test suite
+
+**Modified Files**:
+- `dnd_rag_system/systems/action_validator.py` - Added LLM classifier alongside keyword classifier
+
+**Benefits**:
+- ✅ Handles creative phrasings: "loose an arrow", "nock and release my bowstring"
+- ✅ No keyword maintenance required for LLM mode
+- ✅ Preserves existing functionality (keyword mode still works)
+- ✅ 100% backward compatible (default behavior unchanged)
+- ✅ Model reuse: Shares Qwen2.5-3B with mechanics extractor
+
+**Test Results**: All tests passing (keyword, LLM, comparison mode)
+
+**Impact**:
+- Better natural language understanding
+- More immersive gameplay (players use creative descriptions)
+- Optional upgrade path (can enable per-session)
+- No breaking changes to existing systems
+
+---
+
 ## ✅ D&D 5e SRD RAG Integration - Character Creation Enhancement ✅ COMPLETED (2026-01-15)
 
 ### Official D&D 5e Rules Integration
