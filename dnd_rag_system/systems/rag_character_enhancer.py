@@ -269,7 +269,10 @@ class RAGCharacterEnhancer:
         # 5. Set spell slots for casters
         spell_slots = self.get_spell_slots(character.character_class, character.level)
         if any(slot > 0 for slot in spell_slots):
-            slots_summary = ', '.join(f"{i+1}st: {slot}" for i, slot in enumerate(spell_slots[:5]) if slot > 0)
+            # Show all spell levels with slots (not just first 5)
+            slots_summary = ', '.join(
+                f"{i+1}st: {slot}" for i, slot in enumerate(spell_slots) if slot > 0
+            )
             character.class_features.append(f"Spell Slots: {slots_summary}")
             print(f"  ✓ Spell Slots: {slots_summary}")
             
