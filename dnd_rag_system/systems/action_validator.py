@@ -19,6 +19,7 @@ from enum import Enum
 import logging
 import json
 import subprocess
+from dnd_rag_system.constants import ActionKeywords, SpellKeywords
 
 logger = logging.getLogger(__name__)
 
@@ -82,34 +83,13 @@ class ActionValidator:
     Prevents hallucinations while preserving narrative flexibility.
     """
 
-    # Keywords for intent detection
-    COMBAT_KEYWORDS = [
-        'attack', 'hit', 'strike', 'slash', 'stab', 'shoot', 'fire at', 'fire',
-        'punch', 'kick', 'swing', 'swing at', 'charge', 'lunge at', 'fight',
-        'smash', 'bash', 'cleave', 'thrust', 'parry', 'block and attack'
-    ]
-
-    SPELL_KEYWORDS = [
-        'cast', 'casting', 'spell', 'magic missile', 'fireball', 'healing word',
-        'cure wounds', 'eldritch blast', 'sacred flame', 'guiding bolt'
-    ]
-
-    CONVERSATION_KEYWORDS = [
-        'talk to', 'speak to', 'ask', 'tell', 'say to', 'greet', 'chat with',
-        'question', 'inquire', 'converse', 'discuss with', 'address',
-        'hello', 'hi', 'hey', '"'  # Quoted speech
-    ]
-
-    ITEM_KEYWORDS = [
-        'use', 'drink', 'eat', 'equip', 'wear', 'wield', 'open',
-        'pull out', 'take out', 'consume', 'apply', 'ready', 'draw',
-        'hold', 'grab', 'reach for'
-    ]
-    
-    STEAL_KEYWORDS = [
-        'steal', 'swipe', 'pocket', 'pilfer', 'nick', 'pinch', 'lift',
-        'snatch', 'sneak', 'pickpocket'
-    ]
+    # Keywords for intent detection (from constants)
+    COMBAT_KEYWORDS = ActionKeywords.ATTACK_KEYWORDS
+    SPELL_KEYWORDS = ActionKeywords.SPELL_KEYWORDS
+    CONVERSATION_KEYWORDS = ActionKeywords.CONVERSATION_KEYWORDS
+    ITEM_KEYWORDS = ActionKeywords.ITEM_USE_KEYWORDS
+    STEAL_KEYWORDS = ActionKeywords.STEAL_KEYWORDS
+    EXPLORATION_KEYWORDS = ActionKeywords.EXPLORATION_KEYWORDS
 
     def __init__(
         self,
@@ -1031,7 +1011,9 @@ ENTITY EXTRACTION:
 - "resource": Item, spell, or weapon being used
   - For spells: "I cast Fireball" → "Fireball"
   - For items: "I drink a healing potion" → "healing potion"
+  - For steal: "swipe the gold coins" → "gold coins" (preserve FULL item name)
   - For combat: "I shoot my bow" → "bow"
+  - **IMPORTANT**: Extract the COMPLETE item name (all words), not just keywords
   - If not specified: null
 
 EXAMPLES:
@@ -1053,23 +1035,24 @@ EXAMPLES:
 6. "I swipe the ruby from the pedestal"
    → {{"action_type": "steal", "target": null, "resource": "ruby"}}
 
-7. "swipe the gold"
-   → {{"action_type": "steal", "target": null, "resource": "gold"}}
+7. "swipe the gold coins"
+   → {{"action_type": "steal", "target": null, "resource": "gold coins"}}
 
-8. "swipe the potion"
-   → {{"action_type": "steal", "target": null, "resource": "potion"}}
+8. "swipe the healing potion"
+   → {{"action_type": "steal", "target": null, "resource": "healing potion"}}
 
-9. "pocket the ring"
-   → {{"action_type": "steal", "target": null, "resource": "ring"}}
+9. "pocket the magic ring"
+   → {{"action_type": "steal", "target": null, "resource": "magic ring"}}
 
 10. "Let fly with my longbow towards the orc"
    → {{"action_type": "combat", "target": "orc", "resource": "longbow"}}
 
 RULES:
 - Be permissive with creative phrasings
-- Extract exact names from the input
+- Extract exact names from the input (preserve COMPLETE multi-word item names)
 - Use null for missing entities
 - Preserve original capitalization for names
+- **IMPORTANT**: Extract the FULL item name including all descriptive words (e.g., "gold coins" not just "gold")
 - **IMPORTANT**: "swipe", "pocket", "steal", "pickpocket" = ALWAYS "steal" action (taking without permission)
 - **IMPORTANT**: "use", "drink", "equip" = "item_use" action (using your own items)
 - If the verb is a stealing verb, classify as "steal" regardless of the item type

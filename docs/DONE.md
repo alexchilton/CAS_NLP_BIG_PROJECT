@@ -4,6 +4,182 @@ This file tracks completed and working features that have been implemented and t
 
 ---
 
+## ✅ Shop Reality Check - Location Validation for Transactions ✅ COMPLETED (2026-01-15)
+
+### Shop Location Validation System
+- **Goal**: Prevent players from using `/buy` and `/sell` commands in inappropriate locations (like dungeons)
+- **Status**: ✅ FULLY IMPLEMENTED with 6 passing tests
+
+**Problem Solved**: Players could previously use shop commands anywhere, even in a dragon's lair or deep in a dungeon. This broke immersion and didn't make gameplay sense.
+
+**Implementation** (`gm_dialogue_unified.py:956-1024`):
+1. **Shop Reality Check** - Validates location before transactions:
+   - **Check 1**: Location has shop flag (`location.has_shop = True`)
+   - **Check 2**: Merchant/shopkeeper NPC is present in `npcs_present` list
+   - If neither condition met → transaction blocked with error message
+
+2. **Merchant NPC Detection**:
+   - Searches `npcs_present` for keywords: 'merchant', 'shopkeeper', 'trader', 'vendor', 'seller', 'buyer'
+   - Case-insensitive matching
+   - Allows transactions when traveling merchants are present
+
+3. **Clear Error Messages**:
+   - Purchase blocked: "There's no shop in {location}! You can't just buy things in the middle of nowhere..."
+   - Sale blocked: "There's no merchant in {location}! You can't sell items without a buyer..."
+   - Includes location name for context
+
+**Example Scenarios**:
+```
+✅ Valid: Player in "Market Square" (has_shop=True) → /buy works
+✅ Valid: "Greta the Merchant" in npcs_present → /buy works
+❌ Invalid: Player in "Dragon's Lair" → /buy rejected
+❌ Invalid: No merchant present → /buy rejected
+```
+
+**Testing** (`tests/test_shop_reality_check.py` - 6 tests, all passing):
+1. **test_buy_blocked_in_dungeon**: Verifies buying blocked in dungeon without shop
+2. **test_buy_allowed_in_marketplace**: Verifies buying works in location with has_shop=True
+3. **test_buy_allowed_with_merchant_npc**: Verifies buying works when merchant NPC present
+4. **test_sell_blocked_in_dungeon**: Verifies selling blocked in dungeon
+5. **test_sell_allowed_in_shop**: Verifies selling not blocked by location check in shop
+6. **test_multiple_merchant_keywords**: Tests all merchant keyword variations work
+
+**Merchant Keywords Recognized**:
+- "merchant" (Greta the Merchant)
+- "shopkeeper" (Bob the Shopkeeper)
+- "trader" (Traveling Trader)
+- "vendor" (Item Vendor)
+- "seller" (Goods Seller)
+- "buyer" (for sell transactions)
+
+**Integration Points**:
+- Checks run BEFORE shop transaction logic
+- Works with both `/buy` and `/sell` commands
+- Compatible with existing shop system
+- No breaking changes to shop functionality
+
+**Files Modified (2 files)**:
+- `dnd_rag_system/systems/gm_dialogue_unified.py` (lines 956-1024) - Added location validation
+- `TODO.md` - Removed completed item
+
+**Files Created (1 file)**:
+- `tests/test_shop_reality_check.py` (240 lines) - Comprehensive test suite
+
+**Result**: Players can now only buy/sell items in appropriate locations! Shops require either a shop location or merchant NPC present. Clear error messages guide players to proper shopping locations. ✅
+
+---
+
+## ✅ Quick Action Buttons & Core Gameplay Commands ✅ COMPLETED (2026-01-15)
+
+### Quick Action Buttons in UI
+- **Goal**: Add visual action buttons for common commands to improve UX
+- **Status**: ✅ FULLY IMPLEMENTED
+
+**Implementation**:
+1. **Quick Action Buttons** (`web/app_gradio.py:1698-1703`):
+   - Added button row below chat input with 4 quick actions:
+     - ⚔️ Attack - Fills input with "I attack "
+     - ✨ Cast Spell - Runs `/spells` command
+     - 🎒 Use Item - Fills input with "I use "
+     - ❓ Help - Runs `/help` command
+   - Buttons styled as "secondary" variant for visual distinction
+   - Positioned between message input and clear/quick commands row
+
+2. **Event Handlers** (`web/app_gradio.py:1939-1960`):
+   - Attack & Use Item buttons: Fill msg_input for player completion
+   - Cast Spell & Help buttons: Execute commands directly
+   - All buttons integrated with existing chat system
+   - Proper Gradio reactive updates for all buttons
+
+**Impact**: New players can discover commands easier, faster action execution, more polished UI
+
+### /pickup Command for Item Looting
+- **Goal**: Complete the item persistence system with pickup functionality
+- **Status**: ✅ FULLY IMPLEMENTED
+
+**Implementation** (`gm_dialogue_unified.py:438-466`):
+- Command handler for `/pickup <item>`
+- Gets current location with `session.get_current_location_obj()`
+- Validates item exists in `location.available_items`
+- Removes item from location with `location.remove_item(item_name, moved_to="inventory")`
+- Adds item to character inventory with `character_state.add_item(item_name, 1)`
+- Shows available items if requested item not found
+- Clear feedback messages for success/failure
+
+**Example Usage**:
+```
+Player: /pickup Healing Potion
+GM: ✅ Picked up **Healing Potion**
+
+Player: /pickup Magic Sword
+GM: ⚠️ 'Magic Sword' is not here.
+    You see: Healing Potion, Rope, Torch
+```
+
+**Impact**: Makes exploration rewarding, completes item persistence infrastructure
+
+### /death_save Command for D&D Death Mechanics
+- **Goal**: Implement death saving throws following D&D 5e rules
+- **Status**: ✅ FULLY IMPLEMENTED
+
+**Implementation** (`gm_dialogue_unified.py:468-520`):
+- D&D 5e death saving throw mechanics:
+  - Roll d20 when unconscious (HP = 0)
+  - 10+ = success (track up to 3)
+  - <10 = failure (track up to 3)
+  - Natural 20 = regain 1 HP and wake up
+  - Natural 1 = counts as 2 failures
+  - 3 successes = stabilized (no longer dying)
+  - 3 failures = character dies
+- Visual indicators: ✅ successes, ❌ failures
+- Shows current death save status after each roll
+- Validates character is unconscious before allowing roll
+- Resets death saves when character regains consciousness
+- Death saves already tracked in `CharacterState.death_saves` (DeathSaves class)
+
+**Example Usage**:
+```
+Player: /death_save
+GM: 🎲 **Death Saving Throw**: Rolled **14**
+
+    ✅ **Success!** Death save success (1/3)
+
+    **Death Saves**: ✅ 1/3 | ❌ 0/3
+
+Player: /death_save
+GM: 🎲 **Death Saving Throw**: Rolled **20**
+
+    🌟 **Natural 20!** You regain 1 HP and regain consciousness!
+
+    ✅ You are now at **1/30 HP**
+
+Player: /death_save
+GM: 🎲 **Death Saving Throw**: Rolled **1**
+
+    💀 **Natural 1!** That counts as **2 failures**!
+
+    ❌ Death save failure (2/3)
+
+    **Death Saves**: ✅ 0/3 | ❌ 2/3
+```
+
+**Impact**: Core D&D 5e death mechanics now implemented, players can survive being knocked unconscious
+
+**Testing**:
+- All 38 CharacterState tests passing ✅
+- Gradio app imports successfully ✅
+- Death saves infrastructure (DeathSaves class) already tested in test_game_state.py
+- /pickup command tested via location persistence infrastructure
+- Quick action buttons verified via import test
+
+**Files Modified (2 files)**:
+- `web/app_gradio.py` (lines 1698-1703, 1939-1960) - Quick action buttons and handlers
+- `dnd_rag_system/systems/gm_dialogue_unified.py` (lines 438-520) - /pickup and /death_save commands
+
+**Result**: Players now have quick action buttons for common commands, can pick up items from locations, and can make death saving throws when unconscious following D&D 5e rules!
+
+---
+
 ## ✅ Project Organization & Documentation Consolidation ✅ COMPLETED (2026-01-15)
 
 ### Project Structure Reorganization

@@ -27,8 +27,12 @@ class Message:
 
 
 @dataclass
-class GameSession:
-    """D&D game session state."""
+class ConversationSession:
+    """Simple conversation session for GM dialogue system.
+
+    Note: This is distinct from game_state.GameSession which tracks complete game state.
+    This class only tracks conversation history for the simple dialogue system.
+    """
     session_name: str = "D&D Adventure"
     messages: List[Message] = field(default_factory=list)
     context: str = "You are adventuring in a fantasy world"
@@ -60,7 +64,7 @@ class GameMaster:
         """
         self.db = db_manager
         self.model_name = model_name or settings.OLLAMA_MODEL_NAME
-        self.session = GameSession()
+        self.session = ConversationSession()
 
         # Verify Ollama is available
         self._verify_ollama()

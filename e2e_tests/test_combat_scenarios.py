@@ -31,12 +31,12 @@ os.environ['GM_DEBUG'] = 'true'
 
 # DEPRECATED: Use selenium_helpers.wait_for_gradio instead
 # def wait_for_gradio(driver, timeout=30):
-    """Wait for Gradio interface to fully load."""
-    WebDriverWait(driver, timeout).until(
-        EC.presence_of_element_located((By.TAG_NAME, "gradio-app"))
-    )
-    time.sleep(2)
-
+#    """Wait for Gradio interface to fully load."""
+#    WebDriverWait(driver, timeout).until(
+#        EC.presence_of_element_located((By.TAG_NAME, "gradio-app"))
+#    )
+#    time.sleep(2)
+#
 
 
 # NOTE: This test file has been updated to import from selenium_helpers.py

@@ -2,11 +2,13 @@
 D&D Character Creator
 
 Interactive character creation system with RAG-powered lookups for:
-- Race selection and trait lookup
-- Class selection and feature lookup
+- Race selection and trait lookup (FROM ChromaDB)
+- Class selection and feature lookup (FROM ChromaDB)
 - Ability score generation
 - Equipment selection
 - Character sheet generation
+
+Uses constants to avoid magic strings.
 """
 
 import sys
@@ -20,6 +22,7 @@ from dataclasses import dataclass, field, asdict
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.config import settings
+from dnd_rag_system.constants import CharacterClasses, CharacterRaces
 
 
 @dataclass
@@ -220,25 +223,64 @@ class CharacterCreator:
             print(f"Placeholder: {race_name}s are playable characters in D&D 5e.")
 
     def _apply_race_traits(self):
-        """Apply racial traits to character."""
+        """Apply racial traits and ability bonuses using RAG."""
         race = self.character.race
-
-        # Placeholder racial bonuses (would come from RAG in production)
+        
+        # Try to get racial bonuses from RAG/SRD
+        try:
+            import chromadb
+            client = chromadb.PersistentClient(path='chromadb')
+            collection = client.get_collection('dnd5e_srd')
+            
+            results = collection.query(
+                query_texts=[f"{race} race ability score"],
+                n_results=1,
+                where={"$and": [{"type": {"$eq": "race"}}, {"name": {"$eq": race}}]}
+            )
+            
+            if results and results.get('metadatas') and results['metadatas'][0]:
+                metadata = results['metadatas'][0][0]
+                
+                # Extract bonus_* fields
+                bonuses = {}
+                for key, val in metadata.items():
+                    if key.startswith('bonus_'):
+                        ability = key.replace('bonus_', '')
+                        bonuses[ability] = val
+                
+                if bonuses:
+                    print(f"\n  ✓ Racial bonuses from SRD:")
+                    
+                    # Apply bonuses to character
+                    for ability, bonus in bonuses.items():
+                        current_val = getattr(self.character, ability)
+                        setattr(self.character, ability, current_val + bonus)
+                        print(f"    +{bonus} {ability.capitalize()} → {current_val + bonus}")
+                    
+                    self.character.race_traits.append(f"{race} racial traits")
+                    return
+        except Exception as e:
+            print(f"  ⚠️  Could not get racial bonuses from RAG: {e}")
+        
+        # Fallback to hardcoded if RAG fails
+        print(f"  ⚠️  Using fallback racial bonuses for {race}")
         race_bonuses = {
-            'Human': {'strength': 1, 'dexterity': 1, 'constitution': 1,
+            CharacterRaces.HUMAN: {'strength': 1, 'dexterity': 1, 'constitution': 1,
                      'intelligence': 1, 'wisdom': 1, 'charisma': 1},
-            'Elf': {'dexterity': 2},
-            'Dwarf': {'constitution': 2},
-            'Halfling': {'dexterity': 2},
-            'Dragonborn': {'strength': 2, 'charisma': 1},
-            'Gnome': {'intelligence': 2},
-            'Half-Elf': {'charisma': 2},
-            'Half-Orc': {'strength': 2, 'constitution': 1},
-            'Tiefling': {'charisma': 2, 'intelligence': 1}
+            CharacterRaces.ELF: {'dexterity': 2},
+            CharacterRaces.DWARF: {'constitution': 2},
+            CharacterRaces.HALFLING: {'dexterity': 2},
+            CharacterRaces.DRAGONBORN: {'strength': 2, 'charisma': 1},
+            CharacterRaces.GNOME: {'intelligence': 2},
+            CharacterRaces.HALF_ELF: {'charisma': 2},
+            CharacterRaces.HALF_ORC: {'strength': 2, 'constitution': 1},
+            CharacterRaces.TIEFLING: {'intelligence': 1, 'charisma': 2}
         }
 
         if race in race_bonuses:
             for ability, bonus in race_bonuses[race].items():
+                current_val = getattr(self.character, ability)
+                setattr(self.character, ability, current_val + bonus)
                 print(f"  +{bonus} {ability.title()}")
 
         self.character.race_traits.append(f"{race} racial traits")
@@ -305,18 +347,30 @@ class CharacterCreator:
             print(f"Loading {class_name} information...")
 
     def _apply_class_features(self):
-        """Apply starting class features."""
+        """Apply starting class features using SRD RAG data."""
         cls = self.character.character_class
-
-        # Add starting features
-        self.character.class_features.append(f"{cls} starting features")
-
-        # Add proficiencies (simplified)
-        self.character.proficiencies.extend([
-            f"{cls} weapon proficiencies",
-            f"{cls} armor proficiencies",
-            f"{cls} saving throws"
-        ])
+        
+        # Try to use RAG-powered enhancement if available
+        try:
+            from dnd_rag_system.systems.rag_character_enhancer import enhance_character_with_rag
+            
+            print(f"\n🔮 Auto-applying {cls} features from SRD...")
+            enhance_character_with_rag(self.character)
+            print("✓ Class features applied from official SRD data\n")
+            
+        except Exception as e:
+            # Fallback to basic features if RAG enhancement fails
+            print(f"⚠️  Using basic class features (SRD unavailable: {e})\n")
+            
+            # Add starting features (basic fallback)
+            self.character.class_features.append(f"{cls} starting features")
+            
+            # Add proficiencies (simplified)
+            self.character.proficiencies.extend([
+                f"{cls} weapon proficiencies",
+                f"{cls} armor proficiencies",
+                f"{cls} saving throws"
+            ])
 
     def _generate_ability_scores(self):
         """Generate ability scores."""
@@ -413,13 +467,13 @@ class CharacterCreator:
         cls = self.character.character_class
 
         print(f"\n{cls} starting equipment:")
-        if cls in ['Fighter', 'Paladin', 'Ranger']:
+        if cls in [CharacterClasses.FIGHTER, CharacterClasses.PALADIN, CharacterClasses.RANGER]:
             self.character.equipment = ["Longsword", "Shield", "Chainmail", "Backpack", "50 GP"]
-        elif cls in ['Wizard', 'Sorcerer', 'Warlock']:
+        elif cls in [CharacterClasses.WIZARD, CharacterClasses.SORCERER, CharacterClasses.WARLOCK]:
             self.character.equipment = ["Quarterstaff", "Spellbook", "Robes", "Component Pouch", "25 GP"]
-        elif cls in ['Rogue', 'Bard']:
+        elif cls in [CharacterClasses.ROGUE, CharacterClasses.BARD]:
             self.character.equipment = ["Shortsword", "Leather Armor", "Thieves' Tools", "Backpack", "40 GP"]
-        elif cls == 'Cleric':
+        elif cls == CharacterClasses.CLERIC:
             self.character.equipment = ["Mace", "Shield", "Chainmail", "Holy Symbol", "30 GP"]
         else:
             self.character.equipment = ["Basic gear", "50 GP"]
@@ -429,8 +483,16 @@ class CharacterCreator:
 
     def _is_spellcaster(self) -> bool:
         """Check if class is a spellcaster."""
-        spellcasting_classes = ['Wizard', 'Sorcerer', 'Warlock', 'Cleric',
-                               'Druid', 'Bard', 'Paladin', 'Ranger']
+        spellcasting_classes = [
+            CharacterClasses.WIZARD, 
+            CharacterClasses.SORCERER, 
+            CharacterClasses.WARLOCK, 
+            CharacterClasses.CLERIC,
+            CharacterClasses.DRUID, 
+            CharacterClasses.BARD, 
+            CharacterClasses.PALADIN, 
+            CharacterClasses.RANGER
+        ]
         return self.character.character_class in spellcasting_classes
 
     def _select_starting_spells(self):

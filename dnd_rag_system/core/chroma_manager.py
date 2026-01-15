@@ -2,6 +2,7 @@
 ChromaDB Manager
 
 Unified interface for managing ChromaDB collections and operations.
+Auto-ingests SRD data on first use.
 """
 
 import chromadb
@@ -55,10 +56,57 @@ class ChromaDBManager:
 
         # Cache for collections
         self._collections = {}
+        
+        # Auto-ingest SRD data if not present
+        self._ensure_srd_data()
 
         print(f"ChromaDB Manager initialized:")
         print(f"  Persist dir: {self.persist_dir}")
         print(f"  Embedding model: {self.embedding_model}")
+    
+    def _ensure_srd_data(self):
+        """Ensure SRD data is ingested (runs once on first use)."""
+        try:
+            # Check if SRD collection exists and has data
+            try:
+                srd_collection = self.client.get_collection("dnd5e_srd")
+                if srd_collection.count() > 0:
+                    return  # Already ingested
+            except:
+                pass  # Collection doesn't exist yet
+            
+            # Need to ingest SRD data
+            print("📚 First-time SRD setup: Parsing and ingesting D&D 5e data...")
+            
+            from pathlib import Path
+            srd_pdf = Path(__file__).parent.parent / "data" / "reference" / "SRD-OGL_V5.1.pdf"
+            
+            if not srd_pdf.exists():
+                print(f"⚠️  SRD PDF not found at {srd_pdf}, skipping SRD ingestion")
+                return
+            
+            # Run parser and ingestion
+            import subprocess
+            scripts_dir = Path(__file__).parent.parent.parent / "scripts"
+            
+            # Parse PDF
+            parse_script = scripts_dir / "parse_srd_pdf.py"
+            if parse_script.exists():
+                print("  ⏳ Parsing SRD PDF...")
+                subprocess.run([sys.executable, str(parse_script)], 
+                             capture_output=True, check=True)
+            
+            # Ingest to ChromaDB
+            ingest_script = scripts_dir / "ingest_srd_to_chromadb.py"
+            if ingest_script.exists():
+                print("  ⏳ Ingesting to ChromaDB...")
+                subprocess.run([sys.executable, str(ingest_script)], 
+                             capture_output=True, check=True)
+                print("  ✅ SRD data ready!")
+            
+        except Exception as e:
+            print(f"⚠️  Could not auto-ingest SRD data: {e}")
+            print("   Character creation will use basic fallback features")
 
     def get_or_create_collection(
         self,

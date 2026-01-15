@@ -104,19 +104,33 @@ def load_character(driver, char_name="Thorin"):
     
     # Click to open dropdown
     char_dropdown.click()
-    time.sleep(3)  # Wait for dropdown animation and options to populate
+    time.sleep(4)  # Wait longer for dropdown animation and options to populate
     
     # Find and click the character option
     options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
     print(f"   Found {len(options)} options")
-    
+
     # Wait longer if options are empty - Gradio needs time to populate
+    # CRITICAL: Options may exist but have empty text, so we need to wait for text content
     retry_count = 0
-    while retry_count < 3 and (not options or not any(opt.text.strip() for opt in options)):
-        print(f"   Waiting for options to populate (attempt {retry_count + 1})...")
-        time.sleep(2)
+    max_retries = 8  # Increased from 5 - Gradio can be very slow
+    while retry_count < max_retries:
         options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
+        # Check if we have at least one option with non-empty text
+        valid_options = [opt for opt in options if opt.text.strip()]
+        if valid_options:
+            print(f"   ✅ Found {len(valid_options)} valid options")
+            break
+        print(f"   Waiting for options to populate (attempt {retry_count + 1}/{max_retries})...")
+        time.sleep(4)  # Increased from 3 seconds - Gradio needs more time
         retry_count += 1
+
+    # Final check - if still no valid options after retries, this is an error
+    options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
+    if not any(opt.text.strip() for opt in options):
+        print(f"   ❌ Options still empty after {max_retries} retries")
+        driver.save_screenshot('/tmp/dropdown_empty_options.png')
+        raise Exception("Dropdown options never populated - check screenshot at /tmp/dropdown_empty_options.png")
     
     # Debug: print what's actually in the options
     for i, opt in enumerate(options):
@@ -202,19 +216,36 @@ def select_dropdown_option(driver, aria_label, option_text, partial_match=True):
 
     # Click to open dropdown
     dropdown.click()
-    time.sleep(2)  # Wait for dropdown animation
+    time.sleep(4)  # Wait longer for dropdown animation and population
 
     # Find options
     options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
     print(f"   Found {len(options)} options")
 
     # Wait for options to populate if needed
+    # CRITICAL: Options may exist but have empty text, so we need to wait for text content
     retry_count = 0
-    while retry_count < 3 and (not options or not any(opt.text.strip() for opt in options)):
-        print(f"   Waiting for options to populate (attempt {retry_count + 1})...")
-        time.sleep(2)
+    max_retries = 8  # Increased from 5 - Gradio can be very slow
+    while retry_count < max_retries:
         options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
+        # Check if we have at least one option with non-empty text
+        valid_options = [opt for opt in options if opt.text.strip()]
+        if valid_options:
+            print(f"   ✅ Found {len(valid_options)} valid options")
+            break
+        print(f"   Waiting for options to populate (attempt {retry_count + 1}/{max_retries})...")
+        time.sleep(4)  # Increased from 3 seconds - Gradio needs more time
         retry_count += 1
+
+    # Final check - if still no valid options after retries, this is an error
+    options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
+    if not any(opt.text.strip() for opt in options):
+        print(f"   ❌ Options still empty after {max_retries} retries")
+        driver.save_screenshot(f'/tmp/dropdown_{aria_label.replace(" ", "_")}_empty_options.png')
+        raise Exception(
+            f"Dropdown '{aria_label}' options never populated - "
+            f"check screenshot at /tmp/dropdown_{aria_label.replace(' ', '_')}_empty_options.png"
+        )
 
     # Debug: print available options
     available = []

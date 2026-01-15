@@ -4,73 +4,7 @@
 
 ---
 
-## 🔥 HIGH PRIORITY - QUICK WINS (Immediate Impact)
-
-### Fix NPC Cleanup Bug ⚡ (5 min)
-**CRITICAL BUG** - Dead enemies remain targetable after combat
-- **File**: `combat_manager.py:551-574`
-- **Problem**: `end_combat()` clears `npc_monsters` but not `npcs_present` list
-- **Impact**: Players can target/interact with corpses, breaks immersion
-- **Fix**: Remove dead NPCs from `session.npcs_present` when combat ends
-
-### Add Spell Slot Visualization 🎨 (30 min)
-**HIGH VISUAL IMPACT** - Show spell resources at a glance
-- **File**: `app_gradio.py:600-649` (format_character_sheet)
-- **Add**: Visual spell slot tracker to character sheet sidebar
-  ```
-  Level 1: ⬛⬛⬜⬜ (2/4)
-  Level 2: ⬛⬜⬜ (1/3)
-  Level 3: ⬜⬜ (0/2)
-  ```
-- **Update**: Real-time as spells are cast
-- **Impact**: Better resource management for spellcasters, looks professional
-
-### Show Temp HP in Character Sheet ⚡ (10 min)
-**MISSING INFO** - Temp HP tracked but invisible
-- **File**: `app_gradio.py:620-621`
-- **Change**: `HP: 28/30` → `HP: 28/30 (+5 temp HP)`
-- **Impact**: Players see their damage shield
-
-### Add Death Save Display ⚡ (15 min)
-**CORE MECHANIC VISIBILITY** - Death saves exist but hidden
-- **File**: `app_gradio.py:640` (after inventory)
-- **Add**: Show when unconscious:
-  ```
-  ### Death Saves
-  - Successes: ✅✅⬜
-  - Failures: ❌⬜⬜
-  *Make a death saving throw each turn with `/death_save`*
-  ```
-- **Impact**: Players know their survival status
-
-### Create High-Level Wizard Character 🧙 (20 min)
-**SHOWCASE FEATURE** - Demo the spell system with a powerful caster
-- **Character**: Level 10+ Wizard with extensive spell list
-- **Features**:
-  - High HP pool (doesn't die easily)
-  - Full spell progression (1st-5th level spells)
-  - Signature spells: Fireball, Lightning Bolt, Shield, Counterspell
-  - Good stats (INT 18+, CON 14+)
-- **Purpose**: Show off RAG spell lookup and slot management
-- **Save**: As `characters/archmage.json` for quick loading
-
----
-
 ## 🚨 HIGH PRIORITY - Core Mechanics
-
-### Implement Death Saving Throws (2 hours)
-**MISSING CORE D&D MECHANIC** - Infrastructure exists but no command
-- **Current**: Warning shows `/death_save` but command doesn't exist
-- **Has**: `DeathSaves` class in `game_state.py` already implemented
-- **Need**:
-  1. Add `/death_save` command handler in `gm_dialogue_unified.py`
-  2. Roll d20: 10+ = success, <10 = failure
-  3. Track 0-3 successes/failures
-  4. Auto-death at 3 failures
-  5. Auto-stabilize at 3 successes
-  6. Critical hit (nat 20) = regain 1 HP
-  7. Critical fail (nat 1) = 2 failures
-- **Impact**: Core D&D rules enforcement
 
 ### Party Member Interactions
 **STATUS: PARTIALLY IMPLEMENTED** 🚧
@@ -102,20 +36,6 @@
   - Strategy discussions
   - Roleplaying between characters (not mechanically enforced)
 
-### Integrate Shop Reality Check
-- **Problem**: Currently players can use `/buy` and `/sell` anywhere, even in a dragon's lair!
-- **Solution**: Validate shop location before allowing transactions
-- **Implementation**:
-  - Check if current location is a shop (`location.has_shop = True`)
-  - OR check if a merchant/shopkeeper NPC is present in `npcs_present`
-  - Reject transactions with message: "There's no shop here! You're in a dragon's lair, not a marketplace!"
-- **Examples**:
-  - ✅ Valid: Player in "Market Square" (has_shop=True) → `/buy` works
-  - ✅ Valid: "Greta the Merchant" in `npcs_present` → `/buy` works
-  - ❌ Invalid: Player in "Dragon's Lair" → `/buy` rejected
-  - ❌ Invalid: No merchant NPC present → `/buy` rejected
-- **Integration Point**: Add shop location validation in `ShopSystem.attempt_purchase()` and `attempt_sale()`
-
 ---
 
 ## 📚 MEDIUM PRIORITY - UX & Polish
@@ -144,32 +64,6 @@
   - Unconscious/dead status clearly marked
   - Conditions (poisoned, blessed, etc.)
 - **Impact**: Tactical party coordination possible
-
-### Quick Action Buttons (20 min)
-**FASTER ACTIONS** - New players discover commands easier
-- **File**: `app_gradio.py:1673` (after msg_input)
-- **Add**: Button row below chat input:
-  - `⚔️ Attack` → fills "I attack "
-  - `✨ Cast Spell` → runs "/spells"
-  - `🎒 Use Item` → fills "I use "
-  - `❓ Help` → runs "/help"
-- **Impact**: UI feels more polished, better UX
-
-### Implement `/pickup` Command (30 min)
-**COMPLETE LOOT SYSTEM** - Infrastructure exists, just needs command
-- **File**: `gm_dialogue_unified.py` (add command handler)
-- **Has**: `location.available_items` and `location.moved_items` already tracked
-- **Add**:
-  ```python
-  elif lower_input.startswith('/pickup '):
-      item_name = player_input[8:].strip()
-      current_loc = self.session.get_current_location_obj()
-      if current_loc and current_loc.has_item(item_name):
-          current_loc.remove_item(item_name, moved_to="inventory")
-          self.session.character_state.add_item(item_name, 1)
-          return f"✅ Picked up {item_name}"
-  ```
-- **Impact**: Makes exploration rewarding, completes item persistence
 
 ### Quest Tracker UI (1 day)
 **GAME STRUCTURE** - Give players clear objectives
@@ -232,13 +126,18 @@
 
 ## 🧹 CODE CLEANLINESS (Refactoring)
 
-### Delete Duplicate GameSession Class (30 min)
-**CRITICAL CLEANUP** - Two conflicting classes exist
+### ✅ Rename GameSession to ConversationSession - COMPLETED (2026-01-15)
+**NAMING CLARITY** - Resolved naming conflict between two different session classes
 - **Files**:
-  - Old: `gm_dialogue.py:30-44` (4 fields, simple)
-  - New: `game_state.py:1386-1713` (20+ fields, comprehensive)
-- **Problem**: Wrong import causes subtle bugs
-- **Fix**: Delete old class, update all imports to use `game_state.GameSession`
+  - Simple dialogue system: `gm_dialogue.py:30-47` (ConversationSession - tracks LLM conversation)
+  - Full game system: `game_state.py:1386-1713` (GameSession - tracks complete D&D game state)
+- **Analysis**: These are NOT duplicates - they serve different purposes
+  - `ConversationSession`: Conversation history for simple RAG dialogue system (used by 2 scripts)
+  - `GameSession`: Comprehensive D&D game state (used by web app and unified system)
+- **Fix Applied**: Renamed `gm_dialogue.py`'s `GameSession` to `ConversationSession`
+  - Added clarifying docstring explaining distinction from game_state.GameSession
+  - Verified backward compatibility (scripts don't import it directly)
+- **Impact**: Eliminates naming confusion, clarifies architecture
 
 ### Refactor GameMaster God Object (2-3 days)
 **ARCHITECTURE** - 1400+ line class doing everything
@@ -251,20 +150,37 @@
   - Keep GameMaster as thin coordinator
 - **Impact**: Easier testing, better maintainability
 
-### Deduplicate Character Sheet Formatting (30 min)
-**CODE DUPLICATION** - 90% identical functions
+### Deduplicate Character Sheet Formatting
+**CODE DUPLICATION** - 80-90% identical functions
 - **Files**: `app_gradio.py`
-  - `format_character_sheet()` (lines 600-649)
-  - `format_character_sheet_for_char()` (lines 1527-1569)
-- **Fix**: Extract common logic to `_format_sheet_core()`
+  - `format_character_sheet()` (lines 600-674) - Single character mode
+  - `format_character_sheet_for_char()` (lines 1552-1568) - Party mode
+- **Differences**:
+  - Data source: `gm.session.character_state` vs `party.get_character()`
+  - Features: First includes gold, temp HP, death saves, spell slots; second is simpler
+- **Fix**: Extract common logic to `_format_sheet_core(char, char_state, show_extras=True)`
+- **Complexity**: Moderate - requires careful handling of different data sources
 - **Impact**: Single point for bug fixes and improvements
+- **Status**: Identified but deferred (larger than 30 min estimate)
 
-### Extract Magic Strings to Constants (2 hours)
+---
+
+## ✅ COMPLETED TASKS
+
+### Extract Magic Strings to Constants ✅ DONE (2026-01-15)
 **MAINTAINABILITY** - Commands and keywords hardcoded everywhere
-- **Current**:
-  ```python
-  if cmd == '/help':  # Magic string
-  if 'goblin' in lower_input:  # Magic string
+- **✅ Created**: `dnd_rag_system/constants.py` with comprehensive constant classes:
+  - `Commands`: All slash commands (`/help`, `/attack`, `/cast`, etc.)
+  - `ActionKeywords`: Intent detection keywords (attack, spell, steal, etc.)
+  - `ItemEffects`: Magic item effect types
+  - `EquipmentSlots`: Character equipment locations
+  - `LocationTypes`: World location categories
+  - `DamageTypes`, `Conditions`, `CharacterClasses`, `CharacterRaces`
+- **✅ Refactored**: 
+  - `gm_dialogue_unified.py`: Using `Commands` constants
+  - `action_validator.py`: Using `ActionKeywords` constants
+- **✅ Tests**: `tests/test_constants.py` - 30 passing tests
+- **Impact**: Typos now caught at import time, easier refactoring, IDE autocomplete
   ```
 - **Fix**: Create constants file:
   ```python
@@ -279,7 +195,34 @@
 
 ## 📚 LOWER PRIORITY - Data Quality
 
-### RAG Data Quality Improvements
+### ✅ RAG Data Quality Improvements - COMPLETED (2026-01-15)
+
+#### ✅ Parse SRD-OGL_V5.1.pdf and Ingest to ChromaDB
+**OFFICIAL D&D 5E RULES** - Use authoritative SRD data instead of hardcoded approximations
+- **✅ Created**: `scripts/parse_srd_pdf.py` (332 lines)
+  - Extracts 12 classes with hit dice, proficiencies, saving throws
+  - Extracts 24+ spells with level, school, descriptions
+  - Extracts 9 races with traits
+  - Outputs to `dnd_rag_system/data/extracted/srd/` as JSON
+- **✅ Created**: `scripts/ingest_srd_to_chromadb.py` (137 lines)
+  - Ingests parsed data into ChromaDB collection `dnd5e_srd`
+  - 45+ documents with structured metadata
+  - Queryable for character creation and gameplay
+- **✅ Created**: `dnd_rag_system/systems/rag_character_enhancer.py` (322 lines)
+  - Auto-applies class features during character creation
+  - Sets correct hit dice (Barbarian: d12, Wizard: d6, etc.)
+  - Applies proficiencies (armor, weapons, tools, saving throws)
+  - Adds class abilities by level
+  - Sets spell slots for caster classes (full/half/pact magic)
+  - Looks up and suggests appropriate spells from RAG database
+- **✅ Tests**: `tests/test_rag_character_enhancer.py` - 16 passing tests
+- **✅ Documentation**: `docs/SRD_RAG_INTEGRATION.md` - Complete implementation guide
+- **✅ Dependencies**: Added `PyPDF2>=3.0.0` to `requirements.txt`
+- **Impact**: 
+  - Accurate character creation using official D&D 5e SRD rules
+  - Reduces manual errors and LLM hallucinations
+  - Single source of truth for class features
+  - Easy to update if new SRD versions released
 
 #### Fix Racial Data in ChromaDB
 - Current problem: All races showing same ability scores (CHA +1, DEX +1) due to OCR errors

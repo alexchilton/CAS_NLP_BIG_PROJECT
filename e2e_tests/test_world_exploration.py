@@ -59,14 +59,14 @@ def create_driver(headless=False):
 
 # DEPRECATED: Use selenium_helpers.wait_for_gradio instead
 # def wait_for_gradio(driver, timeout=30):
-    """Wait for Gradio interface to load."""
-    print("⏳ Waiting for Gradio...")
-    WebDriverWait(driver, timeout).until(
-        EC.presence_of_element_located((By.TAG_NAME, "gradio-app"))
-    )
-    time.sleep(2)
-    print("✅ Gradio loaded")
-
+#    """Wait for Gradio interface to load."""
+#    print("⏳ Waiting for Gradio...")
+#    WebDriverWait(driver, timeout).until(
+#        EC.presence_of_element_located((By.TAG_NAME, "gradio-app"))
+#    )
+#    time.sleep(2)
+#    print("✅ Gradio loaded")
+#
 
 def find_chat_input(driver):
     """Find the chat input textarea."""
