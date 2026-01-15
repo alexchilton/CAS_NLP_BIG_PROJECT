@@ -6,15 +6,29 @@ Implements hybrid entity tracking:
 - Allows LLM to improvise environmental flavor
 - Prevents hallucination of non-existent targets
 - Encourages NPC conversation with smart introduction logic
+
+Supports two intent classification modes:
+- Keyword-based: Fast, reliable, limited to predefined patterns
+- LLM-based (default): Handles creative phrasings, uses Qwen2.5-3B with automatic fallback
 """
 
 from dataclasses import dataclass
-from typing import Optional, List, Tuple, Dict
+from typing import Optional, List, Tuple, Dict, Any
 import re
 from enum import Enum
 import logging
+import json
+import subprocess
 
 logger = logging.getLogger(__name__)
+
+# Import config for default classifier type
+try:
+    from dnd_rag_system.config import IntentClassifierConfig
+    DEFAULT_CLASSIFIER = IntentClassifierConfig.DEFAULT_CLASSIFIER
+except ImportError:
+    # Fallback if config not available
+    DEFAULT_CLASSIFIER = "llm"
 
 
 class ActionType(Enum):
@@ -97,9 +111,29 @@ class ActionValidator:
         'snatch', 'sneak', 'pickpocket'
     ]
 
-    def __init__(self, debug: bool = False):
+    def __init__(
+        self,
+        debug: bool = False,
+        classifier_type: str = None,  # "keyword" or "llm" (defaults to config)
+        compare_classifiers: bool = False   # Run both and log differences
+    ):
+        """
+        Initialize action validator.
+
+        Args:
+            debug: Enable debug logging
+            classifier_type: Intent classifier to use ("keyword" or "llm").
+                           If None, uses DEFAULT_CLASSIFIER from config (currently "llm")
+            compare_classifiers: If True, runs both classifiers and logs differences
+        """
         self.debug = debug
         self.party_character_names = []  # List of party member names for parsing
+        self.classifier_type = classifier_type if classifier_type is not None else DEFAULT_CLASSIFIER
+        self.compare_classifiers = compare_classifiers
+
+        # LLM settings (reuse from mechanics_extractor)
+        self.llm_model = "qwen2.5:3b"
+        self.llm_timeout = 10
 
     def set_party_characters(self, character_names: List[str]):
         """
@@ -151,6 +185,47 @@ class ActionValidator:
     def analyze_intent(self, user_input: str) -> ActionIntent:
         """
         Parse user input to determine action type, target, and resources.
+
+        Dispatcher method that routes to keyword-based or LLM-based classifier.
+
+        Args:
+            user_input: Raw player input
+
+        Returns:
+            ActionIntent with parsed information
+        """
+        # Comparison mode: run both classifiers and log differences
+        if self.compare_classifiers:
+            keyword_result = self._analyze_intent_keyword(user_input)
+            llm_result = self._analyze_intent_llm(user_input)
+
+            # Log differences for analysis
+            if keyword_result.action_type != llm_result.action_type:
+                logger.warning(
+                    f"🔀 CLASSIFIER MISMATCH for '{user_input}':\n"
+                    f"  Keyword: {keyword_result}\n"
+                    f"  LLM:     {llm_result}"
+                )
+            elif self.debug:
+                logger.debug(f"✅ Both classifiers agree: {keyword_result.action_type.value}")
+
+            # Return LLM result in comparison mode
+            return llm_result
+
+        # LLM-based classification
+        elif self.classifier_type == "llm":
+            return self._analyze_intent_llm(user_input)
+
+        # Default: keyword-based (preserves existing behavior)
+        else:
+            return self._analyze_intent_keyword(user_input)
+
+    def _analyze_intent_keyword(self, user_input: str) -> ActionIntent:
+        """
+        Keyword-based intent classification (original implementation).
+
+        Uses predefined keyword lists to determine action type.
+        Fast but brittle - misses creative phrasings.
 
         Args:
             user_input: Raw player input
@@ -861,6 +936,204 @@ class ActionValidator:
                 return entity
 
         return None
+
+    # ============================================================================
+    # LLM-Based Intent Classification
+    # ============================================================================
+
+    def _analyze_intent_llm(self, user_input: str) -> ActionIntent:
+        """
+        LLM-based intent classification using Qwen2.5-3B.
+
+        Uses natural language understanding to classify intent
+        and extract entities. More flexible than keyword matching.
+
+        Args:
+            user_input: Raw player input
+
+        Returns:
+            ActionIntent with parsed information
+        """
+        prompt = self._build_intent_prompt(user_input)
+
+        try:
+            raw_response = self._query_ollama_intent(prompt)
+
+            if self.debug:
+                logger.debug(f"🤖 LLM Intent Response: {raw_response[:200]}...")
+
+            # Parse JSON response
+            intent_data = self._parse_intent_response(raw_response)
+
+            # Convert to ActionIntent
+            action_type_str = intent_data.get("action_type", "exploration")
+            try:
+                action_type = ActionType(action_type_str)
+            except ValueError:
+                logger.warning(f"Unknown action type '{action_type_str}', defaulting to exploration")
+                action_type = ActionType.EXPLORATION
+
+            return ActionIntent(
+                action_type=action_type,
+                target=intent_data.get("target"),
+                resource=intent_data.get("resource"),
+                raw_input=user_input
+            )
+
+        except Exception as e:
+            logger.error(f"❌ LLM intent classification failed: {e}")
+            # FALLBACK to keyword-based on error
+            logger.warning("⚠️ Falling back to keyword-based classification")
+            return self._analyze_intent_keyword(user_input)
+
+    def _build_intent_prompt(self, user_input: str) -> str:
+        """Build prompt for LLM intent classification."""
+
+        party_context = ""
+        if self.party_character_names:
+            party_context = f"\nPARTY MEMBERS: {', '.join(self.party_character_names)}\n"
+
+        prompt = f"""Analyze this D&D player action and extract the intent. Output ONLY valid JSON.
+
+PLAYER ACTION:
+{user_input}
+{party_context}
+
+Classify the action and extract entities. Output as JSON with this exact schema:
+{{
+  "action_type": "ACTION_TYPE",
+  "target": "TARGET_NAME_OR_NULL",
+  "resource": "RESOURCE_NAME_OR_NULL"
+}}
+
+ACTION_TYPE must be one of:
+- "combat" - Attacking, hitting, striking with weapons
+- "spell_cast" - Casting spells or using magic
+- "conversation" - Talking to NPCs, asking questions
+- "item_use" - Using, drinking, equipping YOUR OWN items
+- "exploration" - Looking around, searching, moving
+- "steal" - Stealing, swiping, pocketing, pickpocketing items (TAKING without permission)
+- "unknown" - Cannot determine
+
+**CRITICAL CLASSIFICATION RULE**:
+The ACTION VERB determines the type, NOT the item:
+- If verb = "swipe", "pocket", "steal", "pickpocket" → ALWAYS "steal"
+- If verb = "use", "drink", "equip", "consume" → ALWAYS "item_use"
+Example: "swipe the potion" = "steal" (not "item_use")
+
+ENTITY EXTRACTION:
+- "target": Who/what is being targeted (enemy name, NPC name, party member name)
+  - For combat: "I attack the goblin" → "goblin"
+  - For conversation: "I talk to the bartender" → "bartender"
+  - For spells: "I cast Fire Bolt at the orc" → "orc"
+  - For self-actions: null
+
+- "resource": Item, spell, or weapon being used
+  - For spells: "I cast Fireball" → "Fireball"
+  - For items: "I drink a healing potion" → "healing potion"
+  - For combat: "I shoot my bow" → "bow"
+  - If not specified: null
+
+EXAMPLES:
+1. "I loose an arrow at the dragon"
+   → {{"action_type": "combat", "target": "dragon", "resource": "arrow"}}
+
+2. "Thorin talks to the innkeeper about rumors"
+   → {{"action_type": "conversation", "target": "innkeeper", "resource": null}}
+
+3. "I cast Cure Wounds on Gimli"
+   → {{"action_type": "spell_cast", "target": "Gimli", "resource": "Cure Wounds"}}
+
+4. "I nock and release my bowstring at the goblin"
+   → {{"action_type": "combat", "target": "goblin", "resource": "bow"}}
+
+5. "I look around the room"
+   → {{"action_type": "exploration", "target": null, "resource": null}}
+
+6. "I swipe the ruby from the pedestal"
+   → {{"action_type": "steal", "target": null, "resource": "ruby"}}
+
+7. "swipe the gold"
+   → {{"action_type": "steal", "target": null, "resource": "gold"}}
+
+8. "swipe the potion"
+   → {{"action_type": "steal", "target": null, "resource": "potion"}}
+
+9. "pocket the ring"
+   → {{"action_type": "steal", "target": null, "resource": "ring"}}
+
+10. "Let fly with my longbow towards the orc"
+   → {{"action_type": "combat", "target": "orc", "resource": "longbow"}}
+
+RULES:
+- Be permissive with creative phrasings
+- Extract exact names from the input
+- Use null for missing entities
+- Preserve original capitalization for names
+- **IMPORTANT**: "swipe", "pocket", "steal", "pickpocket" = ALWAYS "steal" action (taking without permission)
+- **IMPORTANT**: "use", "drink", "equip" = "item_use" action (using your own items)
+- If the verb is a stealing verb, classify as "steal" regardless of the item type
+
+JSON:"""
+
+        return prompt
+
+    def _query_ollama_intent(self, prompt: str) -> str:
+        """Query Ollama with the intent classification prompt."""
+        try:
+            result = subprocess.run(
+                ['ollama', 'run', self.llm_model, prompt],
+                capture_output=True,
+                text=True,
+                timeout=self.llm_timeout
+            )
+
+            if result.returncode != 0:
+                raise Exception(f"Ollama error: {result.stderr}")
+
+            return result.stdout.strip()
+
+        except subprocess.TimeoutExpired:
+            raise Exception(f"Ollama query timed out after {self.llm_timeout}s")
+        except FileNotFoundError:
+            raise Exception("Ollama not found. Install from https://ollama.ai")
+        except Exception as e:
+            raise Exception(f"Ollama query failed: {e}")
+
+    def _parse_intent_response(self, raw_response: str) -> Dict[str, Any]:
+        """Parse LLM response into intent dictionary."""
+        # Clean response (remove markdown code blocks)
+        response = raw_response.strip()
+
+        if response.startswith("```json"):
+            response = response[7:]
+        elif response.startswith("```"):
+            response = response[3:]
+
+        if response.endswith("```"):
+            response = response[:-3]
+
+        response = response.strip()
+
+        # Find JSON in response
+        start_idx = response.find("{")
+        end_idx = response.rfind("}") + 1
+
+        if start_idx >= 0 and end_idx > start_idx:
+            response = response[start_idx:end_idx]
+
+        try:
+            data = json.loads(response)
+            # Ensure null values are Python None
+            if data.get("target") == "null":
+                data["target"] = None
+            if data.get("resource") == "null":
+                data["resource"] = None
+            return data
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse intent JSON: {e}")
+            logger.error(f"Response was: {response}")
+            raise
 
 
 def create_context_aware_prompt(validation: ValidationReport, base_context: str) -> str:

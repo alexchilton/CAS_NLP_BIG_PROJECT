@@ -2,7 +2,7 @@ import os
 import re
 
 # --- CONFIGURATION ---
-SOURCE_FILE = 'extracted_monsters.txt'
+SOURCE_FILE = 'dnd_rag_system/data/extracted/extracted_monsters.txt'
 OUTPUT_DIR = 'data/monsters_raw'
 
 # --- HELPER FUNCTIONS ---

@@ -130,8 +130,16 @@ class TestPlayerAttackDamage:
     def gm_with_combat(self):
         """GM with character and goblin in combat"""
         mock_db = MagicMock()
+
+        # Mock the database query to return proper goblin data with CR
+        # The search method returns: {'documents': [[doc]], 'metadatas': [[metadata]]}
+        mock_db.search.return_value = {
+            'documents': [['Goblin - Small humanoid, Challenge Rating: 1/4']],
+            'metadatas': [[{'cr': 0.25, 'source': 'monsters'}]]
+        }
+
         gm = GameMaster(mock_db)
-        
+
         # Character
         char = Character(
             name="Thorin",
@@ -142,10 +150,10 @@ class TestPlayerAttackDamage:
             equipment=["Longsword", "Shield"]
         )
         char_state = CharacterState(character_name="Thorin", max_hp=28, current_hp=28)
-        
+
         gm.session.base_character_stats["Thorin"] = char
         gm.session.character_state = char_state
-        
+
         # Goblin enemy
         goblin = MonsterInstance(
             name="Goblin",
@@ -163,7 +171,7 @@ class TestPlayerAttackDamage:
         )
         gm.combat_manager.npc_monsters["Goblin"] = goblin
         gm.session.npcs_present = ["Goblin"]
-        
+
         return gm
 
     def test_player_attack_damages_npc(self, gm_with_combat):
