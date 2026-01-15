@@ -1,0 +1,38 @@
+{
+  "name": "test",
+  "race": "Elf",
+  "character_class": "Wizard",
+  "level": 10,
+  "strength": 6,
+  "dexterity": 16,
+  "constitution": 7,
+  "intelligence": 17,
+  "wisdom": 8,
+  "charisma": 10,
+  "hit_points": 4,
+  "armor_class": 13,
+  "proficiency_bonus": 2,
+  "background": "",
+  "alignment": "True Neutral",
+  "race_traits": [],
+  "class_features": [
+    "Spellcasting",
+    "Arcane Recovery",
+    "(SRD-enhanced)"
+  ],
+  "proficiencies": [
+    "Armor: None Weapons: Daggers, darts, slings, quarterstaffs, light crossbows Tools: None Saving Throws: Intelligence, Wisdom Skills: Choose two from Arcana, History, Insight, Investigation, Medicine, and Religion Equipment You start with the following equipment, in addition to the equipment granted by your background: \u2022 (a) a quarterstaff or (b) a dagger \u2022 (a) a component pouch or (b) an arcane focus \u2022 (a) a scholar\u2019s pack or (b) an explorer\u2019s pack \u2022 A spellbook The Wizard Proficiency Cantrips \u2014Spell Slots per Spell Level\u2014 Level Bonus Features Known 1st 2nd 3rd 4th 5th 6th 7th 8th 9th 1st +2 Spellcasting, Arcane Recovery 3 2 \u008a \u008a \u008a \u008a \u008a \u008a \u008a \u008a 2nd +2 Arcane Tradition 3 3 \u008a \u008a \u008a \u008a \u008a \u008a \u008a \u008a 3rd +2 \u008a 3 4 2 \u008a \u008a \u008a \u008a \u008a \u008a \u008a 4th +2 Ability Score Improvement 4 4 3 \u008a \u008a \u008a \u008a \u008a \u008a \u008a 5th +3 \u008a 4 4 3 2 \u008a \u008a \u008a \u008a \u008a \u008a 6th +3 Arcane Tradition feature 4 4 3 3 \u008a \u008a \u008a \u008a \u008a \u008a 7th +3 \u008a 4 4 3 3 1 \u008a \u008a \u008a \u008a \u008a 8th +3 Ability Score Improvement 4 4 3 3 2 \u008a \u008a \u008a \u008a \u008a 9th +4 \u008a 4 4 3 3 3 1 \u008a \u008a \u008a \u008a 10th +4 Arcane Tradition feature 5 4 3 3 3 2 \u008a \u008a \u008a \u008a 11th +4 \u008a 5 4 3 3 3 2 1 \u008a \u008a \u008a 12th +4 Ability Score Improvement 5 4 3 3 3 2 1 \u008a \u008a \u008a 13th +5 \u008a 5 4 3 3 3 2 1 1 \u008a \u008a 14th +5 Arcane Tradition feature 5 4 3 3 3 2 1 1 \u008a \u008a 15th +5 \u008a 5 4 3 3 3 2 1 1 1 \u008a 16th +5 Ability Score Improvement 5 4 3 3 3 2 1 1 1 \u008a 17th +6 \u008a 5 4 3 3 3 2 1 1 1 1 18th +6 Spell Mastery 5 4 3 3 3 3 1 1 1 1 19th +6 Ability Score Improvement 5 4 3 3 3 3 2 1 1 1 20th +6 Signature Spell 5 4 3 3 3 3 2 2 1 1 Spellcasting As a student of arcane magic, you have a spellbook containing spells that show the first glimmerings of your true power. Cantrips At 1st level, you know three cantrips of your choice from the wizard spell list. You learn additional wizard cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Wizard table. Spellbook At 1st level, you have a spellbook containing six 1st-\u00ad\u2010\u2011level wizard spells of your choice. Your spellbook is the repository of the wizard spells you know, except your cantrips, which are fixed in your mind.",
+    "Weapons: Daggers, darts, slings, quarterstaffs, light crossbows Tools: None Saving Throws: Intelligence, Wisdom Skills: Choose two from Arcana, History, Insight, Investigation, Medicine, and Religion Equipment You start with the following equipment, in addition to the equipment granted by your background: \u2022 (a) a quarterstaff or (b) a dagger \u2022 (a) a component pouch or (b) an arcane focus \u2022 (a) a scholar\u2019s pack or (b) an explorer\u2019s pack \u2022 A spellbook The Wizard Proficiency Cantrips \u2014Spell Slots per Spell Level\u2014 Level Bonus Features Known 1st 2nd 3rd 4th 5th 6th 7th 8th 9th 1st +2 Spellcasting, Arcane Recovery 3 2 \u008a \u008a \u008a \u008a \u008a \u008a \u008a \u008a 2nd +2 Arcane Tradition 3 3 \u008a \u008a \u008a \u008a \u008a \u008a \u008a \u008a 3rd +2 \u008a 3 4 2 \u008a \u008a \u008a \u008a \u008a \u008a \u008a 4th +2 Ability Score Improvement 4 4 3 \u008a \u008a \u008a \u008a \u008a \u008a \u008a 5th +3 \u008a 4 4 3 2 \u008a \u008a \u008a \u008a \u008a \u008a 6th +3 Arcane Tradition feature 4 4 3 3 \u008a \u008a \u008a \u008a \u008a \u008a 7th +3 \u008a 4 4 3 3 1 \u008a \u008a \u008a \u008a \u008a 8th +3 Ability Score Improvement 4 4 3 3 2 \u008a \u008a \u008a \u008a \u008a 9th +4 \u008a 4 4 3 3 3 1 \u008a \u008a \u008a \u008a 10th +4 Arcane Tradition feature 5 4 3 3 3 2 \u008a \u008a \u008a \u008a 11th +4 \u008a 5 4 3 3 3 2 1 \u008a \u008a \u008a 12th +4 Ability Score Improvement 5 4 3 3 3 2 1 \u008a \u008a \u008a 13th +5 \u008a 5 4 3 3 3 2 1 1 \u008a \u008a 14th +5 Arcane Tradition feature 5 4 3 3 3 2 1 1 \u008a \u008a 15th +5 \u008a 5 4 3 3 3 2 1 1 1 \u008a 16th +5 Ability Score Improvement 5 4 3 3 3 2 1 1 1 \u008a 17th +6 \u008a 5 4 3 3 3 2 1 1 1 1 18th +6 Spell Mastery 5 4 3 3 3 3 1 1 1 1 19th +6 Ability Score Improvement 5 4 3 3 3 3 2 1 1 1 20th +6 Signature Spell 5 4 3 3 3 3 2 2 1 1 Spellcasting As a student of arcane magic, you have a spellbook containing spells that show the first glimmerings of your true power. Cantrips At 1st level, you know three cantrips of your choice from the wizard spell list. You learn additional wizard cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Wizard table. Spellbook At 1st level, you have a spellbook containing six 1st-\u00ad\u2010\u2011level wizard spells of your choice. Your spellbook is the repository of the wizard spells you know, except your cantrips, which are fixed in your mind.",
+    "Saves: Intelligence, Wisdom Skills: Choose two from Arcana"
+  ],
+  "equipment": [
+    "Quarterstaff",
+    "Spellbook",
+    "Robes",
+    "Component Pouch",
+    "25 GP"
+  ],
+  "spells": [],
+  "gold": 100,
+  "image_path": null
+}
