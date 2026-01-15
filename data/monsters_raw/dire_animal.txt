@@ -1,6 +1,0 @@
-DIRE ANIMAL
-Challenge Rating: 2
-Dire animals are larger, tougher, meaner versions of ordinary ani- Treasure: None
-mals. Each kind tends to have a feral, prehistoric, or even demonic Alignment: Always neutral
-appearance. Advancement: 4–9 HD (Large)
-Level Adjustment: —

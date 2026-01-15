@@ -1,5 +1,0 @@
-PHANTOM FUNGUS
-Speed: 40 ft. (8 squares), climb 20 ft. illus.
-Medium Plant Armor Class: 15 (–1 size, +3 Dex, +3 natural), touch 12,
-by
-Hit Dice: 2d8+6 (15 hp) flat-footed 12

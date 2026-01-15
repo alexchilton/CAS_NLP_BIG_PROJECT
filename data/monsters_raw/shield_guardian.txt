@@ -1,4 +1,0 @@
-SHIELD GUARDIAN
-Large Construct
-Hit Dice: 15d10+30 (112 hp)
-Initiative: +0

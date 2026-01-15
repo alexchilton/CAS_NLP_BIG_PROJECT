@@ -1,5 +1,0 @@
-U SCRAG
-These cousins of the troll have the aquatic subtype. They dwell in Umberhulk
-any body of water in any climate. They have a base land speed of 20
-feet and a swim speed of 40 feet and are found only in aquatic envi-
-ronments. They regenerate only if mostly immersed in water.
