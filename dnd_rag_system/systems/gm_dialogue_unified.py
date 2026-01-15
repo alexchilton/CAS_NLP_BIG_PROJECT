@@ -369,8 +369,13 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                             new_level = xp_result.get('new_level', 0)
                             xp_feedback += f"\n\n🎉 **LEVEL UP!** You are now level {new_level}!\n\n💡 *Type `/level_up` to roll for HP and upgrade spell slots*"
 
-            # End combat (this clears defeated_enemies tracking)
-            combat_feedback = self.combat_manager.end_combat()
+            # End combat (this clears defeated_enemies tracking and returns dead NPCs)
+            combat_feedback, dead_npcs = self.combat_manager.end_combat()
+
+            # Remove dead NPCs from session's npcs_present list (FIX: prevents targeting corpses)
+            for dead_npc in dead_npcs:
+                if dead_npc in self.session.npcs_present:
+                    self.session.npcs_present.remove(dead_npc)
 
             # Add XP feedback if any
             if xp_feedback:

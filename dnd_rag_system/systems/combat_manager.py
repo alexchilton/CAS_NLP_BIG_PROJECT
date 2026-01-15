@@ -548,20 +548,25 @@ class CombatManager:
             return self.npc_monsters[npc_name].roll_attack_damage(attack_name)
         return (0, "unknown")
 
-    def end_combat(self, clear_xp_tracking: bool = True) -> str:
+    def end_combat(self, clear_xp_tracking: bool = True) -> tuple[str, list[str]]:
         """
-        End combat and return a message.
+        End combat and return a message plus list of dead NPCs to remove.
 
         Args:
             clear_xp_tracking: Whether to clear defeated enemies tracking (default True)
 
         Returns:
-            String announcing combat end
+            Tuple of (combat_end_message, list_of_dead_npc_names)
         """
         if not self.combat.in_combat:
-            return "⚠️ Not in combat"
+            return ("⚠️ Not in combat", [])
 
         rounds = self.combat.round_number
+
+        # Identify dead NPCs before clearing
+        dead_npcs = [npc_name for npc_name, monster in self.npc_monsters.items()
+                     if not monster.is_alive()]
+
         self.combat.end_combat()
 
         # Clear defeated enemies tracking for next combat
@@ -571,7 +576,7 @@ class CombatManager:
         # Clear loaded monster instances for next combat
         self.npc_monsters.clear()
 
-        return f"⚔️ **Combat has ended!** (lasted {rounds} rounds)"
+        return (f"⚔️ **Combat has ended!** (lasted {rounds} rounds)", dead_npcs)
 
     def is_in_combat(self) -> bool:
         """Check if currently in combat."""
