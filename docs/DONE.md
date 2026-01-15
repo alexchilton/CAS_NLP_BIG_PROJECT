@@ -4,6 +4,126 @@ This file tracks completed and working features that have been implemented and t
 
 ---
 
+## ✅ Project Organization & Documentation Consolidation ✅ COMPLETED (2026-01-15)
+
+### Project Structure Reorganization
+- **Goal**: Organize scattered files across root directory into logical structure
+- **Status**: ✅ FULLY COMPLETED
+
+**File Reorganization**:
+
+1. **RAG Data Consolidation** (`dnd_rag_system/data/`):
+   - Created `dnd_rag_system/data/reference/` for original D&D PDFs (104 MB)
+   - Created `dnd_rag_system/data/extracted/` for processed text files (2.2 MB)
+   - Moved all PDFs with cleaned names (players_handbook.pdf, monster_manual.pdf, dm_guide.pdf)
+   - Moved all extracted text files (spells.txt, all_spells.txt, extracted_classes.txt, extracted_monsters.txt)
+   - Moved equipment.txt from web/ to dnd_rag_system/data/
+   - Created `dnd_rag_system/data/README.md` documenting data structure
+
+2. **Scripts Organization**:
+   - Created `scripts/rag/` for RAG ingestion scripts (5 files)
+     - `initialize_rag.py`, `ingest_dm_guide.py`, `ingest_game_content.py`
+     - `1_split_monsters.py`, `2_run_ingestion_v2.py`
+   - Created `scripts/` for utility scripts (6 files)
+     - `query_rag.py`, `create_character.py`, `play_with_character.py`
+     - `rag_dialogue_test.py`, `test_dm_guide_query.py`, `generate_report_assets.py`
+   - Updated all `project_root` paths from `.parent` to `.parent.parent.parent`
+
+3. **Jupyter Notebooks Organization**:
+   - Created `notebooks/` directory (5 notebooks)
+   - Moved: `classes_to_rag.ipynb`, `monster_to_rag.ipynb`, `monster_to_rag_v2.ipynb`
+   - Moved: `races_to_rag.ipynb`, `rag_spells2.ipynb`
+
+4. **Documentation Consolidation** (`docs/`):
+   - Created `docs/archived/` for old bug fix documentation (9 files)
+   - Moved resolved bug docs: BUG_FIXES.md, COMBAT_BUG_FIXES_SESSION.md, CRITICAL_* files
+   - Consolidated 9 test docs into single TESTING.md (merged RUNNING_TESTS.md content)
+   - Removed redundant docs: TEST_FIXES_SUMMARY.md, TEST_STATUS_SUMMARY.md, TEST_SUMMARY.md
+   - Removed outdated docs: SESSION_SUMMARY.md, rag_improvement_analysis.md
+   - Remaining active docs: WORLD_SYSTEM_COMPLETE.md, SHOP_SYSTEM_GUIDE.md, EQUIPMENT_SYSTEM.md
+
+**Files Modified**:
+- `scripts/rag/ingest_dm_guide.py` - Updated PDF path to dnd_rag_system/data/reference/
+- `scripts/rag/1_split_monsters.py` - Updated monster file paths
+- `tests/test_shop_system.py` - Updated equipment.txt path
+- All moved scripts - Fixed project_root path calculation
+
+**Result**: Clean root directory with only essential deployment files (app.py, Dockerfile, requirements.txt, *.sh). All data, scripts, and docs organized logically.
+
+**Commits**:
+- 9f6b6cb - "refactor: Move equipment.txt to dnd_rag_system/data/"
+- b7e273f - "refactor: Consolidate all RAG data into dnd_rag_system/data/"
+- 76cbffa - "refactor: Organize scripts and notebooks into proper directories"
+- [pending] - "docs: Consolidate documentation and archive old bug fixes"
+
+---
+
+## ✅ Selenium Dropdown Helpers & E2E Test Fixes ✅ COMPLETED (2026-01-15)
+
+### Gradio Dropdown Selection Bug Fix
+- **Problem**: E2E tests selecting "Elara" from dropdown, but system loaded "Thorin" instead
+- **Root Cause**: Gradio dropdowns are `<input role="listbox">` with aria-label, NOT standard `<select>` elements
+  - Previous code: `driver.find_elements(By.TAG_NAME, "select")` found nothing in Gradio
+  - Dropdowns defaulted to first option (Thorin) when selection failed silently
+- **Investigation**: Created test_character_bug.py to isolate core logic vs UI issue
+- **Result**: Core application logic works correctly - bug was in Selenium dropdown selection
+
+**Implementation**:
+
+1. **Selenium Helpers Module** (`e2e_tests/selenium_helpers.py`):
+   - Created comprehensive dropdown helper library
+   - Universal `select_dropdown_option()` function for any Gradio dropdown
+   - Uses correct CSS selector: `input[aria-label="..."]`
+   - Finds options with `[role="option"]` selector
+   - Supports partial matching for flexible selection
+   - Includes verification that selection succeeded
+
+2. **Specific Helper Functions**:
+   - `select_character(driver, name)` - "Choose Your Character" dropdown
+   - `select_race(driver, race)` - "Race" dropdown
+   - `select_class(driver, class_name)` - "Class" dropdown
+   - `select_alignment(driver, alignment)` - "Alignment" dropdown
+   - `select_debug_scenario(driver, scenario)` - "🧪 Debug Scenario (Optional)" dropdown
+   - `wait_for_gradio(driver, timeout=30)` - Wait for Gradio to load
+
+3. **Updated E2E Tests**:
+   - `e2e_tests/test_combat_scenarios.py` - Uses selenium_helpers
+   - `e2e_tests/test_wizard_spell_combat.py` - Uses selenium_helpers
+   - All character dropdown selection now reliable and verified
+
+**Code Example**:
+```python
+from selenium_helpers import select_character, wait_for_gradio
+
+# Old (broken):
+dropdowns = driver.find_elements(By.TAG_NAME, "select")  # Finds nothing!
+
+# New (works):
+select_character(driver, "Elara")  # Uses correct aria-label selector
+```
+
+**Warning in selenium_helpers.py**:
+```python
+# ⚠️ CRITICAL: Gradio dropdowns are NOT standard <select> elements!
+# They are <input role="listbox"> with aria-label attributes.
+# ALWAYS use these helpers instead of find_element(By.TAG_NAME, "select")
+```
+
+**Files Created**:
+- `e2e_tests/selenium_helpers.py` (150+ lines) - Universal dropdown helpers
+
+**Files Modified**:
+- `e2e_tests/test_combat_scenarios.py` - Imported and used helpers
+- `e2e_tests/test_wizard_spell_combat.py` - Imported and used helpers
+
+**Result**: All Gradio dropdown selections now work reliably! Comprehensive helper library prevents future dropdown bugs. Character selection verified working in E2E tests.
+
+**Commits**:
+- bc4fb82 - "fix: Fix Selenium character dropdown selection in E2E tests"
+- cbe2992 - "docs: Create comprehensive Selenium dropdown helpers"
+
+---
+
 ## ✅ E2E Bug Fixes - Combat and Character Validation ✅ COMPLETED (2026-01-14)
 
 ### Bug #1 Fixed: Wrong Character Stats in Error Messages (Thorin vs Elara)

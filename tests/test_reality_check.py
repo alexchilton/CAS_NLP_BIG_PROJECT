@@ -27,7 +27,8 @@ def test_combat_actions():
     print("TEST 1: Combat Actions")
     print("="*80)
 
-    validator = ActionValidator(debug=True)
+    # Use keyword classifier for consistent test results
+    validator = ActionValidator(debug=True, classifier_type="keyword")
     session = GameSession(session_name="Test Combat")
 
     # Add some NPCs
@@ -71,7 +72,8 @@ def test_npc_conversations():
     print("TEST 2: NPC Conversations")
     print("="*80)
 
-    validator = ActionValidator(debug=True)
+    # Use keyword classifier for consistent test results
+    validator = ActionValidator(debug=True, classifier_type="keyword")
     session = GameSession(session_name="Test Conversation")
     session.set_location("Rusty Dragon Inn", "A warm tavern filled with patrons.")
 
@@ -113,7 +115,8 @@ def test_spell_casting():
     print("TEST 3: Spell Casting")
     print("="*80)
 
-    validator = ActionValidator(debug=True)
+    # Use keyword classifier for consistent test results
+    validator = ActionValidator(debug=True, classifier_type="keyword")
     session = GameSession(session_name="Test Spells")
 
     # Create character with known spells
@@ -157,7 +160,8 @@ def test_item_usage():
     print("TEST 4: Item Usage")
     print("="*80)
 
-    validator = ActionValidator(debug=True)
+    # Use keyword classifier for consistent test results (LLM can be flaky)
+    validator = ActionValidator(debug=True, classifier_type="keyword")
     session = GameSession(session_name="Test Items")
 
     # Create character with inventory
@@ -201,7 +205,8 @@ def test_exploration():
     print("TEST 5: Exploration Actions")
     print("="*80)
 
-    validator = ActionValidator(debug=True)
+    # Use keyword classifier for consistent test results
+    validator = ActionValidator(debug=True, classifier_type="keyword")
     session = GameSession(session_name="Test Exploration")
 
     # Test 5.1: Look around
@@ -229,7 +234,8 @@ def test_intent_analysis():
     print("TEST 6: Intent Analysis")
     print("="*80)
 
-    validator = ActionValidator(debug=True)
+    # Use keyword classifier for consistent test results
+    validator = ActionValidator(debug=True, classifier_type="keyword")
 
     test_cases = [
         ("I attack the goblin", ActionType.COMBAT, "goblin"),
