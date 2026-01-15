@@ -4,11 +4,30 @@ Shared Selenium Helper Functions for E2E Tests
 This module provides robust, reusable helper functions for Selenium-based E2E tests.
 All tests should import and use these functions instead of implementing their own versions.
 
-CRITICAL NOTES:
-- Gradio dropdowns are NOT standard <select> elements!
-- They are <input role="listbox"> with aria-label attributes
-- Use input[aria-label="Choose Your Character"] to find the character dropdown
-- This has been debugged multiple times - DO NOT try to find <select> tags!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  CRITICAL: GRADIO DROPDOWN SELECTOR ISSUE ⚠️
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+THIS HAS BEEN A CONSTANT PROBLEM - READ CAREFULLY:
+
+Gradio dropdowns are NOT standard HTML <select> elements!
+They are <input role="listbox"> with aria-label attributes.
+
+❌ WRONG - DO NOT USE:
+   driver.find_elements(By.TAG_NAME, "select")
+   driver.find_elements(By.CSS_SELECTOR, "select")
+   Select(dropdown_element)  # from selenium.webdriver.support.ui
+
+✅ CORRECT - USE THIS:
+   driver.find_element(By.CSS_SELECTOR, 'input[aria-label="Exact Label Text"]')
+
+When dropdown selection fails silently, the UI defaults to the first option,
+causing tests to use the wrong character/value without raising an error.
+
+ALWAYS use the helper functions in this module for ALL dropdown interactions.
+DO NOT implement your own dropdown logic in individual test files.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
 
 import time
@@ -130,6 +149,189 @@ def load_character(driver, char_name="Thorin"):
 
 # Alias for backwards compatibility
 load_character_robust = load_character
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# UNIVERSAL DROPDOWN HELPER
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+def select_dropdown_option(driver, aria_label, option_text, partial_match=True):
+    """
+    Universal helper to select an option from ANY Gradio dropdown.
+
+    This is the ONLY way to interact with Gradio dropdowns reliably.
+    Use this function for all dropdown interactions in all E2E tests.
+
+    Args:
+        driver: Selenium WebDriver instance
+        aria_label: Exact aria-label of the dropdown (e.g., "Choose Your Character")
+        option_text: Text of option to select (e.g., "Elara", "Fighter")
+        partial_match: If True, match if option_text appears in option (default: True)
+                      If False, require exact match
+
+    Returns:
+        str: The text of the selected option
+
+    Raises:
+        Exception: If dropdown or option not found
+
+    Example:
+        # Load a character
+        select_dropdown_option(driver, "Choose Your Character", "Elara")
+
+        # Select a race
+        select_dropdown_option(driver, "Race", "Elf")
+
+        # Select a class
+        select_dropdown_option(driver, "Class", "Wizard")
+    """
+    print(f"\n🎯 Selecting '{option_text}' from dropdown '{aria_label}'")
+
+    # Find dropdown by aria-label
+    try:
+        dropdown = driver.find_element(
+            By.CSS_SELECTOR,
+            f'input[aria-label="{aria_label}"]'
+        )
+        print(f"   ✅ Found dropdown")
+    except:
+        print(f"   ❌ Could not find dropdown with aria-label='{aria_label}'")
+        driver.save_screenshot(f'/tmp/dropdown_{aria_label.replace(" ", "_")}_not_found.png')
+        raise Exception(f"Dropdown '{aria_label}' not found - check screenshot")
+
+    # Click to open dropdown
+    dropdown.click()
+    time.sleep(2)  # Wait for dropdown animation
+
+    # Find options
+    options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
+    print(f"   Found {len(options)} options")
+
+    # Wait for options to populate if needed
+    retry_count = 0
+    while retry_count < 3 and (not options or not any(opt.text.strip() for opt in options)):
+        print(f"   Waiting for options to populate (attempt {retry_count + 1})...")
+        time.sleep(2)
+        options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
+        retry_count += 1
+
+    # Debug: print available options
+    available = []
+    for i, opt in enumerate(options):
+        if opt.text.strip():
+            available.append(opt.text)
+            print(f"   Option {i}: '{opt.text}'")
+
+    # Find and click matching option
+    found = False
+    for opt in options:
+        opt_text = opt.text.strip()
+        if not opt_text:
+            continue
+
+        if partial_match:
+            if option_text.lower() in opt_text.lower():
+                print(f"   ✅ Selecting: '{opt_text}'")
+                opt.click()
+                time.sleep(1)
+                found = True
+                return opt_text
+        else:
+            if option_text.lower() == opt_text.lower():
+                print(f"   ✅ Selecting: '{opt_text}'")
+                opt.click()
+                time.sleep(1)
+                found = True
+                return opt_text
+
+    if not found:
+        raise Exception(
+            f"Option '{option_text}' not found in dropdown '{aria_label}'. "
+            f"Available: {available}"
+        )
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# SPECIFIC DROPDOWN HELPERS (use these for convenience)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+def select_character(driver, character_name):
+    """
+    Select a character from the 'Choose Your Character' dropdown.
+
+    Args:
+        driver: Selenium WebDriver instance
+        character_name: Name of character (e.g., "Elara", "Thorin")
+    """
+    return select_dropdown_option(driver, "Choose Your Character", character_name)
+
+
+def select_race(driver, race):
+    """
+    Select a race from the character creation 'Race' dropdown.
+
+    Args:
+        driver: Selenium WebDriver instance
+        race: Race name (e.g., "Elf", "Dwarf", "Human")
+    """
+    return select_dropdown_option(driver, "Race", race)
+
+
+def select_class(driver, character_class):
+    """
+    Select a class from the character creation 'Class' dropdown.
+
+    Args:
+        driver: Selenium WebDriver instance
+        character_class: Class name (e.g., "Fighter", "Wizard", "Rogue")
+    """
+    return select_dropdown_option(driver, "Class", character_class)
+
+
+def select_alignment(driver, alignment):
+    """
+    Select an alignment from the character creation alignment dropdown.
+
+    Args:
+        driver: Selenium WebDriver instance
+        alignment: Alignment (e.g., "Lawful Good", "Chaotic Neutral")
+    """
+    return select_dropdown_option(driver, "Alignment", alignment)
+
+
+def select_debug_scenario(driver, scenario_name):
+    """
+    Select a debug scenario from the '🧪 Debug Scenario (Optional)' dropdown.
+
+    Args:
+        driver: Selenium WebDriver instance
+        scenario_name: Scenario name (e.g., "Goblin Cave", "Ancient Ruins")
+    """
+    return select_dropdown_option(driver, "🧪 Debug Scenario (Optional)", scenario_name)
+
+
+def select_party_characters(driver, character_names):
+    """
+    Select characters for party mode (multi-select dropdown).
+
+    Note: Multi-select dropdowns may behave differently. This function
+    clicks each character option in sequence.
+
+    Args:
+        driver: Selenium WebDriver instance
+        character_names: List of character names to select
+    """
+    print(f"\n👥 Selecting party members: {character_names}")
+
+    for char_name in character_names:
+        try:
+            select_dropdown_option(driver, "Select Characters", char_name)
+        except Exception as e:
+            print(f"   ⚠️  Warning: Could not select {char_name}: {e}")
+
+    print(f"✅ Party selection complete")
 
 
 def find_chat_input(driver):
