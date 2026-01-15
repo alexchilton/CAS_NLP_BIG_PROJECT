@@ -18,8 +18,9 @@ import re
 from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
+from selenium_helpers import load_character, wait_for_gradio
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -28,13 +29,20 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 os.environ['GM_DEBUG'] = 'true'
 
 
-def wait_for_gradio(driver, timeout=30):
+# DEPRECATED: Use selenium_helpers.wait_for_gradio instead
+# def wait_for_gradio(driver, timeout=30):
     """Wait for Gradio interface to fully load."""
     WebDriverWait(driver, timeout).until(
         EC.presence_of_element_located((By.TAG_NAME, "gradio-app"))
     )
     time.sleep(2)
 
+
+
+# NOTE: This test file has been updated to import from selenium_helpers.py
+# Local load_character() and wait_for_gradio() functions have been deprecated.
+# The imported versions use the correct Gradio selectors (input[aria-label=...])
+# See e2e_tests/README_SELENIUM.md for details.
 
 def find_chat_input(driver):
     """Find the chat input textarea."""
@@ -96,10 +104,12 @@ def get_chat_messages(driver):
     return messages
 
 
-def load_character(driver, char_name):
-    """Load a character via UI."""
+# DEPRECATED: Use selenium_helpers.load_character instead
+# def load_character(driver, char_name):
+    """Load a character via UI with verification."""
     print(f"\n📝 Loading {char_name}...")
 
+    # Find the character dropdown
     dropdowns = driver.find_elements(By.TAG_NAME, "select")
     char_dropdown = None
     for dd in dropdowns:
@@ -107,22 +117,51 @@ def load_character(driver, char_name):
             char_dropdown = dd
             break
 
-    if char_dropdown:
-        char_dropdown.click()
-        time.sleep(0.5)
+    if not char_dropdown:
+        raise Exception("Could not find character dropdown")
 
-        options = char_dropdown.find_elements(By.TAG_NAME, "option")
-        for opt in options:
-            if char_name.lower() in opt.text.lower():
-                opt.click()
-                break
+    # Use Selenium's Select class for robust dropdown handling
+    select = Select(char_dropdown)
 
+    # Get all available options
+    available_options = [opt.text for opt in select.options]
+    print(f"   Available characters: {available_options}")
+
+    # Find matching option
+    matching_option = None
+    for option in select.options:
+        if char_name.lower() in option.text.lower():
+            matching_option = option.text
+            break
+
+    if not matching_option:
+        raise Exception(f"Character '{char_name}' not found in dropdown. Available: {available_options}")
+
+    # Select by visible text
+    print(f"   Selecting: {matching_option}")
+    select.select_by_visible_text(matching_option)
+    time.sleep(0.5)
+
+    # Verify selection
+    selected_option = select.first_selected_option.text
+    if char_name.lower() not in selected_option.lower():
+        raise Exception(f"Selection failed! Expected '{char_name}' but got '{selected_option}'")
+
+    print(f"   ✅ Verified: {selected_option} is selected")
+
+    # Click Load Character button
     buttons = driver.find_elements(By.TAG_NAME, "button")
+    load_button = None
     for btn in buttons:
         if "load character" in btn.text.lower():
-            btn.click()
-            time.sleep(3)
+            load_button = btn
             break
+
+    if not load_button:
+        raise Exception("Could not find 'Load Character' button")
+
+    load_button.click()
+    time.sleep(3)
 
 
 def check_combat_over(message):

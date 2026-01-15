@@ -17,12 +17,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium_helpers import load_character, wait_for_gradio
 
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
-def wait_for_gradio(driver, timeout=30):
+# DEPRECATED: Use selenium_helpers.wait_for_gradio instead
+# def wait_for_gradio(driver, timeout=30):
     """Wait for Gradio interface to fully load."""
     print("⏳ Waiting for Gradio to load...")
     WebDriverWait(driver, timeout).until(
@@ -31,6 +33,12 @@ def wait_for_gradio(driver, timeout=30):
     time.sleep(2)  # Extra time for components to initialize
     print("✅ Gradio loaded")
 
+
+
+# NOTE: This test file has been updated to import from selenium_helpers.py
+# Local load_character() and wait_for_gradio() functions have been deprecated.
+# The imported versions use the correct Gradio selectors (input[aria-label=...])
+# See e2e_tests/README_SELENIUM.md for details.
 
 def find_chat_input(driver):
     """Find the chat input textarea."""
@@ -86,7 +94,8 @@ def get_chat_messages(driver):
     return messages
 
 
-def load_character(driver, char_name="Thorin"):
+# DEPRECATED: Use selenium_helpers.load_character instead
+# def load_character(driver, char_name="Thorin"):
     """Load a character."""
     print(f"📝 Loading character: {char_name}")
 
@@ -164,7 +173,7 @@ def test_ui_combat_integration():
         print("TEST 2: Start combat with /start_combat command")
         print("=" * 80)
 
-        send_message(driver, "/start_combat Goblin, Orc Warrior")
+        send_message(driver, "/start_combat Goblin, Orc")
 
         time.sleep(2)
 

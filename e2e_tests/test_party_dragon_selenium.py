@@ -19,12 +19,19 @@ from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium_helpers import load_character, wait_for_gradio
 
 # Test configuration
 GRADIO_URL = "http://localhost:7860"
 HEADLESS = False  # Keep browser visible to watch the combat!
 LONG_WAIT = 8  # Wait time for GM responses
 
+
+
+# NOTE: This test file has been updated to import from selenium_helpers.py
+# Local load_character() and wait_for_gradio() functions have been deprecated.
+# The imported versions use the correct Gradio selectors (input[aria-label=...])
+# See e2e_tests/README_SELENIUM.md for details.
 
 def create_driver():
     """Create Chrome WebDriver."""
@@ -45,7 +52,8 @@ def create_driver():
         sys.exit(1)
 
 
-def wait_for_gradio(driver, timeout=10):
+# DEPRECATED: Use selenium_helpers.wait_for_gradio instead
+# def wait_for_gradio(driver, timeout=10):
     """Wait for Gradio to load."""
     time.sleep(timeout)
     return True
@@ -85,7 +93,8 @@ def send_message(driver, message):
         return False
 
 
-def load_character(driver, character_name):
+# DEPRECATED: Use selenium_helpers.load_character instead
+# def load_character(driver, character_name):
     """Load a character."""
     try:
         print(f"📝 Loading {character_name}...")

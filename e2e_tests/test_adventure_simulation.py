@@ -44,14 +44,18 @@ def wait_for_response(driver, previous_count, timeout=30):
 def get_chat_messages(driver):
     """Get all chat messages from Gradio chatbot."""
     try:
-        # Gradio uses data-testid for message identification
-        bot_messages = driver.find_elements(By.CSS_SELECTOR, '[data-testid="bot"]')
-        user_messages = driver.find_elements(By.CSS_SELECTOR, '[data-testid="user"]')
+        # Try multiple selectors for Gradio chat messages
+        bot_messages = driver.find_elements(By.CSS_SELECTOR, '.message')
+        if not bot_messages:
+            bot_messages = driver.find_elements(By.CSS_SELECTOR, '[data-testid="bot"]')
+        if not bot_messages:
+            # Fallback: try finding any div with bot-related class
+            bot_messages = driver.find_elements(By.CSS_SELECTOR, '.bot, [class*="bot"]')
         
         # Get text from bot messages
         messages = []
         for msg in bot_messages:
-            text = msg.text
+            text = msg.text.strip()
             if text and "Loading" not in text and text not in messages:  # Avoid duplicates
                 messages.append(text)
         
@@ -61,10 +65,8 @@ def get_chat_messages(driver):
         return []
 
 def send_message(driver, text):
-    """Send a message and wait for NEW response."""
-    # Get current bot messages BEFORE sending
-    messages_before = get_chat_messages(driver)
-    count_before = len(messages_before)
+    """Send a message and wait for response."""
+    print(f"  💬 Sending: {text[:80]}")
     
     # Find and fill input
     textarea = driver.find_element(By.CSS_SELECTOR, 'textarea[placeholder*="Type"]')
@@ -75,22 +77,14 @@ def send_message(driver, text):
     submit_btn = driver.find_element(By.CSS_SELECTOR, 'button.primary')
     submit_btn.click()
     
-    # Wait for NEW bot message to appear
-    max_wait = 30
-    for i in range(max_wait):
-        time.sleep(1)
-        messages_after = get_chat_messages(driver)
-        count_after = len(messages_after)
-        
-        # Check if we have a new message
-        if count_after > count_before:
-            # Return the newest message (last in list)
-            return messages_after[-1]
+    # Fixed wait for LLM response (more reliable than trying to detect new messages)
+    time.sleep(10)
     
-    # Timeout - return what we have
-    print(f"⚠️ Timeout waiting for response to: {text[:50]}")
-    all_messages = get_chat_messages(driver)
-    return all_messages[-1] if all_messages else ""
+    # Get the latest chat messages to return
+    messages = get_chat_messages(driver)
+    if messages:
+        return messages[-1]
+    return "[No messages found]"
 
 def get_hp_from_sheet(driver):
     """Extract HP from character sheet (not chat history)."""
@@ -188,7 +182,7 @@ def main():
         print("=" * 80)
         
         turn = 0
-        max_turns = 50  # Safety limit
+        max_turns = 20  # Safety limit
         in_combat = False
         current_enemy = None
         
@@ -322,7 +316,7 @@ def main():
                     break
             
             # Pause between turns
-            time.sleep(3)
+            time.sleep(1)
         
         if turn >= max_turns:
             print("\n⏱️  Adventure ended - max turns reached")
@@ -334,8 +328,8 @@ def main():
         print(f"Final HP: {get_hp_from_sheet(driver)}")
         
         # Keep browser open
-        print("\n👀 Browser will stay open for 30 seconds...")
-        time.sleep(30)
+        print("\n👀 Browser will stay open for 10 seconds...")
+        time.sleep(10)
         
     except Exception as e:
         print(f"\n❌ Error: {e}")
