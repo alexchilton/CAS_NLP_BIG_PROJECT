@@ -198,6 +198,15 @@ class MechanicsExtractor:
             # Parse JSON response
             mechanics = self._parse_response(raw_response)
             
+            # Post-process: Filter out zero-damage entries (LLM hallucination)
+            if mechanics.damage:
+                mechanics.damage = [
+                    d for d in mechanics.damage 
+                    if d.get('amount', 0) > 0
+                ]
+                if self.debug and len(mechanics.damage) < len(self._parse_response(raw_response).damage):
+                    logger.debug(f"🔧 Filtered zero-damage hallucinations")
+            
             # Post-process: Filter out NPCs that are already present
             # The LLM sometimes includes them despite instructions
             if mechanics.npcs_introduced and existing_npcs:
@@ -284,8 +293,14 @@ DAMAGE EXAMPLES (who receives damage):
 - "Arrow embeds into the orc" → {{"target": "orc", "amount": X}}
 
 RULES:
-- Only include fields where something happened
-- Empty arrays are OK
+- **MOST IMPORTANT**: Only extract mechanics that ACTUALLY HAPPENED in the narrative
+- **CRITICAL**: Only include damage if actual damage was dealt (amount > 0)
+  - "Dragon appears" → NO damage
+  - "Thorin readies sword" → NO damage  
+  - "Dragon ATTACKS and hits for 15" → YES, damage
+- **DO NOT** include damage entries with amount: 0 or negative values
+- **DO NOT** hallucinate or invent events not explicitly described
+- Empty arrays are OK for fields with no events
 - Use exact names from the narrative for target/character fields
 - **DAMAGE TARGET**: Who RECEIVES damage, not who deals it
   - "Thorin strikes the goblin" → target: "Goblin" (goblin receives damage)

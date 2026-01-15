@@ -57,10 +57,10 @@ def create_driver():
 
 # DEPRECATED: Use selenium_helpers.wait_for_gradio instead
 # def wait_for_gradio(driver, timeout=10):
-    """Wait for Gradio to load."""
-    time.sleep(timeout)
-    return True
-
+#    """Wait for Gradio to load."""
+#    time.sleep(timeout)
+#    return True
+#
 
 def send_message(driver, message):
     """Send a message in the chat."""

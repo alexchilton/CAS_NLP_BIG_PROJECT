@@ -1,0 +1,194 @@
+[
+  {
+    "name": "Acid Splash",
+    "type": "spell",
+    "level_school": "Conjuration cantrip",
+    "level": 0,
+    "school": "Conjuration",
+    "description": "Casting Time: 1 action Range: 60 feet Components: V, S Duration: Instantaneous You hurl a bubble of acid. Choose one creature within range, or choose two creatures within range that are within 5 feet of each other. A target must succeed on a Dexterity saving throw or take 1d6 acid damage. This spell\u2019s damage increases by 1d6 when you reach 5th level (2d6), 11th level (3d6), and 17th level (4d6). Aid 2nd-\u00ad\u2010\u2011level abjuration Casting Time: 1 action Range: 30 feet Components: V, S, M (a tiny strip o"
+  },
+  {
+    "name": "Chill Touch",
+    "type": "spell",
+    "level_school": "Necromancy cantrip",
+    "level": 0,
+    "school": "Necromancy",
+    "description": "Casting Time: 1 action Range: 120 feet Components: V, S Duration: 1 round You create a ghostly, skeletal hand in the space of a creature within range. Make a ranged spell attack against the creature to assail it with the chill of the grave. On a hit, the target takes 1d8 necrotic damage, and it can\u2019t regain hit points until the start of your next turn. Until then, the hand clings to the target. If you hit an undead target, it also has disadvantage on attack rolls against you until the end of you"
+  },
+  {
+    "name": "Dancing Lights",
+    "type": "spell",
+    "level_school": "Evocation cantrip",
+    "level": 0,
+    "school": "Evocation",
+    "description": "Casting Time: 1 action Range: 120 feet Components: V, S, M (a bit of phosphorus or wychwood, or a glowworm) Duration: Concentration, up to 1 minute You create up to four torch-\u00ad\u2010\u2011sized lights within range, making them appear as torches, lanterns, or glowing orbs that hover in the air for the duration. You can also combine the four lights into one glowing vaguely humanoid form of Medium size. Whichever form you choose, each light sheds dim light in a 10-\u00ad\u2010\u2011foot radius. As a bonus action on your t"
+  },
+  {
+    "name": "Druidcraft",
+    "type": "spell",
+    "level_school": "Transmutation cantrip",
+    "level": 0,
+    "school": "Transmutation",
+    "description": "Casting Time: 1 action Range: 30 feet Components: V, S Duration: Instantaneous Whispering to the spirits of nature, you create one of the following effects within range: \u2022 You create a tiny, harmless sensory effect that predicts what the weather will be at your location for the next 24 hours. The effect might manifest as a golden orb for clear skies, a cloud for rain, falling snowflakes for snow, and so on. This effect persists for 1 round. \u2022 You instantly make a flower blossom, a seed pod open,"
+  },
+  {
+    "name": "Eldritch Blast",
+    "type": "spell",
+    "level_school": "Evocation cantrip",
+    "level": 0,
+    "school": "Evocation",
+    "description": "Casting Time: 1 action Range: 120 feet Components: V, S Duration: Instantaneous A beam of crackling energy streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 force damage. The spell creates more than one beam when you reach higher levels: two beams at 5th level, three beams at 11th level, and four beams at 17th level. You can direct the beams at the same target or at different ones. Make a separate attack roll for each beam. Enh"
+  },
+  {
+    "name": "Fire Bolt",
+    "type": "spell",
+    "level_school": "Evocation cantrip",
+    "level": 0,
+    "school": "Evocation",
+    "description": "Casting Time: 1 action Range: 120 feet Components: V, S Duration: Instantaneous You hurl a mote of fire at a creature or object within range. Make a ranged spell attack against the target. On a hit, the target takes 1d10 fire damage. A flammable object hit by this spell ignites if it isn't being worn or carried. This spell's damage increases by 1d10 when you reach 5th level (2d10), 11th level (3d10), and 17th level (4d10). Fire Shield 4th-\u00ad\u2010\u2011level evocation Casting Time: 1 action Range: Self Com"
+  },
+  {
+    "name": "Guidance",
+    "type": "spell",
+    "level_school": "Divination cantrip",
+    "level": 0,
+    "school": "Divination",
+    "description": "Casting Time: 1 action Range: Touch Components: V, S Duration: Concentration, up to 1 minute You touch one willing creature. Once before the spell ends, the target can roll a d4 and add the number rolled to one ability check of its choice. It can roll the die before or after making the ability check. The spell then ends. Guiding Bolt 1st-\u00ad\u2010\u2011level evocation Casting Time: 1 action Range: 120 feet Components: V, S Duration: 1 round A flash of light streaks toward a creature of your choice within ra"
+  },
+  {
+    "name": "Light",
+    "type": "spell",
+    "level_school": "Evocation cantrip",
+    "level": 0,
+    "school": "Evocation",
+    "description": "Casting Time: 1 action Range: Touch Components: V, M (a firefly or phosphorescent moss) Duration: 1 hour You touch one object that is no larger than 10 feet in any dimension. Until the spell ends, the object sheds bright light in a 20-\u00ad\u2010\u2011foot radius and dim light for an additional 20 feet. The light can be colored as you like. Completely covering the object with something opaque blocks the light. The spell ends if you cast it again or dismiss it as an action. If you target an object held or worn"
+  },
+  {
+    "name": "Mage Hand",
+    "type": "spell",
+    "level_school": "Conjuration cantrip",
+    "level": 0,
+    "school": "Conjuration",
+    "description": "Casting Time: 1 action Range: 30 feet Components: V, S Duration: 1 minute A spectral, floating hand appears at a point you choose within range. The hand lasts for the duration or until you dismiss it as an action. The hand vanishes if it is ever more than 30 feet away from you or if you cast this spell again. You can use your action to control the hand. You can use the hand to manipulate an object, open an unlocked door or container, stow or retrieve an item from an open container, or pour the c"
+  },
+  {
+    "name": "Mending",
+    "type": "spell",
+    "level_school": "Transmutation cantrip",
+    "level": 0,
+    "school": "Transmutation",
+    "description": "Casting Time: 1 minute Range: Touch Components: V, S, M (two lodestones) Duration: Instantaneous This spell repairs a single break or tear in an object you touch, such as a broken chain link, two halves of a broken key, a torn cloak, or a leaking wineskin. As long as the break or tear is no larger than 1 foot in any dimension, you mend it, leaving no trace of the former damage. This spell can physically repair a magic item or construct, but the spell can\u2019t restore magic to such an object. Messag"
+  },
+  {
+    "name": "Message",
+    "type": "spell",
+    "level_school": "Transmutation cantrip",
+    "level": 0,
+    "school": "Transmutation",
+    "description": "Casting Time: 1 action Range: 120 feet Components: V, S, M (a short piece of copper wire) Duration: 1 round You point your finger toward a creature within range and whisper a message. The target (and only the target) hears the message and can reply in a whisper that only you can hear. You can cast this spell through solid objects if you are familiar with the target and know it is beyond the barrier. Magical silence, 1 foot of stone, 1 inch of common metal, a thin sheet of lead, or 3 feet of wood"
+  },
+  {
+    "name": "Minor Illusion",
+    "type": "spell",
+    "level_school": "Illusion cantrip",
+    "level": 0,
+    "school": "Illusion",
+    "description": "Casting Time: 1 action Range: 30 feet Components: S, M (a bit of fleece) Duration: 1 minute You create a sound or an image of an object within range that lasts for the duration. The illusion also ends if you dismiss it as an action or cast this spell again. If you create a sound, its volume can range from a whisper to a scream. It can be your voice, someone else\u2019s voice, a lion\u2019s roar, a beating of drums, or any other sound you choose. The sound continues unabated throughout the duration, or you"
+  },
+  {
+    "name": "Poison Spray",
+    "type": "spell",
+    "level_school": "Conjuration cantrip",
+    "level": 0,
+    "school": "Conjuration",
+    "description": "Casting Time: 1 action Range: 10 feet Components: V, S Duration: Instantaneous You extend your hand toward a creature you can see within range and project a puff of noxious gas from your palm. The creature must succeed on a Constitution saving throw or take 1d12 poison damage. This spell's damage increases by 1d12 when you reach 5th level (2d12), 11th level (3d12), and 17th level (4d12). Polymorph 4th-\u00ad\u2010\u2011level transmutation Casting Time: 1 action Range: 60 feet Components: V, S, M (a caterpillar"
+  },
+  {
+    "name": "Prestidigitation",
+    "type": "spell",
+    "level_school": "Transmutation cantrip",
+    "level": 0,
+    "school": "Transmutation",
+    "description": "Casting Time: 1 action Range: 10 feet Components: V, S Duration: Up to 1 hour This spell is a minor magical trick that novice spellcasters use for practice. You create one of the following magical effects within range: \u2022 You create an instantaneous, harmless sensory effect, such as a shower of sparks, a puff of wind, faint musical notes, or an odd odor. \u2022 You instantaneously light or snuff out a candle, a torch, or a small campfire. \u2022 You instantaneously clean or soil an object no larger than 1 "
+  },
+  {
+    "name": "Produce Flame",
+    "type": "spell",
+    "level_school": "Conjuration cantrip",
+    "level": 0,
+    "school": "Conjuration",
+    "description": "Casting Time: 1 action Range: Self Components: V, S Duration: 10 minutes A flickering flame appears in your hand. The flame remains there for the duration and harms neither you nor your equipment. The flame sheds bright light in a 10-\u00ad\u2010\u2011foot radius and dim light for an additional 10 feet. The spell ends if you dismiss it as an action or if you cast it again. You can also attack with the flame, although doing so ends the spell. When you cast this spell, or as an action on a later turn, you can hu"
+  },
+  {
+    "name": "Ray of Frost",
+    "type": "spell",
+    "level_school": "Evocation cantrip",
+    "level": 0,
+    "school": "Evocation",
+    "description": "Casting Time: 1 action Range: 60 feet Components: V, S Duration: Instantaneous A frigid beam of blue-\u00ad\u2010\u2011white light streaks toward a creature within range. Make a ranged spell attack against the target. On a hit, it takes 1d8 cold damage, and its speed is reduced by 10 feet until the start of your next turn. The spell\u2019s damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8). Regenerate 7th-\u00ad\u2010\u2011level transmutation Casting Time: 1 minute Range: Touch Componen"
+  },
+  {
+    "name": "Resistance",
+    "type": "spell",
+    "level_school": "Abjuration cantrip",
+    "level": 0,
+    "school": "Abjuration",
+    "description": "Casting Time: 1 action Range: Touch Components: V, S, M (a miniature cloak) Duration: Concentration, up to 1 minute You touch one willing creature. Once before the spell ends, the target can roll a d4 and add the number rolled to one saving throw of its choice. It can roll the die before or after making the saving throw. The spell then ends. Resurrection 7th-\u00ad\u2010\u2011level necromancy Casting Time: 1 hour Range: Touch Components: V, S, M (a diamond worth at least 1,000 gp, which the spell consumes) Dur"
+  },
+  {
+    "name": "Sacred Flame",
+    "type": "spell",
+    "level_school": "Evocation cantrip",
+    "level": 0,
+    "school": "Evocation",
+    "description": "Casting Time: 1 action Range: 60 feet Components: V, S Duration: Instantaneous Flame-\u00ad\u2010\u2011like radiance descends on a creature that you can see within range. The target must succeed on a Dexterity saving throw or take 1d8 radiant damage. The target gains no benefit from cover for this saving throw. The spell\u2019s damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th level (4d8). Sanctuary 1st-\u00ad\u2010\u2011level abjuration Casting Time: 1 bonus action Range: 30 feet Components: V, S"
+  },
+  {
+    "name": "Shillelagh",
+    "type": "spell",
+    "level_school": "Transmutation cantrip",
+    "level": 0,
+    "school": "Transmutation",
+    "description": "Casting Time: 1 bonus action Range: Touch Components: V, S, M (mistletoe, a shamrock leaf, and a club or quarterstaff) Duration: 1 minute The wood of a club or quarterstaff you are holding is imbued with nature\u2019s power. For the duration, you can use your spellcasting ability instead of Strength for the attack and damage rolls of melee attacks using that weapon, and the weapon\u2019s damage die becomes a d8. The weapon also becomes magical, if it isn\u2019t already. The spell ends if you cast it again or i"
+  },
+  {
+    "name": "Shocking Grasp",
+    "type": "spell",
+    "level_school": "Evocation cantrip",
+    "level": 0,
+    "school": "Evocation",
+    "description": "Casting Time: 1 action Range: Touch Components: V, S Duration: Instantaneous Lightning springs from your hand to deliver a shock to a creature you try to touch. Make a melee spell attack against the target. You have advantage on the attack roll if the target is wearing armor made of metal. On a hit, the target takes 1d8 lightning damage, and it can\u2019t take reactions until the start of its next turn. The spell\u2019s damage increases by 1d8 when you reach 5th level (2d8), 11th level (3d8), and 17th lev"
+  },
+  {
+    "name": "Spare the Dying",
+    "type": "spell",
+    "level_school": "Necromancy cantrip",
+    "level": 0,
+    "school": "Necromancy",
+    "description": "Casting Time: 1 action Range: Touch Components: V, S Duration: Instantaneous You touch a living creature that has 0 hit points. The creature becomes stable. This spell has no effect on undead or constructs. Speak with Animals 1st-\u00ad\u2010\u2011level divination (ritual) Casting Time: 1 action Range: Self Components: V, S Duration: 10 minutes You gain the ability to comprehend and verbally communicate with beasts for the duration. The knowledge and awareness of many beasts is limited by their intelligence, b"
+  },
+  {
+    "name": "Thaumaturgy",
+    "type": "spell",
+    "level_school": "Transmutation cantrip",
+    "level": 0,
+    "school": "Transmutation",
+    "description": "Casting Time: 1 action Range: 30 feet Components: V Duration: Up to 1 minute You manifest a minor wonder, a sign of supernatural power, within range. You create one of the following magical effects within range: \u2022 Your voice booms up to three times as loud as normal for 1 minute. \u2022 You cause flames to flicker, brighten, dim, or change color for 1 minute. \u2022 You cause harmless tremors in the ground for 1 minute. \u2022 You create an instantaneous sound that originates from a point of your choice within"
+  },
+  {
+    "name": "True Strike",
+    "type": "spell",
+    "level_school": "Divination cantrip",
+    "level": 0,
+    "school": "Divination",
+    "description": "Casting Time: 1 action Range: 30 feet Components: S Duration: Concentration, up to 1 round You extend your hand and point a finger at a target in range. Your magic grants you a brief insight into the target\u2019s defenses. On your next turn, you gain advantage on your first attack roll against the target, provided that this spell hasn\u2019t ended. Unseen Servant 1st-\u00ad\u2010\u2011level conjuration (ritual) Casting Time: 1 action Range: 60 feet Components: V, S, M (a piece of string and a bit of wood) Duration: 1 h"
+  },
+  {
+    "name": "Vicious Mockery",
+    "type": "spell",
+    "level_school": "Enchantment cantrip",
+    "level": 0,
+    "school": "Enchantment",
+    "description": "Casting Time: 1 action Range: 60 feet Components: V"
+  }
+]

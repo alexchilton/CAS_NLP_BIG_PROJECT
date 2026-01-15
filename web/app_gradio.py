@@ -683,13 +683,29 @@ def create_character(name: str, race: str, char_class: str, level: int,
     if not name:
         return "❌ Please enter a character name", gr.update()
 
+    # === USE RAG-ENHANCED CHARACTER CREATION ===
+    from dnd_rag_system.systems.rag_character_enhancer import enhance_character_with_rag
+    from dnd_rag_system.constants import CharacterClasses
+    
+    # Store original base scores (before racial bonuses)
+    base_scores = {
+        'strength': str_val,
+        'dexterity': dex_val,
+        'constitution': con_val,
+        'intelligence': int_val,
+        'wisdom': wis_val,
+        'charisma': cha_val
+    }
+    
     # Load racial traits and apply bonuses
     racial_traits = load_racial_traits(None, race)  # Use fallback data
     racial_bonuses_applied = ""
+    racial_bonus_details = {}
 
     if racial_traits:
         # Apply racial ability score bonuses
         for ability, bonus in racial_traits.ability_increases.items():
+            racial_bonus_details[ability] = bonus
             if ability == "strength":
                 str_val += bonus
             elif ability == "dexterity":
@@ -722,35 +738,44 @@ def create_character(name: str, race: str, char_class: str, level: int,
         gold=100  # Starting gold for new characters
     )
 
-    # Calculate derived stats
-    hit_die_map = {
-        "Wizard": 6, "Sorcerer": 6,
-        "Rogue": 8, "Bard": 8, "Cleric": 8, "Druid": 8, "Monk": 8, "Warlock": 8,
-        "Fighter": 10, "Paladin": 10, "Ranger": 10,
-        "Barbarian": 12
-    }
-    hit_die = hit_die_map.get(char_class, 8)
-    character.hit_points = character.calculate_hit_points(hit_die)
+    # === APPLY RAG-ENHANCED CLASS FEATURES ===
+    try:
+        enhance_character_with_rag(character)
+        hit_die = character.hit_points // (1 + character.get_ability_modifier(character.constitution))
+        rag_enhanced = True
+    except Exception as e:
+        # Fallback to hardcoded if RAG fails
+        print(f"RAG enhancement failed: {e}")
+        hit_die_map = {
+            "Wizard": 6, "Sorcerer": 6,
+            "Rogue": 8, "Bard": 8, "Cleric": 8, "Druid": 8, "Monk": 8, "Warlock": 8,
+            "Fighter": 10, "Paladin": 10, "Ranger": 10,
+            "Barbarian": 12
+        }
+        hit_die = hit_die_map.get(char_class, 8)
+        character.hit_points = character.calculate_hit_points(hit_die)
+        rag_enhanced = False
 
     dex_mod = character.get_ability_modifier(dex_val)
     character.armor_class = 10 + dex_mod
 
-    # Add basic equipment
-    equipment_map = {
-        "Fighter": ["Longsword", "Shield", "Chainmail", "Backpack", "50 GP"],
-        "Wizard": ["Quarterstaff", "Spellbook", "Robes", "Component Pouch", "25 GP"],
-        "Rogue": ["Shortsword", "Leather Armor", "Thieves' Tools", "Backpack", "40 GP"],
-        "Cleric": ["Mace", "Shield", "Chainmail", "Holy Symbol", "30 GP"],
-        "Paladin": ["Longsword", "Shield", "Plate Armor", "Holy Symbol", "40 GP"],
-        "Ranger": ["Longbow", "Arrows (20)", "Leather Armor", "Backpack", "40 GP"],
-        "Barbarian": ["Greataxe", "Javelin (4)", "Leather Armor", "Backpack", "50 GP"],
-        "Bard": ["Rapier", "Lute", "Leather Armor", "Backpack", "35 GP"],
-        "Sorcerer": ["Quarterstaff", "Component Pouch", "Robes", "Backpack", "30 GP"],
-        "Warlock": ["Dagger", "Component Pouch", "Leather Armor", "Backpack", "35 GP"],
-        "Druid": ["Quarterstaff", "Druidic Focus", "Leather Armor", "Backpack", "30 GP"],
-        "Monk": ["Quarterstaff", "Darts (10)", "Robes", "Backpack", "20 GP"]
-    }
-    character.equipment = equipment_map.get(char_class, ["Basic gear", "50 GP"])
+    # Add basic equipment (already added by RAG if successful)
+    if not character.equipment or not rag_enhanced:
+        equipment_map = {
+            "Fighter": ["Longsword", "Shield", "Chainmail", "Backpack", "50 GP"],
+            "Wizard": ["Quarterstaff", "Spellbook", "Robes", "Component Pouch", "25 GP"],
+            "Rogue": ["Shortsword", "Leather Armor", "Thieves' Tools", "Backpack", "40 GP"],
+            "Cleric": ["Mace", "Shield", "Chainmail", "Holy Symbol", "30 GP"],
+            "Paladin": ["Longsword", "Shield", "Plate Armor", "Holy Symbol", "40 GP"],
+            "Ranger": ["Longbow", "Arrows (20)", "Leather Armor", "Backpack", "40 GP"],
+            "Barbarian": ["Greataxe", "Javelin (4)", "Leather Armor", "Backpack", "50 GP"],
+            "Bard": ["Rapier", "Lute", "Leather Armor", "Backpack", "35 GP"],
+            "Sorcerer": ["Quarterstaff", "Component Pouch", "Robes", "Backpack", "30 GP"],
+            "Warlock": ["Dagger", "Component Pouch", "Leather Armor", "Backpack", "35 GP"],
+            "Druid": ["Quarterstaff", "Druidic Focus", "Leather Armor", "Backpack", "30 GP"],
+            "Monk": ["Quarterstaff", "Darts (10)", "Robes", "Backpack", "20 GP"]
+        }
+        character.equipment = equipment_map.get(char_class, ["Basic gear", "50 GP"])
 
     # Save character
     filename = f"{name.lower().replace(' ', '_')}.json"
@@ -762,10 +787,40 @@ def create_character(name: str, race: str, char_class: str, level: int,
     # Update character list
     new_choices = get_available_characters()
 
-    # Format success message with racial bonuses
-    success_msg = f"✅ Character '{name}' created successfully!\n\nSaved to: {save_result}\n\n"
+    # === FORMAT ENHANCED SUCCESS MESSAGE ===
+    success_msg = f"""✅ **Character Created Successfully!**
+
+**{name}** - {race} {char_class}, Level {level}
+📁 Saved to: `{save_result}`
+
+---
+
+### 📊 Ability Scores (with racial bonuses)
+"""
+    
+    for ability in ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma']:
+        base = base_scores[ability]
+        final = getattr(character, ability)
+        bonus = racial_bonus_details.get(ability, 0)
+        
+        if bonus > 0:
+            success_msg += f"- **{ability.upper()}**: {base} + {bonus} = **{final}** ({character.get_ability_modifier(final):+d})\n"
+        else:
+            success_msg += f"- **{ability.upper()}**: {final} ({character.get_ability_modifier(final):+d})\n"
+    
+    success_msg += f"\n### 🎲 Class Features\n"
+    success_msg += f"- **Hit Die**: 1d{hit_die} (HP: {character.hit_points})\n"
+    success_msg += f"- **Armor Class**: {character.armor_class}\n"
+    success_msg += f"- **Proficiency Bonus**: +{character.proficiency_bonus}\n"
+    
+    if character.class_features:
+        success_msg += f"\n**Starting Features**: {', '.join(character.class_features[:3])}\n"
+    
     if racial_bonuses_applied:
-        success_msg += f"{racial_bonuses_applied}"
+        success_msg += f"\n### 🧬 Racial Traits\n{racial_bonuses_applied}\n"
+    
+    if rag_enhanced:
+        success_msg += f"\n✨ *Enhanced with D&D 5e SRD data*"
 
     return (
         success_msg,
@@ -1695,6 +1750,13 @@ with demo:
                         )
                         submit_btn = gr.Button("Send", variant="primary", scale=1)
 
+                    # Quick Action Buttons
+                    with gr.Row():
+                        attack_btn = gr.Button("⚔️ Attack", variant="secondary", scale=1)
+                        cast_btn = gr.Button("✨ Cast Spell", variant="secondary", scale=1)
+                        use_item_btn = gr.Button("🎒 Use Item", variant="secondary", scale=1)
+                        help_btn = gr.Button("❓ Help", variant="secondary", scale=1)
+
                     with gr.Row():
                         clear_btn = gr.Button("Clear History")
                         gr.Markdown("**Quick Commands:** `/help` | `/stats` | `/map` | `/explore` | `/buy <item>` | `/sell <item>`")
@@ -1927,6 +1989,29 @@ with demo:
     clear_btn.click(
         clear_history,
         outputs=[chatbot]
+    )
+
+    # Quick action button handlers
+    attack_btn.click(
+        lambda: "I attack ",
+        outputs=[msg_input]
+    )
+
+    cast_btn.click(
+        chat,
+        inputs=[gr.State("/spells"), chatbot],
+        outputs=[chatbot, initiative_display, combat_accordion, character_sheet]
+    )
+
+    use_item_btn.click(
+        lambda: "I use ",
+        outputs=[msg_input]
+    )
+
+    help_btn.click(
+        chat,
+        inputs=[gr.State("/help"), chatbot],
+        outputs=[chatbot, initiative_display, combat_accordion, character_sheet]
     )
 
     # Event handlers - Create Character Tab

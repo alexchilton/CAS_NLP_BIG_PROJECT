@@ -29,6 +29,37 @@ How items work with lazy-generated locations:
 - What's implemented vs. missing
 - Future enhancements
 
+#### [EQUIPMENT_SYSTEM.md](EQUIPMENT_SYSTEM.md)
+Equipment and character management system:
+- Equipment tracking and persistence
+- Inventory management
+- Character stats integration
+
+### Character Creation System
+
+**RAG-Enhanced Character Creation** - Automatic application of official D&D 5e SRD rules:
+- **Hit Dice**: Extracted FROM SRD PDF (Barbarian d12, Wizard d6, etc.)
+- **Racial Bonuses**: Query ChromaDB for ability score increases (Elf +2 DEX, Dwarf +2 CON)
+- **Class Features**: Auto-apply proficiencies, starting equipment, spell slots FROM RAG
+- **Primary Abilities**: Recommended stats for each class (Wizard → Intelligence)
+- **No Magic Strings**: Uses constants (`CharacterClasses.WIZARD`, `CharacterRaces.ELF`)
+
+**Implementation:**
+- `dnd_rag_system/systems/rag_character_enhancer.py` - RAG lookup system
+- `scripts/parse_srd_pdf.py` - Extracts data from SRD-OGL_V5.1.pdf
+- `scripts/ingest_srd_to_chromadb.py` - Loads into ChromaDB collection `dnd5e_srd`
+- Auto-ingestion on first use (like other collections)
+
+**Test Coverage:** 34 tests passing
+- `tests/test_rag_character_enhancer.py` - 16 unit tests
+- `tests/test_srd_character_creation_integration.py` - 16 integration tests
+- `tests/test_complete_character_creation_e2e.py` - 2 E2E tests
+
+**GUI Integration:**
+- Character creation shows base scores + racial bonuses
+- Displays hit die, class features, proficiencies
+- "✨ Enhanced with D&D 5e SRD data" badge
+
 ### Development Guides
 
 #### [HUGGINGFACE_DEPLOYMENT.md](HUGGINGFACE_DEPLOYMENT.md)
@@ -121,6 +152,12 @@ D&D RAG System
 
 ## 🚀 Recent Additions
 
+- ✅ **RAG-Enhanced Character Creation** (Jan 15, 2026)
+  - Hit dice parsed from SRD PDF
+  - Racial bonuses from ChromaDB
+  - Class features auto-applied
+  - No magic strings (using constants)
+  - 34 tests passing
 - ✅ World State & Exploration System (Dec 26, 2025)
 - ✅ Lazy Location Generation (Dec 26, 2025)
 - ✅ Item Persistence Infrastructure (Dec 26, 2025)

@@ -31,6 +31,7 @@ from dnd_rag_system.systems.mechanics_extractor import MechanicsExtractor
 from dnd_rag_system.systems.mechanics_applicator import MechanicsApplicator
 from dnd_rag_system.systems.encounter_system import EncounterSystem
 from dnd_rag_system.systems.spell_manager import SpellManager
+from dnd_rag_system.constants import Commands, ActionKeywords
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -232,7 +233,7 @@ class GameMaster:
             from dnd_rag_system.systems.game_state import Condition
             if Condition.UNCONSCIOUS.value in self.session.character_state.conditions:
                 # Only allow certain commands while unconscious
-                allowed_commands = ['/help', '/stats', '/character', '/context', '/death_save', '/initiative']
+                allowed_commands = Commands.unconscious_allowed_commands()
                 if not any(player_input.lower().strip().startswith(cmd) for cmd in allowed_commands):
                     return """⚠️ **You are unconscious and cannot take actions!**
 
@@ -253,7 +254,7 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
         combat_command_handled = False
         lower_input = player_input.lower().strip()
 
-        if lower_input.startswith('/start_combat'):
+        if lower_input.startswith(Commands.START_COMBAT):
             # Parse NPCs from command: /start_combat Goblin, Orc, Dragon
             npc_list = []
             if ' ' in player_input:
@@ -294,7 +295,7 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             combat_feedback = self.combat_manager.advance_turn()
             combat_command_handled = True
 
-        elif lower_input == '/end_combat':
+        elif lower_input == Commands.END_COMBAT:
             # Award XP before ending combat
             xp_feedback = ""
 
@@ -383,7 +384,7 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
 
             combat_command_handled = True
 
-        elif lower_input == '/initiative':
+        elif lower_input == Commands.INITIATIVE:
             if self.session.party and len(self.session.party.characters) > 0:
                 combat_feedback = self.combat_manager.get_initiative_tracker(self.session.party)
             else:
@@ -434,6 +435,90 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                         self.session.character_state.remove_item(item_name, 1)
 
                     combat_command_handled = True
+
+        elif lower_input.startswith('/pickup '):
+            # Parse item name from command: /pickup healing potion
+            item_name = player_input.split(' ', 1)[1].strip() if ' ' in player_input else ""
+
+            if not item_name:
+                combat_feedback = "⚠️ Usage: `/pickup <item>` (e.g., `/pickup healing potion`)"
+                combat_command_handled = True
+            elif not self.session.character_state:
+                combat_feedback = "⚠️ No character state loaded!"
+                combat_command_handled = True
+            else:
+                # Get current location
+                current_loc = self.session.get_current_location_obj()
+
+                if not current_loc:
+                    combat_feedback = "⚠️ No location information available."
+                    combat_command_handled = True
+                elif not current_loc.has_item(item_name):
+                    # List available items for convenience
+                    available = ", ".join(current_loc.available_items[:5]) if current_loc.available_items else "nothing"
+                    combat_feedback = f"⚠️ '{item_name}' is not here.\n\nYou see: {available}"
+                    combat_command_handled = True
+                else:
+                    # Move item from location to character inventory
+                    current_loc.remove_item(item_name, moved_to="inventory")
+                    self.session.character_state.add_item(item_name, 1)
+
+                    combat_feedback = f"✅ Picked up **{item_name}**"
+                    combat_command_handled = True
+
+        elif lower_input == Commands.DEATH_SAVE:
+            # Death saving throw
+            if not self.session.character_state:
+                combat_feedback = "⚠️ No character state loaded!"
+                combat_command_handled = True
+            elif self.session.character_state.is_conscious():
+                combat_feedback = "⚠️ You are not unconscious! Death saving throws are only for unconscious characters (0 HP)."
+                combat_command_handled = True
+            else:
+                # Roll d20 for death saving throw
+                roll = random.randint(1, 20)
+
+                combat_feedback = f"🎲 **Death Saving Throw**: Rolled **{roll}**\n\n"
+
+                # Handle critical rolls first
+                if roll == 20:
+                    # Natural 20: Regain 1 HP and stabilize
+                    self.session.character_state.current_hp = 1
+                    self.session.character_state.death_saves.reset()
+                    combat_feedback += "🌟 **Natural 20!** You regain 1 HP and regain consciousness!\n\n"
+                    combat_feedback += f"✅ You are now at **1/{self.session.character_state.max_hp} HP**"
+                elif roll == 1:
+                    # Natural 1: Count as 2 failures
+                    dead, msg1 = self.session.character_state.death_saves.add_failure()
+                    if not dead:
+                        dead, msg2 = self.session.character_state.death_saves.add_failure()
+                        combat_feedback += f"💀 **Natural 1!** That counts as **2 failures**!\n\n"
+                        combat_feedback += f"❌ {msg2}"
+                        if dead:
+                            combat_feedback += "\n\n☠️ **YOU HAVE DIED** ☠️"
+                    else:
+                        combat_feedback += f"💀 **Natural 1!** {msg1}\n\n☠️ **YOU HAVE DIED** ☠️"
+                elif roll >= 10:
+                    # Success
+                    stabilized, msg = self.session.character_state.death_saves.add_success()
+                    combat_feedback += f"✅ **Success!** {msg}"
+                    if stabilized:
+                        combat_feedback += "\n\n🛡️ You are **stabilized** at 0 HP (no longer dying, but still unconscious)."
+                else:
+                    # Failure
+                    dead, msg = self.session.character_state.death_saves.add_failure()
+                    combat_feedback += f"❌ **Failure!** {msg}"
+                    if dead:
+                        combat_feedback += "\n\n☠️ **YOU HAVE DIED** ☠️"
+
+                # Show current death save status (unless dead or stabilized)
+                if self.session.character_state.current_hp == 0 and not self.session.character_state.death_saves.is_dead():
+                    if not self.session.character_state.death_saves.is_stable():
+                        combat_feedback += f"\n\n**Death Saves**: "
+                        combat_feedback += f"✅ {self.session.character_state.death_saves.successes}/3 | "
+                        combat_feedback += f"❌ {self.session.character_state.death_saves.failures}/3"
+
+                combat_command_handled = True
 
         elif lower_input in ['/rest', '/short_rest']:
             # Short rest - spend hit dice to heal
@@ -744,7 +829,7 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             combat_feedback = f"🗺️ {message}"
             combat_command_handled = True
 
-        elif lower_input == '/map':
+        elif lower_input == Commands.MAP:
             # Show world map - current location + discovered locations
             current_loc = self.session.get_current_location_obj()
             discovered = self.session.get_discovered_locations()
@@ -783,7 +868,7 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                 combat_feedback = "📍 Current location not found in world map."
             combat_command_handled = True
 
-        elif lower_input == '/locations':
+        elif lower_input == Commands.LOCATIONS:
             discovered = self.session.get_discovered_locations()
             if discovered:
                 combat_feedback = "🗺️ **Discovered Locations**:\n"
@@ -868,28 +953,76 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             if purchase_intent:
                 is_shop_transaction = True
                 item_name, quantity = purchase_intent
-                transaction = self.shop.attempt_purchase(
-                    self.session.character_state,
-                    item_name,
-                    quantity
-                )
-                transaction_feedback = f"**💰 SHOP TRANSACTION**: {transaction.message}\n\n"
 
-                if DEBUG_PROMPTS:
-                    logger.debug(f"🛒 Purchase: {item_name} x{quantity} - {transaction.message}")
+                # SHOP REALITY CHECK: Validate that we're actually in a shop location
+                current_loc = self.session.get_current_location_obj()
+                is_shop_available = False
+
+                # Check 1: Does the location have a shop?
+                if current_loc and getattr(current_loc, 'has_shop', False):
+                    is_shop_available = True
+
+                # Check 2: Is there a merchant/shopkeeper NPC present?
+                if not is_shop_available and self.session.npcs_present:
+                    merchant_keywords = ['merchant', 'shopkeeper', 'trader', 'vendor', 'seller']
+                    for npc in self.session.npcs_present:
+                        npc_name_lower = npc.lower()
+                        if any(keyword in npc_name_lower for keyword in merchant_keywords):
+                            is_shop_available = True
+                            break
+
+                if not is_shop_available:
+                    location_name = current_loc.name if current_loc else "this location"
+                    transaction_feedback = f"**❌ NO SHOP HERE**: There's no shop in {location_name}! You can't just buy things in the middle of nowhere. Find a marketplace, trading post, or merchant NPC first.\n\n"
+                    if DEBUG_PROMPTS:
+                        logger.debug(f"🚫 Shop Reality Check: Purchase blocked in {location_name}")
+                else:
+                    transaction = self.shop.attempt_purchase(
+                        self.session.character_state,
+                        item_name,
+                        quantity
+                    )
+                    transaction_feedback = f"**💰 SHOP TRANSACTION**: {transaction.message}\n\n"
+
+                    if DEBUG_PROMPTS:
+                        logger.debug(f"🛒 Purchase: {item_name} x{quantity} - {transaction.message}")
 
             elif sell_intent:
                 is_shop_transaction = True
                 item_name, quantity = sell_intent
-                transaction = self.shop.attempt_sale(
-                    self.session.character_state,
-                    item_name,
-                    quantity
-                )
-                transaction_feedback = f"**💵 SHOP TRANSACTION**: {transaction.message}\n\n"
 
-                if DEBUG_PROMPTS:
-                    logger.debug(f"💵 Sale: {item_name} x{quantity} - {transaction.message}")
+                # SHOP REALITY CHECK: Validate that we're actually in a shop location
+                current_loc = self.session.get_current_location_obj()
+                is_shop_available = False
+
+                # Check 1: Does the location have a shop?
+                if current_loc and getattr(current_loc, 'has_shop', False):
+                    is_shop_available = True
+
+                # Check 2: Is there a merchant/shopkeeper NPC present?
+                if not is_shop_available and self.session.npcs_present:
+                    merchant_keywords = ['merchant', 'shopkeeper', 'trader', 'vendor', 'seller', 'buyer']
+                    for npc in self.session.npcs_present:
+                        npc_name_lower = npc.lower()
+                        if any(keyword in npc_name_lower for keyword in merchant_keywords):
+                            is_shop_available = True
+                            break
+
+                if not is_shop_available:
+                    location_name = current_loc.name if current_loc else "this location"
+                    transaction_feedback = f"**❌ NO SHOP HERE**: There's no merchant in {location_name}! You can't sell items without a buyer. Find a marketplace, trading post, or merchant NPC first.\n\n"
+                    if DEBUG_PROMPTS:
+                        logger.debug(f"🚫 Shop Reality Check: Sale blocked in {location_name}")
+                else:
+                    transaction = self.shop.attempt_sale(
+                        self.session.character_state,
+                        item_name,
+                        quantity
+                    )
+                    transaction_feedback = f"**💵 SHOP TRANSACTION**: {transaction.message}\n\n"
+
+                    if DEBUG_PROMPTS:
+                        logger.debug(f"💵 Sale: {item_name} x{quantity} - {transaction.message}")
         
         # Step 0.5: Party Mode Character Parsing
         # If in party mode, extract which character is acting and temporarily set character_state

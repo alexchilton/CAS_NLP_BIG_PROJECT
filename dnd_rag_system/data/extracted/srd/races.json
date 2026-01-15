@@ -1,0 +1,82 @@
+[
+  {
+    "name": "Dwarf",
+    "type": "race",
+    "ability_bonuses": {
+      "constitution": 2
+    },
+    "traits": "See SRD for Dwarf traits"
+  },
+  {
+    "name": "Elf",
+    "type": "race",
+    "ability_bonuses": {
+      "dexterity": 2
+    },
+    "traits": "See SRD for Elf traits"
+  },
+  {
+    "name": "Halfling",
+    "type": "race",
+    "ability_bonuses": {
+      "dexterity": 2
+    },
+    "traits": "See SRD for Halfling traits"
+  },
+  {
+    "name": "Human",
+    "type": "race",
+    "ability_bonuses": {
+      "strength": 1,
+      "dexterity": 1,
+      "constitution": 1,
+      "intelligence": 1,
+      "wisdom": 1,
+      "charisma": 1
+    },
+    "traits": "See SRD for Human traits"
+  },
+  {
+    "name": "Dragonborn",
+    "type": "race",
+    "ability_bonuses": {
+      "strength": 2,
+      "charisma": 1
+    },
+    "traits": "See SRD for Dragonborn traits"
+  },
+  {
+    "name": "Gnome",
+    "type": "race",
+    "ability_bonuses": {
+      "intelligence": 2
+    },
+    "traits": "See SRD for Gnome traits"
+  },
+  {
+    "name": "Half-Elf",
+    "type": "race",
+    "ability_bonuses": {
+      "charisma": 2
+    },
+    "traits": "See SRD for Half-Elf traits"
+  },
+  {
+    "name": "Half-Orc",
+    "type": "race",
+    "ability_bonuses": {
+      "strength": 2,
+      "constitution": 1
+    },
+    "traits": "See SRD for Half-Orc traits"
+  },
+  {
+    "name": "Tiefling",
+    "type": "race",
+    "ability_bonuses": {
+      "intelligence": 1,
+      "charisma": 2
+    },
+    "traits": "See SRD for Tiefling traits"
+  }
+]
