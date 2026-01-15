@@ -6,7 +6,8 @@ import json
 from pathlib import Path
 
 # Add project root to path
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.config import settings
