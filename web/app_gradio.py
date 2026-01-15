@@ -418,7 +418,7 @@ def load_character_with_debug(character_choice: str, scenario_choice: Optional[s
     # CRITICAL: Clear old session state before loading new scenario
     # This prevents Goblin/Wolf from previous scenario appearing in Shopping District
     gm.session.npcs_present = []  # Clear all NPCs
-    gm.combat_manager.end_combat()  # End any active combat
+    _, _ = gm.combat_manager.end_combat()  # End any active combat (ignore return values)
     gm.message_history = []  # Clear chat history
     
     # Load character with specific location
@@ -618,7 +618,7 @@ def format_character_sheet() -> str:
 ---
 
 ### Combat Stats
-- **HP**: {current_hp}/{max_hp}
+- **HP**: {current_hp}/{max_hp}{f" (+{char_state.temp_hp} temp HP)" if char_state and char_state.temp_hp > 0 else ""}
 - **AC**: {char.armor_class}
 - **Proficiency Bonus**: +{char.proficiency_bonus}
 - **Gold**: {gold} GP
@@ -640,6 +640,31 @@ def format_character_sheet() -> str:
 {chr(10).join('- ' + f"{item} ({qty})" for item, qty in char_state.inventory.items() if item not in char.equipment) if char_state and char_state.inventory else '- Empty'}
 
 """
+
+    # Add death save display if unconscious
+    if char_state and not char_state.is_conscious():
+        sheet += f"""
+### ⚠️ Death Saves
+- **Successes**: {"✅ " * char_state.death_saves.successes}{"⬜ " * (3 - char_state.death_saves.successes)}
+- **Failures**: {"❌ " * char_state.death_saves.failures}{"⬜ " * (3 - char_state.death_saves.failures)}
+
+*Make a death saving throw each turn with `/death_save`*
+
+"""
+
+    # Add spell slot visualization if character is a spellcaster
+    if char_state and char_state.spellcasting_class:
+        sheet += """### ✨ Spell Slots
+"""
+        available_slots = char_state.spell_slots.get_available()
+        if available_slots:
+            for level, (current, max_slots) in sorted(available_slots.items()):
+                filled = "⬛" * current
+                empty = "⬜" * (max_slots - current)
+                sheet += f"- **Level {level}**: {filled}{empty} ({current}/{max_slots})\n"
+        else:
+            sheet += "*No spell slots*\n"
+        sheet += "\n"
 
     if char.spells:
         sheet += f"""### Spells
