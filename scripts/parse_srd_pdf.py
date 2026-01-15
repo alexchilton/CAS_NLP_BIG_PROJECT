@@ -141,22 +141,34 @@ class SRDParser:
         return primary_abilities.get(class_name, 'Unknown')
     
     def _extract_saving_throws(self, text: str) -> List[str]:
-        """Extract saving throw proficiencies."""
-        match = re.search(r'Saving\s+Throws:\s*([^\n]+)', text, re.IGNORECASE)
+        """Extract saving throw proficiencies (should be 2 abilities)."""
+        # Match "Saving Throws: Intelligence, Wisdom" up to next field
+        match = re.search(r'Saving\s+Throws:\s*([A-Za-z,\s]+?)(?:\s+Skills:|\s+Equipment:|$)', text, re.IGNORECASE)
         if match:
-            saves = match.group(1).strip()
-            return [s.strip() for s in saves.split(',')]
+            saves_str = match.group(1).strip()
+            # Split on comma and take only valid ability names
+            abilities = ['Strength', 'Dexterity', 'Constitution', 'Intelligence', 'Wisdom', 'Charisma']
+            saves = []
+            for part in saves_str.split(','):
+                part = part.strip()
+                if part in abilities:
+                    saves.append(part)
+            return saves[:2]  # Should be exactly 2
         return []
     
     def _extract_armor_prof(self, text: str) -> str:
         """Extract armor proficiencies."""
-        match = re.search(r'Armor:\s*([^\n]+)', text, re.IGNORECASE)
-        return match.group(1).strip() if match else 'None'
+        match = re.search(r'Armor:\s*(.+?)(?:\s+Weapons:|\s+Tools:|$)', text, re.IGNORECASE)
+        if match:
+            return match.group(1).strip()
+        return 'None'
     
     def _extract_weapon_prof(self, text: str) -> str:
         """Extract weapon proficiencies."""
-        match = re.search(r'Weapons:\s*([^\n]+)', text, re.IGNORECASE)
-        return match.group(1).strip() if match else 'Simple weapons'
+        match = re.search(r'Weapons:\s*(.+?)(?:\s+Tools:|\s+Saving|$)', text, re.IGNORECASE)
+        if match:
+            return match.group(1).strip()
+        return 'Simple weapons'
     
     def _extract_tool_prof(self, text: str) -> str:
         """Extract tool proficiencies."""

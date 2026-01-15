@@ -75,9 +75,24 @@ class Character:
         }
 
     def calculate_hit_points(self, hit_die: int) -> int:
-        """Calculate starting HP."""
+        """
+        Calculate HP for character's level.
+        
+        Formula:
+        - Level 1: max hit die + CON modifier
+        - Each additional level: average of hit die + CON modifier
+        """
         con_mod = self.get_ability_modifier(self.constitution)
-        return hit_die + con_mod
+        
+        # First level: full hit die + CON mod
+        hp = hit_die + con_mod
+        
+        # Additional levels: average + CON mod per level
+        if self.level > 1:
+            avg_roll = (hit_die // 2) + 1  # e.g., d6 = 4, d8 = 5, d10 = 6, d12 = 7
+            hp += (self.level - 1) * (avg_roll + con_mod)
+        
+        return max(1, hp)  # Minimum 1 HP
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for JSON export."""
