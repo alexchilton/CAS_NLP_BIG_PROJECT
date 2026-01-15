@@ -16,7 +16,7 @@ import re
 from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 
 # Add project to path
@@ -28,12 +28,27 @@ os.environ['GM_DEBUG'] = 'true'
 
 def wait_for_gradio(driver, timeout=30):
     """Wait for Gradio interface to fully load."""
-    print("⏳ Waiting for Gradio to load...")
+    print("⏳ Waiting for Gradio interface...")
+
+    # Wait for gradio-app tag
     WebDriverWait(driver, timeout).until(
         EC.presence_of_element_located((By.TAG_NAME, "gradio-app"))
     )
-    time.sleep(2)
-    print("✅ Gradio loaded")
+
+    # Wait longer for JavaScript to render
+    print("   ⏳ Waiting for JavaScript to render components...")
+    time.sleep(10)  # Increased from 2 to 10 seconds
+
+    # Wait for any button to appear (sign that UI is rendered)
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, "button"))
+        )
+        print("   ✅ Buttons detected - UI rendered")
+    except:
+        print("   ⚠️  No buttons found yet, continuing anyway...")
+
+    print("✅ Gradio interface loaded")
 
 
 def find_chat_input(driver):
@@ -97,34 +112,44 @@ def get_chat_messages(driver):
 
 
 def load_character(driver, char_name="Elara"):
-    """Load a character via UI."""
+    """Load a character via UI dropdown."""
     print(f"\n📝 Loading character: {char_name}")
-
-    dropdowns = driver.find_elements(By.TAG_NAME, "select")
-    char_dropdown = None
-    for dd in dropdowns:
-        if dd.is_displayed():
-            char_dropdown = dd
+    
+    # Find the character dropdown by aria-label
+    # Gradio renders dropdowns as <input role="listbox">
+    try:
+        char_dropdown = driver.find_element(By.CSS_SELECTOR, 'input[aria-label="Choose Your Character"]')
+        print(f"✅ Found character dropdown")
+    except:
+        print(f"❌ Could not find character dropdown")
+        driver.save_screenshot('/tmp/dropdown_not_found.png')
+        raise Exception("Character dropdown not found - check screenshot at /tmp/dropdown_not_found.png")
+    
+    # Click to open dropdown
+    char_dropdown.click()
+    time.sleep(1)
+    
+    # Find and click the character option
+    options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
+    print(f"   Found {len(options)} options")
+    
+    for opt in options:
+        if char_name.lower() in opt.text.lower():
+            print(f"   Selecting: {opt.text}")
+            opt.click()
+            time.sleep(1)
             break
-
-    if char_dropdown:
-        char_dropdown.click()
-        time.sleep(0.5)
-
-        options = char_dropdown.find_elements(By.TAG_NAME, "option")
-        for opt in options:
-            if char_name.lower() in opt.text.lower():
-                opt.click()
-                break
-
+    
+    # Click Load Character button
     buttons = driver.find_elements(By.TAG_NAME, "button")
     for btn in buttons:
-        if "load character" in btn.text.lower():
+        if "Load Character" in btn.text:
+            print(f"   Clicking Load Character button")
             btn.click()
-            time.sleep(3)
+            time.sleep(7)  # Wait for character to load
             break
-
-    print(f"✅ Character loaded")
+    
+    print(f"✅ Character loaded: {char_name}")
 
 
 def check_combat_over(message):
@@ -152,22 +177,10 @@ def test_wizard_spell_combat():
     print("\n" + "✨" * 40)
     print("WIZARD SPELL COMBAT TEST - FIGHT TO DEATH")
     print("✨" * 40)
-
-    # Start Gradio with Ancient Ruins location
-    import subprocess
-    env = os.environ.copy()
-    env['TEST_START_LOCATION'] = 'Ancient Ruins'
-    print(f"\n🚀 Starting Gradio with TEST_START_LOCATION='{env['TEST_START_LOCATION']}'")
-
-    gradio_process = subprocess.Popen(
-        ['python3', 'web/app_gradio.py'],
-        env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
-    )
-
-    # Wait for Gradio to start
-    time.sleep(8)
+    print("\n⚠️  NOTE: This test connects to your running Gradio instance at http://localhost:7860")
+    print("   Make sure Gradio is running before starting this test!")
+    print("   The test will use whatever character/location is currently loaded.")
+    print("✨" * 40)
 
     options = webdriver.ChromeOptions()
     if os.environ.get('HEADLESS', 'false').lower() == 'true':
@@ -184,7 +197,7 @@ def test_wizard_spell_combat():
         wait_for_gradio(driver)
 
         print("\n" + "=" * 80)
-        print("SETUP: Loading Elara (Wizard) at Ancient Ruins")
+        print("SETUP: Loading Elara (Wizard)")
         print("=" * 80)
 
         load_character(driver, "Elara")
@@ -304,15 +317,8 @@ def test_wizard_spell_combat():
     finally:
         time.sleep(2)
         driver.quit()
-
-        # Stop Gradio
-        print("\n🛑 Stopping Gradio process...")
-        gradio_process.terminate()
-        try:
-            gradio_process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            gradio_process.kill()
-            gradio_process.wait()
+        print("\n✅ Browser closed")
+        print("\n⚠️  Note: Gradio is still running at http://localhost:7860")
 
 
 if __name__ == "__main__":
