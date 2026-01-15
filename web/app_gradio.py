@@ -213,6 +213,21 @@ def load_character_with_location(character_choice: str, location_name: Optional[
     # Add race and class for personality-driven responses
     char_state.race = char.race
     char_state.character_class = char.character_class
+    
+    # Set spellcasting_class for spellcasters
+    from dnd_rag_system.constants import CharacterClasses
+    SPELLCASTING_CLASSES = [
+        CharacterClasses.WIZARD,
+        CharacterClasses.SORCERER,
+        CharacterClasses.WARLOCK,
+        CharacterClasses.CLERIC,
+        CharacterClasses.DRUID,
+        CharacterClasses.BARD,
+        CharacterClasses.PALADIN,
+        CharacterClasses.RANGER
+    ]
+    if char.character_class in SPELLCASTING_CLASSES:
+        char_state.spellcasting_class = char.character_class
 
     # Add spells to character state for spell validation
     if char.spells:
@@ -1538,6 +1553,22 @@ def add_to_party(character_choices: List[str]) -> str:
                 max_hp=char.hit_points,
                 level=char.level
             )
+            
+            # Set spellcasting_class for spellcasters
+            from dnd_rag_system.constants import CharacterClasses
+            SPELLCASTING_CLASSES = [
+                CharacterClasses.WIZARD,
+                CharacterClasses.SORCERER,
+                CharacterClasses.WARLOCK,
+                CharacterClasses.CLERIC,
+                CharacterClasses.DRUID,
+                CharacterClasses.BARD,
+                CharacterClasses.PALADIN,
+                CharacterClasses.RANGER
+            ]
+            if char.character_class in SPELLCASTING_CLASSES:
+                char_state.spellcasting_class = char.character_class
+            
             party.add_character(char_state)
             added_count += 1
 
