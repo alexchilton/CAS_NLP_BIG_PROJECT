@@ -138,6 +138,7 @@ class Location:
             "connections": self.connections,
             "defeated_enemies": list(self.defeated_enemies),
             "moved_items": self.moved_items,
+            "available_items": self.available_items,
             "completed_events": list(self.completed_events),
             "resident_npcs": self.resident_npcs,
             "visit_count": self.visit_count,
@@ -158,6 +159,7 @@ class Location:
             connections=data.get("connections", []),
             defeated_enemies=set(data.get("defeated_enemies", [])),
             moved_items=data.get("moved_items", {}),
+            available_items=data.get("available_items", []),
             completed_events=set(data.get("completed_events", [])),
             resident_npcs=data.get("resident_npcs", []),
             visit_count=data.get("visit_count", 0),
@@ -316,6 +318,12 @@ class CharacterState:
     hit_dice_current: int = 0  # For short rest healing
     hit_dice_max: int = 0
 
+    # Spell knowledge and preparation (D&D 5e)
+    spellcasting_class: Optional[str] = None  # "Wizard", "Sorcerer", etc. (None = non-caster)
+    spellcasting_ability: str = "INT"  # INT, WIS, or CHA
+    known_spells: List[str] = field(default_factory=list)  # All spells known (for all casters)
+    prepared_spells: List[str] = field(default_factory=list)  # Currently prepared (Wizard/Cleric/Druid/Paladin)
+
     # Inventory (item_name: quantity)
     inventory: Dict[str, int] = field(default_factory=dict)
 
@@ -441,12 +449,29 @@ class CharacterState:
 
     # Spell Management
     def cast_spell(self, spell_level: int, spell_name: str,
-                   requires_concentration: bool = False) -> Dict[str, Any]:
+                   requires_concentration: bool = False,
+                   skip_validation: bool = False) -> Dict[str, Any]:
         """
         Cast a spell, consuming a spell slot.
 
-        Returns success status and message.
+        Args:
+            spell_level: Level of spell slot to use
+            spell_name: Name of spell to cast
+            requires_concentration: Whether spell requires concentration
+            skip_validation: Skip spell known/prepared check (for backwards compatibility)
+
+        Returns:
+            Dict with success status and message
         """
+        # Validate spell is known/prepared (unless skipped for backwards compatibility)
+        if not skip_validation and self.spellcasting_class:
+            can_cast, reason = self.can_cast_spell(spell_name)
+            if not can_cast:
+                return {
+                    "success": False,
+                    "message": reason
+                }
+
         # Cantrips don't use slots
         if spell_level == 0:
             if requires_concentration:
@@ -522,6 +547,209 @@ class CharacterState:
             self.break_concentration()
 
         return success
+
+    # Spell Learning and Preparation
+    def is_prepared_caster(self) -> bool:
+        """
+        Check if this character uses prepared spells (Wizard, Cleric, Druid, Paladin).
+
+        Returns:
+            True if prepared caster, False if known caster or non-caster
+        """
+        if not self.spellcasting_class:
+            return False
+
+        prepared_classes = ["Wizard", "Cleric", "Druid", "Paladin"]
+        return self.spellcasting_class in prepared_classes
+
+    def is_known_caster(self) -> bool:
+        """
+        Check if this character uses known spells (Sorcerer, Bard, Warlock, Ranger).
+
+        Returns:
+            True if known caster, False otherwise
+        """
+        if not self.spellcasting_class:
+            return False
+
+        known_classes = ["Sorcerer", "Bard", "Warlock", "Ranger"]
+        return self.spellcasting_class in known_classes
+
+    def get_max_prepared_spells(self, ability_modifier: int) -> int:
+        """
+        Calculate maximum number of prepared spells.
+
+        For prepared casters: ability_modifier + class_level (minimum 1)
+        For known casters: returns number of known spells (unlimited prepared)
+
+        Args:
+            ability_modifier: Spellcasting ability modifier (INT, WIS, or CHA)
+
+        Returns:
+            Maximum number of prepared spells
+        """
+        if not self.spellcasting_class:
+            return 0
+
+        if self.is_prepared_caster():
+            # Prepared casters: ability mod + level (min 1)
+            return max(1, ability_modifier + self.level)
+        else:
+            # Known casters can cast any known spell
+            return len(self.known_spells)
+
+    def learn_spell(self, spell_name: str) -> Dict[str, Any]:
+        """
+        Learn a new spell.
+
+        For all casters: adds to known_spells list
+        For prepared casters: must still prepare daily
+        For known casters: can cast immediately
+
+        Args:
+            spell_name: Name of spell to learn
+
+        Returns:
+            Dict with success status and message
+        """
+        if not self.spellcasting_class:
+            return {
+                "success": False,
+                "message": f"{self.character_name} is not a spellcaster"
+            }
+
+        # Check if already known
+        if spell_name in self.known_spells:
+            return {
+                "success": False,
+                "message": f"Already know {spell_name}"
+            }
+
+        # Add to known spells
+        self.known_spells.append(spell_name)
+
+        # For known casters, automatically prepare it
+        if self.is_known_caster():
+            if spell_name not in self.prepared_spells:
+                self.prepared_spells.append(spell_name)
+
+        return {
+            "success": True,
+            "spell_name": spell_name,
+            "message": f"Learned {spell_name}!" +
+                      (" (automatically prepared)" if self.is_known_caster() else " (must prepare to cast)")
+        }
+
+    def prepare_spell(self, spell_name: str, ability_modifier: int) -> Dict[str, Any]:
+        """
+        Prepare a spell for casting (prepared casters only).
+
+        Args:
+            spell_name: Name of spell to prepare
+            ability_modifier: Spellcasting ability modifier
+
+        Returns:
+            Dict with success status and message
+        """
+        if not self.is_prepared_caster():
+            return {
+                "success": False,
+                "message": f"{self.spellcasting_class} uses known spells, not prepared spells"
+            }
+
+        # Check if spell is known
+        if spell_name not in self.known_spells:
+            return {
+                "success": False,
+                "message": f"Don't know {spell_name}. Must learn it first (find scroll, level up, etc.)"
+            }
+
+        # Check if already prepared
+        if spell_name in self.prepared_spells:
+            return {
+                "success": False,
+                "message": f"{spell_name} is already prepared"
+            }
+
+        # Check preparation limit
+        max_prepared = self.get_max_prepared_spells(ability_modifier)
+        if len(self.prepared_spells) >= max_prepared:
+            return {
+                "success": False,
+                "message": f"Already have {max_prepared} spells prepared (limit reached). Unprepare a spell first."
+            }
+
+        # Prepare the spell
+        self.prepared_spells.append(spell_name)
+
+        return {
+            "success": True,
+            "spell_name": spell_name,
+            "prepared_count": len(self.prepared_spells),
+            "max_prepared": max_prepared,
+            "message": f"Prepared {spell_name} ({len(self.prepared_spells)}/{max_prepared} spells prepared)"
+        }
+
+    def unprepare_spell(self, spell_name: str) -> Dict[str, Any]:
+        """
+        Unprepare a spell (prepared casters only).
+
+        Args:
+            spell_name: Name of spell to unprepare
+
+        Returns:
+            Dict with success status and message
+        """
+        if not self.is_prepared_caster():
+            return {
+                "success": False,
+                "message": f"{self.spellcasting_class} uses known spells, not prepared spells"
+            }
+
+        if spell_name not in self.prepared_spells:
+            return {
+                "success": False,
+                "message": f"{spell_name} is not prepared"
+            }
+
+        self.prepared_spells.remove(spell_name)
+
+        return {
+            "success": True,
+            "spell_name": spell_name,
+            "message": f"Unprepared {spell_name}"
+        }
+
+    def can_cast_spell(self, spell_name: str) -> Tuple[bool, str]:
+        """
+        Check if character can cast a specific spell.
+
+        Validates:
+        - Character is a spellcaster
+        - Spell is known
+        - Spell is prepared (if prepared caster)
+
+        Does NOT check spell slots (use has_slot() separately)
+
+        Args:
+            spell_name: Name of spell to check
+
+        Returns:
+            Tuple of (can_cast, reason)
+        """
+        if not self.spellcasting_class:
+            return False, f"{self.character_name} is not a spellcaster"
+
+        # Check if spell is known
+        if spell_name not in self.known_spells:
+            return False, f"Don't know {spell_name}"
+
+        # For prepared casters, must be prepared
+        if self.is_prepared_caster():
+            if spell_name not in self.prepared_spells:
+                return False, f"{spell_name} is not prepared. Use /prepare_spell to prepare it."
+
+        return True, "Can cast"
 
     # Inventory Management
     def add_item(self, item_name: str, quantity: int = 1):
@@ -811,6 +1039,10 @@ class CharacterState:
             "spell_slots": asdict(self.spell_slots),
             "hit_dice_current": self.hit_dice_current,
             "hit_dice_max": self.hit_dice_max,
+            "spellcasting_class": self.spellcasting_class,
+            "spellcasting_ability": self.spellcasting_ability,
+            "known_spells": self.known_spells,
+            "prepared_spells": self.prepared_spells,
             "inventory": self.inventory,
             "gold": self.gold,
             "experience_points": self.experience_points,
@@ -837,6 +1069,10 @@ class CharacterState:
             spell_slots=spell_slots,
             hit_dice_current=data.get("hit_dice_current", 0),
             hit_dice_max=data.get("hit_dice_max", 0),
+            spellcasting_class=data.get("spellcasting_class"),
+            spellcasting_ability=data.get("spellcasting_ability", "INT"),
+            known_spells=data.get("known_spells", []),
+            prepared_spells=data.get("prepared_spells", []),
             inventory=data.get("inventory", {}),
             gold=data.get("gold", 50),
             experience_points=data.get("experience_points", 0),
@@ -968,6 +1204,36 @@ class CombatState:
 
         return "\n".join(lines)
 
+    def to_dict(self) -> Dict:
+        """Convert to dictionary for JSON serialization."""
+        return {
+            "in_combat": self.in_combat,
+            "round_number": self.round_number,
+            "initiative_order": self.initiative_order,
+            "current_turn_index": self.current_turn_index,
+            "active_effects": {
+                name: list(data) for name, data in self.active_effects.items()
+            }
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict) -> "CombatState":
+        """Create CombatState from dictionary."""
+        combat = cls(
+            in_combat=data.get("in_combat", False),
+            round_number=data.get("round_number", 0),
+            initiative_order=data.get("initiative_order", []),
+            current_turn_index=data.get("current_turn_index", 0)
+        )
+
+        # Reconstruct active effects (convert lists back to tuples)
+        combat.active_effects = {
+            name: tuple(effect_data)
+            for name, effect_data in data.get("active_effects", {}).items()
+        }
+
+        return combat
+
 
 @dataclass
 class PartyState:
@@ -1090,6 +1356,30 @@ class PartyState:
                 lines.append(f"  {item} x{qty}")
 
         return "\n".join(lines)
+
+    def to_dict(self) -> Dict:
+        """Convert to dictionary for JSON serialization."""
+        return {
+            "party_name": self.party_name,
+            "characters": {name: char.to_dict() for name, char in self.characters.items()},
+            "shared_inventory": self.shared_inventory,
+            "gold": self.gold
+        }
+
+    @classmethod
+    def from_dict(cls, data: Dict) -> "PartyState":
+        """Create PartyState from dictionary."""
+        party = cls(
+            party_name=data.get("party_name", "Adventuring Party"),
+            shared_inventory=data.get("shared_inventory", {}),
+            gold=data.get("gold", 0)
+        )
+
+        # Reconstruct character states
+        for name, char_data in data.get("characters", {}).items():
+            party.characters[name] = CharacterState.from_dict(char_data)
+
+        return party
 
 
 @dataclass
@@ -1314,6 +1604,112 @@ class GameSession:
                     lines.append(f"  - {quest['name']}: {quest['description']}")
 
         return "\n".join(lines)
+
+    def save_to_json(self, filepath: Path):
+        """
+        Save complete game session to JSON file.
+
+        This saves everything:
+        - World map (all locations)
+        - Character state
+        - Party state (all party members)
+        - Combat state (if in combat)
+        - Quests, NPCs, time, etc.
+
+        Args:
+            filepath: Path to save file (e.g., Path("saves/game1.json"))
+        """
+        # Ensure directory exists
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+
+        save_data = {
+            "version": "1.0",  # For future compatibility
+            "session_name": self.session_name,
+            "current_location": self.current_location,
+            "scene_description": self.scene_description,
+
+            # World map (serialize all locations)
+            "world_map": {
+                name: loc.to_dict() for name, loc in self.world_map.items()
+            },
+
+            # Character state (single character mode)
+            "character_state": self.character_state.to_dict() if self.character_state else None,
+
+            # Party and combat
+            "party": self.party.to_dict(),
+            "combat": self.combat.to_dict(),
+
+            # Quests
+            "active_quests": self.active_quests,
+            "completed_quests": self.completed_quests,
+
+            # NPCs and time
+            "npcs_present": self.npcs_present,
+            "day": self.day,
+            "time_of_day": self.time_of_day,
+
+            # Encounter tracking
+            "turns_since_last_encounter": self.turns_since_last_encounter,
+            "last_encounter_location": self.last_encounter_location,
+
+            # Notes
+            "notes": self.notes
+        }
+
+        with open(filepath, 'w') as f:
+            json.dump(save_data, f, indent=2)
+
+    @classmethod
+    def load_from_json(cls, filepath: Path) -> "GameSession":
+        """
+        Load complete game session from JSON file.
+
+        Args:
+            filepath: Path to save file
+
+        Returns:
+            GameSession with all state restored
+        """
+        with open(filepath, 'r') as f:
+            data = json.load(f)
+
+        # Create session
+        session = cls(
+            session_name=data.get("session_name", "Loaded Game"),
+            current_location=data.get("current_location", "Unknown"),
+            scene_description=data.get("scene_description", ""),
+            day=data.get("day", 1),
+            time_of_day=data.get("time_of_day", "morning"),
+            turns_since_last_encounter=data.get("turns_since_last_encounter", 0),
+            last_encounter_location=data.get("last_encounter_location", "")
+        )
+
+        # Restore world map
+        session.world_map = {
+            name: Location.from_dict(loc_data)
+            for name, loc_data in data.get("world_map", {}).items()
+        }
+
+        # Restore character state
+        if data.get("character_state"):
+            session.character_state = CharacterState.from_dict(data["character_state"])
+
+        # Restore party
+        session.party = PartyState.from_dict(data.get("party", {}))
+
+        # Restore combat
+        session.combat = CombatState.from_dict(data.get("combat", {}))
+
+        # Restore quests
+        session.active_quests = data.get("active_quests", [])
+        session.completed_quests = data.get("completed_quests", [])
+
+        # Restore NPCs and notes
+        session.npcs_present = data.get("npcs_present", [])
+        session.notes = data.get("notes", [])
+
+        return session
 
 
 # Helper functions for spell slot initialization

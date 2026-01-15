@@ -244,7 +244,7 @@ def load_dm_guide(db_manager: ChromaDBManager, clear: bool = False, pages_per_ch
         db_manager.clear_collection(collection_name)
 
     # Check if PDF exists
-    pdf_path = Path(__file__).parent / "dm_guide.pdf"
+    pdf_path = Path(__file__).parent / "dnd_rag_system" / "data" / "reference" / "dm_guide.pdf"
 
     if not pdf_path.exists():
         print(f"❌ DM Guide PDF not found: {pdf_path}")

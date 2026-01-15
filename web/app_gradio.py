@@ -836,7 +836,7 @@ def chat(message: str, history: list) -> Tuple[list, str, gr.update, str]:
     Returns:
         Tuple of (updated_history, initiative_display, accordion_update, character_sheet)
     """
-    global conversation_history, gameplay_mode
+    global conversation_history, gameplay_mode, current_character
 
     # Check if in party mode or character mode
     if gameplay_mode == "party":
@@ -890,10 +890,18 @@ def chat(message: str, history: list) -> Tuple[list, str, gr.update, str]:
 - `/unequip <slot>` - Unequip an item from a slot (e.g., ring_left, neck, armor)
 - `/equipment` - Show all equipped items and bonuses
 
+**Save/Load:**
+- `/save_game <name>` - Save current game session (e.g., `/save_game campaign1`)
+- `/load_game <name>` - Load a saved game session (e.g., `/load_game campaign1`)
+
 **Items & Potions:**
 - `/use <item>` - Use a potion or item (e.g., `/use healing potion`)
 
 **Spellcasting:**
+- `/spells` - Show your known and prepared spells
+- `/learn_spell <spell>` - Learn a new spell (e.g., `/learn_spell Fireball`)
+- `/prepare_spell <spell>` - Prepare a spell for casting (Wizard/Cleric/Druid/Paladin)
+- `/unprepare_spell <spell>` - Unprepare a spell (frees up a preparation slot)
 - `/cast <spell>` - Cast a spell on yourself (e.g., `/cast shield`)
 - `/cast <spell> on <target>` - Cast a spell on a target (e.g., `/cast cure wounds on Thorin`)
 
@@ -1072,6 +1080,295 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
                     history + [
                         {"role": "user", "content": message},
                         {"role": "assistant", "content": "⚠️ No character loaded"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+        elif cmd.startswith("/learn_spell "):
+            # Learn a new spell
+            spell_name = message[13:].strip()  # Get spell after "/learn_spell "
+            if not spell_name:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "Usage: `/learn_spell <spell>` (e.g., `/learn_spell Fireball`)"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+            if gm.session.character_state:
+                result = gm.session.character_state.learn_spell(spell_name)
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": result["message"]}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+            else:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "⚠️ No character loaded"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+        elif cmd.startswith("/prepare_spell "):
+            # Prepare a spell (prepared casters only)
+            spell_name = message[15:].strip()  # Get spell after "/prepare_spell "
+            if not spell_name:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "Usage: `/prepare_spell <spell>` (e.g., `/prepare_spell Magic Missile`)"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+            if gm.session.character_state:
+                # Need ability modifier - get from character
+                if current_character:
+                    ability_mod = current_character.get_ability_modifier(
+                        getattr(current_character, gm.session.character_state.spellcasting_ability.lower(), 10)
+                    )
+                else:
+                    ability_mod = 0  # Default
+
+                result = gm.session.character_state.prepare_spell(spell_name, ability_mod)
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": result["message"]}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+            else:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "⚠️ No character loaded"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+        elif cmd.startswith("/unprepare_spell "):
+            # Unprepare a spell
+            spell_name = message[17:].strip()  # Get spell after "/unprepare_spell "
+            if not spell_name:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "Usage: `/unprepare_spell <spell>` (e.g., `/unprepare_spell Fireball`)"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+            if gm.session.character_state:
+                result = gm.session.character_state.unprepare_spell(spell_name)
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": result["message"]}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+            else:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "⚠️ No character loaded"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+        elif cmd == "/spells":
+            # Show known and prepared spells
+            if gm.session.character_state:
+                char_state = gm.session.character_state
+
+                if not char_state.spellcasting_class:
+                    spell_msg = "❌ You are not a spellcaster"
+                else:
+                    spell_msg = f"# 📖 Spells for {char_state.character_name}\n\n"
+                    spell_msg += f"**Class**: {char_state.spellcasting_class} ({char_state.spellcasting_ability}-based)\n\n"
+
+                    if char_state.is_prepared_caster():
+                        # Prepared caster (Wizard, Cleric, etc.)
+                        spell_msg += f"**Type**: Prepared Caster\n"
+
+                        if current_character:
+                            ability_score = getattr(current_character, char_state.spellcasting_ability.lower(), 10)
+                            ability_mod = current_character.get_ability_modifier(ability_score)
+                            max_prepared = char_state.get_max_prepared_spells(ability_mod)
+                            spell_msg += f"**Max Prepared**: {max_prepared} ({ability_mod} modifier + {char_state.level} level)\n\n"
+                        else:
+                            spell_msg += "\n"
+
+                        spell_msg += f"### Known Spells ({len(char_state.known_spells)})\n"
+                        if char_state.known_spells:
+                            spell_msg += "\n".join([f"- {spell}" for spell in char_state.known_spells])
+                        else:
+                            spell_msg += "*None*"
+
+                        spell_msg += f"\n\n### Prepared Spells ({len(char_state.prepared_spells)})\n"
+                        if char_state.prepared_spells:
+                            spell_msg += "\n".join([f"- ✓ {spell}" for spell in char_state.prepared_spells])
+                        else:
+                            spell_msg += "*None - use `/prepare_spell <spell>` to prepare spells*"
+                    else:
+                        # Known caster (Sorcerer, Bard, etc.)
+                        spell_msg += f"**Type**: Known Caster (all known spells are prepared)\n\n"
+
+                        spell_msg += f"### Known Spells ({len(char_state.known_spells)})\n"
+                        if char_state.known_spells:
+                            spell_msg += "\n".join([f"- {spell}" for spell in char_state.known_spells])
+                        else:
+                            spell_msg += "*None - use `/learn_spell <spell>` to learn spells*"
+
+                    # Show spell slots
+                    spell_msg += "\n\n### Spell Slots\n"
+                    available_slots = char_state.spell_slots.get_available()
+                    if available_slots:
+                        for level, (current, max_slots) in available_slots.items():
+                            spell_msg += f"- **Level {level}**: {current}/{max_slots}\n"
+                    else:
+                        spell_msg += "*No spell slots*"
+
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": spell_msg}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+            else:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "⚠️ No character loaded"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+        elif cmd.startswith("/save_game "):
+            # Save game session
+            save_name = message[11:].strip()  # Get name after "/save_game "
+            if not save_name:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "Usage: `/save_game <name>` (e.g., `/save_game campaign1`)"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+            try:
+                saves_dir = Path(__file__).parent.parent / "saves"
+                saves_dir.mkdir(exist_ok=True)
+
+                save_path = saves_dir / f"{save_name}.json"
+                gm.session.save_to_json(save_path)
+
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": f"✅ Game saved successfully!\n\nSaved to: `{save_path}`\n\nYou can load this save with: `/load_game {save_name}`"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+            except Exception as e:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": f"❌ Error saving game: {str(e)}"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+        elif cmd.startswith("/load_game "):
+            # Load game session
+            save_name = message[11:].strip()  # Get name after "/load_game "
+            if not save_name:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": "Usage: `/load_game <name>` (e.g., `/load_game campaign1`)"}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+
+            try:
+                saves_dir = Path(__file__).parent.parent / "saves"
+                save_path = saves_dir / f"{save_name}.json"
+
+                if not save_path.exists():
+                    # List available saves
+                    available_saves = [f.stem for f in saves_dir.glob("*.json")] if saves_dir.exists() else []
+                    saves_list = ", ".join(available_saves) if available_saves else "none"
+
+                    return (
+                        history + [
+                            {"role": "user", "content": message},
+                            {"role": "assistant", "content": f"❌ Save file '{save_name}' not found.\n\nAvailable saves: {saves_list}"}
+                        ],
+                        *get_initiative_tracker(),
+                        get_current_sheet()
+                    )
+
+                # Load the session
+                from dnd_rag_system.systems.game_state import GameSession
+                gm.session = GameSession.load_from_json(save_path)
+
+                # Restore character state to global (for UI display)
+                if gm.session.character_state:
+                    # Recreate Character object from character state for display
+                    # This is a simplified version - ideally would load full Character from base_character_stats
+                    char_name = gm.session.character_state.character_name
+                    if char_name in gm.session.base_character_stats:
+                        current_character = gm.session.base_character_stats[char_name]
+
+                location = gm.session.current_location
+                char_state = gm.session.character_state
+
+                load_message = f"✅ Game loaded successfully!\n\n**Location**: {location}\n"
+                if char_state:
+                    load_message += f"**Character**: {char_state.character_name}\n"
+                    load_message += f"**HP**: {char_state.current_hp}/{char_state.max_hp}\n"
+                    load_message += f"**Gold**: {char_state.gold} GP\n"
+
+                if gm.combat_manager.is_in_combat():
+                    load_message += f"\n⚔️ **In Combat** - Round {gm.session.combat.round_number}"
+
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": load_message}
+                    ],
+                    *get_initiative_tracker(),
+                    get_current_sheet()
+                )
+            except Exception as e:
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": f"❌ Error loading game: {str(e)}"}
                     ],
                     *get_initiative_tracker(),
                     get_current_sheet()
