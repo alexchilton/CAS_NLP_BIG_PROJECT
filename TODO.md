@@ -126,18 +126,7 @@
 
 ## 🧹 CODE CLEANLINESS (Refactoring)
 
-### ✅ Rename GameSession to ConversationSession - COMPLETED (2026-01-15)
-**NAMING CLARITY** - Resolved naming conflict between two different session classes
-- **Files**:
-  - Simple dialogue system: `gm_dialogue.py:30-47` (ConversationSession - tracks LLM conversation)
-  - Full game system: `game_state.py:1386-1713` (GameSession - tracks complete D&D game state)
-- **Analysis**: These are NOT duplicates - they serve different purposes
-  - `ConversationSession`: Conversation history for simple RAG dialogue system (used by 2 scripts)
-  - `GameSession`: Comprehensive D&D game state (used by web app and unified system)
-- **Fix Applied**: Renamed `gm_dialogue.py`'s `GameSession` to `ConversationSession`
-  - Added clarifying docstring explaining distinction from game_state.GameSession
-  - Verified backward compatibility (scripts don't import it directly)
-- **Impact**: Eliminates naming confusion, clarifies architecture
+> **Note**: See docs/DONE.md for completed refactoring tasks (Constants, GameSession rename, LLM Intent Classification)
 
 ### Refactor GameMaster God Object (2-3 days)
 **ARCHITECTURE** - 1400+ line class doing everything
@@ -165,40 +154,8 @@
 
 ---
 
-## ✅ COMPLETED TASKS
-
-### Extract Magic Strings to Constants ✅ DONE (2026-01-15)
-**MAINTAINABILITY** - Commands and keywords hardcoded everywhere
-- **✅ Created**: `dnd_rag_system/constants.py` with comprehensive constant classes:
-  - `Commands`: All slash commands (`/help`, `/attack`, `/cast`, etc.)
-  - `ActionKeywords`: Intent detection keywords (attack, spell, steal, etc.)
-  - `ItemEffects`: Magic item effect types
-  - `EquipmentSlots`: Character equipment locations
-  - `LocationTypes`: World location categories
-  - `DamageTypes`, `Conditions`, `CharacterClasses`, `CharacterRaces`
-- **✅ Refactored**: 
-  - `gm_dialogue_unified.py`: Using `Commands` constants
-  - `action_validator.py`: Using `ActionKeywords` constants
-  - All SRD code: Using `CharacterClasses` and `CharacterRaces` constants
-- **✅ Tests**: `tests/test_constants.py` - 30 passing tests
-- **Impact**: Typos now caught at import time, easier refactoring, IDE autocomplete
-
----
-
 ## 📚 LOWER PRIORITY - Data Quality
 
 > **Note**: See docs/DONE.md for completed RAG Data Quality improvements (SRD integration completed 2026-01-15)
-
----
-
-## 📊 REFACTORING & MAINTENANCE
-
-### ✅ Upgrade Reality Check with LLM-based NLP Intent Classification - COMPLETED (2026-01-14)
-- **Files Changed**:
-  - `dnd_rag_system/config.py` (NEW): Configuration for intent classifiers
-  - `dnd_rag_system/systems/action_validator.py`: Added LLM classifier alongside keyword classifier
-  - `tests/test_llm_intent_classifier.py` (NEW): Comprehensive test suite
-- **Test Results**: All tests passing (keyword, LLM, comparison mode)
-- **Time Spent**: ~4 hours (planning, implementation, testing)
 
 
