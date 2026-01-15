@@ -2,7 +2,8 @@
 # Comprehensive Test Runner for D&D RAG System
 # Usage: ./run_tests.sh [unit|e2e|selenium|all]
 
-set -e  # Exit on error
+# Don't exit on error - we want to see all test results
+# set -e removed to allow tests to continue after failures
 
 # Colors
 GREEN='\033[0;32m'
@@ -22,7 +23,9 @@ TEST_TYPE="${1:-all}"
 run_unit_tests() {
     echo -e "${YELLOW}Running Unit Tests...${NC}"
     echo "---"
-    python3 -m pytest tests/ -v --tb=short -x 2>&1 | tee logs/unit_tests_$(date +%Y%m%d_%H%M%S).log
+    # Removed -x flag to continue after failures
+    # Added --tb=short to keep output concise
+    python3 -m pytest tests/ -v --tb=short --maxfail=999 2>&1 | tee logs/unit_tests_$(date +%Y%m%d_%H%M%S).log
     echo ""
 }
 
@@ -57,12 +60,26 @@ run_e2e_programmatic() {
         fi
     done
 
+    # Track failures but continue running all tests
+    FAILED_TESTS=()
     for test in "${PROGRAMMATIC_TESTS[@]}"; do
         if [ -f "$test" ]; then
             echo -e "\n${GREEN}▶${NC} Running: $test"
-            python3 "$test" 2>&1 | tee "logs/$(basename $test .py)_$(date +%Y%m%d_%H%M%S).log"
+            if ! python3 "$test" 2>&1 | tee "logs/$(basename $test .py)_$(date +%Y%m%d_%H%M%S).log"; then
+                FAILED_TESTS+=("$test")
+            fi
         fi
     done
+    
+    # Report failures at the end
+    if [ ${#FAILED_TESTS[@]} -gt 0 ]; then
+        echo -e "\n${RED}❌ Failed E2E tests:${NC}"
+        for failed in "${FAILED_TESTS[@]}"; do
+            echo -e "  ${RED}✗${NC} $failed"
+        done
+    else
+        echo -e "\n${GREEN}✅ All E2E tests passed!${NC}"
+    fi
     echo ""
 }
 
@@ -81,12 +98,25 @@ run_selenium_tests() {
         "e2e_tests/test_stat_rolling_ui.py"
     )
 
+    FAILED_TESTS=()
     for test in "${SELENIUM_TESTS[@]}"; do
         if [ -f "$test" ]; then
             echo -e "\n${GREEN}▶${NC} Running: $test"
-            HEADLESS=true python3 "$test" 2>&1 | tee "logs/$(basename $test .py)_$(date +%Y%m%d_%H%M%S).log"
+            if ! HEADLESS=true python3 "$test" 2>&1 | tee "logs/$(basename $test .py)_$(date +%Y%m%d_%H%M%S).log"; then
+                FAILED_TESTS+=("$test")
+            fi
         fi
     done
+    
+    # Report failures at the end
+    if [ ${#FAILED_TESTS[@]} -gt 0 ]; then
+        echo -e "\n${RED}❌ Failed Selenium tests:${NC}"
+        for failed in "${FAILED_TESTS[@]}"; do
+            echo -e "  ${RED}✗${NC} $failed"
+        done
+    else
+        echo -e "\n${GREEN}✅ All Selenium tests passed!${NC}"
+    fi
     echo ""
 }
 
