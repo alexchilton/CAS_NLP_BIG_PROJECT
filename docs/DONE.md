@@ -4,6 +4,606 @@ This file tracks completed and working features that have been implemented and t
 
 ---
 
+## ✅ E2E Bug Fixes - Combat and Character Validation ✅ COMPLETED (2026-01-14)
+
+### Bug #1 Fixed: Wrong Character Stats in Error Messages (Thorin vs Elara)
+- **Symptom**: When "Elara casts Magic Missile", system said "You're a FIGHTER, not a wizard!" using Thorin's class instead of Elara's
+- **Root Cause**: `generate_invalid_action_response()` always used `session.character_state` for race/class instead of looking up the specific acting character
+- **Impact**: Broke party mode validation - wrong character's stats used for error messages
+- **Fix Applied** (`gm_dialogue_unified.py:1640-1652`):
+  - Extract acting character name from input using `extract_acting_character()`
+  - Look up specific character's stats from `base_character_stats` dictionary
+  - Fall back to `character_state` for single-player mode
+  - Now correctly uses Elara's stats when "Elara casts..." and Thorin's stats when "Thorin attacks..."
+- **Testing**: Verified with party character parsing tests
+- **Result**: ✅ Error messages now use correct character's race and class
+
+### Bug #2 Fixed: /start_combat Spawning Wrong Enemies
+- **Symptom**: `/start_combat Skeleton` spawned "Goblin, Skeleton and Ogre appear!" instead of just Skeleton
+- **Root Cause**: `get_combat_start_message()` listed ALL monsters in `npc_monsters` dict (persistent accumulation), not just monsters in current combat
+- **Impact**: Combat messages showed enemies from previous combats, confusing players
+- **Fix Applied** (`combat_manager.py:216-217, 572`):
+  - Changed to only list NPCs from current `initiative_order`:
+    ```python
+    npcs_in_combat = [name for name, init in self.combat.initiative_order
+                      if name in self.npc_monsters]
+    ```
+  - Clear `npc_monsters` dictionary when combat ends:
+    ```python
+    self.npc_monsters.clear()  # Clear loaded monster instances for next combat
+    ```
+- **Testing**: Verified sequential combats no longer accumulate enemies
+- **Result**: ✅ Combat messages now show only the requested enemies
+
+### Bug #3 Investigated: Echo Bug When Unconscious
+- **Symptom** (reported): Game echoes player input when character is unconscious
+- **Investigation**: Cannot reproduce in current codebase
+  - Unconscious check (lines 231-249) returns proper informative message, not an echo
+  - No code path found that would echo the player's input
+  - LLM response cleaning removes echoes (line 1916-1917)
+- **Status**: Could not find or reproduce the bug
+- **Possible Explanations**:
+  - Bug may have been fixed inadvertently by other changes
+  - May require specific reproduction scenario not tested
+  - May have been a transient LLM behavior issue
+- **Result**: ⚠️ Inconclusive - unable to reproduce or fix
+
+**Files Modified (2 files)**:
+- `dnd_rag_system/systems/combat_manager.py` - Fixed combat message generation and cleanup
+- `dnd_rag_system/systems/gm_dialogue_unified.py` - Fixed character stat lookup for error messages
+
+**Commit**: 626f14d - "fix: Resolve E2E test bugs in combat and character validation"
+
+---
+
+## ✅ LLM-Based Intent Classification (Optional) ✅ COMPLETED (2026-01-14)
+
+### Optional LLM-Based Action Intent Classifier
+- **Goal**: Add optional LLM-based natural language understanding for player actions while preserving the existing keyword-based system
+- **Status**: ✅ FULLY IMPLEMENTED with parallel classifier support and graceful fallback
+
+**Problem Solved**: The keyword-based action validator is fast and reliable but brittle - it fails on creative phrasings:
+- ✅ Works: "attack the goblin", "fire my bow", "shoot my bow"
+- ❌ Fails: "loose an arrow", "nock and release my bowstring", "let fly with my longbow"
+- Required constant keyword list maintenance for every new synonym or variation
+
+**Implemented Solution**: Optional LLM-based intent classifier using Qwen2.5-3B (same model as mechanics extractor)
+
+**Implementation**:
+
+1. **Configuration System** (`dnd_rag_system/config.py` - NEW):
+   - `IntentClassifierConfig` class with classifier type constants
+   - Default remains keyword-based (preserves existing behavior)
+   - Toggle switches for LLM mode and comparison mode
+   - Centralized model settings (reuses Qwen2.5-3B)
+
+2. **Dual Classifier Architecture** (`action_validator.py`):
+   - **Keyword-based classifier** (`_analyze_intent_keyword()`):
+     - Original implementation (renamed, unchanged logic)
+     - Fast (~0ms), reliable for standard phrases
+     - Uses predefined keyword lists
+   - **LLM-based classifier** (`_analyze_intent_llm()`):
+     - Uses Qwen2.5-3B for natural language understanding
+     - Handles creative phrasings: "loose an arrow", "nock and release"
+     - Structured JSON output with intent type and extracted entities
+     - ~1-2 second inference time
+     - **Graceful fallback**: Automatically falls back to keyword-based on LLM errors
+   - **Dispatcher** (`analyze_intent()`):
+     - Routes to appropriate classifier based on configuration
+     - Default: keyword-based (no breaking changes)
+     - Optional: LLM-based via `classifier_type="llm"` parameter
+     - Comparison mode: Runs both and logs differences
+
+3. **Comparison Mode** (for validation):
+   - Runs both classifiers in parallel
+   - Logs differences when classifications disagree
+   - Returns LLM result but shows keyword result for comparison
+   - Useful for testing and validation
+
+4. **LLM Prompt Engineering** (`_build_intent_prompt()`):
+   - Structured prompt with clear action type definitions
+   - Entity extraction rules (target, resource)
+   - 7 detailed examples covering combat, spells, conversation, items, exploration, stealing
+   - Party member context integration
+   - Handles creative phrasings naturally
+
+**Key Features**:
+- ✅ **No Breaking Changes**: Default behavior remains keyword-based (fast, reliable)
+- ✅ **100% Backward Compatible**: Existing code works unchanged
+- ✅ **Model Reuse**: Shares Qwen2.5-3B with mechanics extractor (no additional model download)
+- ✅ **Graceful Fallback**: LLM errors automatically fall back to keyword-based
+- ✅ **Parallel Implementation**: Both classifiers available simultaneously
+- ✅ **Runtime Toggle**: Switch via parameter without code changes
+- ✅ **Validation Mode**: Compare both classifiers to verify accuracy
+
+**Test Results** (All Passing):
+
+**Keyword Classifier Tests** (`TestKeywordClassifier`):
+- ✅ Standard combat actions recognized
+- ✅ Standard spell casting recognized
+- ✅ Creative combat phrases fail as expected (baseline)
+
+**LLM Classifier Tests** (`TestLLMClassifier`):
+- ✅ Creative combat phrases work: "loose an arrow at the dragon"
+- ✅ Standard actions work: "I attack the goblin", "I cast Fireball"
+- ✅ All action types supported: combat, spell_cast, conversation, item_use, exploration, steal
+- ✅ Fallback works when LLM errors occur
+
+**Comparison Mode Tests** (`TestComparisonMode`):
+- ✅ Both classifiers agree on standard phrases
+- ✅ LLM handles creative phrases better than keyword
+- ✅ Differences logged automatically for analysis
+
+**Edge Case Tests** (`TestEdgeCases`):
+- ✅ Party member actions parsed correctly
+- ✅ Ambiguous actions classified appropriately
+
+**Example Usage**:
+
+```python
+# Default: keyword-based (fast, existing behavior)
+validator = ActionValidator()
+intent = validator.analyze_intent("I attack the goblin")
+# → ActionIntent(type=combat, target=goblin, resource=None)
+
+# LLM-based: handles creative phrasings
+validator = ActionValidator(classifier_type="llm")
+intent = validator.analyze_intent("I loose an arrow at the dragon")
+# → ActionIntent(type=combat, target=dragon, resource=arrow)
+
+# Comparison mode: run both and log differences
+validator = ActionValidator(compare_classifiers=True)
+intent = validator.analyze_intent("I nock and release my bowstring")
+# Logs: "🔀 CLASSIFIER MISMATCH for 'I nock and release my bowstring':"
+#       "  Keyword: ActionIntent(type=exploration, ...)"
+#       "  LLM:     ActionIntent(type=combat, ...)"
+# Returns: LLM result
+```
+
+**Performance**:
+| Classifier | Speed | Accuracy (standard) | Accuracy (creative) | Maintenance |
+|------------|-------|-------------------|-------------------|-------------|
+| Keyword | ~0ms | High | Low | High (keyword lists) |
+| LLM | ~1-2s | High | **High** ✨ | Low (model handles variants) |
+
+**Benefits**:
+- ✅ Handles creative natural language: "nock and release", "let fly with my longbow"
+- ✅ No keyword maintenance required in LLM mode
+- ✅ Preserves existing functionality (keyword mode still available)
+- ✅ 100% backward compatible (default unchanged)
+- ✅ Graceful error handling with automatic fallback
+- ✅ Model reuse (no additional downloads or dependencies)
+
+**Files Created (2 files)**:
+- `dnd_rag_system/config.py` (58 lines) - Configuration system
+- `tests/test_llm_intent_classifier.py` (263 lines) - Comprehensive test suite
+
+**Files Modified (2 files)**:
+- `dnd_rag_system/systems/action_validator.py`:
+  - Added imports: `json`, `subprocess`, `Any` type
+  - Updated `__init__()` with classifier_type and compare_classifiers parameters
+  - Renamed `analyze_intent()` → `_analyze_intent_keyword()`
+  - Created new dispatcher `analyze_intent()` that routes to appropriate classifier
+  - Added `_analyze_intent_llm()` - LLM-based classification
+  - Added `_build_intent_prompt()` - prompt engineering for LLM
+  - Added `_query_ollama_intent()` - Ollama API integration
+  - Added `_parse_intent_response()` - JSON response parsing
+- `TODO.md` - Marked feature as completed with implementation details
+
+**Testing**:
+- All existing tests pass (no regressions)
+- 12 new tests covering keyword, LLM, comparison, and edge cases
+- All tests passing ✅
+
+**Integration Points** (Future Work):
+- Can be integrated into `GameMaster.__init__()` with toggle parameter
+- Gradio UI can add radio button for user to choose classifier
+- Default remains keyword-based unless user opts in
+
+**Time Spent**: ~4 hours (planning, implementation, testing, documentation)
+
+**Result**: Players can now benefit from natural language understanding for creative action phrasings while maintaining the speed and reliability of the keyword-based system! The implementation is fully backward compatible, extensively tested, and ready for optional rollout.
+
+---
+
+## ✅ SyntaxError Fix in web/app_gradio.py ✅ COMPLETED (2026-01-14)
+
+### Fixed Global Declaration Import Error
+- **Issue**: Python SyntaxError causing all unit tests to fail
+  - Error: `SyntaxError: name 'current_character' is used prior to global declaration`
+  - Location: `web/app_gradio.py:1340`
+  - Impact: Tests couldn't even import the module, blocking all test execution
+- **Root Cause**: `global current_character` declaration appeared at line 1340 inside `/load_game` command handler, but `current_character` was already used earlier in the `chat()` function (line 1136, 1210, etc.)
+- **Fix Applied** (2 changes):
+  1. Added `current_character` to global declaration at top of `chat()` function (line 839)
+  2. Removed duplicate `global current_character` declaration at line 1340
+- **Python Rule**: In Python, `global` must be declared before any use of the variable within a function
+- **Result**: ✅ Import error fixed, all 557 tests can now run successfully
+- **Files Modified**:
+  - `web/app_gradio.py:839` (added `current_character` to global declaration)
+  - `web/app_gradio.py:1340` (removed duplicate global declaration)
+- **Testing**: All unit tests now import successfully and can execute
+
+---
+
+## ✅ Save/Load System for World State ✅ FULLY IMPLEMENTED (2026-01-14)
+
+### Complete Game Session Persistence System
+- **Goal**: Enable saving complete game state to disk and loading campaigns across app restarts
+- **Status**: ✅ FULLY IMPLEMENTED with 17 passing tests (13 unit + 4 integration)
+
+**Problem Solved**: Game sessions previously only persisted in-memory during runtime. Closing the app meant losing all progress, world exploration, character development, and story progression.
+
+**Implementation**:
+
+1. **Location Serialization** (`game_state.py:138-169`):
+   - `Location.to_dict()` - Converts location to JSON-serializable dictionary
+   - `Location.from_dict()` - Reconstructs location from dictionary
+   - Preserves all location state:
+     - Basic info (name, type, description, connections)
+     - Persistent state (defeated enemies, moved items, completed events)
+     - Discovery and visit tracking (visit_count, last_visited_day, is_discovered)
+     - Available items list (items that can be picked up)
+     - Shop/safety flags (has_shop, is_safe, resident_npcs)
+
+2. **CharacterState Serialization** (already existed, enhanced):
+   - Complete character state including HP, level, gold, inventory
+   - Spell slots preservation (current and max for levels 1-9)
+   - Conditions tracking (poisoned, stunned, unconscious, etc.)
+   - Death saves state (successes and failures)
+   - Equipment and attunement status
+
+3. **PartyState Serialization** (`game_state.py:1094-1116`):
+   - `PartyState.to_dict()` - Converts party to dictionary
+   - `PartyState.from_dict()` - Reconstructs party with all members
+   - Preserves:
+     - Party name and shared gold
+     - All party member character states (recursive serialization)
+     - Shared inventory items
+
+4. **CombatState Serialization** (`game_state.py:971-999`):
+   - `CombatState.to_dict()` - Converts combat state to dictionary
+   - `CombatState.from_dict()` - Reconstructs combat mid-battle
+   - Preserves:
+     - Combat status (in_combat flag, round_number)
+     - Initiative order with all participants and rolls
+     - Current turn tracking (current_turn_index)
+     - Active effects (buffs, debuffs, durations)
+
+5. **GameSession Save/Load** (`game_state.py:1372-1476`):
+   - `GameSession.save_to_json(filepath)` - Complete session serialization
+   - `GameSession.load_from_json(filepath)` - Complete session restoration
+   - Saves everything:
+     - **World map**: All locations with connections and state
+     - **Character/Party**: Complete character or party state
+     - **Combat**: Mid-combat saves work perfectly
+     - **Quests**: Active and completed quests
+     - **NPCs**: Currently present NPCs
+     - **Time**: Day and time_of_day tracking
+     - **Encounter tracking**: Turns since last encounter, last location
+     - **Notes**: Player notes and session history
+   - Versioned format (version 1.0) for future compatibility
+   - Creates save directory automatically if missing
+
+6. **UI Commands** (`web/app_gradio.py:1084-1194`):
+   - `/save_game <name>` - Save current session with custom name
+     - Creates `saves/<name>.json` file
+     - Shows save path confirmation
+     - Handles errors gracefully
+   - `/load_game <name>` - Load previously saved session
+     - Lists available saves if file not found
+     - Restores complete game state
+     - Updates UI character sheet automatically
+     - Shows location, character info, combat status
+   - Both commands integrated into help system
+
+**Save File Structure**:
+```json
+{
+  "version": "1.0",
+  "session_name": "Epic Adventure",
+  "current_location": "Ancient Crypt",
+  "world_map": {
+    "Town Square": {...},
+    "Forest Path": {...},
+    "Ancient Crypt": {...}
+  },
+  "character_state": {...},
+  "party": {...},
+  "combat": {...},
+  "active_quests": [...],
+  "completed_quests": [...],
+  "npcs_present": [...],
+  "day": 1,
+  "time_of_day": "evening"
+}
+```
+
+**Testing (17 tests total)**:
+
+**Unit Tests** (`tests/test_save_load_system.py` - 13 tests):
+- `TestLocationSerialization`: 2 tests
+  - Basic location serialization with all fields
+  - Location with state changes (defeated enemies, moved items, events)
+- `TestCharacterStateSerialization`: 3 tests
+  - Basic character state (HP, gold, inventory)
+  - Character with spell slots preservation
+  - Character with conditions and death saves
+- `TestPartyStateSerialization`: 1 test
+  - Party with multiple characters and shared inventory
+- `TestCombatStateSerialization`: 2 tests
+  - Combat state with initiative order and turn tracking
+  - Combat with active effects (buffs/debuffs)
+- `TestGameSessionSerialization`: 5 tests
+  - Basic session save/load
+  - Session with party mode
+  - Session during combat (mid-battle saves)
+  - Session with quests
+  - Session with complex world (multiple locations, connections, enemy tracking)
+
+**Integration Tests** (`tests/test_save_load_integration.py` - 4 tests):
+- `test_full_game_session_workflow`: Complete gameplay simulation
+  - Create character → travel to dungeon → fight enemies → collect loot
+  - Save game mid-combat → load game → verify complete state preservation
+  - Tests: character HP, gold, inventory, combat state, world map, defeated enemies, quests
+- `test_save_load_with_party_mode`: Multi-character party persistence
+  - Create party with multiple members → save → load
+  - Verify all party members and shared inventory preserved
+- `test_save_load_preserves_location_state`: Location-specific state
+  - Defeated enemies, moved items, completed events, visit counts all preserved
+- `test_multiple_save_slots`: Multiple save file support
+  - Create different saves → load each → verify independence
+
+**Example Usage**:
+```
+Player: /save_game epic_dragon_quest
+GM: ✅ Game saved successfully!
+    Saved to: `saves/epic_dragon_quest.json`
+    You can load this save with: /load_game epic_dragon_quest
+
+[Player closes app, reopens later]
+
+Player: /load_game epic_dragon_quest
+GM: ✅ Game loaded successfully!
+    Location: Ancient Crypt
+    Character: Adventurer
+    HP: 20/30
+    Gold: 200 GP
+    ⚔️ In Combat - Round 1
+```
+
+**Error Handling**:
+- Missing save files → Shows list of available saves
+- Invalid JSON → Clear error message
+- Missing save directory → Creates automatically
+- Save during critical states → Works perfectly (even mid-combat)
+
+**Files Created (2 test files)**:
+- `tests/test_save_load_system.py` (407 lines, 13 tests)
+- `tests/test_save_load_integration.py` (305 lines, 4 tests)
+
+**Files Modified (3 files)**:
+- `dnd_rag_system/systems/game_state.py` (added serialization methods)
+  - `Location.to_dict()` and `from_dict()` (enhanced with available_items)
+  - `PartyState.to_dict()` and `from_dict()` (new)
+  - `CombatState.to_dict()` and `from_dict()` (new)
+  - `GameSession.save_to_json()` and `load_from_json()` (new)
+- `web/app_gradio.py` (added save/load commands)
+  - `/save_game <name>` command handler (lines 1084-1120)
+  - `/load_game <name>` command handler (lines 1122-1194)
+  - Help text updated with save/load commands
+- `TODO.md` (marked as completed)
+
+**Result**: Players can now save their campaigns at any point and resume across app restarts! Complete world state, character progression, combat status, and story progress all preserved. The system handles edge cases gracefully (mid-combat saves, party mode, complex world maps) and provides clear user feedback.
+
+---
+
+## ✅ Spell System with Prepared/Known Spells Distinction ✅ FULLY IMPLEMENTED (2026-01-14)
+
+### Complete D&D 5e Spell System
+- **Goal**: Implement proper D&D 5e spell mechanics with prepared vs known spells
+- **Status**: ✅ FULLY IMPLEMENTED with 28 passing tests
+
+**Problem Solved**: Previously, there was no distinction between prepared and known spells. All spell casting was handled generically without tracking which spells a character knows or has prepared. This didn't follow D&D 5e rules where:
+- **Prepared Casters** (Wizard, Cleric, Druid, Paladin) must prepare a limited subset of spells each day
+- **Known Casters** (Sorcerer, Bard, Warlock, Ranger) permanently know spells but can't easily change them
+
+**Implementation**:
+
+1. **Spell Tracking Fields** (`game_state.py:321-325`):
+   - `spellcasting_class: Optional[str]` - Character's spellcasting class (None for non-casters)
+   - `spellcasting_ability: str` - Spellcasting ability (INT, WIS, or CHA)
+   - `known_spells: List[str]` - All spells the character knows
+   - `prepared_spells: List[str]` - Currently prepared spells (for prepared casters)
+
+2. **Caster Type Detection** (`game_state.py:535-559`):
+   - `is_prepared_caster()` - Returns True for Wizard, Cleric, Druid, Paladin
+   - `is_known_caster()` - Returns True for Sorcerer, Bard, Warlock, Ranger
+   - Determines which spell preparation system to use
+
+3. **Spell Learning** (`game_state.py:584-624`):
+   - `learn_spell(spell_name)` - Add spell to known_spells list
+   - For prepared casters: Must prepare spell daily before casting
+   - For known casters: Automatically prepares upon learning (can cast immediately)
+   - Returns success status and descriptive message
+
+4. **Spell Preparation** (`game_state.py:626-674` for prepared casters only):
+   - `prepare_spell(spell_name, ability_modifier)` - Prepare spell for daily use
+   - Checks if spell is known before allowing preparation
+   - Enforces preparation limit: `ability_modifier + level` (minimum 1)
+   - Prevents duplicate preparation
+   - Wizards/Clerics/Druids/Paladins only
+
+5. **Spell Unpreparing** (`game_state.py:676-704`):
+   - `unprepare_spell(spell_name)` - Remove spell from prepared list
+   - Frees up a preparation slot
+   - Only works for prepared casters
+
+6. **Spell Casting Validation** (`game_state.py:706-735`):
+   - `can_cast_spell(spell_name)` - Validates spell can be cast
+   - Checks if character is a spellcaster
+   - Checks if spell is known
+   - For prepared casters: Checks if spell is prepared
+   - Returns `(can_cast, reason)` tuple
+
+7. **Integrated Spell Slot Tracking** (already existed, enhanced):
+   - `SpellSlots` class tracks levels 1-9 (current and max)
+   - `cast_spell()` now validates known/prepared status before consuming slot
+   - Optional `skip_validation` parameter for backwards compatibility
+   - Concentration tracking integration
+
+8. **Maximum Prepared Spells Calculation** (`game_state.py:561-583`):
+   - `get_max_prepared_spells(ability_modifier)` - Calculate preparation limit
+   - Prepared casters: `max(1, ability_modifier + level)`
+   - Known casters: Returns number of known spells (unlimited prepared)
+   - Non-casters: Returns 0
+
+9. **UI Commands** (`web/app_gradio.py:1084-1260`):
+   - `/spells` - Show known and prepared spells with spell slot status
+     - Displays different format for prepared vs known casters
+     - Shows max prepared limit for prepared casters
+     - Lists spell slots by level with current/max counts
+   - `/learn_spell <name>` - Learn a new spell
+   - `/prepare_spell <name>` - Prepare a spell (prepared casters only)
+   - `/unprepare_spell <name>` - Unprepare a spell
+   - All commands integrated with help text
+
+10. **Serialization** (`game_state.py:1015-1068`):
+    - All spell data saved in to_dict() and from_dict()
+    - Preserves known_spells, prepared_spells, spellcasting_class, spellcasting_ability
+    - Full compatibility with save/load system
+
+**D&D 5e Rules Implementation**:
+
+**Prepared Casters** (Wizard, Cleric, Druid, Paladin):
+- Must prepare spells after a long rest
+- Number of spells prepared = spellcasting ability modifier + class level (minimum 1)
+- Example: Level 5 Wizard with INT 16 (+3 modifier) → 3 + 5 = 8 spells prepared
+- Can only cast prepared spells (must have them in prepared list)
+- Can change prepared spells after each long rest
+
+**Known Casters** (Sorcerer, Bard, Warlock, Ranger):
+- Permanently know a limited set of spells
+- All known spells are automatically prepared (can cast any known spell)
+- Learn new spells when leveling up
+- Cannot easily change known spells (requires special mechanics)
+
+**Testing (28 tests total)**:
+
+**Test File**: `tests/test_spell_preparation.py` (480 lines)
+
+- `TestSpellCasterTypes`: 3 tests
+  - Prepared caster identification (Wizard, Cleric, Druid, Paladin)
+  - Known caster identification (Sorcerer, Bard, Warlock, Ranger)
+  - Non-caster identification
+
+- `TestSpellLearning`: 4 tests
+  - Wizard learning spell (must prepare separately)
+  - Sorcerer learning spell (auto-prepares)
+  - Attempting to learn already-known spell (rejected)
+  - Non-caster attempting to learn spell (rejected)
+
+- `TestSpellPreparation`: 6 tests
+  - Wizard preparing spell successfully
+  - Preparing multiple spells up to limit
+  - Exceeding preparation limit (rejected)
+  - Preparing unknown spell (rejected)
+  - Re-preparing already-prepared spell (rejected)
+  - Known caster attempting to use prepare (rejected)
+
+- `TestUnprepareSpell`: 2 tests
+  - Unpreparing spell successfully
+  - Unpreparing non-prepared spell (rejected)
+
+- `TestSpellCastingValidation`: 5 tests
+  - Prepared spell can be cast (wizard)
+  - Unprepared spell cannot be cast (wizard)
+  - Known spell can be cast (sorcerer)
+  - Unknown spell cannot be cast
+  - Non-caster cannot cast spells
+
+- `TestCastSpellIntegration`: 3 tests
+  - Casting prepared spell consumes slot
+  - Casting unprepared spell fails and doesn't consume slot
+  - Skip validation parameter works (backwards compatibility)
+
+- `TestSpellSerialization`: 2 tests
+  - Spell data serializes correctly
+  - Spell data deserializes correctly
+
+- `TestMaxPreparedSpells`: 3 tests
+  - Prepared caster max calculation with different modifiers
+  - Known caster max calculation (equals known spells)
+  - Non-caster returns 0
+
+**All 28 tests passing** ✅
+
+**Example Usage**:
+
+```
+# Wizard (Prepared Caster)
+Player: /learn_spell Fireball
+GM: Learned Fireball! (must prepare to cast)
+
+Player: /learn_spell Magic Missile
+GM: Learned Magic Missile! (must prepare to cast)
+
+Player: /spells
+GM: **Known Spells (2)**:
+    - Fireball
+    - Magic Missile
+    **Prepared Spells (0)**:
+    *None - use /prepare_spell to prepare spells*
+    **Max Prepared**: 6 (3 INT mod + 3 level)
+
+Player: /prepare_spell Fireball
+GM: Prepared Fireball (1/6 spells prepared)
+
+Player: /prepare_spell Magic Missile
+GM: Prepared Magic Missile (2/6 spells prepared)
+
+Player: /cast Fireball
+GM: Cast Fireball (level 3 slot used, 1 remaining)
+
+# Sorcerer (Known Caster)
+Player: /learn_spell Magic Missile
+GM: Learned Magic Missile! (automatically prepared)
+
+Player: /spells
+GM: **Known Spells (1)**:
+    - Magic Missile
+    **Type**: Known Caster (all known spells are prepared)
+
+Player: /cast Magic Missile
+GM: Cast Magic Missile (level 1 slot used, 3 remaining)
+```
+
+**Files Modified (2 files)**:
+- `dnd_rag_system/systems/game_state.py` - Added spell tracking and management methods
+  - New fields: spellcasting_class, spellcasting_ability, known_spells, prepared_spells
+  - New methods: learn_spell(), prepare_spell(), unprepare_spell(), can_cast_spell()
+  - Enhanced cast_spell() with validation
+  - Updated serialization to include spell data
+- `web/app_gradio.py` - Added spell management commands
+  - `/spells` command (lines 1191-1260)
+  - `/learn_spell <name>` command (lines 1084-1115)
+  - `/prepare_spell <name>` command (lines 1117-1156)
+  - `/unprepare_spell <name>` command (lines 1158-1189)
+  - Updated help text with spell commands
+
+**Files Created (1 test file)**:
+- `tests/test_spell_preparation.py` (480 lines, 28 tests)
+
+**Integration**:
+- Works seamlessly with existing spell slot system (SpellSlots class)
+- Compatible with save/load system (spell data persists)
+- Integrates with concentration mechanics
+- Compatible with spell_manager.py spell lookup functions
+
+**Result**: Players can now properly learn and prepare spells following D&D 5e rules! Wizards must prepare spells daily, Sorcerers can cast any known spell. The system enforces preparation limits, validates spell knowledge, and provides clear feedback. Full D&D 5e compliance for spellcasting classes!
+
+---
+
 ## ✅ Equipment System with Magic Items & Class Features ✅ FULLY IMPLEMENTED (2026-01-14)
 
 ### Complete Magic Item and Class Feature System
@@ -535,7 +1135,7 @@ GM: ⚕️ Elara casts Cure Wounds on Thorin, healing 6 HP
   - Equipment loader: `dnd_rag_system/loaders/equipment_loader.py`
   - Shop system: `dnd_rag_system/systems/shop_system.py`
   - Tests: `test_shop_system.py`
-  - Equipment data: `web/equipment.txt`
+  - Equipment data: `dnd_rag_system/data/equipment.txt`
 
 ### Real-Time Inventory Display Updates ✅ IMPLEMENTED (2026-01-13)
 - **Goal**: Automatically refresh inventory display in UI after `/buy` and `/sell` transactions

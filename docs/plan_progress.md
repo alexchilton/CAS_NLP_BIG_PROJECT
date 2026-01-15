@@ -499,7 +499,7 @@ python query_rag.py --monster "dragon" # Search monsters
 **Goal**: Implement GM-driven conversational shopping with NPC shopkeepers
 
 ### ✅ 9.1 Equipment Database
-**File**: `loaders/equipment_loader.py`, `web/equipment.txt`
+**File**: `loaders/equipment_loader.py`, `dnd_rag_system/data/equipment.txt`
 - [x] Parse D&D 5e equipment tables (weapons, armor, gear, tools, mounts)
 - [x] Extract 58 equipment items with prices, weights, and properties
 - [x] Load into ChromaDB `dnd_equipment` collection
