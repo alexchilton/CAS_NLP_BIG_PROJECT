@@ -236,15 +236,36 @@ class CombatManager:
 
         return "\n".join(lines)
 
+    def all_enemies_defeated(self) -> bool:
+        """
+        Check if all enemy NPCs in combat are dead.
+
+        Returns:
+            True if all NPCs are dead, False otherwise
+        """
+        if not self.npc_monsters:
+            # No NPCs in combat
+            return False
+
+        # Check if all NPCs are dead
+        return all(not monster.is_alive() for monster in self.npc_monsters.values())
+
     def advance_turn(self) -> str:
         """
         Advance to the next turn and return a message.
+        Automatically ends combat if all enemies are defeated.
 
         Returns:
-            String announcing whose turn it is
+            String announcing whose turn it is, or combat end message
         """
         if not self.combat.in_combat:
             return "⚠️ Not in combat"
+
+        # Check if all enemies are defeated before advancing
+        if self.all_enemies_defeated():
+            end_msg, dead_npcs = self.end_combat()
+            victory_msg = "🎉 **VICTORY!** All enemies have been defeated!\n\n" + end_msg
+            return victory_msg
 
         old_round = self.combat.round_number
         next_character = self.combat.next_turn()
@@ -258,6 +279,12 @@ class CombatManager:
 
         if next_character:
             message_parts.append(f"🎯 **{next_character}'s turn!**")
+
+        # Check again after advancing (in case last enemy died on their turn)
+        if self.all_enemies_defeated():
+            end_msg, dead_npcs = self.end_combat()
+            victory_msg = "\n\n🎉 **VICTORY!** All enemies have been defeated!\n\n" + end_msg
+            message_parts.append(victory_msg)
 
         return "\n".join(message_parts)
 
