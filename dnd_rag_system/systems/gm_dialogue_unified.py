@@ -323,15 +323,42 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                     # SUCCESS! Escape combat
                     combat_feedback = f"🏃 **FLEE SUCCESSFUL!**\n\n"
                     combat_feedback += f"Flee Check: {flee_roll} + {dex_mod} (DEX) = {flee_total} vs DC {flee_dc}\n\n"
-                    combat_feedback += f"You manage to escape from combat!\n\n"
+
+                    # Store current location and NPCs before fleeing
+                    old_location = self.session.current_location
+                    fled_from_npcs = list(self.session.npcs_present)
+
+                    # Add NPCs as resident enemies at this location (they stay here)
+                    current_loc = self.session.get_current_location_obj()
+                    if current_loc:
+                        for npc in fled_from_npcs:
+                            if npc not in current_loc.resident_npcs:
+                                current_loc.resident_npcs.append(npc)
+                        if DEBUG_PROMPTS:
+                            logger.debug(f"🏃 NPCs remaining at {old_location}: {fled_from_npcs}")
 
                     # End combat without XP
                     end_msg, dead_npcs = self.combat_manager.end_combat()
-                    combat_feedback += end_msg
 
-                    # Clear NPCs from scene (you fled, so they're left behind)
-                    for npc in list(self.session.npcs_present):
-                        self.session.npcs_present.remove(npc)
+                    # Clear NPCs from current scene (you fled away from them)
+                    self.session.npcs_present.clear()
+
+                    # Find a nearby location to flee to
+                    available_destinations = self.session.get_available_destinations()
+
+                    if available_destinations:
+                        # Flee to a random connected location
+                        flee_destination = random.choice(available_destinations)
+                        success, travel_msg = self.session.travel_to(flee_destination)
+
+                        combat_feedback += f"You flee from {old_location} and run to **{flee_destination}**!\n\n"
+                        combat_feedback += f"⚠️ **The enemies remain at {old_location}** - they may still be there if you return!\n\n"
+                        combat_feedback += end_msg
+                    else:
+                        # No connected locations - just end combat and stay here
+                        combat_feedback += f"You manage to break away from combat!\n\n"
+                        combat_feedback += f"⚠️ **The enemies are still nearby** - they may pursue or wait for you!\n\n"
+                        combat_feedback += end_msg
                 else:
                     # FAILURE! Take opportunity attack damage
                     opp_attack_damage = random.randint(1, 6) * num_enemies  # Simple damage
