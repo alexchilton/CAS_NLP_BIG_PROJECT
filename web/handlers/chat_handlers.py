@@ -68,7 +68,7 @@ def chat(
     gm,
     get_initiative_tracker_func,
     get_current_sheet_func
-) -> Tuple[list, str, str, str, str, str]:
+) -> Tuple[list, str, 'gr.update', str, str, str]:
     """
     Handle chat messages and commands.
 
@@ -627,7 +627,26 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
 
     # Generate GM response (handles /buy, /sell, combat commands, and regular actions)
     try:
+        # Aggressively prune context BEFORE generate_response to prevent timeouts
+        # This ensures we never send a huge context to the LLM
+        import time
+        msg_count = len(gm.message_history)
+        
+        if msg_count > 15:
+            print(f"⚠️  Context preventive pruning: {msg_count} messages → pruning now")
+            gm._prune_message_history()
+            print(f"   ✅ After pruning: {len(gm.message_history)} messages")
+        
+        # Time the LLM call
+        llm_start = time.time()
         response = gm.generate_response(message, use_rag=True)
+        llm_duration = time.time() - llm_start
+        
+        # Log timing
+        print(f"⏱️  LLM response time: {llm_duration:.1f}s (history size: {len(gm.message_history)} msgs)")
+        if llm_duration > 10:
+            print(f"   ⚠️  SLOW RESPONSE! This may indicate context window issues.")
+        
         conversation_history.append((message, response))
         return (
             history + [
