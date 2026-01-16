@@ -275,13 +275,20 @@ class RAGCharacterEnhancer:
             )
             character.class_features.append(f"Spell Slots: {slots_summary}")
             print(f"  ✓ Spell Slots: {slots_summary}")
-            
-            # 6. Look up appropriate spells
-            spells = self.query_spells_for_class(character.character_class, max_level=1, limit=6)
+
+            # 6. Look up appropriate spells based on character level
+            # Calculate max spell level: Level 1-2 = 1st, 3-4 = 2nd, 5-6 = 3rd, etc.
+            max_spell_level = min(9, (character.level + 1) // 2)
+
+            # Get more spells for higher level characters (2 spells per spell level they can cast)
+            spells_per_level = 2
+            total_spells_to_add = max_spell_level * spells_per_level + 3  # +3 cantrips
+
+            spells = self.query_spells_for_class(character.character_class, max_level=max_spell_level, limit=spells_per_level)
             if spells:
-                for spell in spells[:6]:  # Add up to 6 starting spells
+                for spell in spells[:total_spells_to_add]:
                     character.spells.append(f"{spell['name']} ({spell['school']} {spell['level']})")
-                print(f"  ✓ Spells: {len(spells)} suggested")
+                print(f"  ✓ Spells: {len(spells)} suggested (up to level {max_spell_level})")
         
         # Mark as enhanced
         character.class_features.append("(SRD-enhanced)")
