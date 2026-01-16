@@ -1335,7 +1335,26 @@ CRITICAL INSTRUCTIONS:
 
                 if not is_players_turn:
                     # Not the player's turn - they can't attack yet!
-                    player_attack_instruction = f"⚠️ **NOT YOUR TURN!**\n\n**Current Turn:** {current_turn}\n\nYou must wait for your turn in the initiative order. Use `/next_turn` to advance combat."
+                    # Return this message DIRECTLY to the user (bypass LLM to avoid hallucinations)
+                    from dnd_rag_system.systems.action_intent import ActionType
+                    return f"""⚠️ **WAIT! It's not your turn yet!**
+
+**Current Turn:** {current_turn} is acting right now.
+
+**What happened:**
+1. You attacked the enemy, which started combat
+2. Initiative was rolled to determine turn order
+3. {current_turn} won initiative and goes first!
+
+**What to do:**
+- Wait for {current_turn} to finish their turn
+- Click the **"Next Turn"** button to advance combat
+- Then you can attack on your turn!
+
+**Initiative Order:** See the tracker above to know when it's your turn.
+
+This is how D&D 5e combat works - initiative determines who goes first, not who declares the attack!"""
+
                     if DEBUG_PROMPTS:
                         logger.debug(f"⚠️ Player tried to attack on {current_turn}'s turn - blocked")
 
