@@ -26,30 +26,30 @@ from dnd_rag_system.systems.game_state import CharacterState, PartyState
 from dnd_rag_system.config import settings
 
 # Component imports
-from components.play_tab import create_play_tab
-from components.create_tab import create_character_tab
-from components.party_tab import create_party_tab
+from web.components.play_tab import create_play_tab
+from web.components.create_tab import create_character_tab
+from web.components.party_tab import create_party_tab
 
 # Handler imports
-from handlers.character_handlers import (
+from web.handlers.character_handlers import (
     get_available_characters,
     delete_character,
     load_character,
     load_character_with_debug,
     create_character as create_character_handler
 )
-from handlers.combat_handlers import (
+from web.handlers.combat_handlers import (
     get_initiative_tracker,
     handle_next_turn,
     handle_end_combat
 )
-from handlers.chat_handlers import (
+from web.handlers.chat_handlers import (
     handle_rag_lookup,
     chat,
     clear_history,
     roll_random_stats
 )
-from handlers.party_handlers import (
+from web.handlers.party_handlers import (
     load_party_mode,
     add_to_party,
     remove_from_party,
@@ -57,8 +57,8 @@ from handlers.party_handlers import (
 )
 
 # Formatter imports
-from formatters.character_formatter import format_character_sheet
-from formatters.party_formatter import format_party_sheet, get_all_character_sheets
+from web.formatters.character_formatter import format_character_sheet
+from web.formatters.party_formatter import format_party_sheet, get_all_character_sheets
 
 # ============================================================================
 # INITIALIZATION
@@ -219,6 +219,40 @@ def load_character_with_debug_wrapper(character_choice: str, scenario_choice: Op
     return result
 
 
+def load_character_with_location(character_choice: str, location_name: Optional[str] = None) -> Tuple[str, str, str]:
+    """
+    Load character and set specific starting location (for testing).
+    
+    Args:
+        character_choice: Character selection string
+        location_name: Optional location name. If None, uses random.
+    
+    Returns:
+        Tuple of (location_name, location_desc, character_name)
+    """
+    global current_character, conversation_history, gameplay_mode
+    
+    conversation_history = []
+    gameplay_mode = "character"
+    
+    from web.handlers.character_handlers import load_character_with_location as handler_load_char_loc
+    
+    loc_name, loc_desc, char_name, character, char_state = handler_load_char_loc(
+        character_choice,
+        CHARACTERS_DIR,
+        STARTING_LOCATIONS,
+        COMBAT_LOCATIONS,
+        gm,
+        location_name
+    )
+    
+    # Update global current_character
+    if char_name in gm.session.base_character_stats:
+        current_character = gm.session.base_character_stats[char_name]
+    
+    return loc_name, loc_desc, char_name
+
+
 def delete_character_wrapper(character_choice: str) -> Tuple[str, gr.update]:
     """Wrapper for delete_character handler."""
     return delete_character(character_choice, CHARACTERS_DIR)
@@ -322,9 +356,9 @@ def create_character_wrapper(
     alignment: str, background: str,
     str_val: int, dex_val: int, con_val: int,
     int_val: int, wis_val: int, cha_val: int
-) -> Tuple[str, gr.update]:
+) -> Tuple[str, gr.update, gr.update]:
     """Wrapper for create_character handler."""
-    return create_character_handler(
+    status_msg, char_dropdown_update = create_character_handler(
         name, race, char_class, level,
         alignment, background,
         str_val, dex_val, con_val,
@@ -332,6 +366,8 @@ def create_character_wrapper(
         CHARACTERS_DIR,
         db
     )
+    # Return same dropdown update for both play and party tabs
+    return (status_msg, char_dropdown_update, char_dropdown_update)
 
 
 # ============================================================================
@@ -585,7 +621,8 @@ try:
             ],
             outputs=[
                 create_components['create_output'],
-                play_components['character_dropdown']
+                play_components['character_dropdown'],
+                party_components['party_char_selector']  # Update party selector too
             ]
         )
 
@@ -903,7 +940,8 @@ except TypeError:
             ],
             outputs=[
                 create_components['create_output'],
-                play_components['character_dropdown']
+                play_components['character_dropdown'],
+                party_components['party_char_selector']  # Update party selector too
             ]
         )
 

@@ -10,7 +10,7 @@ import gradio as gr
 from dnd_rag_system.systems.game_state import CharacterState, PartyState
 from dnd_rag_system.constants import CharacterClasses
 from .character_handlers import load_character_from_json
-from formatters.party_formatter import format_party_sheet
+from web.formatters.party_formatter import format_party_sheet
 
 
 # Constants for party handlers
