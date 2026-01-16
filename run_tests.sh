@@ -1,9 +1,9 @@
 #!/bin/bash
 # Comprehensive Test Runner for D&D RAG System
-# Usage: ./run_tests.sh [unit|e2e|selenium|all]
+# Usage: ./run_tests.sh [unit|e2e|playwright|all]
 
 # Don't exit on error - we want to see all test results
-# set -e removed to allow tests to continue after failures
+set +e
 
 # Colors
 GREEN='\033[0;32m'
@@ -23,46 +23,36 @@ TEST_TYPE="${1:-all}"
 run_unit_tests() {
     echo -e "${YELLOW}Running Unit Tests...${NC}"
     echo "---"
-    # Removed -x flag to continue after failures
-    # Added --tb=short to keep output concise
     python3 -m pytest tests/ -v --tb=short --maxfail=999 2>&1 | tee logs/unit_tests_$(date +%Y%m%d_%H%M%S).log
     echo ""
 }
 
-# Function to run programmatic E2E tests (no Selenium)
+# Function to run programmatic E2E tests (no UI)
 run_e2e_programmatic() {
     echo -e "${YELLOW}Running Programmatic E2E Tests...${NC}"
     echo "---"
 
-    # Find all test files in e2e_tests that don't require Selenium
-    # Exclude Selenium tests (those will be run separately)
-    SELENIUM_EXCLUDE=(
-        "test_goblin_cave_combat.py"
-        "test_wizard_spell_combat.py"
-        "test_ui_loading.py"
-        "test_character_creation.py"
-        "test_stat_rolling_ui.py"
-        "test_shop_selenium.py"
-        "test_party_dragon_selenium.py"
-        "test_reality_check_browser.py"
-        "test_shop_ui.py"
-        "test_adventure_simulation.py"  # Interactive - requires manual start
-        "test_party_mode_logging.py"    # Interactive - infinite loop for manual inspection
+    # Find all test files in e2e_tests that are NOT Playwright/Selenium UI tests
+    # Exclude files ending in _playwright.py, _selenium.py, and specific UI tests
+    E2E_TESTS=(
+        "e2e_tests/test_combat_mechanics_direct.py"
+        "e2e_tests/test_combat_npc_extraction.py"
+        "e2e_tests/test_combat_system.py"
+        "e2e_tests/test_dragon_combat_mechanics.py"
+        "e2e_tests/test_equipment_system_e2e.py"
+        "e2e_tests/test_goblin_combat_npc_extraction.py"
+        "e2e_tests/test_goblin_treasure_persistence.py"
+        "e2e_tests/test_hallucination_bug.py"
+        "e2e_tests/test_hp_tracking.py"
+        "e2e_tests/test_magic_item_rag_e2e.py"
+        "e2e_tests/test_monster_stats_integration.py"
+        "e2e_tests/test_party_character_parsing.py"
+        "e2e_tests/test_reality_check_e2e.py"
+        "e2e_tests/test_steal_and_combat.py"
     )
-    
-    # Get all test files
-    PROGRAMMATIC_TESTS=()
-    for test in e2e_tests/test_*.py; do
-        basename_test=$(basename "$test")
-        # Check if it's not in the exclude list
-        if [[ ! " ${SELENIUM_EXCLUDE[@]} " =~ " ${basename_test} " ]]; then
-            PROGRAMMATIC_TESTS+=("$test")
-        fi
-    done
 
-    # Track failures but continue running all tests
     FAILED_TESTS=()
-    for test in "${PROGRAMMATIC_TESTS[@]}"; do
+    for test in "${E2E_TESTS[@]}"; do
         if [ -f "$test" ]; then
             echo -e "\n${GREEN}▶${NC} Running: $test"
             if ! python3 "$test" 2>&1 | tee "logs/$(basename $test .py)_$(date +%Y%m%d_%H%M%S).log"; then
@@ -71,51 +61,26 @@ run_e2e_programmatic() {
         fi
     done
     
-    # Report failures at the end
     if [ ${#FAILED_TESTS[@]} -gt 0 ]; then
-        echo -e "\n${RED}❌ Failed E2E tests:${NC}"
+        echo -e "\n${RED}❌ Failed Programmatic E2E tests:${NC}"
         for failed in "${FAILED_TESTS[@]}"; do
             echo -e "  ${RED}✗${NC} $failed"
         done
     else
-        echo -e "\n${GREEN}✅ All E2E tests passed!${NC}"
+        echo -e "\n${GREEN}✅ All Programmatic E2E tests passed!${NC}"
     fi
     echo ""
 }
 
-# Function to run Selenium E2E tests
-run_selenium_tests() {
-    echo -e "${YELLOW}Running Selenium E2E Tests (HEADLESS mode)...${NC}"
+# Function to run Playwright E2E tests (UI)
+run_playwright_tests() {
+    echo -e "${YELLOW}Running Playwright E2E Tests (Headless)...${NC}"
     echo "---"
-    echo -e "${RED}⚠️  These tests are slow and may require Chrome/ChromeDriver${NC}"
-    echo ""
-
-    SELENIUM_TESTS=(
-        "e2e_tests/test_goblin_cave_combat.py"
-        "e2e_tests/test_wizard_spell_combat.py"
-        "e2e_tests/test_ui_loading.py"
-        "e2e_tests/test_character_creation.py"
-        "e2e_tests/test_stat_rolling_ui.py"
-    )
-
-    FAILED_TESTS=()
-    for test in "${SELENIUM_TESTS[@]}"; do
-        if [ -f "$test" ]; then
-            echo -e "\n${GREEN}▶${NC} Running: $test"
-            if ! HEADLESS=true python3 "$test" 2>&1 | tee "logs/$(basename $test .py)_$(date +%Y%m%d_%H%M%S).log"; then
-                FAILED_TESTS+=("$test")
-            fi
-        fi
-    done
     
-    # Report failures at the end
-    if [ ${#FAILED_TESTS[@]} -gt 0 ]; then
-        echo -e "\n${RED}❌ Failed Selenium tests:${NC}"
-        for failed in "${FAILED_TESTS[@]}"; do
-            echo -e "  ${RED}✗${NC} $failed"
-        done
+    if [ -f "./run_playwright_tests.sh" ]; then
+        ./run_playwright_tests.sh
     else
-        echo -e "\n${GREEN}✅ All Selenium tests passed!${NC}"
+        echo -e "${RED}Error: run_playwright_tests.sh not found!${NC}"
     fi
     echo ""
 }
@@ -131,17 +96,21 @@ case "$TEST_TYPE" in
     e2e)
         run_e2e_programmatic
         ;;
+    playwright)
+        run_playwright_tests
+        ;;
     selenium)
-        run_selenium_tests
+        echo -e "${YELLOW}Selenium tests have been deprecated. Running Playwright tests instead.${NC}"
+        run_playwright_tests
         ;;
     all)
         run_unit_tests
         run_e2e_programmatic
-        echo -e "${YELLOW}Skipping Selenium tests (run with: ./run_tests.sh selenium)${NC}"
+        run_playwright_tests
         ;;
     *)
         echo -e "${RED}Invalid test type: $TEST_TYPE${NC}"
-        echo "Usage: ./run_tests.sh [unit|e2e|selenium|all]"
+        echo "Usage: ./run_tests.sh [unit|e2e|playwright|all]"
         exit 1
         ;;
 esac

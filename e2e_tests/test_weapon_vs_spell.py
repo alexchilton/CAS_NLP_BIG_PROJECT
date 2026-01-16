@@ -116,6 +116,11 @@ def test_weapon_vs_spell_tracking():
         print("TEST 2: ELARA (Wizard) - Spell Attacks")
         print("=" * 80)
         
+        # Refresh page to ensure clean state for dropdown
+        print("🔄 Refreshing page to reset UI state...")
+        driver.refresh()
+        wait_for_gradio(driver)
+        
         load_character(driver, "Elara")
         
         response = send_message(driver, "/start_combat Goblin", wait_time=8)
