@@ -1,0 +1,39 @@
+{
+  "name": "tj",
+  "race": "Half-Elf",
+  "character_class": "Rogue",
+  "level": 9,
+  "strength": 8,
+  "dexterity": 18,
+  "constitution": 15,
+  "intelligence": 14,
+  "wisdom": 11,
+  "charisma": 20,
+  "hit_points": 66,
+  "armor_class": 14,
+  "proficiency_bonus": 2,
+  "background": "",
+  "alignment": "True Neutral",
+  "race_traits": [],
+  "class_features": [
+    "Expertise",
+    "Sneak Attack (1d6)",
+    "Thieves' Cant",
+    "(SRD-enhanced)"
+  ],
+  "proficiencies": [
+    "Armor: Light armor",
+    "Weapons: Simple weapons, hand crossbows, longswords, rapiers, shortswords",
+    "Saves: Dexterity, Intelligence"
+  ],
+  "equipment": [
+    "Shortsword",
+    "Leather Armor",
+    "Thieves' Tools",
+    "Backpack",
+    "40 GP"
+  ],
+  "spells": [],
+  "gold": 100,
+  "image_path": null
+}
