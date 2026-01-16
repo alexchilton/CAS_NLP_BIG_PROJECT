@@ -32,6 +32,7 @@ DO NOT implement your own dropdown logic in individual test files.
 
 import time
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -89,74 +90,29 @@ def load_character(driver, char_name="Thorin"):
     """
     print(f"\n📝 Loading character: {char_name}")
     
-    # Find the character dropdown by aria-label
-    # Gradio renders dropdowns as <input role="listbox">
-    try:
-        char_dropdown = driver.find_element(
-            By.CSS_SELECTOR, 
-            'input[aria-label="Choose Your Character"]'
-        )
-        print(f"✅ Found character dropdown")
-    except:
-        print(f"❌ Could not find character dropdown")
-        driver.save_screenshot('/tmp/dropdown_not_found.png')
-        raise Exception("Character dropdown not found - check screenshot at /tmp/dropdown_not_found.png")
-    
-    # Click to open dropdown
-    char_dropdown.click()
-    time.sleep(4)  # Wait longer for dropdown animation and options to populate
-    
-    # Find and click the character option
-    options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
-    print(f"   Found {len(options)} options")
-
-    # Wait longer if options are empty - Gradio needs time to populate
-    # CRITICAL: Options may exist but have empty text, so we need to wait for text content
-    retry_count = 0
-    max_retries = 8  # Increased from 5 - Gradio can be very slow
-    while retry_count < max_retries:
-        options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
-        # Check if we have at least one option with non-empty text
-        valid_options = [opt for opt in options if opt.text.strip()]
-        if valid_options:
-            print(f"   ✅ Found {len(valid_options)} valid options")
-            break
-        print(f"   Waiting for options to populate (attempt {retry_count + 1}/{max_retries})...")
-        time.sleep(4)  # Increased from 3 seconds - Gradio needs more time
-        retry_count += 1
-
-    # Final check - if still no valid options after retries, this is an error
-    options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
-    if not any(opt.text.strip() for opt in options):
-        print(f"   ❌ Options still empty after {max_retries} retries")
-        driver.save_screenshot('/tmp/dropdown_empty_options.png')
-        raise Exception("Dropdown options never populated - check screenshot at /tmp/dropdown_empty_options.png")
-    
-    # Debug: print what's actually in the options
-    for i, opt in enumerate(options):
-        print(f"   Option {i}: text='{opt.text}' (visible={opt.is_displayed()})")
-    
-    found = False
-    for opt in options:
-        if char_name.lower() in opt.text.lower():
-            print(f"   Selecting: {opt.text}")
-            opt.click()
-            time.sleep(1)
-            found = True
-            break
-    
-    if not found:
-        available = [opt.text for opt in options]
-        raise Exception(f"Character '{char_name}' not found. Available: {available}")
+    # Use the universal helper for selection
+    select_dropdown_option(driver, "Choose Your Character", char_name)
     
     # Click Load Character button
-    buttons = driver.find_elements(By.TAG_NAME, "button")
-    for btn in buttons:
-        if "Load Character" in btn.text:
-            print(f"   Clicking Load Character button")
-            btn.click()
-            time.sleep(7)  # Wait for character to load
-            break
+    # Wait for the button to be clickable
+    try:
+        load_btn = WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Load Character')]"))
+        )
+        print(f"   Clicking Load Character button")
+        load_btn.click()
+        time.sleep(7)  # Wait for character to load
+    except Exception as e:
+        print(f"   ❌ Could not find/click Load Character button: {e}")
+        # Fallback to finding by text iteration
+        buttons = driver.find_elements(By.TAG_NAME, "button")
+        for btn in buttons:
+            if "Load Character" in btn.text:
+                print(f"   Clicking Load Character button (fallback)")
+                btn.click()
+                time.sleep(7)
+                return
+        raise Exception("Load Character button not found")
     
     print(f"✅ Character loaded: {char_name}")
 
@@ -215,72 +171,148 @@ def select_dropdown_option(driver, aria_label, option_text, partial_match=True):
         raise Exception(f"Dropdown '{aria_label}' not found - check screenshot")
 
     # Click to open dropdown
-    dropdown.click()
-    time.sleep(4)  # Wait longer for dropdown animation and population
+    try:
+        dropdown.click()
+    except Exception as e:
+        print(f"   ⚠️ Standard click failed: {e}. Trying JS click...")
+        driver.execute_script("arguments[0].click();", dropdown)
+        
+    time.sleep(4)  # Initial wait for animation
 
-    # Find options
-    options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
-    print(f"   Found {len(options)} options")
-
-    # Wait for options to populate if needed
-    # CRITICAL: Options may exist but have empty text, so we need to wait for text content
+    # Robust search loop
+    found_opt = None
     retry_count = 0
-    max_retries = 8  # Increased from 5 - Gradio can be very slow
+    max_retries = 10
+    
     while retry_count < max_retries:
         options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
-        # Check if we have at least one option with non-empty text
-        valid_options = [opt for opt in options if opt.text.strip()]
+        
+        # Check for visibility
+        visible_options = [opt for opt in options if opt.is_displayed()]
+        
+        # Also check for text content (sometimes elements are visible but text renders late)
+        valid_options = [opt for opt in visible_options if opt.text.strip()]
+        
         if valid_options:
-            print(f"   ✅ Found {len(valid_options)} valid options")
-            break
-        print(f"   Waiting for options to populate (attempt {retry_count + 1}/{max_retries})...")
-        time.sleep(4)  # Increased from 3 seconds - Gradio needs more time
+            print(f"   Checking {len(valid_options)} visible options (Attempt {retry_count + 1}/{max_retries})...")
+            
+            for opt in valid_options:
+                opt_text = opt.text.strip()
+                match = False
+                
+                if partial_match:
+                    if option_text.lower() in opt_text.lower():
+                        match = True
+                else:
+                    if option_text.lower() == opt_text.lower():
+                        match = True
+                
+                if match:
+                    print(f"   ✅ Found match: '{opt_text}'")
+                    try:
+                        opt.click()
+                        time.sleep(1)
+                        
+                        # Verify selection took effect
+                        current_val = dropdown.get_attribute("value")
+                        if current_val and ((partial_match and option_text.lower() in current_val.lower()) or 
+                                          (not partial_match and option_text.lower() == current_val.lower())):
+                             return opt_text
+                        else:
+                             print(f"   ⚠️ Selection failed? Input value is '{current_val}'. Retrying...")
+                             
+                    except Exception as e:
+                        print(f"   ⚠️ Found but failed to click: {e}. Retrying...")
+                        break 
+            
+            print(f"   ❌ Option '{option_text}' not found in current visible list. Retrying...")
+            
+        else:
+            # Fallback: Check hidden options and force click if found
+            print(f"   ⚠️ No visible options. Checking hidden options...")
+            # Selenium .text is empty for hidden elements, must use textContent/innerText
+            all_options = [opt for opt in options if opt.get_attribute("textContent").strip()]
+            
+            for opt in all_options:
+                opt_text = opt.get_attribute("textContent").strip()
+                
+                if (partial_match and option_text.lower() in opt_text.lower()) or \
+                   (not partial_match and option_text.lower() == opt_text.lower()):
+                    print(f"   ✅ Found HIDDEN match: '{opt_text}'. Force clicking via JS...")
+                    driver.execute_script("arguments[0].click();", opt)
+                    time.sleep(1)
+                    
+                    # Verify selection took effect
+                    current_val = dropdown.get_attribute("value")
+                    if current_val and ((partial_match and option_text.lower() in current_val.lower()) or 
+                                      (not partial_match and option_text.lower() == current_val.lower())):
+                         return opt_text
+                    else:
+                         print(f"   ⚠️ Selection failed? Input value is '{current_val}'. Trying 'Type and Enter' strategy...")
+                         
+                         # Try typing the value and hitting Enter
+                         try:
+                             # Clear input (standard clear might not work on some custom inputs)
+                             dropdown.send_keys(Keys.CONTROL + "a")
+                             dropdown.send_keys(Keys.DELETE)
+                             time.sleep(0.5)
+                             
+                             # Type and Enter
+                             dropdown.send_keys(option_text)
+                             time.sleep(1)
+                             dropdown.send_keys(Keys.ENTER)
+                             time.sleep(1)
+                         except Exception as e:
+                             print(f"   ⚠️ 'Type and Enter' failed: {e}")
+                         
+                         # Re-verify
+                         current_val = dropdown.get_attribute("value")
+                         if current_val and ((partial_match and option_text.lower() in current_val.lower()) or 
+                                           (not partial_match and option_text.lower() == current_val.lower())):
+                             print(f"   ✅ 'Type and Enter' success!")
+                             return opt_text
+                         else:
+                             print(f"   ❌ 'Type and Enter' failed. Value is still '{current_val}'")
+                    
+                    # Continue loop to retry if verification failed
+                    break
+
+            # Diagnosis
+            is_expanded = dropdown.get_attribute("aria-expanded")
+            print(f"   Waiting for options... (Attempt {retry_count + 1}). Stats: Total={len(options)}, Visible={len(visible_options)}, Expanded={is_expanded}")
+            
+            # Recovery logic
+            if len(visible_options) == 0:
+                # Dropdown likely closed or options hidden
+                # Rotate through different interaction methods
+                method = retry_count % 3
+                
+                if method == 0:
+                    print("   ♻️  Retry strategy 1: Standard Click...")
+                    try:
+                        dropdown.click()
+                    except:
+                        pass
+                elif method == 1:
+                    print("   ♻️  Retry strategy 2: JavaScript Click...")
+                    driver.execute_script("arguments[0].click();", dropdown)
+                else:
+                    print("   ♻️  Retry strategy 3: Keyboard (Arrow Down)...")
+                    dropdown.send_keys(Keys.ARROW_DOWN)
+            
+        time.sleep(3)
         retry_count += 1
 
-    # Final check - if still no valid options after retries, this is an error
+    # Final check - failure
     options = driver.find_elements(By.CSS_SELECTOR, '[role="option"]')
-    if not any(opt.text.strip() for opt in options):
-        print(f"   ❌ Options still empty after {max_retries} retries")
-        driver.save_screenshot(f'/tmp/dropdown_{aria_label.replace(" ", "_")}_empty_options.png')
-        raise Exception(
-            f"Dropdown '{aria_label}' options never populated - "
-            f"check screenshot at /tmp/dropdown_{aria_label.replace(' ', '_')}_empty_options.png"
-        )
-
-    # Debug: print available options
-    available = []
-    for i, opt in enumerate(options):
-        if opt.text.strip():
-            available.append(opt.text)
-            print(f"   Option {i}: '{opt.text}'")
-
-    # Find and click matching option
-    found = False
-    for opt in options:
-        opt_text = opt.text.strip()
-        if not opt_text:
-            continue
-
-        if partial_match:
-            if option_text.lower() in opt_text.lower():
-                print(f"   ✅ Selecting: '{opt_text}'")
-                opt.click()
-                time.sleep(1)
-                found = True
-                return opt_text
-        else:
-            if option_text.lower() == opt_text.lower():
-                print(f"   ✅ Selecting: '{opt_text}'")
-                opt.click()
-                time.sleep(1)
-                found = True
-                return opt_text
-
-    if not found:
-        raise Exception(
-            f"Option '{option_text}' not found in dropdown '{aria_label}'. "
-            f"Available: {available}"
-        )
+    available = [opt.text.strip() for opt in options if opt.text.strip()]
+    
+    driver.save_screenshot(f'/tmp/dropdown_{aria_label.replace(" ", "_")}_failed.png')
+    
+    raise Exception(
+        f"Option '{option_text}' not found in dropdown '{aria_label}' after {max_retries} retries. "
+        f"Available: {available[:10]}..." 
+    )
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
