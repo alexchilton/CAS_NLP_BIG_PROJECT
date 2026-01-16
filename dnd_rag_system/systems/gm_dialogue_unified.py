@@ -63,6 +63,7 @@ class Message:
     role: str  # 'player', 'gm', 'system'
     content: str
     rag_context: Optional[str] = None
+    timestamp: Optional[str] = None  # For tracking when message occurred
 
 
 class GameMaster:
@@ -85,7 +86,8 @@ class GameMaster:
         """
         self.db = db_manager
         self.session = GameSession(session_name="D&D Adventure")
-        self.message_history: List[Message] = []  # Separate conversation history
+        self.message_history: List[Message] = []  # Active conversation history
+        self.conversation_summary: str = ""  # Compressed summary of older messages
         self.action_validator = ActionValidator(debug=DEBUG_PROMPTS)  # Reality check system
         self.shop = ShopSystem(db_manager, debug=DEBUG_PROMPTS)  # Shop transaction system
         self.spell_manager = SpellManager(db_manager)  # Spell and resource management
@@ -212,6 +214,95 @@ class GameMaster:
                     context_parts.append(f"[{collection_type.upper()}] {name}:\n{doc[:400]}")
 
         return "\n\n".join(context_parts) if context_parts else "No highly relevant rules found."
+
+    def _prune_message_history(self):
+        """
+        Prune message history to prevent context window overflow.
+        Keeps recent messages and creates summary of older ones.
+        Uses more aggressive pruning for party mode.
+        """
+        from dnd_rag_system.config.settings import MAX_MESSAGE_HISTORY, SUMMARIZE_EVERY_N_MESSAGES
+        
+        # More aggressive pruning for party mode (5 characters = larger prompts)
+        is_party_mode = self.session.party and len(self.session.party.characters) > 0
+        max_history = MAX_MESSAGE_HISTORY if not is_party_mode else max(12, MAX_MESSAGE_HISTORY // 2)
+        
+        # If history is within limits, no action needed
+        if len(self.message_history) <= max_history:
+            return
+        
+        # Calculate how many messages to summarize
+        messages_to_summarize = len(self.message_history) - max_history
+        
+        # Extract messages to summarize
+        old_messages = self.message_history[:messages_to_summarize]
+        
+        # Create summary of old messages
+        summary_text = self._create_message_summary(old_messages)
+        
+        # Update conversation summary
+        if self.conversation_summary:
+            self.conversation_summary += f"\n\n--- Session Continued ---\n{summary_text}"
+        else:
+            self.conversation_summary = summary_text
+        
+        # Keep only recent messages
+        self.message_history = self.message_history[messages_to_summarize:]
+        
+        # Log for debugging
+        mode_indicator = "party mode" if is_party_mode else "solo mode"
+        logger.info(f"📝 Pruned {messages_to_summarize} messages ({mode_indicator}). History now: {len(self.message_history)} messages")
+        self.session.add_note(f"Conversation history summarized ({messages_to_summarize} messages archived, {mode_indicator})")
+
+    def _create_message_summary(self, messages: List[Message]) -> str:
+        """
+        Create a concise summary of message exchanges.
+        Focuses on key events: combat, quests, important discoveries.
+        
+        Args:
+            messages: List of messages to summarize
+            
+        Returns:
+            Summary text
+        """
+        if not messages:
+            return ""
+        
+        # Build summary from key events
+        summary_lines = []
+        
+        for msg in messages:
+            # Extract important events (combat, quests, travel, shopping)
+            content_lower = msg.content.lower()
+            
+            # Combat events
+            if any(word in content_lower for word in ['combat', 'attack', 'damage', 'hp', 'defeated', 'killed']):
+                if msg.role == 'gm':
+                    # Condensed combat outcome
+                    if 'defeated' in content_lower or 'killed' in content_lower or 'fled' in content_lower:
+                        summary_lines.append(f"⚔️ Combat: {msg.content[:100]}")
+            
+            # Quest events
+            elif any(word in content_lower for word in ['quest', 'mission', 'task', 'objective']):
+                summary_lines.append(f"📜 Quest: {msg.content[:100]}")
+            
+            # Travel/exploration
+            elif any(word in content_lower for word in ['travel', 'arrive', 'enter', 'leave', 'journey']):
+                summary_lines.append(f"🗺️ Travel: {msg.content[:100]}")
+            
+            # Shopping/transactions
+            elif any(word in content_lower for word in ['buy', 'sell', 'purchase', 'gold', 'shop']):
+                summary_lines.append(f"💰 Trade: {msg.content[:100]}")
+            
+            # Important discoveries
+            elif any(word in content_lower for word in ['find', 'discover', 'treasure', 'loot', 'item']):
+                summary_lines.append(f"🔍 Discovery: {msg.content[:100]}")
+        
+        # If no key events found, create generic summary
+        if not summary_lines:
+            return f"The party had {len(messages)//2} exchanges covering general exploration and conversation."
+        
+        return "\n".join(summary_lines)
 
     def generate_response(self, player_input: str, use_rag: bool = True) -> str:
         """
@@ -963,7 +1054,11 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                 combat_feedback = "🗺️ No locations discovered yet."
             combat_command_handled = True
 
-        elif lower_input in ['/explore', '/search']:
+        # Discovery Triggers (Natural Language Exploration)
+        discovery_triggers = ['find a new path', 'explore further', 'venture out', 'leave this area', 'find new location', '/explore', '/search']
+        is_discovery_action = any(phrase in lower_input for phrase in discovery_triggers)
+
+        if is_discovery_action:
             # Lazy location generation with LLM-enhanced descriptions
             current_loc = self.session.get_current_location_obj()
             if current_loc:
@@ -1023,6 +1118,7 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
         if combat_command_handled:
             self.message_history.append(Message('player', player_input))
             self.message_history.append(Message('system', combat_feedback))
+            self._prune_message_history()  # Prevent context overflow
             return combat_feedback
 
         # Step 0: Shop Transaction Processing (before Reality Check)
@@ -1195,6 +1291,7 @@ CRITICAL INSTRUCTIONS:
             # Save to history
             self.message_history.append(Message('player', player_input))
             self.message_history.append(Message('gm', response))
+            self._prune_message_history()  # Prevent context overflow
             self.session.add_note(f"Invalid action rejected: {validation.action.action_type.value}")
 
             return response
@@ -1472,58 +1569,58 @@ CRITICAL INSTRUCTIONS:
                     else:
                         logger.debug(f"⚔️ Combat turn auto-advanced: {turn_message}")
 
-                    # Step 5.6: Process NPC turns automatically using monster stats
-                    # Get player AC for NPC attack targeting
-                    target_ac = 15  # Default
-                    if self.session.character_state:
-                        # Try to get AC from character (if available)
-                        if hasattr(self.session.character_state, 'armor_class'):
-                            target_ac = self.session.character_state.armor_class
-                    elif self.session.party and len(self.session.party.characters) > 0:
-                        # For party mode, use average AC or first character's AC
-                        first_char = list(self.session.party.characters.values())[0]
-                        if hasattr(first_char, 'armor_class'):
-                            target_ac = first_char.armor_class
+                # Step 5.6: Process NPC turns automatically using monster stats
+                # Get player AC for NPC attack targeting
+                target_ac = 15  # Default
+                if self.session.character_state:
+                    # Try to get AC from character (if available)
+                    if hasattr(self.session.character_state, 'armor_class'):
+                        target_ac = self.session.character_state.armor_class
+                elif self.session.party and len(self.session.party.characters) > 0:
+                    # For party mode, use average AC or first character's AC
+                    first_char = list(self.session.party.characters.values())[0]
+                    if hasattr(first_char, 'armor_class'):
+                        target_ac = first_char.armor_class
 
-                    # Process all consecutive NPC turns
-                    npc_actions = self.combat_manager.process_npc_turns(target_ac)
+                # Process all consecutive NPC turns
+                npc_actions = self.combat_manager.process_npc_turns(target_ac)
 
-                    if npc_actions:
-                        # Add NPC attacks to response
-                        combat_feedback += "\n\n**🐉 NPC ACTIONS:**\n" + "\n\n".join(npc_actions)
+                if npc_actions:
+                    # Add NPC attacks to response
+                    combat_feedback += "\n\n**🐉 NPC ACTIONS:**\n" + "\n\n".join(npc_actions)
 
-                        # Apply damage to player/party if NPCs hit
-                        for npc_action in npc_actions:
-                            if "💥" in npc_action and "damage" in npc_action.lower():
-                                # Extract damage from attack result
-                                import re
-                                damage_match = re.search(r'\*\*(\d+)\s+(\w+)\s+damage\*\*', npc_action)
-                                if damage_match:
-                                    damage = int(damage_match.group(1))
-                                    damage_type = damage_match.group(2)
+                    # Apply damage to player/party if NPCs hit
+                    for npc_action in npc_actions:
+                        if "💥" in npc_action and "damage" in npc_action.lower():
+                            # Extract damage from attack result
+                            import re
+                            damage_match = re.search(r'\*\*(\d+)\s+(\w+)\s+damage\*\*', npc_action)
+                            if damage_match:
+                                damage = int(damage_match.group(1))
+                                damage_type = damage_match.group(2)
 
-                                    # Apply to character or party
-                                    if self.session.character_state:
-                                        result = self.session.character_state.take_damage(damage, damage_type)
-                                        combat_feedback += f"\n💥 You take {damage} {damage_type} damage! HP: {result['current_hp']}/{self.session.character_state.max_hp}"
+                                # Apply to character or party
+                                if self.session.character_state:
+                                    result = self.session.character_state.take_damage(damage, damage_type)
+                                    combat_feedback += f"\n💥 You take {damage} {damage_type} damage! HP: {result['current_hp']}/{self.session.character_state.max_hp}"
 
-                                        if result['unconscious']:
-                                            combat_feedback += "\n☠️ **You fall unconscious!**"
+                                    if result['unconscious']:
+                                        combat_feedback += "\n☠️ **You fall unconscious!**"
 
-                                    elif self.session.party and len(self.session.party.characters) > 0:
-                                        # For party mode, apply to first character (target should be smarter in future)
-                                        first_char_name = list(self.session.party.characters.keys())[0]
-                                        first_char = self.session.party.characters[first_char_name]
-                                        result = first_char.take_damage(damage, damage_type)
-                                        combat_feedback += f"\n💥 {first_char_name} takes {damage} {damage_type} damage! HP: {result['current_hp']}/{first_char.max_hp}"
+                                elif self.session.party and len(self.session.party.characters) > 0:
+                                    # For party mode, apply to first character (target should be smarter in future)
+                                    first_char_name = list(self.session.party.characters.keys())[0]
+                                    first_char = self.session.party.characters[first_char_name]
+                                    result = first_char.take_damage(damage, damage_type)
+                                    combat_feedback += f"\n💥 {first_char_name} takes {damage} {damage_type} damage! HP: {result['current_hp']}/{first_char.max_hp}"
 
-                                        if result['unconscious']:
-                                            combat_feedback += f"\n☠️ **{first_char_name} falls unconscious!**"
+                                    if result['unconscious']:
+                                        combat_feedback += f"\n☠️ **{first_char_name} falls unconscious!**"
 
-                        if DEBUG_PROMPTS:
-                            logger.debug(f"🐉 NPC turns processed: {len(npc_actions)} attacks")
-                            for action in npc_actions:
-                                logger.debug(f"   {action}")
+                    if DEBUG_PROMPTS:
+                        logger.debug(f"🐉 NPC turns processed: {len(npc_actions)} attacks")
+                        for action in npc_actions:
+                            logger.debug(f"   {action}")
 
             # Add shop transaction feedback if any
             if transaction_feedback:
@@ -1540,6 +1637,7 @@ CRITICAL INSTRUCTIONS:
             # Save to history
             self.message_history.append(Message('player', player_input, rag_context if use_rag else None))
             self.message_history.append(Message('gm', response))
+            self._prune_message_history()  # Prevent context overflow
             self.session.add_note(f"Player: {player_input[:50]}... | GM: {response[:50]}...")
 
             return response
@@ -1675,7 +1773,9 @@ CRITICAL INSTRUCTIONS:
         """
 
         # Get recent conversation history
-        recent_messages = self.message_history[-4:] if len(self.message_history) > 4 else self.message_history
+        from dnd_rag_system.config.settings import RECENT_MESSAGES_FOR_PROMPT
+        
+        recent_messages = self.message_history[-RECENT_MESSAGES_FOR_PROMPT:] if len(self.message_history) > RECENT_MESSAGES_FOR_PROMPT else self.message_history
         history_text = "\n".join([
             f"{'Player' if msg.role == 'player' else 'GM'}: {msg.content}"
             for msg in recent_messages
@@ -1688,6 +1788,10 @@ CURRENT LOCATION: {self.session.current_location}
 SCENE: {self.session.scene_description if self.session.scene_description else "The adventure continues..."}
 TIME: Day {self.session.day}, {self.session.time_of_day}
 """
+
+        # Add conversation summary if it exists (for context continuity)
+        if self.conversation_summary:
+            prompt += f"\nPREVIOUS SESSION SUMMARY:\n{self.conversation_summary[-500:]}\n"  # Last 500 chars of summary
 
         # Add location context for better narrative consistency
         current_loc = self.session.get_current_location_obj()
@@ -1754,6 +1858,7 @@ TIME: Day {self.session.day}, {self.session.time_of_day}
 4. Be concise and engaging (2-4 sentences max)
 5. Maintain narrative flow while being mechanically precise
 6. If rules are unclear, use standard D&D 5e mechanics
+7. Be concise, respond in 3-5 sentences unless more detail is explicitly required.
 
 """
 
@@ -2063,8 +2168,19 @@ GM RESPONSE:"""
                     old_location = self.session.current_location
                     self.session.current_location = new_location
                     
+                    # Clear NPCs when changing location (NPCs don't follow the player!)
+                    # Only keep resident NPCs of the new location
+                    new_loc_obj = self.session.get_current_location_obj()
+                    if new_loc_obj:
+                        # Keep only resident NPCs of new location
+                        self.session.npcs_present = list(new_loc_obj.resident_npcs)
+                    else:
+                        # Unknown location - clear all NPCs
+                        self.session.npcs_present = []
+                    
                     if DEBUG_PROMPTS:
                         logger.debug(f"📍 Location changed: '{old_location}' → '{new_location}'")
+                        logger.debug(f"🎭 NPCs cleared, now present: {self.session.npcs_present}")
                     
                     self.session.add_note(f"Traveled to: {new_location}")
                 
@@ -2136,6 +2252,48 @@ GM RESPONSE:"""
             # Clean up response (remove prompt echo if present)
             if "GM RESPONSE:" in response:
                 response = response.split("GM RESPONSE:")[-1].strip()
+            
+            # CRITICAL: Remove leaked system prompts from model training data
+            # The model sometimes hallucinates roleplay card formats
+            import re
+            
+            # Remove {{user}} template markers and everything after
+            if "{{user}}" in response:
+                response = response.split("{{user}}")[0].strip()
+            
+            # Remove "Take the role of" instruction blocks
+            if "Take the role of" in response:
+                response = response.split("Take the role of")[0].strip()
+            
+            # Remove "You must engage in roleplay" blocks
+            if "you must roleplay" in response.lower():
+                parts = re.split(r'you must (?:engage in )?roleplay', response, flags=re.IGNORECASE)
+                response = parts[0].strip()
+            
+            # Remove "Never write for" instruction blocks
+            if "Never write for" in response:
+                response = response.split("Never write for")[0].strip()
+            
+            # Remove "Scenario:" metadata blocks
+            if "Scenario:" in response:
+                response = response.split("Scenario:")[0].strip()
+            
+            # Remove markdown code fences that sometimes appear
+            response = re.sub(r'```[\w]*\n.*?```', '', response, flags=re.DOTALL)
+            
+            # Remove duplicate paragraphs (hallucination symptom)
+            paragraphs = response.split('\n\n')
+            seen = set()
+            cleaned_paragraphs = []
+            for para in paragraphs:
+                para_clean = para.strip()
+                if para_clean and para_clean not in seen:
+                    seen.add(para_clean)
+                    cleaned_paragraphs.append(para)
+            response = '\n\n'.join(cleaned_paragraphs)
+            
+            # Final trim
+            response = response.strip()
 
             # Log response if debug mode is enabled
             if DEBUG_PROMPTS:
