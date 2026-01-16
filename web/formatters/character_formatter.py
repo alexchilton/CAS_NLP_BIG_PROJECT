@@ -30,6 +30,10 @@ def format_character_sheet(char, char_state, db) -> tuple:
     max_hp = char_state.max_hp if char_state else char.hit_points
     gold = char_state.gold if char_state and hasattr(char_state, 'gold') else getattr(char, 'gold', 0)
 
+    # Get XP from game state
+    xp = char_state.experience_points if char_state else 0
+    xp_for_next = char.level * 1000  # Simplified XP system: 1000 XP per level
+
     # ========== COLUMN 1: NAME, COMBAT STATS, ABILITY SCORES ==========
     temp_hp_str = f" (+{char_state.temp_hp} temp)" if char_state and char_state.temp_hp > 0 else ""
     col1 = f"""# {char.name}
@@ -45,6 +49,7 @@ def format_character_sheet(char, char_state, db) -> tuple:
 **AC:** {char.armor_class}
 **Prof Bonus:** +{char.proficiency_bonus}
 **Gold:** {gold} GP
+**XP:** {xp}/{xp_for_next}
 
 """
 

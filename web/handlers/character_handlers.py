@@ -143,11 +143,15 @@ def load_character_with_location(
 
     # Create CharacterState
     char = current_character
+    # Calculate starting XP: (level - 1) * 1000
+    # Level 1 = 0 XP, Level 2 = 1000 XP, Level 10 = 9000 XP, etc.
+    starting_xp = (char.level - 1) * 1000
     char_state = CharacterState(
         character_name=char.name,
         max_hp=char.hit_points,
         current_hp=char.hit_points,
         level=char.level,
+        experience_points=starting_xp,
         inventory={item: 1 for item in char.equipment},
         gold=getattr(char, 'gold', 50)
     )
