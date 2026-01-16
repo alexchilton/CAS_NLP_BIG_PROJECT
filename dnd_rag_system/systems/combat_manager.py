@@ -203,6 +203,10 @@ class CombatManager:
         # Start combat
         self.combat.start_combat(initiatives)
 
+        # DEBUG: Confirm combat started
+        print(f"🔍 Combat started: in_combat={self.combat.in_combat}")
+        print(f"   Initiative order: {self.combat.initiative_order}")
+
         return self.get_combat_start_message()
 
     def get_combat_start_message(self) -> str:

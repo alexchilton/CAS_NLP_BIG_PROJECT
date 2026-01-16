@@ -19,15 +19,23 @@ def get_initiative_tracker(gm, gameplay_mode, party_characters, party_state) -> 
     Returns:
         Tuple of (initiative_display_text, accordion_update)
     """
-    if gm.combat_manager.is_in_combat():
+    in_combat = gm.combat_manager.is_in_combat()
+
+    # DEBUG: Log accordion visibility state
+    print(f"🔍 get_initiative_tracker: in_combat={in_combat}")
+
+    if in_combat:
         # Get initiative tracker with party info if in party mode
         if gameplay_mode == "party" and party_characters:
             tracker = gm.combat_manager.get_initiative_tracker(party_state)
         else:
             tracker = gm.combat_manager.get_initiative_tracker()
 
+        print(f"   ✅ Returning accordion visible=True, open=True")
+        print(f"   📋 Tracker preview: {tracker[:100]}...")
         return tracker, gr.update(visible=True, open=True)
     else:
+        print(f"   ❌ Returning accordion visible=False")
         return "⚔️ Not currently in combat\n\nUse `/start_combat Goblin, Orc` to begin combat", gr.update(visible=False)
 
 
