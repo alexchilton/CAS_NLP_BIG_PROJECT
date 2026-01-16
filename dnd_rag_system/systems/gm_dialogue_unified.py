@@ -1300,53 +1300,86 @@ CRITICAL INSTRUCTIONS:
         if original_character_state is not None:
             self.session.character_state = original_character_state
 
-        # Step 1.7: Calculate Player Attack (if attacking)
+        # Step 1.7: Auto-start combat if player attacks an NPC
+        # CRITICAL: This MUST happen BEFORE attack calculation to ensure initiative is rolled first
+        # D&D 5e Rules: Initiative determines who attacks first, not who declares the attack!
+        from dnd_rag_system.systems.game_state import Condition
+        if (action_intent.action_type == ActionType.COMBAT and
+            self.session.npcs_present and
+            not self.combat_manager.is_in_combat()):
+
+            # Auto-start combat with present NPCs (rolls initiative)
+            if self.session.character_state:
+                combat_feedback = self.combat_manager.start_combat_with_character(
+                    self.session.character_state,
+                    self.session.npcs_present
+                )
+                if DEBUG_PROMPTS:
+                    logger.debug(f"⚔️ Auto-started combat with: {', '.join(self.session.npcs_present)}")
+                    current_turn = self.session.combat.get_current_turn()
+                    logger.debug(f"⚔️ Initiative Order Set - First Turn: {current_turn}")
+
+        # Step 1.8: Calculate Player Attack (ONLY if it's their turn or not in combat)
         # Pre-calculate attack roll and damage so GM can narrate specific numbers
         player_attack_instruction = ""
         player_attack_damage_feedback = ""
-        if (action_intent.action_type == ActionType.COMBAT and 
-            action_intent.target and 
+        if (action_intent.action_type == ActionType.COMBAT and
+            action_intent.target and
             self.session.character_state):
-            
-            # Use fuzzy-matched target name if available, otherwise use original
-            target_name = validation.matched_entity if validation and validation.matched_entity else action_intent.target
-            
-            # Calculate player's attack
-            attack_result = self._calculate_player_attack(
-                target_name,
-                self.session.character_state
-            )
-            
-            if attack_result:
-                player_attack_instruction = attack_result
-                if DEBUG_PROMPTS:
-                    logger.debug(f"⚔️ Player Attack: {attack_result}")
-                
-                # Parse and apply damage directly (don't rely on mechanics extraction)
-                import re
-                damage_match = re.search(r'💥 (\d+) (\w+) damage', attack_result)
-                if damage_match and "HITS" in attack_result:
-                    damage_amount = int(damage_match.group(1))
-                    damage_type = damage_match.group(2)
-                    # Use matched target name (already calculated above)
-                    
-                    # Apply damage to NPC directly
-                    if target_name in self.combat_manager.npc_monsters:
-                        actual_damage, is_dead = self.combat_manager.apply_damage_to_npc(
-                            target_name,
-                            damage_amount
-                        )
-                        
-                        npc = self.combat_manager.npc_monsters[target_name]
-                        if is_dead:
-                            player_attack_damage_feedback = f"💥 {target_name} takes {actual_damage} {damage_type} damage and dies! ☠️"
-                            # Remove from npcs_present
-                            if target_name in self.session.npcs_present:
-                                self.session.npcs_present.remove(target_name)
-                        else:
-                            player_attack_damage_feedback = f"💥 {target_name} takes {actual_damage} {damage_type} damage! (HP: {npc.current_hp}/{npc.max_hp})"
-                elif "MISSES" in attack_result or "CRITICALLY MISSES" in attack_result:
-                    player_attack_damage_feedback = f"❌ Attack missed {target_name}!"
+
+            # Check if it's the player's turn (if in combat)
+            is_players_turn = True  # Default to True if not in combat
+            if self.combat_manager.is_in_combat():
+                current_turn = self.session.combat.get_current_turn()
+                is_players_turn = (current_turn == self.session.character_state.character_name)
+
+                if not is_players_turn:
+                    # Not the player's turn - they can't attack yet!
+                    player_attack_instruction = f"⚠️ **NOT YOUR TURN!**\n\n**Current Turn:** {current_turn}\n\nYou must wait for your turn in the initiative order. Use `/next_turn` to advance combat."
+                    if DEBUG_PROMPTS:
+                        logger.debug(f"⚠️ Player tried to attack on {current_turn}'s turn - blocked")
+
+            # Only calculate attack if it's the player's turn (or not in combat)
+            if is_players_turn:
+                # Use fuzzy-matched target name if available, otherwise use original
+                target_name = validation.matched_entity if validation and validation.matched_entity else action_intent.target
+
+                # Calculate player's attack
+                attack_result = self._calculate_player_attack(
+                    target_name,
+                    self.session.character_state
+                )
+
+                if attack_result:
+                    player_attack_instruction = attack_result
+                    if DEBUG_PROMPTS:
+                        logger.debug(f"⚔️ Player Attack: {attack_result}")
+
+                    # Parse and apply damage directly (don't rely on mechanics extraction)
+                    import re
+                    damage_match = re.search(r'💥 (\d+) (\w+) damage', attack_result)
+                    if damage_match and "HITS" in attack_result:
+                        damage_amount = int(damage_match.group(1))
+                        damage_type = damage_match.group(2)
+                        # Use matched target name (already calculated above)
+
+                        # Apply damage to NPC directly
+                        if target_name in self.combat_manager.npc_monsters:
+                            actual_damage, is_dead = self.combat_manager.apply_damage_to_npc(
+                                target_name,
+                                damage_amount
+                            )
+
+                            npc = self.combat_manager.npc_monsters[target_name]
+                            if is_dead:
+                                player_attack_damage_feedback = f"💥 {target_name} takes {actual_damage} {damage_type} damage and dies! ☠️"
+                                # Remove from npcs_present
+                                if target_name in self.session.npcs_present:
+                                    self.session.npcs_present.remove(target_name)
+                            else:
+                                player_attack_damage_feedback = f"💥 {target_name} takes {actual_damage} {damage_type} damage! (HP: {npc.current_hp}/{npc.max_hp})"
+                    elif "MISSES" in attack_result or "CRITICALLY MISSES" in attack_result:
+                        player_attack_damage_feedback = f"❌ Attack missed {target_name}!"
 
         # Step 2: Search RAG if enabled
         if use_rag:
@@ -1530,22 +1563,6 @@ CRITICAL INSTRUCTIONS:
             # Step 5.4: Extract location changes from GM narrative
             # Parse patterns like "You find yourself in X", "You travel to X", "You are in X"
             self._extract_and_update_location(response)
-
-            # Step 5.4.5: Auto-start combat if player attacks an NPC
-            # Check if this is an attack action and NPCs are present
-            from dnd_rag_system.systems.game_state import Condition
-            if (action_intent.action_type == ActionType.COMBAT and 
-                self.session.npcs_present and 
-                not self.combat_manager.is_in_combat()):
-                
-                # Auto-start combat with present NPCs
-                if self.session.character_state:
-                    combat_feedback = self.combat_manager.start_combat_with_character(
-                        self.session.character_state,
-                        self.session.npcs_present
-                    )
-                    if DEBUG_PROMPTS:
-                        logger.debug(f"⚔️ Auto-started combat with: {', '.join(self.session.npcs_present)}")
 
             # Step 5.5: Auto-advance turn in combat mode after character acts
             # In D&D combat: NPCs attack EVERY round regardless of what player does
