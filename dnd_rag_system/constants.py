@@ -21,6 +21,7 @@ class Commands:
     NEXT_TURN = '/next_turn'
     END_COMBAT = '/end_combat'
     INITIATIVE = '/initiative'
+    FLEE = '/flee'
     
     # Character Actions
     STATS = '/stats'
@@ -81,6 +82,7 @@ class Commands:
             cls.NEXT_TURN,
             cls.END_COMBAT,
             cls.INITIATIVE,
+            cls.FLEE,
         ]
     
     @classmethod

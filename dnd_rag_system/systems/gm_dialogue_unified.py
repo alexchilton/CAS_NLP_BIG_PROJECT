@@ -295,6 +295,61 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             combat_feedback = self.combat_manager.advance_turn()
             combat_command_handled = True
 
+        elif lower_input in ['/flee', '/run', '/escape']:
+            # Attempt to flee from combat
+            if not self.combat_manager.is_in_combat():
+                combat_feedback = "⚠️ Not in combat! Nothing to flee from."
+            else:
+                import random
+
+                # Get character's DEX modifier for flee check
+                dex_mod = 0
+                if self.session.character_state:
+                    # Single character mode - get DEX from base stats
+                    char_name = self.session.character_state.character_name
+                    if char_name in self.session.base_character_stats:
+                        base_char = self.session.base_character_stats[char_name]
+                        dex_mod = base_char.get_ability_modifier(base_char.dexterity)
+
+                # Roll flee check (d20 + DEX modifier)
+                flee_roll = random.randint(1, 20)
+                flee_total = flee_roll + dex_mod
+
+                # DC based on number of enemies (10 + number of enemies)
+                num_enemies = len(self.combat_manager.npc_monsters)
+                flee_dc = 10 + num_enemies
+
+                if flee_total >= flee_dc:
+                    # SUCCESS! Escape combat
+                    combat_feedback = f"🏃 **FLEE SUCCESSFUL!**\n\n"
+                    combat_feedback += f"Flee Check: {flee_roll} + {dex_mod} (DEX) = {flee_total} vs DC {flee_dc}\n\n"
+                    combat_feedback += f"You manage to escape from combat!\n\n"
+
+                    # End combat without XP
+                    end_msg, dead_npcs = self.combat_manager.end_combat()
+                    combat_feedback += end_msg
+
+                    # Clear NPCs from scene (you fled, so they're left behind)
+                    for npc in list(self.session.npcs_present):
+                        self.session.npcs_present.remove(npc)
+                else:
+                    # FAILURE! Take opportunity attack damage
+                    opp_attack_damage = random.randint(1, 6) * num_enemies  # Simple damage
+
+                    combat_feedback = f"🏃 **FLEE FAILED!**\n\n"
+                    combat_feedback += f"Flee Check: {flee_roll} + {dex_mod} (DEX) = {flee_total} vs DC {flee_dc}\n\n"
+                    combat_feedback += f"You try to flee but the enemies strike as you run!\n\n"
+                    combat_feedback += f"💥 You take {opp_attack_damage} damage from opportunity attacks!\n\n"
+
+                    # Apply damage to character
+                    if self.session.character_state:
+                        damage_result = self.session.character_state.take_damage(opp_attack_damage, "slashing")
+                        combat_feedback += damage_result['message'] + "\n\n"
+
+                    combat_feedback += "Combat continues! (Try fleeing again or fight)"
+
+            combat_command_handled = True
+
         elif lower_input == Commands.END_COMBAT:
             # Award XP before ending combat
             xp_feedback = ""
@@ -886,7 +941,8 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             current_loc = self.session.get_current_location_obj()
             if current_loc:
                 # Check if we already have too many connections from this location
-                if len(current_loc.connections) >= 6:
+                # Maximum 12 connections per location to avoid overwhelming the player
+                if len(current_loc.connections) >= 12:
                     combat_feedback = "🔍 You search the area but find no new paths. All routes from here have been explored."
                 else:
                     from dnd_rag_system.systems.world_builder import generate_llm_enhanced_location
