@@ -1336,7 +1336,6 @@ CRITICAL INSTRUCTIONS:
                 if not is_players_turn:
                     # Not the player's turn - they can't attack yet!
                     # Return this message DIRECTLY to the user (bypass LLM to avoid hallucinations)
-                    from dnd_rag_system.systems.action_intent import ActionType
                     return f"""⚠️ **WAIT! It's not your turn yet!**
 
 **Current Turn:** {current_turn} is acting right now.
