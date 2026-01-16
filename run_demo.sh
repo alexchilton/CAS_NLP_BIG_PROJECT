@@ -1,0 +1,1 @@
+python3 e2e_tests/demo_endless_adventure_playwright.py
