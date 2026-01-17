@@ -625,18 +625,102 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
 
         # Let other commands pass through to GM
 
+    # SPECIAL HANDLING: Detect knowledge/RAG questions vs in-character actions
+    # Knowledge questions should bypass GM roleplay and go straight to RAG
+    message_lower = message.lower()
+    knowledge_indicators = [
+        'what is', 'what does', 'what are',
+        'tell me about', 'describe', 'explain',
+        'how does', 'how do',
+        'what\'s a', 'whats a',
+        'information about', 'info about',
+        'details about', 'details on'
+    ]
+
+    is_knowledge_question = any(indicator in message_lower for indicator in knowledge_indicators)
+
+    if is_knowledge_question and not message.startswith('/'):
+        # This is a knowledge question - use RAG directly without roleplay
+        try:
+            # Extract the query (what they're asking about)
+            # Preserve original capitalization for better RAG matching
+            query = message
+            for indicator in knowledge_indicators:
+                if indicator in message_lower:
+                    # Find the indicator position and extract the rest
+                    ind_pos = message_lower.find(indicator)
+                    if ind_pos >= 0:
+                        query = message[ind_pos + len(indicator):].strip(' ?.')
+                        break
+
+            print(f"🔍 Knowledge question detected: '{message}' → query: '{query}'")
+
+            if query:
+                # Use RAG to look up the info
+                from dnd_rag_system.systems.spell_manager import SpellManager
+                spell_mgr = SpellManager(gm.db)
+
+                # Check if it's a spell
+                spell_details = spell_mgr.lookup_spell_details(query)
+
+                if spell_details:
+                    # Format spell details
+                    level_str = "Cantrip" if spell_details['level'] == 0 else f"Level {spell_details['level']}"
+                    conc_str = "⚠️ Requires Concentration" if spell_details['concentration'] else ""
+
+                    rag_response = f"""## 🪄 {spell_details['name']}
+*{level_str} {spell_details['school']}*  {conc_str}
+
+**Description:**
+{spell_details['description']}
+
+---
+*Source: D&D 5e SRD via RAG*"""
+                else:
+                    # Try general RAG search
+                    results = gm.search_rag(query, n_results=3)
+                    if results and results.get('documents') and results['documents'][0]:
+                        formatted = gm.format_rag_context(results)
+                        rag_response = f"## 📖 {query.title()}\n\n{formatted}\n\n---\n*Source: D&D 5e SRD via RAG*"
+                    else:
+                        rag_response = f"❌ **'{query}' not found in D&D 5e SRD**\n\nTry asking about:\n- Spells (e.g., 'What is Magic Missile?')\n- Items (e.g., 'Tell me about Longsword')\n- Monsters (e.g., 'What is a Goblin?')\n- Rules (e.g., 'How does Sneak Attack work?')"
+
+                # IMPORTANT: Clean up any contamination from RAG lookup
+                # RAG queries should not spawn NPCs or affect game state
+                if gm.session.npcs_present:
+                    print(f"🧹 Cleaning up NPCs spawned during RAG query: {gm.session.npcs_present}")
+                    gm.session.npcs_present = []
+
+                if gm.combat_manager.is_in_combat():
+                    print(f"🧹 Ending combat started during RAG query")
+                    gm.combat_manager.end_combat()
+
+                return (
+                    history + [
+                        {"role": "user", "content": message},
+                        {"role": "assistant", "content": rag_response}
+                    ],
+                    *get_initiative_tracker_func(),
+                    *get_current_sheet_func()
+                )
+        except Exception as e:
+            print(f"RAG lookup error: {e}")
+            import traceback
+            traceback.print_exc()
+            # Fall through to normal GM response on error
+
     # Generate GM response (handles /buy, /sell, combat commands, and regular actions)
     try:
         # Aggressively prune context BEFORE generate_response to prevent timeouts
         # This ensures we never send a huge context to the LLM
         import time
         msg_count = len(gm.message_history)
-        
+
         if msg_count > 15:
             print(f"⚠️  Context preventive pruning: {msg_count} messages → pruning now")
             gm._prune_message_history()
             print(f"   ✅ After pruning: {len(gm.message_history)} messages")
-        
+
         # Time the LLM call
         llm_start = time.time()
         response = gm.generate_response(message, use_rag=True)
