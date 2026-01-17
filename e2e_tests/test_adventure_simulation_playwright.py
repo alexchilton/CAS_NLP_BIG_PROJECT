@@ -72,7 +72,12 @@ def test_adventure_simulation_playwright():
             max_turns = 20  # Safety limit
             in_combat = False
             current_enemy = None
-            
+            combat_started_for_current_enemy = False  # Track if we've called /start_combat
+
+            # Stuck detection (from GRADIO_FREEZE_BUG_FIX.md)
+            last_response_text = ""
+            stuck_count = 0
+
             while turn < max_turns:
                 turn += 1
                 
@@ -158,16 +163,15 @@ def test_adventure_simulation_playwright():
                 else:
                     # Combat mode - attack until someone dies
                     print(f"\n⚔️  Turn {turn}: COMBAT - Attacking {current_enemy}!")
-                    
-                    # Start combat if not already in it
-                    # Check if previous response indicated combat start
-                    last_msg = get_last_bot_message(page)
-                    if 'initiative' not in last_msg.lower():
+
+                    # Start combat only if we haven't started it for this enemy yet
+                    if not combat_started_for_current_enemy:
                         send_message(page, f"/start_combat {current_enemy}")
+                        combat_started_for_current_enemy = True
                         time.sleep(2) # Give a moment for combat to init
                         response = get_last_bot_message(page)
                         print(f"Combat started: {response[:200]}...")
-                    
+
                     # Attack
                     attack_variations = [
                         f"I attack the {current_enemy} with my battleaxe",
@@ -181,14 +185,17 @@ def test_adventure_simulation_playwright():
                     response = get_last_bot_message(page)
                     print(f"Attack: {response[:250]}...")
                     
-                    # Check if enemy died
-                    if 'dead' in response.lower() or 'dies' in response.lower() or 'falls' in response.lower():
-                        print(f"✅ {current_enemy} defeated!")
+                    # Check if enemy died OR combat ended
+                    if ('dead' in response.lower() or 'dies' in response.lower() or 'falls' in response.lower() or
+                        'combat has ended' in response.lower() or 'combat ended' in response.lower()):
+                        print(f"✅ {current_enemy} defeated! Combat ended.")
                         in_combat = False
                         current_enemy = None
-                        
-                        # End combat
-                        send_message(page, "/end_combat")
+                        combat_started_for_current_enemy = False  # Reset flag for next combat
+
+                        # End combat if not already ended
+                        if 'combat has ended' not in response.lower():
+                            send_message(page, "/end_combat")
                     
                     # Check our HP
                     hp = get_hp_from_sheet(page)
