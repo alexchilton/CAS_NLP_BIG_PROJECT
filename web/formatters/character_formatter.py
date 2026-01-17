@@ -78,8 +78,16 @@ def format_character_sheet(char, char_state, db) -> tuple:
 """
 
     col2 += """### 🎒 Inventory\n"""
+    # DEBUG: Check inventory state
+    print(f"📋 DEBUG format_character_sheet: char_state exists={char_state is not None}")
+    if char_state:
+        print(f"📋 DEBUG: has inventory attr={hasattr(char_state, 'inventory')}")
+        if hasattr(char_state, 'inventory'):
+            print(f"📋 DEBUG: inventory={char_state.inventory}")
+
     if char_state and char_state.inventory:
         inv_items = [f"- {item} ({qty})" for item, qty in char_state.inventory.items() if item not in char.equipment]
+        print(f"📋 DEBUG: inv_items after filtering={inv_items}")
         if inv_items:
             col2 += chr(10).join(inv_items) + "\n"
         else:
