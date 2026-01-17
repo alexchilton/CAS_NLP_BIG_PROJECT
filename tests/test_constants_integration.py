@@ -25,13 +25,14 @@ class TestCommandsInGameMaster:
         gm.session.character_state.character_name = "Thorin"
         gm.session.character_state.current_hp = 20
         gm.session.character_state.max_hp = 20
+        gm.session.character_state.armor_class = 15  # Fix: Mock needs armor_class for NPC attacks
         gm.session.character_state.conditions = []  # Fix: Mock needs iterable
-        
+
         mock_llm.return_value = "Combat begins!"
-        
+
         # Use the constant instead of magic string
         response = gm.generate_response(f"{Commands.START_COMBAT} Goblin")
-        
+
         assert gm.combat_manager.is_in_combat()
         assert "Goblin" in gm.session.npcs_present
     
