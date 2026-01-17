@@ -94,9 +94,10 @@ def test_shop_ui_playwright():
             send_message(page, "/stats")
             stats_response = get_last_bot_message(page)
             current_gold, current_inventory = extract_gold_and_inventory(stats_response)
-            
-            expect(current_gold).to_be(initial_gold - 1) # Thorin starts with 50, rope costs 1
-            expect("rope (1)" in [item.lower() for item in current_inventory]).to_be_true()
+
+            # Use Python assertions for integer/boolean comparisons
+            assert current_gold == initial_gold - 1, f"Expected gold={initial_gold - 1}, got {current_gold}"
+            assert any("rope" in item.lower() for item in current_inventory), f"Rope not found in inventory: {current_inventory}"
             print("✅ Inventory and gold updated after purchase.")
             
             # 2. Sell an item (Longsword, initially equipped)
@@ -120,9 +121,10 @@ def test_shop_ui_playwright():
             send_message(page, "/stats")
             stats_response_after_sell = get_last_bot_message(page)
             final_gold, final_inventory = extract_gold_and_inventory(stats_response_after_sell)
-            
-            expect(final_gold).to_be_greater_than(current_gold) # Gold should increase
-            expect("longsword (1)" in [item.lower() for item in final_inventory]).to_be_false() # Longsword should be gone
+
+            # Use Python assertions for integer/boolean comparisons
+            assert final_gold > current_gold, f"Expected gold to increase from {current_gold}, got {final_gold}"
+            assert not any("longsword" in item.lower() for item in final_inventory), f"Longsword should be sold, but found in: {final_inventory}"
             print("✅ Inventory and gold updated after sale.")
             
             print("\n✅ All Shop UI Integration Tests Completed!")
