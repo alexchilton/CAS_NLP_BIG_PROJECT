@@ -182,6 +182,10 @@ class ShopSystem:
         else:
             character_state.inventory[item_name] = quantity
 
+        # DEBUG: Verify inventory was updated
+        print(f"🛒 DEBUG: Added {quantity}x {item_name} to inventory")
+        print(f"🛒 DEBUG: Current inventory: {character_state.inventory}")
+
         return ShopTransaction(
             success=True,
             item_name=item_name,
