@@ -160,6 +160,12 @@ MAX_CONTEXT_TOKENS = 2000
 # Number of recent messages to include in LLM prompt (context pruning)
 RECENT_MESSAGES_FOR_PROMPT = 10
 
+# Maximum number of messages to keep in history (context pruning)
+MAX_MESSAGE_HISTORY = 20
+
+# Summarize conversation every N messages to reduce context size
+SUMMARIZE_EVERY_N_MESSAGES = 15
+
 # Entity recognition patterns
 ENTITY_PATTERNS = {
     "spell_indicators": ["cast", "spell", "fireball", "magic missile", "cure wounds"],
