@@ -1020,31 +1020,34 @@ EXAMPLES:
 1. "I loose an arrow at the dragon"
    → {{"action_type": "combat", "target": "dragon", "resource": "arrow"}}
 
-2. "Thorin talks to the innkeeper about rumors"
+2. "shoot the dragon"
+   → {{"action_type": "combat", "target": "dragon", "resource": null}}
+
+3. "Thorin talks to the innkeeper about rumors"
    → {{"action_type": "conversation", "target": "innkeeper", "resource": null}}
 
-3. "I cast Cure Wounds on Gimli"
+4. "I cast Cure Wounds on Gimli"
    → {{"action_type": "spell_cast", "target": "Gimli", "resource": "Cure Wounds"}}
 
-4. "I nock and release my bowstring at the goblin"
+5. "I nock and release my bowstring at the goblin"
    → {{"action_type": "combat", "target": "goblin", "resource": "bow"}}
 
-5. "I look around the room"
+6. "I look around the room"
    → {{"action_type": "exploration", "target": null, "resource": null}}
 
-6. "I swipe the ruby from the pedestal"
+7. "I swipe the ruby from the pedestal"
    → {{"action_type": "steal", "target": null, "resource": "ruby"}}
 
-7. "swipe the gold coins"
+8. "swipe the gold coins"
    → {{"action_type": "steal", "target": null, "resource": "gold coins"}}
 
-8. "swipe the healing potion"
+9. "swipe the healing potion"
    → {{"action_type": "steal", "target": null, "resource": "healing potion"}}
 
-9. "pocket the magic ring"
+10. "pocket the magic ring"
    → {{"action_type": "steal", "target": null, "resource": "magic ring"}}
 
-10. "Let fly with my longbow towards the orc"
+11. "Let fly with my longbow towards the orc"
    → {{"action_type": "combat", "target": "orc", "resource": "longbow"}}
 
 RULES:
