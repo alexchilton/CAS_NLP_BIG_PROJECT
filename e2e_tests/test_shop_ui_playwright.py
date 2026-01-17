@@ -143,7 +143,17 @@ def test_shop_ui_playwright():
             browser.close()
             print("🛑 Stopping Gradio...")
             gradio_process.terminate()
-            gradio_process.wait()
+
+            # Capture and print server logs
+            stdout, stderr = gradio_process.communicate(timeout=5)
+            print("\n" + "=" * 80)
+            print("GRADIO SERVER LOGS (stdout):")
+            print("=" * 80)
+            print(stdout.decode('utf-8', errors='ignore'))
+            print("\n" + "=" * 80)
+            print("GRADIO SERVER LOGS (stderr):")
+            print("=" * 80)
+            print(stderr.decode('utf-8', errors='ignore')[-2000:])  # Last 2000 chars
 
 if __name__ == "__main__":
     test_shop_ui_playwright()
