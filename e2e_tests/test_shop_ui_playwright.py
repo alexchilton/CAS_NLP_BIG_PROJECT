@@ -57,7 +57,9 @@ def test_shop_ui_playwright():
     time.sleep(10) # Give server time to start
     
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        # Allow HEADLESS env var to show GUI: HEADLESS=false python3 test.py
+        headless_mode = os.getenv('HEADLESS', 'true').lower() != 'false'
+        browser = p.chromium.launch(headless=headless_mode)
         page = browser.new_page()
         
         try:
