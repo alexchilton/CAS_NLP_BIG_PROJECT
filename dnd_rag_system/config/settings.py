@@ -157,6 +157,9 @@ DEFAULT_RAG_RESULTS = 5
 # Maximum context tokens for LLM (approximate)
 MAX_CONTEXT_TOKENS = 2000
 
+# Number of recent messages to include in LLM prompt (context pruning)
+RECENT_MESSAGES_FOR_PROMPT = 10
+
 # Entity recognition patterns
 ENTITY_PATTERNS = {
     "spell_indicators": ["cast", "spell", "fireball", "magic missile", "cure wounds"],
