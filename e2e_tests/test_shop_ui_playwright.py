@@ -69,12 +69,18 @@ def test_shop_ui_playwright():
             # Load Thorin
             print("\n📝 Loading Thorin...")
             load_character(page, "Thorin")
-            
-            # Get initial stats
-            initial_sheet = get_character_sheet_text(page)
-            initial_gold, initial_inventory = extract_gold_and_inventory(initial_sheet)
-            
-            print(f"Initial: Gold={initial_gold}, Inventory={initial_inventory}")
+
+            # Send /stats to ensure character sheet is fully populated
+            send_message(page, "/stats")
+            time.sleep(3)  # Give UI time to fully update and render stats
+
+            # Get initial stats from the response
+            initial_response = get_last_bot_message(page)
+            initial_gold, initial_inventory = extract_gold_and_inventory(initial_response)
+
+            print(f"DEBUG: Stats response length: {len(initial_response)}")
+            print(f"DEBUG: Stats response preview:\n{initial_response[:800]}")
+            print(f"DEBUG: Extracted - Gold={initial_gold}, Inventory={initial_inventory}")
             
             # 1. Buy an item (Rope, cost 1 GP)
             print("\n" + "=" * 80)
