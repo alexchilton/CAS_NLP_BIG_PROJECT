@@ -13,6 +13,7 @@ import subprocess
 import json
 import os
 import logging
+import random
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
@@ -377,6 +378,29 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
                         self.session.npcs_present.append(npc)
                         if DEBUG_PROMPTS:
                             logger.debug(f"🎭 Added {npc} to npcs_present for combat targeting")
+
+                # IMPORTANT: If combat starts with an NPC's turn, process NPC turns immediately
+                current_turn = self.combat_manager.get_current_turn_name()
+                if current_turn and current_turn in self.combat_manager.npc_monsters:
+                    # Get player AC for NPC targeting
+                    target_ac = 15  # Default
+                    if self.session.character_state and hasattr(self.session.character_state, 'armor_class'):
+                        target_ac = self.session.character_state.armor_class
+                    elif self.session.party and len(self.session.party.characters) > 0:
+                        first_char = list(self.session.party.characters.values())[0]
+                        if hasattr(first_char, 'armor_class'):
+                            target_ac = first_char.armor_class
+
+                    # Process all NPC turns (damage is applied inside process_npc_turns)
+                    npc_actions = self.combat_manager.process_npc_turns(
+                        target_ac,
+                        target_character=self.session.character_state,
+                        target_party=self.session.party
+                    )
+
+                    if npc_actions:
+                        combat_feedback += "\n\n**🐉 NPC ACTIONS:**\n" + "\n\n".join(npc_actions)
+
             else:
                 combat_feedback = "⚠️ No NPCs specified for combat! Use: `/start_combat Goblin, Orc` or add NPCs with add_npc() first."
 
@@ -391,8 +415,6 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             if not self.combat_manager.is_in_combat():
                 combat_feedback = "⚠️ Not in combat! Nothing to flee from."
             else:
-                import random
-
                 # Get character's DEX modifier for flee check
                 dex_mod = 0
                 if self.session.character_state:
@@ -1304,6 +1326,7 @@ CRITICAL INSTRUCTIONS:
         # CRITICAL: This MUST happen BEFORE attack calculation to ensure initiative is rolled first
         # D&D 5e Rules: Initiative determines who attacks first, not who declares the attack!
         from dnd_rag_system.systems.game_state import Condition
+        auto_started_combat = False
         if (action_intent.action_type == ActionType.COMBAT and
             self.session.npcs_present and
             not self.combat_manager.is_in_combat()):
@@ -1314,10 +1337,36 @@ CRITICAL INSTRUCTIONS:
                     self.session.character_state,
                     self.session.npcs_present
                 )
+                auto_started_combat = True
+
                 if DEBUG_PROMPTS:
                     logger.debug(f"⚔️ Auto-started combat with: {', '.join(self.session.npcs_present)}")
                     current_turn = self.session.combat.get_current_turn()
                     logger.debug(f"⚔️ Initiative Order Set - First Turn: {current_turn}")
+
+                # IMPORTANT: If combat starts with an NPC's turn, process NPC turns immediately
+                # This ensures NPCs attack BEFORE the player if they won initiative
+                current_turn = self.combat_manager.get_current_turn_name()
+                if current_turn and current_turn in self.combat_manager.npc_monsters:
+                    # Get player AC for NPC targeting
+                    target_ac = 15  # Default
+                    if hasattr(self.session.character_state, 'armor_class'):
+                        target_ac = self.session.character_state.armor_class
+
+                    # Process all NPC turns (damage is applied inside process_npc_turns)
+                    npc_actions = self.combat_manager.process_npc_turns(
+                        target_ac,
+                        target_character=self.session.character_state
+                    )
+
+                    if npc_actions:
+                        combat_feedback += "\n\n**🐉 NPC ACTIONS:**\n" + "\n\n".join(npc_actions)
+
+                # IMPORTANT: If combat was auto-started, return the combat feedback immediately
+                # This prevents LLM narrative from appearing before the combat start message
+                # Return the clean combat start + NPC actions + turn announcement
+                if auto_started_combat:
+                    return combat_feedback
 
         # Step 1.8: Calculate Player Attack (ONLY if it's their turn or not in combat)
         # Pre-calculate attack roll and damage so GM can narrate specific numbers
@@ -1335,24 +1384,17 @@ CRITICAL INSTRUCTIONS:
 
                 if not is_players_turn:
                     # Not the player's turn - they can't attack yet!
-                    # Return this message DIRECTLY to the user (bypass LLM to avoid hallucinations)
-                    return f"""⚠️ **WAIT! It's not your turn yet!**
-
-**Current Turn:** {current_turn} is acting right now.
+                    player_attack_instruction = f"""⚠️ **NOT YOUR TURN!** It's {current_turn}'s turn right now.
 
 **What happened:**
-1. You attacked the enemy, which started combat
-2. Initiative was rolled to determine turn order
-3. {current_turn} won initiative and goes first!
+- You attacked, which started combat
+- Initiative was rolled: {current_turn} won and goes first!
 
 **What to do:**
-- Wait for {current_turn} to finish their turn
-- Click the **"Next Turn"** button to advance combat
-- Then you can attack on your turn!
+- Click "Next Turn" button to advance combat
+- Wait for your turn to attack
 
-**Initiative Order:** See the tracker above to know when it's your turn.
-
-This is how D&D 5e combat works - initiative determines who goes first, not who declares the attack!"""
+This is D&D 5e rules - initiative determines who goes first!"""
 
                     if DEBUG_PROMPTS:
                         logger.debug(f"⚠️ Player tried to attack on {current_turn}'s turn - blocked")
@@ -1470,6 +1512,9 @@ This is how D&D 5e combat works - initiative determines who goes first, not who 
             else:
                 response = self._query_ollama(prompt)
 
+            # Step 4.5: Remove prompt leakage (LLM echoing instructions)
+            response = self._remove_prompt_leakage(response)
+
             # Step 5: Post-process response (e.g., auto-add NPCs introduced in conversation)
             self._post_process_response(response, validation)
             
@@ -1562,10 +1607,21 @@ This is how D&D 5e combat works - initiative determines who goes first, not who 
 
                         # Combine all feedbacks
                         all_feedback = npc_feedback + feedback + npc_damage_feedback
-                        
-                        # Add mechanics feedback to combat output
+
+                        # Deduplicate feedback messages (fixes LLM prompt leakage causing duplicate extractions)
                         if all_feedback:
-                            mechanics_output = "\n\n**⚙️ MECHANICS:**\n" + "\n".join(all_feedback)
+                            unique_feedback = []
+                            seen = set()
+                            for msg in all_feedback:
+                                # Normalize message for comparison (remove emojis/formatting)
+                                normalized = msg.strip().lower()
+                                if normalized not in seen:
+                                    seen.add(normalized)
+                                    unique_feedback.append(msg)
+
+                        # Add mechanics feedback to combat output
+                        if unique_feedback:
+                            mechanics_output = "\n\n**⚙️ MECHANICS:**\n" + "\n".join(unique_feedback)
                             combat_feedback += mechanics_output
 
                         if DEBUG_PROMPTS and all_feedback:
@@ -1596,7 +1652,7 @@ This is how D&D 5e combat works - initiative determines who goes first, not who 
                 # This ensures NPCs attack every round, even if player runs/talks/etc.
                 turn_message = self.combat_manager.advance_turn()
                 if turn_message:
-                    combat_feedback = f"\n\n{turn_message}"
+                    combat_feedback += f"\n\n{turn_message}"
 
                 if DEBUG_PROMPTS:
                     if player_unconscious:
@@ -1617,40 +1673,16 @@ This is how D&D 5e combat works - initiative determines who goes first, not who 
                     if hasattr(first_char, 'armor_class'):
                         target_ac = first_char.armor_class
 
-                # Process all consecutive NPC turns
-                npc_actions = self.combat_manager.process_npc_turns(target_ac)
+                # Process all consecutive NPC turns (damage is applied inside process_npc_turns)
+                npc_actions = self.combat_manager.process_npc_turns(
+                    target_ac,
+                    target_character=self.session.character_state,
+                    target_party=self.session.party
+                )
 
                 if npc_actions:
                     # Add NPC attacks to response
                     combat_feedback += "\n\n**🐉 NPC ACTIONS:**\n" + "\n\n".join(npc_actions)
-
-                    # Apply damage to player/party if NPCs hit
-                    for npc_action in npc_actions:
-                        if "💥" in npc_action and "damage" in npc_action.lower():
-                            # Extract damage from attack result
-                            import re
-                            damage_match = re.search(r'\*\*(\d+)\s+(\w+)\s+damage\*\*', npc_action)
-                            if damage_match:
-                                damage = int(damage_match.group(1))
-                                damage_type = damage_match.group(2)
-
-                                # Apply to character or party
-                                if self.session.character_state:
-                                    result = self.session.character_state.take_damage(damage, damage_type)
-                                    combat_feedback += f"\n💥 You take {damage} {damage_type} damage! HP: {result['current_hp']}/{self.session.character_state.max_hp}"
-
-                                    if result['unconscious']:
-                                        combat_feedback += "\n☠️ **You fall unconscious!**"
-
-                                elif self.session.party and len(self.session.party.characters) > 0:
-                                    # For party mode, apply to first character (target should be smarter in future)
-                                    first_char_name = list(self.session.party.characters.keys())[0]
-                                    first_char = self.session.party.characters[first_char_name]
-                                    result = first_char.take_damage(damage, damage_type)
-                                    combat_feedback += f"\n💥 {first_char_name} takes {damage} {damage_type} damage! HP: {result['current_hp']}/{first_char.max_hp}"
-
-                                    if result['unconscious']:
-                                        combat_feedback += f"\n☠️ **{first_char_name} falls unconscious!**"
 
                     if DEBUG_PROMPTS:
                         logger.debug(f"🐉 NPC turns processed: {len(npc_actions)} attacks")
@@ -2221,6 +2253,39 @@ GM RESPONSE:"""
                 
                 # Only match first occurrence
                 break
+
+    def _remove_prompt_leakage(self, response: str) -> str:
+        """
+        Remove common prompt leakage patterns from LLM response.
+
+        LLMs sometimes echo back instructions that were meant to be hidden.
+        This method filters out common instruction patterns.
+
+        Args:
+            response: Raw LLM response
+
+        Returns:
+            Cleaned response with instruction patterns removed
+        """
+        import re
+
+        # Patterns to remove (instruction leakage)
+        patterns = [
+            r'Narrate the .+?\.',  # "Narrate the successful strike dealing X damage."
+            r'Taking the above information into consideration.+?roleplay conversation with',  # System prompt leakage
+            r'You are .+?\.\s*Taking.+?into consideration',  # Context setup leakage
+            r'Initiative Order:.+?You are',  # Initiative context leakage
+        ]
+
+        cleaned = response
+        for pattern in patterns:
+            cleaned = re.sub(pattern, '', cleaned, flags=re.DOTALL | re.IGNORECASE)
+
+        # Remove excessive whitespace
+        cleaned = re.sub(r'\n{3,}', '\n\n', cleaned)
+        cleaned = cleaned.strip()
+
+        return cleaned
 
     def _post_process_response(self, response: str, validation) -> None:
         """

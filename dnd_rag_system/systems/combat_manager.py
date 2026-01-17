@@ -234,9 +234,12 @@ class CombatManager:
         for idx, (name, init) in enumerate(self.combat.initiative_order, 1):
             lines.append(f"{idx}. {name} ({init})")
 
+        # Announce Round 1 begins!
+        lines.append(f"\n🔄 **Round {self.combat.round_number} begins!**\n")
+
         current = self.combat.get_current_turn()
         if current:
-            lines.append(f"\n🎯 **{current}'s turn!**")
+            lines.append(f"🎯 **{current}'s turn!**")
 
         return "\n".join(lines)
 
@@ -260,7 +263,9 @@ class CombatManager:
         Automatically ends combat if all enemies are defeated.
 
         Returns:
-            String announcing whose turn it is, or combat end message
+            String announcing whose turn it is, or combat end message.
+            Note: NPC turns are NOT announced here since they are auto-processed
+            by process_npc_turns() which will announce them.
         """
         if not self.combat.in_combat:
             return "⚠️ Not in combat"
@@ -277,11 +282,13 @@ class CombatManager:
 
         message_parts = []
 
-        # Check if new round started
+        # ALWAYS announce round changes (even for NPCs)
+        # This ensures "Round X begins!" is displayed before process_npc_turns() runs
         if new_round > old_round:
             message_parts.append(f"\n🔄 **Round {new_round} begins!**\n")
 
-        if next_character:
+        # Only announce player turns here; NPC turns will be processed by process_npc_turns()
+        if next_character and next_character not in self.npc_monsters:
             message_parts.append(f"🎯 **{next_character}'s turn!**")
 
         # Check again after advancing (in case last enemy died on their turn)
@@ -696,40 +703,43 @@ class CombatManager:
                 # Critical hit! Double damage
                 damage *= 2
                 return (
-                    f"🎯 **CRITICAL HIT!** {npc_name} attacks with {attack_name}!\n"
-                    f"Attack: {attack_roll} (natural 20) + {attack_bonus} = {total_attack} vs AC {target_ac}\n"
-                    f"💥 **{damage} {damage_type} damage** (critical!)"
+                    f"{npc_name} attacks with {attack_name}!\n"
+                    f"🎲 Attack: {attack_roll} (natural 20) + {attack_bonus} = {total_attack} vs AC {target_ac}\n"
+                    f"🎯 **CRITICAL HIT!** 💥 **{damage} {damage_type} damage** (critical!)"
                 )
             else:
                 return (
-                    f"🎯 **HIT!** {npc_name} attacks with {attack_name}!\n"
-                    f"Attack: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}\n"
-                    f"💥 **{damage} {damage_type} damage**"
+                    f"{npc_name} attacks with {attack_name}!\n"
+                    f"🎲 Attack: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}\n"
+                    f"🎯 **HIT!** 💥 **{damage} {damage_type} damage**"
                 )
         else:
             # Miss
             if attack_roll == 1:
                 return (
-                    f"❌ **CRITICAL MISS!** {npc_name}'s {attack_name} goes wide!\n"
-                    f"Attack: {attack_roll} (natural 1) + {attack_bonus} = {total_attack} vs AC {target_ac}\n"
-                    f"The {npc_name} stumbles and misses completely!"
+                    f"{npc_name} attacks with {attack_name}!\n"
+                    f"🎲 Attack: {attack_roll} (natural 1) + {attack_bonus} = {total_attack} vs AC {target_ac}\n"
+                    f"❌ **CRITICAL MISS!** The {npc_name} stumbles and misses completely!"
                 )
             else:
                 return (
-                    f"❌ **MISS!** {npc_name} attacks with {attack_name}!\n"
-                    f"Attack: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}\n"
-                    f"The attack misses!"
+                    f"{npc_name} attacks with {attack_name}!\n"
+                    f"🎲 Attack: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}\n"
+                    f"❌ **MISS!** The attack misses!"
                 )
 
-    def process_npc_turns(self, target_ac: int = 15) -> List[str]:
+    def process_npc_turns(self, target_ac: int = 15, target_character=None, target_party=None) -> List[str]:
         """
         Process all consecutive NPC turns automatically.
 
         Args:
             target_ac: AC of the target to attack (usually player's AC)
+            target_character: Optional CharacterState to apply damage to
+            target_party: Optional PartyState to apply damage to (uses first character)
 
         Returns:
-            List of attack descriptions from all NPCs who took turns
+            List of attack descriptions from all NPCs who took turns,
+            with round announcements, damage application, and final turn announcement
         """
         if not self.combat.in_combat:
             return []
@@ -737,11 +747,18 @@ class CombatManager:
         npc_actions = []
         current_turn = self.combat.get_current_turn()
         processed_npcs = set()  # Track which NPCs have acted this round
+        last_announced_round = self.combat.round_number  # Start with current round (already announced)
 
         # Keep processing turns while it's an NPC turn
         while current_turn and current_turn in self.npc_monsters:
+            # Check if round has changed since last announcement
+            # This ensures "Round X begins!" appears BEFORE the first action in that round
+            current_round = self.combat.round_number
+            if current_round > last_announced_round:
+                npc_actions.append(f"\n🔄 **Round {current_round} begins!**\n")
+                last_announced_round = current_round
             monster = self.npc_monsters[current_turn]
-            
+
             # Skip dead NPCs - advance turn without attacking
             if not monster.is_alive():
                 if self.debug:
@@ -750,13 +767,13 @@ class CombatManager:
                 next_char = self.combat.next_turn()
                 current_turn = self.combat.get_current_turn()
                 continue
-            
+
             # Prevent same NPC from acting twice (infinite loop protection)
             if current_turn in processed_npcs:
                 if self.debug:
                     print(f"⚠️  {current_turn} already acted this batch, stopping")
                 break
-            
+
             # Generate NPC attack
             attack_result = self.generate_npc_attack(current_turn, target_ac)
             npc_actions.append(attack_result)
@@ -766,6 +783,32 @@ class CombatManager:
                 print(f"🎲 NPC Turn: {current_turn}")
                 print(attack_result)
 
+            # Apply damage to target if attack hit
+            if "💥" in attack_result and "damage" in attack_result.lower():
+                import re
+                damage_match = re.search(r'\*\*(\d+)\s+(\w+)\s+damage\*\*', attack_result)
+                if damage_match:
+                    damage = int(damage_match.group(1))
+                    damage_type = damage_match.group(2)
+
+                    # Apply to character or party
+                    if target_character:
+                        result = target_character.take_damage(damage, damage_type)
+                        damage_feedback = f"💥 You take {damage} {damage_type} damage! HP: {result['current_hp']}/{target_character.max_hp}"
+                        if result['unconscious']:
+                            damage_feedback += "\n☠️ **You fall unconscious!**"
+                        npc_actions.append(damage_feedback)
+
+                    elif target_party and len(target_party.characters) > 0:
+                        # For party mode, apply to first character
+                        first_char_name = list(target_party.characters.keys())[0]
+                        first_char = target_party.characters[first_char_name]
+                        result = first_char.take_damage(damage, damage_type)
+                        damage_feedback = f"💥 {first_char_name} takes {damage} {damage_type} damage! HP: {result['current_hp']}/{first_char.max_hp}"
+                        if result['unconscious']:
+                            damage_feedback += f"\n☠️ **{first_char_name} falls unconscious!**"
+                        npc_actions.append(damage_feedback)
+
             # Advance to next turn
             next_char = self.combat.next_turn()
             current_turn = self.combat.get_current_turn()
@@ -774,6 +817,18 @@ class CombatManager:
             if len(npc_actions) > 10:
                 npc_actions.append("⚠️ Too many consecutive NPC turns, stopping")
                 break
+
+        # Check if round changed during NPC processing (e.g., wrapping from last NPC to a player)
+        # This handles the case where the round increments when advancing from an NPC to a player
+        final_round = self.combat.round_number
+        if final_round > last_announced_round:
+            npc_actions.append(f"\n🔄 **Round {final_round} begins!**\n")
+
+        # Announce whose turn it is now (after all NPC processing)
+        if npc_actions and current_turn:
+            # Only announce the player's turn if it's not an NPC
+            if current_turn not in self.npc_monsters:
+                npc_actions.append(f"\n🎯 **{current_turn}'s turn!**")
 
         return npc_actions
 
