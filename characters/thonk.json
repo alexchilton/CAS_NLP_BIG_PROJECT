@@ -1,0 +1,32 @@
+{
+  "name": "Thonk",
+  "race": "Half-Orc",
+  "character_class": "Barbarian",
+  "level": 2,
+  "strength": 20,
+  "dexterity": 14,
+  "constitution": 17,
+  "intelligence": 8,
+  "wisdom": 10,
+  "charisma": 10,
+  "hit_points": 25,
+  "armor_class": 12,
+  "proficiency_bonus": 2,
+  "background": "Adventurer",
+  "alignment": "Chaotic Good",
+  "race_traits": [],
+  "class_features": [
+    "Rage (2/day)",
+    "Unarmored Defense",
+    "(SRD-enhanced)"
+  ],
+  "proficiencies": [
+    "Armor: Light armor, medium armor, shields",
+    "Weapons: Simple weapons, martial weapons",
+    "Saves: Strength, Constitution"
+  ],
+  "equipment": [],
+  "spells": [],
+  "gold": 100,
+  "image_path": null
+}

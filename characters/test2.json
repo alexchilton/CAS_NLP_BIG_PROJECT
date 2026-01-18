@@ -1,0 +1,28 @@
+{
+  "name": "test2",
+  "race": "Human",
+  "character_class": "Fighter",
+  "level": 1,
+  "strength": 14,
+  "dexterity": 12,
+  "constitution": 14,
+  "intelligence": 13,
+  "wisdom": 17,
+  "charisma": 9,
+  "hit_points": 10,
+  "armor_class": 11,
+  "proficiency_bonus": 2,
+  "background": "",
+  "alignment": "True Neutral",
+  "race_traits": [],
+  "class_features": [
+    "Fighting Style",
+    "Second Wind",
+    "(SRD-enhanced)"
+  ],
+  "proficiencies": [],
+  "equipment": [],
+  "spells": [],
+  "gold": 100,
+  "image_path": null
+}

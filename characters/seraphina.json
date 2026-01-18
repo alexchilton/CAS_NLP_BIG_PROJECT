@@ -1,0 +1,36 @@
+{
+  "name": "Seraphina",
+  "race": "Tiefling",
+  "character_class": "Cleric",
+  "level": 1,
+  "strength": 12,
+  "dexterity": 10,
+  "constitution": 14,
+  "intelligence": 11,
+  "wisdom": 16,
+  "charisma": 16,
+  "hit_points": 10,
+  "armor_class": 10,
+  "proficiency_bonus": 2,
+  "background": "Adventurer",
+  "alignment": "Chaotic Good",
+  "race_traits": [],
+  "class_features": [
+    "Spellcasting",
+    "Divine Domain",
+    "Spell Slots: 1st: 2",
+    "(SRD-enhanced)"
+  ],
+  "proficiencies": [
+    "Armor: Light armor, medium armor, shields",
+    "Weapons: Simple weapons",
+    "Saves: Wisdom, Charisma"
+  ],
+  "equipment": [],
+  "spells": [
+    "True Strike (Divination 0)",
+    "Vicious Mockery (Enchantment 0)"
+  ],
+  "gold": 100,
+  "image_path": null
+}
