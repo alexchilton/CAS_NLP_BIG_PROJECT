@@ -21,9 +21,9 @@ RUN if [ -z "$SPACE_ID" ]; then \
         apt-get update && apt-get install -y curl && curl -fsSL https://ollama.com/install.sh | sh; \
     fi
 
-# Run the ingestion script to populate the ChromaDB vector store
-# This step pre-builds the database so the app starts ready
-RUN python initialize_rag.py
+# Note: We skip RAG initialization during build to avoid timeouts
+# The app will initialize the RAG database on first startup instead
+# This makes builds faster and more reliable
 
 # Copy and set up the startup script
 COPY start.sh .

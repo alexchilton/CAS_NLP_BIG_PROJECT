@@ -17,6 +17,14 @@ else
     ollama pull "hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M"
 fi
 
+# Initialize RAG database (only if not already done)
+if [ ! -d "chromadb" ] || [ -z "$(ls -A chromadb 2>/dev/null)" ]; then
+    echo "📚 Initializing RAG database (first run)..."
+    python initialize_rag.py || echo "⚠️  RAG initialization failed, app will start with limited functionality"
+else
+    echo "✅ RAG database already initialized, skipping..."
+fi
+
 # Start the Gradio application
 echo "Starting Gradio app..."
 python web/app_gradio.py
