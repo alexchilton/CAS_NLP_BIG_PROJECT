@@ -123,9 +123,6 @@ def format_character_sheet(char, char_state, db) -> tuple:
 
         # Spells List (Organized by Level)
         if char.spells:
-            from dnd_rag_system.systems.spell_manager import SpellManager
-            spell_mgr = SpellManager(db)
-
             spell_count = len(char.spells)
             col3 += f"""### 📖 Spells ({spell_count})
 """
@@ -139,15 +136,26 @@ def format_character_sheet(char, char_state, db) -> tuple:
 
             col3 += f"*💡 Use `/rag <spell>` for details*\n\n"
 
-            # Organize spells by level
+            # Organize spells by level (with fallback if ChromaDB unavailable)
             spells_by_level = {}
-            for spell in char.spells:
-                level = spell_mgr.lookup_spell_level(spell)
-                if level is None:
-                    level = 999
-                if level not in spells_by_level:
-                    spells_by_level[level] = []
-                spells_by_level[level].append(spell)
+            try:
+                from dnd_rag_system.systems.spell_manager import SpellManager
+                spell_mgr = SpellManager(db) if db else None
+
+                for spell in char.spells:
+                    if spell_mgr:
+                        level = spell_mgr.lookup_spell_level(spell)
+                        if level is None:
+                            level = 999
+                    else:
+                        level = 999  # Unknown level if no DB
+                    if level not in spells_by_level:
+                        spells_by_level[level] = []
+                    spells_by_level[level].append(spell)
+            except Exception as e:
+                print(f"⚠️  Warning: Could not organize spells by level (ChromaDB may not be available): {e}")
+                # Fallback: put all spells in "Unknown" category
+                spells_by_level = {999: list(char.spells)}
 
             # Display spells
             for level in sorted(spells_by_level.keys()):
