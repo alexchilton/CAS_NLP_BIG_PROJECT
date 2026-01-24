@@ -4,6 +4,12 @@ FROM python:3.10-slim
 # Set the working directory in the container
 WORKDIR /app
 
+# Install system dependencies needed for Python packages
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy the production requirements file first to leverage Docker layer caching
 COPY requirements-prod.txt .
 
