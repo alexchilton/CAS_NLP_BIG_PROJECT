@@ -5,8 +5,38 @@ Chat and command handling.
 import os
 from pathlib import Path
 from typing import Tuple
+import gradio as gr
 
 from dnd_rag_system.systems.game_state import GameSession
+
+
+def add_chat_messages(history: list, user_msg: str, assistant_msg: str) -> list:
+    """
+    Add user and assistant messages to chat history in the appropriate format.
+
+    Gradio 4.x uses tuple format: [(user_msg, bot_msg), ...]
+    Gradio 6.x uses dict format: [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}, ...]
+
+    Args:
+        history: Current chat history
+        user_msg: User's message
+        assistant_msg: Assistant's response
+
+    Returns:
+        Updated history with new messages appended
+    """
+    gradio_version = gr.__version__
+    major_version = int(gradio_version.split('.')[0])
+
+    if major_version >= 5:
+        # Gradio 5.x and 6.x use message dict format
+        return history + [
+            {"role": "user", "content": user_msg},
+            {"role": "assistant", "content": assistant_msg}
+        ]
+    else:
+        # Gradio 4.x and earlier use tuple format
+        return history + [(user_msg, assistant_msg)]
 
 
 def handle_rag_lookup(query: str, gm, db) -> str:
@@ -90,20 +120,14 @@ def chat(
     if gameplay_mode == "party":
         if not party_characters:
             return (
-                history + [
-                    {"role": "user", "content": message},
-                    {"role": "assistant", "content": "⚠️ Please load party mode first (add characters in Party Management tab)"}
-                ],
+                add_chat_messages(history, message, "⚠️ Please load party mode first (add characters in Party Management tab)"),
                 *get_initiative_tracker_func(),
                 *get_current_sheet_func()
             )
     else:
         if not current_character:
             return (
-                history + [
-                    {"role": "user", "content": message},
-                    {"role": "assistant", "content": "⚠️ Please load a character first"}
-                ],
+                add_chat_messages(history, message, "⚠️ Please load a character first"),
                 *get_initiative_tracker_func(),
                 *get_current_sheet_func()
             )
@@ -166,10 +190,7 @@ def chat(
 
 Otherwise, just type your action and press Enter!"""
             return (
-                history + [
-                    {"role": "user", "content": message},
-                    {"role": "assistant", "content": help_text}
-                ],
+                add_chat_messages(history, message, help_text),
                 *get_initiative_tracker_func(),
                 *get_current_sheet_func()
             )
@@ -197,10 +218,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
                 fresh_context = gm.session.scene_description
 
             return (
-                history + [
-                    {"role": "user", "content": message},
-                    {"role": "assistant", "content": f"**Current Context:**\n\n{fresh_context}"}
-                ],
+                add_chat_messages(history, message, f"**Current Context:**\n\n{fresh_context}"),
                 *get_initiative_tracker_func(),
                 *get_current_sheet_func()
             )
@@ -210,10 +228,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
             col1, col2, col3 = get_current_sheet_func()
             stats = f"{col1}\n\n{col2}\n\n{col3}"
             return (
-                history + [
-                    {"role": "user", "content": message},
-                    {"role": "assistant", "content": stats}
-                ],
+                add_chat_messages(history, message, stats),
                 *get_initiative_tracker_func(),
                 *get_current_sheet_func()
             )
@@ -224,19 +239,13 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
                 results = gm.search_rag(query, n_results=2)
                 formatted = gm.format_rag_context(results)
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": f"**RAG Search Results:**\n\n{formatted}"}
-                    ],
+                    add_chat_messages(history, message, f"**RAG Search Results:**\n\n{formatted}"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
             else:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "Usage: `/rag <query>` (e.g., `/rag magic missile`)"}
-                    ],
+                    add_chat_messages(history, message, "Usage: `/rag <query>` (e.g., `/rag magic missile`)"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -248,19 +257,13 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
                 equipment_manager = CharacterEquipment(gm.session.character_state)
                 equipment_summary = equipment_manager.get_equipment_summary()
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": equipment_summary}
-                    ],
+                    add_chat_messages(history, message, equipment_summary),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
             else:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "⚠️ No character loaded"}
-                    ],
+                    add_chat_messages(history, message, "⚠️ No character loaded"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -270,10 +273,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
             item_name = message[7:].strip()
             if not item_name:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "Usage: `/equip <item>` (e.g., `/equip Ring of Protection`)"}
-                    ],
+                    add_chat_messages(history, message, "Usage: `/equip <item>` (e.g., `/equip Ring of Protection`)"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -283,19 +283,13 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
                 equipment_manager = CharacterEquipment(gm.session.character_state)
                 success, response_msg = equipment_manager.equip_item(item_name)
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": response_msg}
-                    ],
+                    add_chat_messages(history, message, response_msg),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
             else:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "⚠️ No character loaded"}
-                    ],
+                    add_chat_messages(history, message, "⚠️ No character loaded"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -305,10 +299,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
             slot = message[9:].strip()
             if not slot:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "Usage: `/unequip <slot>` (e.g., `/unequip ring_left`, `/unequip neck`)\n\nValid slots: ring_left, ring_right, neck, armor, main_hand, off_hand, head, hands, feet, back, waist"}
-                    ],
+                    add_chat_messages(history, message, "Usage: `/unequip <slot>` (e.g., `/unequip ring_left`, `/unequip neck`)\n\nValid slots: ring_left, ring_right, neck, armor, main_hand, off_hand, head, hands, feet, back, waist"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -318,19 +309,13 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
                 equipment_manager = CharacterEquipment(gm.session.character_state)
                 success, response_msg = equipment_manager.unequip_item(slot)
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": response_msg}
-                    ],
+                    add_chat_messages(history, message, response_msg),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
             else:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "⚠️ No character loaded"}
-                    ],
+                    add_chat_messages(history, message, "⚠️ No character loaded"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -340,10 +325,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
             spell_name = message[13:].strip()
             if not spell_name:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "Usage: `/learn_spell <spell>` (e.g., `/learn_spell Fireball`)"}
-                    ],
+                    add_chat_messages(history, message, "Usage: `/learn_spell <spell>` (e.g., `/learn_spell Fireball`)"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -351,19 +333,13 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
             if gm.session.character_state:
                 result = gm.session.character_state.learn_spell(spell_name)
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": result["message"]}
-                    ],
+                    add_chat_messages(history, message, result["message"]),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
             else:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "⚠️ No character loaded"}
-                    ],
+                    add_chat_messages(history, message, "⚠️ No character loaded"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -373,10 +349,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
             spell_name = message[15:].strip()
             if not spell_name:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "Usage: `/prepare_spell <spell>` (e.g., `/prepare_spell Magic Missile`)"}
-                    ],
+                    add_chat_messages(history, message, "Usage: `/prepare_spell <spell>` (e.g., `/prepare_spell Magic Missile`)"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -392,19 +365,13 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
 
                 result = gm.session.character_state.prepare_spell(spell_name, ability_mod)
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": result["message"]}
-                    ],
+                    add_chat_messages(history, message, result["message"]),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
             else:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "⚠️ No character loaded"}
-                    ],
+                    add_chat_messages(history, message, "⚠️ No character loaded"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -414,10 +381,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
             spell_name = message[17:].strip()
             if not spell_name:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "Usage: `/unprepare_spell <spell>` (e.g., `/unprepare_spell Fireball`)"}
-                    ],
+                    add_chat_messages(history, message, "Usage: `/unprepare_spell <spell>` (e.g., `/unprepare_spell Fireball`)"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -425,19 +389,13 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
             if gm.session.character_state:
                 result = gm.session.character_state.unprepare_spell(spell_name)
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": result["message"]}
-                    ],
+                    add_chat_messages(history, message, result["message"]),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
             else:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "⚠️ No character loaded"}
-                    ],
+                    add_chat_messages(history, message, "⚠️ No character loaded"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -496,19 +454,13 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
                         spell_msg += "*No spell slots*"
 
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": spell_msg}
-                    ],
+                    add_chat_messages(history, message, spell_msg),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
             else:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "⚠️ No character loaded"}
-                    ],
+                    add_chat_messages(history, message, "⚠️ No character loaded"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -518,10 +470,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
             save_name = message[11:].strip()
             if not save_name:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "Usage: `/save_game <name>` (e.g., `/save_game campaign1`)"}
-                    ],
+                    add_chat_messages(history, message, "Usage: `/save_game <name>` (e.g., `/save_game campaign1`)"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -534,19 +483,13 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
                 gm.session.save_to_json(save_path)
 
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": f"✅ Game saved successfully!\n\nSaved to: `{save_path}`\n\nYou can load this save with: `/load_game {save_name}`"}
-                    ],
+                    add_chat_messages(history, message, f"✅ Game saved successfully!\n\nSaved to: `{save_path}`\n\nYou can load this save with: `/load_game {save_name}`"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
             except Exception as e:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": f"❌ Error saving game: {str(e)}"}
-                    ],
+                    add_chat_messages(history, message, f"❌ Error saving game: {str(e)}"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -556,10 +499,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
             save_name = message[11:].strip()
             if not save_name:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": "Usage: `/load_game <name>` (e.g., `/load_game campaign1`)"}
-                    ],
+                    add_chat_messages(history, message, "Usage: `/load_game <name>` (e.g., `/load_game campaign1`)"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -574,10 +514,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
                     saves_list = ", ".join(available_saves) if available_saves else "none"
 
                     return (
-                        history + [
-                            {"role": "user", "content": message},
-                            {"role": "assistant", "content": f"❌ Save file '{save_name}' not found.\n\nAvailable saves: {saves_list}"}
-                        ],
+                        add_chat_messages(history, message, f"❌ Save file '{save_name}' not found.\n\nAvailable saves: {saves_list}"),
                         *get_initiative_tracker_func(),
                         *get_current_sheet_func()
                     )
@@ -606,19 +543,13 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
                     load_message += f"\n⚔️ **In Combat** - Round {gm.session.combat.round_number}"
 
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": load_message}
-                    ],
+                    add_chat_messages(history, message, load_message),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
             except Exception as e:
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": f"❌ Error loading game: {str(e)}"}
-                    ],
+                    add_chat_messages(history, message, f"❌ Error loading game: {str(e)}"),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -696,10 +627,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
                     gm.combat_manager.end_combat()
 
                 return (
-                    history + [
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": rag_response}
-                    ],
+                    add_chat_messages(history, message, rag_response),
                     *get_initiative_tracker_func(),
                     *get_current_sheet_func()
                 )
@@ -733,10 +661,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
         
         conversation_history.append((message, response))
         return (
-            history + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": response}
-            ],
+            add_chat_messages(history, message, response),
             *get_initiative_tracker_func(),
             *get_current_sheet_func()
         )
@@ -746,10 +671,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
         if not (os.getenv("SPACE_ID") or os.getenv("SPACE_AUTHOR_NAME") or os.getenv("HF_SPACE")):
             error_msg += "\n\nMake sure Ollama is running and the model is installed:\n`ollama pull hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M`"
         return (
-            history + [
-                {"role": "user", "content": message},
-                {"role": "assistant", "content": error_msg}
-            ],
+            add_chat_messages(history, message, error_msg),
             *get_initiative_tracker_func(),
             *get_current_sheet_func()
         )
