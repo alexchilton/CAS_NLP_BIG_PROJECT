@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # Ollama service - provides LLM inference
+  ollama:
+    image: ollama/ollama:latest
+    container_name: dnd-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+  # D&D RAG Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dnd-app
+    ports:
+      - "7860:7860"
+    environment:
+      # Connect to Ollama service using Docker service name
+      - OLLAMA_BASE_URL=http://ollama:11434
+      # Mark as local (not HuggingFace)
+      - LOCAL_DEV=1
+    volumes:
+      # Persist ChromaDB data
+      - chromadb-data:/app/chromadb
+      # Mount code for live development (optional - comment out for production-like testing)
+      # - ./web:/app/web
+      # - ./dnd_rag_system:/app/dnd_rag_system
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Optional: Initialize Ollama with the model on first run
+  ollama-setup:
+    image: ollama/ollama:latest
+    container_name: dnd-ollama-setup
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+      echo 'Pulling Ollama model...' &&
+      ollama pull hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M &&
+      echo 'Model pulled successfully!' &&
+      exit 0
+      "
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    restart: "no"
+
+volumes:
+  ollama-data:
+    driver: local
+  chromadb-data:
+    driver: local

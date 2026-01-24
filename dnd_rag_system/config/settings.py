@@ -144,7 +144,7 @@ OLLAMA_MODEL_NAME = "hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M"
 # Then uncomment:
 # OLLAMA_MODEL_NAME = "hf.co/SicariusSicariiStuff/Impish_QWEN_7B-1M:Q4_K_M"
 
-OLLAMA_BASE_URL = "http://localhost:11434"  # Default Ollama API endpoint
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")  # Default Ollama API endpoint
 OLLAMA_TIMEOUT = 30  # Timeout in seconds for model responses
 
 # ============================================================================
