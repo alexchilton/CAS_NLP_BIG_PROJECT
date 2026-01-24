@@ -2,93 +2,71 @@
 """
 Initialize RAG System for HuggingFace Deployment
 
-This script initializes the ChromaDB vector database by running
-all necessary ingestion scripts. It's designed to work in a Docker
-container where the chromadb/ directory is excluded via .dockerignore.
+This script initializes the ChromaDB vector database by running the
+newer ingestion scripts that work with the current data structure.
 """
 
 import sys
-import subprocess
 from pathlib import Path
+
+# Set up project root
+project_root = Path(__file__).parent
+sys.path.insert(0, str(project_root))
 
 print("=" * 70)
 print("🎲 INITIALIZING D&D RAG SYSTEM")
 print("=" * 70)
 print()
 
-# Set up project root
-project_root = Path(__file__).parent
-sys.path.insert(0, str(project_root))
-
 # Track success/failure
 all_successful = True
 results = {}
 
 # =============================================================================
-# 1. INGEST SRD DATA (Classes, Spells, Races)
+# 1. INGEST SRD DATA (Classes, Spells, Races from JSON)
 # =============================================================================
-print("📚 Step 1: Ingesting SRD data (classes, spells, races)...")
+print("📚 Step 1: Ingesting SRD data (classes, spells, races from JSON)...")
 print("-" * 70)
 
 try:
-    srd_script = project_root / "scripts" / "ingest_srd_to_chromadb.py"
+    from scripts.ingest_srd_to_chromadb import ingest_srd_data
 
-    if srd_script.exists():
-        result = subprocess.run(
-            [sys.executable, str(srd_script)],
-            cwd=str(project_root),
-            check=True,
-            capture_output=False
-        )
-        print("✅ SRD data ingestion completed")
-        results['srd_data'] = 'success'
-    else:
-        print(f"⚠️  Script not found: {srd_script}")
-        results['srd_data'] = 'skipped'
+    ingest_srd_data()
+    print("✅ SRD data ingestion completed\n")
+    results['srd_data'] = 'success'
 
-except subprocess.CalledProcessError as e:
-    print(f"❌ SRD data ingestion failed with exit code {e.returncode}")
-    results['srd_data'] = 'failed'
-    all_successful = False
 except Exception as e:
     print(f"❌ Error during SRD ingestion: {e}")
+    import traceback
+    traceback.print_exc()
     results['srd_data'] = 'failed'
     all_successful = False
 
-print()
-
 # =============================================================================
-# 2. INGEST GAME CONTENT (Magic Items, Class Features)
+# 2. INGEST GAME CONTENT (Magic Items, Class Features from Python modules)
 # =============================================================================
 print("✨ Step 2: Ingesting game content (magic items, class features)...")
 print("-" * 70)
 
 try:
-    game_content_script = project_root / "scripts" / "rag" / "ingest_game_content.py"
+    from dnd_rag_system.core.chroma_manager import ChromaDBManager
+    sys.path.insert(0, str(project_root / "scripts" / "rag"))
+    from ingest_game_content import load_magic_items, load_class_features
 
-    if game_content_script.exists():
-        result = subprocess.run(
-            [sys.executable, str(game_content_script)],
-            cwd=str(project_root),
-            check=True,
-            capture_output=False
-        )
-        print("✅ Game content ingestion completed")
-        results['game_content'] = 'success'
-    else:
-        print(f"⚠️  Script not found: {game_content_script}")
-        results['game_content'] = 'skipped'
+    db_manager = ChromaDBManager()
 
-except subprocess.CalledProcessError as e:
-    print(f"❌ Game content ingestion failed with exit code {e.returncode}")
-    results['game_content'] = 'failed'
-    all_successful = False
+    load_magic_items(db_manager, clear=False)
+    load_class_features(db_manager, clear=False)
+
+    print("✅ Game content ingestion completed\n")
+    results['game_content'] = 'success'
+
 except Exception as e:
     print(f"❌ Error during game content ingestion: {e}")
+    import traceback
+    traceback.print_exc()
     results['game_content'] = 'failed'
     all_successful = False
-
-print()
 
 # =============================================================================
 # 3. SUMMARY
@@ -98,12 +76,7 @@ print("📊 INITIALIZATION SUMMARY")
 print("=" * 70)
 
 for component, status in results.items():
-    status_icon = {
-        'success': '✅',
-        'failed': '❌',
-        'skipped': '⚠️ '
-    }.get(status, '❓')
-
+    status_icon = '✅' if status == 'success' else '❌'
     print(f"  {status_icon} {component.replace('_', ' ').title()}: {status}")
 
 print()
@@ -113,7 +86,7 @@ if all_successful:
     print("   ChromaDB is ready for use.")
     sys.exit(0)
 else:
-    print("⚠️  RAG system initialization completed with some failures.")
-    print("   The application may have limited functionality.")
-    # Don't exit with error code - let the app start anyway
+    print("⚠️  Initialization completed with some failures.")
+    print("   The application may start with limited functionality.")
+    # Exit with 0 to allow the app to start even if RAG init fails
     sys.exit(0)
