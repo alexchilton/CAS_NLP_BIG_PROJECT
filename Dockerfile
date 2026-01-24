@@ -4,12 +4,12 @@ FROM python:3.10-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the requirements file first to leverage Docker layer caching
-COPY requirements.txt .
+# Copy the production requirements file first to leverage Docker layer caching
+COPY requirements-prod.txt .
 
 # Install dependencies
 # Using --no-cache-dir to reduce image size
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-prod.txt
 
 # Copy the rest of the application code and data into the container
 # The .dockerignore file will exclude specified files and directories
