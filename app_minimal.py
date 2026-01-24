@@ -1,24 +1,55 @@
 #!/usr/bin/env python3
 """
 Minimal Gradio app for testing HuggingFace Spaces deployment
-Step 2: Testing ChromaDB imports
+Step 3: Testing all production dependencies
 """
 
 import gradio as gr
 
-# Test ChromaDB import
+# Test all imports
+status_lines = []
+
 try:
     import chromadb
-    import sentence_transformers
-    chromadb_status = f"✅ ChromaDB {chromadb.__version__} loaded"
-    st_status = f"✅ sentence-transformers {sentence_transformers.__version__} loaded"
+    status_lines.append(f"✅ ChromaDB {chromadb.__version__}")
 except Exception as e:
-    chromadb_status = f"❌ ChromaDB import failed: {e}"
-    st_status = ""
+    status_lines.append(f"❌ ChromaDB: {e}")
+
+try:
+    import sentence_transformers
+    status_lines.append(f"✅ sentence-transformers {sentence_transformers.__version__}")
+except Exception as e:
+    status_lines.append(f"❌ sentence-transformers: {e}")
+
+try:
+    import pdfplumber
+    status_lines.append(f"✅ pdfplumber {pdfplumber.__version__}")
+except Exception as e:
+    status_lines.append(f"❌ pdfplumber: {e}")
+
+try:
+    import PyPDF2
+    status_lines.append(f"✅ PyPDF2 {PyPDF2.__version__}")
+except Exception as e:
+    status_lines.append(f"❌ PyPDF2: {e}")
+
+try:
+    import ollama
+    status_lines.append(f"✅ ollama")
+except Exception as e:
+    status_lines.append(f"❌ ollama: {e}")
+
+try:
+    import rich
+    version = getattr(rich, '__version__', 'installed')
+    status_lines.append(f"✅ rich {version}")
+except Exception as e:
+    status_lines.append(f"❌ rich: {e}")
+
+status_text = "\n".join(status_lines)
 
 def greet(name):
-    status = f"{chromadb_status}\n{st_status}\n\n" if chromadb_status else ""
-    return f"{status}Hello {name}! 🎲"
+    return f"{status_text}\n\nHello {name}! 🎲"
 
 # Create simple interface
 demo = gr.Interface(
