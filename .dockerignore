@@ -10,6 +10,7 @@ __pycache__/
 
 # Ignore Jupyter Notebooks - not needed for production
 *.ipynb
+notebooks/
 
 # Ignore the local chromadb instance, as it will be rebuilt inside the container
 chromadb/
@@ -18,3 +19,22 @@ chromadb/
 .env
 venv/
 *.env
+
+# Ignore test files and directories - not needed in production
+tests/
+e2e_tests/
+pytest.ini
+.pytest_cache/
+
+# Ignore development requirements
+requirements.txt
+
+# Ignore documentation and reports
+docs/
+final_report/
+*.md
+!README.md
+
+# Ignore scripts not needed in production
+scripts/rag/1_split_monsters.py
+scripts/rag/2_run_ingestion_v2.py
