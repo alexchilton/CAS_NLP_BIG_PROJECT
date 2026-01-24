@@ -1,4 +1,8 @@
-# Absolute minimal requirements for testing
+# Incremental testing - Step 2: Add ChromaDB layer
 # Use older HuggingFace Hub compatible with Gradio 4.16
 gradio==4.16.0
 huggingface-hub==0.20.3
+
+# Vector database and embeddings
+chromadb==0.4.22
+sentence-transformers==2.3.1
