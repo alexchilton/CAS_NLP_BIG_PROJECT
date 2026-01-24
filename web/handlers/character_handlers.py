@@ -352,7 +352,8 @@ You have **{char_state.gold} gold pieces** in your purse."""
 
 *Type `/help` to see available commands, or describe your action!*"""
 
-    initial_chat = [{"role": "assistant", "content": welcome_message}]
+    # Gradio Chatbot format: list of tuples [(user_msg, bot_msg)]
+    initial_chat = [(None, welcome_message)]
     col1, col2, col3 = format_character_sheet_func(char, char_state, db)
     return col1, col2, col3, "", initial_chat, char_image
 
@@ -461,7 +462,8 @@ What would you like to do?
     if char.image_path and Path(char.image_path).exists():
         char_image = str(char.image_path)
 
-    initial_chat = [{"role": "assistant", "content": welcome_message}]
+    # Gradio Chatbot format: list of tuples [(user_msg, bot_msg)]
+    initial_chat = [(None, welcome_message)]
     col1, col2, col3 = format_character_sheet_func(char, char_state, db)
     return col1, col2, col3, "", initial_chat, char_image
 
