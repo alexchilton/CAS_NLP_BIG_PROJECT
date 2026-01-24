@@ -1,29 +1,30 @@
 # D&D RAG System - Production Dependencies (HuggingFace Spaces)
 # Installation: pip install -r requirements-prod.txt
+# Pinned versions for reproducible builds
 
-# Core dependencies
-chromadb>=0.4.18
-sentence-transformers>=2.2.0
-pdfplumber>=0.10.0
-PyPDF2>=3.0.0
+# Core dependencies - pinned to known working versions
+chromadb==0.4.22
+sentence-transformers==2.3.1
+pdfplumber==0.10.3
+PyPDF2==3.0.1
 
 # Ollama Python client (for local development)
-ollama>=0.1.0
+ollama==0.1.6
 
 # Hugging Face Inference API (for HF Spaces deployment)
-huggingface_hub>=0.20.0
+huggingface_hub==0.20.3
 
-# Web UI
-gradio>=4.0.0
+# Web UI - pinned to avoid breaking changes
+gradio==4.16.0
 
 # Rich console output
-rich>=13.0.0
+rich==13.7.0
 
 # Progress bars
-tqdm>=4.66.0
+tqdm==4.66.1
 
 # Standard library enhancements
-python-dotenv>=1.0.0
+python-dotenv==1.0.0
 
 # Data handling
-dataclasses-json>=0.6.0
+dataclasses-json==0.6.3
