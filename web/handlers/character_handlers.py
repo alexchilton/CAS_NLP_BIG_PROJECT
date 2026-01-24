@@ -18,6 +18,26 @@ from dnd_rag_system.systems.racial_bonuses import load_racial_traits, get_racial
 from dnd_rag_system.systems.rag_character_enhancer import enhance_character_with_rag
 
 
+def format_chat_message(message: str) -> list:
+    """
+    Format initial chat message for Gradio Chatbot component.
+
+    Gradio 4.x uses tuple format: [(user_msg, bot_msg)]
+    Gradio 6.x uses dict format: [{"role": "...", "content": "..."}]
+
+    This function detects the version and returns the appropriate format.
+    """
+    gradio_version = gr.__version__
+    major_version = int(gradio_version.split('.')[0])
+
+    if major_version >= 5:
+        # Gradio 5.x and 6.x use message dict format
+        return [{"role": "assistant", "content": message}]
+    else:
+        # Gradio 4.x and earlier use tuple format
+        return [(None, message)]
+
+
 def load_character_from_json(filepath: Path) -> Optional[Character]:
     """Load character from JSON file."""
     try:
@@ -352,8 +372,8 @@ You have **{char_state.gold} gold pieces** in your purse."""
 
 *Type `/help` to see available commands, or describe your action!*"""
 
-    # Gradio Chatbot format: list of tuples [(user_msg, bot_msg)]
-    initial_chat = [(None, welcome_message)]
+    # Format message for appropriate Gradio version
+    initial_chat = format_chat_message(welcome_message)
     col1, col2, col3 = format_character_sheet_func(char, char_state, db)
     return col1, col2, col3, "", initial_chat, char_image
 
@@ -462,8 +482,8 @@ What would you like to do?
     if char.image_path and Path(char.image_path).exists():
         char_image = str(char.image_path)
 
-    # Gradio Chatbot format: list of tuples [(user_msg, bot_msg)]
-    initial_chat = [(None, welcome_message)]
+    # Format message for appropriate Gradio version
+    initial_chat = format_chat_message(welcome_message)
     col1, col2, col3 = format_character_sheet_func(char, char_state, db)
     return col1, col2, col3, "", initial_chat, char_image
 
