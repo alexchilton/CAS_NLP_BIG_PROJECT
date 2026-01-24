@@ -1,0 +1,4 @@
+# Absolute minimal requirements for testing
+# Use older HuggingFace Hub compatible with Gradio 4.16
+gradio==4.16.0
+huggingface-hub==0.20.3
