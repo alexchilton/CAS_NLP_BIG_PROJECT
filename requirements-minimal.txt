@@ -1,5 +1,5 @@
 # Incremental testing - Step 3: Add all production dependencies
-gradio==4.16.0
+gradio==4.16.0  # Pin for stability (version-aware code supports both 4 and 6)
 huggingface-hub  # Use latest version for modern Inference API support
 
 # Vector database and embeddings
