@@ -117,8 +117,8 @@ class GameMaster:
 
             self.hf_token = hf_token or os.getenv("HF_TOKEN")
             # Use a model that's available via Inference API
-            # Meta-Llama-3.1-8B-Instruct is well-supported and excellent for roleplay
-            self.model_name = model_name or "meta-llama/Meta-Llama-3.1-8B-Instruct"
+            # Llama-3.1-8B-Instruct is well-supported and excellent for roleplay
+            self.model_name = model_name or "meta-llama/Llama-3.1-8B-Instruct"
             # Use new router endpoint (api-inference.huggingface.co is deprecated)
             self.client = InferenceClient(
                 token=self.hf_token,

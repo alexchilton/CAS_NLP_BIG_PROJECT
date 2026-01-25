@@ -164,7 +164,7 @@ class MechanicsExtractor:
 
             self.hf_token = hf_token or os.getenv("HF_TOKEN")
             # Use Meta-Llama model for mechanics extraction (same as GameMaster for consistency)
-            self.model_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+            self.model_name = "meta-llama/Llama-3.1-8B-Instruct"
             self.client = InferenceClient(
                 token=self.hf_token,
                 base_url="https://router.huggingface.co"
