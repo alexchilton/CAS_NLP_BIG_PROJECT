@@ -163,8 +163,8 @@ class MechanicsExtractor:
                 raise ImportError("huggingface_hub is required for HF Spaces. Install with: pip install huggingface_hub")
 
             self.hf_token = hf_token or os.getenv("HF_TOKEN")
-            # Use a smaller, faster model for mechanics extraction
-            self.model_name = "Qwen/Qwen2.5-3B-Instruct"
+            # Use Meta-Llama model for mechanics extraction (same as GameMaster for consistency)
+            self.model_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
             self.client = InferenceClient(
                 token=self.hf_token,
                 base_url="https://router.huggingface.co"
