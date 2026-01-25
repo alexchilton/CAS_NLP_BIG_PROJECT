@@ -119,8 +119,13 @@ class GameMaster:
             # Use a model that's available via Inference API
             # Qwen2.5-7B-Instruct is excellent for roleplay and available on HF Inference API
             self.model_name = model_name or "Qwen/Qwen2.5-7B-Instruct"
-            self.client = InferenceClient(token=self.hf_token)
+            # Use new router endpoint (api-inference.huggingface.co is deprecated)
+            self.client = InferenceClient(
+                token=self.hf_token,
+                base_url="https://router.huggingface.co"
+            )
             print(f"   Model: {self.model_name}")
+            print(f"   Endpoint: https://router.huggingface.co")
             print(f"   Note: Using Inference API compatible model (local uses RPG-specific model)")
         else:
             print("🦙 Using local Ollama mode")

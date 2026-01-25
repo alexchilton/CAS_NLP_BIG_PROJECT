@@ -128,8 +128,13 @@ class ActionValidator:
             self.hf_token = hf_token or os.getenv("HF_TOKEN")
             # Use a smaller, faster model for intent classification
             self.llm_model = "Qwen/Qwen2.5-3B-Instruct"
-            self.client = InferenceClient(token=self.hf_token)
+            # Use new router endpoint (api-inference.huggingface.co is deprecated)
+            self.client = InferenceClient(
+                token=self.hf_token,
+                base_url="https://router.huggingface.co"
+            )
             logger.info(f"   Model: {self.llm_model}")
+            logger.info(f"   Endpoint: https://router.huggingface.co")
         else:
             # Local Ollama mode
             logger.info("🦙 ActionValidator using local Ollama mode")
