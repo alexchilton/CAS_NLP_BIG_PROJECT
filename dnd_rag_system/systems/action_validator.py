@@ -24,9 +24,9 @@ from dnd_rag_system.constants import ActionKeywords, SpellKeywords
 
 logger = logging.getLogger(__name__)
 
-# Import config for default classifier type
+# Import config for default classifier type and HuggingFace settings
 try:
-    from dnd_rag_system.config import IntentClassifierConfig
+    from dnd_rag_system.config import IntentClassifierConfig, HuggingFaceConfig
     DEFAULT_CLASSIFIER = IntentClassifierConfig.DEFAULT_CLASSIFIER
 except ImportError:
     # Fallback if config not available
@@ -126,15 +126,15 @@ class ActionValidator:
                 raise ImportError("huggingface_hub is required for HF Spaces. Install with: pip install huggingface_hub")
 
             self.hf_token = hf_token or os.getenv("HF_TOKEN")
-            # Use Meta-Llama model for intent classification (same as GameMaster for consistency)
-            self.llm_model = "meta-llama/Llama-3.1-8B-Instruct"
-            # Use new router endpoint (api-inference.huggingface.co is deprecated)
+            # Use centralized model configuration
+            self.llm_model = HuggingFaceConfig.INFERENCE_MODEL
+            # Use centralized endpoint configuration
             self.client = InferenceClient(
                 token=self.hf_token,
-                base_url="https://router.huggingface.co"
+                base_url=HuggingFaceConfig.ROUTER_ENDPOINT
             )
             logger.info(f"   Model: {self.llm_model}")
-            logger.info(f"   Endpoint: https://router.huggingface.co")
+            logger.info(f"   Endpoint: {HuggingFaceConfig.ROUTER_ENDPOINT}")
         else:
             # Local Ollama mode
             logger.info("🦙 ActionValidator using local Ollama mode")

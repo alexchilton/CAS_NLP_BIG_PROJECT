@@ -21,6 +21,13 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
+# Import config for HuggingFace settings
+try:
+    from dnd_rag_system.config import HuggingFaceConfig
+except ImportError:
+    # Fallback if config not available
+    HuggingFaceConfig = None
+
 # Default model for mechanics extraction
 # Change this in one place to switch models across the entire system
 # qwen2.5:3b is fast and reliable for structured extraction
@@ -163,14 +170,15 @@ class MechanicsExtractor:
                 raise ImportError("huggingface_hub is required for HF Spaces. Install with: pip install huggingface_hub")
 
             self.hf_token = hf_token or os.getenv("HF_TOKEN")
-            # Use Meta-Llama model for mechanics extraction (same as GameMaster for consistency)
-            self.model_name = "meta-llama/Llama-3.1-8B-Instruct"
+            # Use centralized model configuration
+            self.model_name = HuggingFaceConfig.INFERENCE_MODEL if HuggingFaceConfig else "meta-llama/Llama-3.1-8B-Instruct"
+            endpoint = HuggingFaceConfig.ROUTER_ENDPOINT if HuggingFaceConfig else "https://router.huggingface.co"
             self.client = InferenceClient(
                 token=self.hf_token,
-                base_url="https://router.huggingface.co"
+                base_url=endpoint
             )
             logger.info(f"   Model: {self.model_name}")
-            logger.info(f"   Endpoint: https://router.huggingface.co")
+            logger.info(f"   Endpoint: {endpoint}")
         else:
             # Local Ollama mode
             logger.info("🦙 MechanicsExtractor using local Ollama mode")
