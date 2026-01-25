@@ -3,7 +3,7 @@ gradio==6.0.1  # Unified version across local and HuggingFace Spaces
 huggingface-hub  # Use latest version for modern Inference API support
 
 # Vector database and embeddings
-chromadb==0.4.22
+chromadb>=1.0.0  # Upgraded for NumPy 2.0 compatibility (0.4.x has deprecated NumPy types)
 sentence-transformers==2.3.1
 
 # PDF processing
