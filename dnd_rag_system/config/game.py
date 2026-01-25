@@ -1,20 +1,8 @@
 """
-D&D RAG System Configuration
+Game configuration for D&D RAG System.
 
-Configuration settings for the D&D RAG system, including intent classification,
-model settings, and feature toggles.
+Contains settings for game systems, intent classification, and mechanics extraction.
 """
-
-
-class HuggingFaceConfig:
-    """Configuration for HuggingFace Inference API"""
-
-    # Model to use on HuggingFace Spaces
-    # Used by: GameMaster, ActionValidator, MechanicsExtractor
-    INFERENCE_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
-
-    # Endpoint
-    ROUTER_ENDPOINT = "https://router.huggingface.co"
 
 
 class IntentClassifierConfig:

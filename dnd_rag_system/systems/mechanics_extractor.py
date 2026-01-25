@@ -21,15 +21,8 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-# Import config for HuggingFace settings and environment detection
-try:
-    from dnd_rag_system.config import HuggingFaceConfig, is_huggingface_space
-except ImportError:
-    # Fallback if config not available
-    HuggingFaceConfig = None
-    import os
-    def is_huggingface_space():
-        return os.getenv("USE_HF_API", "false").lower() == "true"
+# Import LLM client factory for unified client creation
+from dnd_rag_system.core.llm_client import LLMClientFactory
 
 # Default model for mechanics extraction
 # Change this in one place to switch models across the entire system
@@ -161,33 +154,12 @@ class MechanicsExtractor:
         self.debug = debug
         self.timeout = timeout
 
-        # Auto-detect environment
-        self.use_hf_api = self._is_huggingface_space()
-
-        if self.use_hf_api:
-            # HuggingFace Inference API mode
-            logger.info("🤗 MechanicsExtractor using Hugging Face Inference API mode")
-            try:
-                from huggingface_hub import InferenceClient
-            except ImportError:
-                raise ImportError("huggingface_hub is required for HF Spaces. Install with: pip install huggingface_hub")
-
-            self.hf_token = hf_token or os.getenv("HF_TOKEN")
-            # Use centralized model configuration
-            self.model_name = HuggingFaceConfig.INFERENCE_MODEL if HuggingFaceConfig else "meta-llama/Llama-3.1-8B-Instruct"
-            endpoint = HuggingFaceConfig.ROUTER_ENDPOINT if HuggingFaceConfig else "https://router.huggingface.co"
-            self.client = InferenceClient(
-                token=self.hf_token,
-                base_url=endpoint
-            )
-            logger.info(f"   Model: {self.model_name}")
-            logger.info(f"   Endpoint: {endpoint}")
-        else:
-            # Local Ollama mode
-            logger.info("🦙 MechanicsExtractor using local Ollama mode")
-            self.model_name = model_name
-            self.client = None
-            logger.info(f"   Model: {self.model_name}")
+        # Use factory to create client with automatic environment detection
+        self.client, self.model_name, self.use_hf_api = LLMClientFactory.create_client(
+            model_name=model_name,
+            hf_token=hf_token,
+            debug=debug
+        )
 
         if self.debug:
             logger.setLevel(logging.DEBUG)
@@ -198,11 +170,6 @@ class MechanicsExtractor:
                 formatter = logging.Formatter('%(levelname)s - %(name)s - %(message)s')
                 console_handler.setFormatter(formatter)
                 logger.addHandler(console_handler)
-
-    def _is_huggingface_space(self) -> bool:
-        """Check if running on Hugging Face Spaces."""
-        # Use centralized environment detection from config
-        return is_huggingface_space()
 
     def extract(
         self,
