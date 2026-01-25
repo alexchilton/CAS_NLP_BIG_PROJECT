@@ -224,9 +224,10 @@ def delete_character_wrapper(character_choice: str) -> Tuple[str, gr.update]:
     return delete_character(character_choice, CHARACTERS_DIR)
 
 
-def handle_rag_lookup_wrapper(query: str) -> str:
-    """Wrapper for handle_rag_lookup handler."""
-    return handle_rag_lookup(query, gm, db)
+def handle_rag_lookup_wrapper(query: str, session: Optional['SessionState']) -> str:
+    """Wrapper for handle_rag_lookup handler with session state."""
+    session = ensure_session(session)
+    return handle_rag_lookup(query, session.gm, db)
 
 
 def chat_wrapper(message: str, history: list, session: Optional['SessionState']) -> Tuple[list, str, gr.update, str, str, str, 'SessionState']:
@@ -427,27 +428,29 @@ try:
         # Load character button
         play_components['load_btn'].click(
             load_character_with_debug_wrapper,
-            inputs=[play_components['character_dropdown'], play_components['debug_scenario_dropdown']],
+            inputs=[play_components['character_dropdown'], play_components['debug_scenario_dropdown'], session_state],
             outputs=[
                 play_components['char_col1'],
                 play_components['char_col2'],
                 play_components['char_col3'],
                 play_components['msg_input'],
                 play_components['chatbot'],
-                play_components['char_image']
+                play_components['char_image'],
+                session_state
             ]
         )
 
         # Load party button
         play_components['load_party_btn'].click(
             load_party_mode_wrapper,
-            inputs=[],
+            inputs=[session_state],
             outputs=[
                 play_components['char_col1'],
                 play_components['char_col2'],
                 play_components['char_col3'],
                 play_components['msg_input'],
-                play_components['chatbot']
+                play_components['chatbot'],
+                session_state
             ]
         )
 
@@ -464,21 +467,22 @@ try:
         # RAG Lookup button
         play_components['rag_lookup_btn'].click(
             handle_rag_lookup_wrapper,
-            inputs=[play_components['rag_lookup_input']],
+            inputs=[play_components['rag_lookup_input'], session_state],
             outputs=[play_components['rag_lookup_output']]
         )
 
         # Chat submit button
         play_components['submit_btn'].click(
             chat_wrapper,
-            inputs=[play_components['msg_input'], play_components['chatbot']],
+            inputs=[play_components['msg_input'], play_components['chatbot'], session_state],
             outputs=[
                 play_components['chatbot'],
                 play_components['initiative_display'],
                 play_components['combat_accordion'],
                 play_components['char_col1'],
                 play_components['char_col2'],
-                play_components['char_col3']
+                play_components['char_col3'],
+                session_state
             ]
         ).then(
             lambda: "",
@@ -488,14 +492,15 @@ try:
         # Chat message input (Enter key)
         play_components['msg_input'].submit(
             chat_wrapper,
-            inputs=[play_components['msg_input'], play_components['chatbot']],
+            inputs=[play_components['msg_input'], play_components['chatbot'], session_state],
             outputs=[
                 play_components['chatbot'],
                 play_components['initiative_display'],
                 play_components['combat_accordion'],
                 play_components['char_col1'],
                 play_components['char_col2'],
-                play_components['char_col3']
+                play_components['char_col3'],
+                session_state
             ]
         ).then(
             lambda: "",
@@ -505,34 +510,37 @@ try:
         # Combat control buttons
         play_components['next_turn_btn'].click(
             handle_next_turn_wrapper,
-            inputs=[play_components['chatbot']],
+            inputs=[play_components['chatbot'], session_state],
             outputs=[
                 play_components['chatbot'],
                 play_components['initiative_display'],
                 play_components['combat_accordion'],
                 play_components['char_col1'],
                 play_components['char_col2'],
-                play_components['char_col3']
+                play_components['char_col3'],
+                session_state
             ]
         )
 
         play_components['end_combat_btn'].click(
             handle_end_combat_wrapper,
-            inputs=[play_components['chatbot']],
+            inputs=[play_components['chatbot'], session_state],
             outputs=[
                 play_components['chatbot'],
                 play_components['initiative_display'],
                 play_components['combat_accordion'],
                 play_components['char_col1'],
                 play_components['char_col2'],
-                play_components['char_col3']
+                play_components['char_col3'],
+                session_state
             ]
         )
 
         # Clear history button
         play_components['clear_btn'].click(
             clear_history_wrapper,
-            outputs=[play_components['chatbot']]
+            inputs=[session_state],
+            outputs=[play_components['chatbot'], session_state]
         )
 
         # Quick action buttons
@@ -542,15 +550,16 @@ try:
         )
 
         play_components['cast_btn'].click(
-            lambda history: chat_wrapper("/spells", history),
-            inputs=[play_components['chatbot']],
+            lambda history, session: chat_wrapper("/spells", history, session),
+            inputs=[play_components['chatbot'], session_state],
             outputs=[
                 play_components['chatbot'],
                 play_components['initiative_display'],
                 play_components['combat_accordion'],
                 play_components['char_col1'],
                 play_components['char_col2'],
-                play_components['char_col3']
+                play_components['char_col3'],
+                session_state
             ]
         )
 
@@ -560,15 +569,16 @@ try:
         )
 
         play_components['help_btn'].click(
-            lambda history: chat_wrapper("/help", history),
-            inputs=[play_components['chatbot']],
+            lambda history, session: chat_wrapper("/help", history, session),
+            inputs=[play_components['chatbot'], session_state],
             outputs=[
                 play_components['chatbot'],
                 play_components['initiative_display'],
                 play_components['combat_accordion'],
                 play_components['char_col1'],
                 play_components['char_col2'],
-                play_components['char_col3']
+                play_components['char_col3'],
+                session_state
             ]
         )
 
@@ -616,65 +626,72 @@ try:
         # EVENT HANDLERS - PARTY MANAGEMENT TAB
         # ========================================================================
 
-        def add_and_update(character_choices):
+        def add_and_update(character_choices, session):
             """Add characters to party and update all displays."""
-            result = add_to_party_wrapper(character_choices)
-            summary = get_party_summary_wrapper()
-            sheets = get_all_character_sheets_wrapper()
+            result, session = add_to_party_wrapper(character_choices, session)
+            summary = get_party_summary_wrapper(session)
+            sheets = get_all_character_sheets_wrapper(session)
 
             # Update remove dropdown with current party members
-            party_member_names = list(party_characters.keys())
+            session = ensure_session(session)
+            party_member_names = list(session.party_characters.keys())
 
             return (
                 result,  # party_status
                 summary,  # party_summary_display
                 sheets,  # party_sheets_display
-                gr.update(choices=party_member_names)  # remove_char_selector
+                gr.update(choices=party_member_names),  # remove_char_selector
+                session
             )
 
-        def remove_and_update(character_name):
+        def remove_and_update(character_name, session):
             """Remove character from party and update all displays."""
+            session = ensure_session(session)
             if not character_name:
                 return (
                     "⚠️ Please select a character to remove",
-                    get_party_summary_wrapper(),
-                    get_all_character_sheets_wrapper(),
-                    gr.update()
+                    get_party_summary_wrapper(session),
+                    get_all_character_sheets_wrapper(session),
+                    gr.update(),
+                    session
                 )
 
-            result = remove_from_party_wrapper(character_name)
-            summary = get_party_summary_wrapper()
-            sheets = get_all_character_sheets_wrapper()
+            result, session = remove_from_party_wrapper(character_name, session)
+            summary = get_party_summary_wrapper(session)
+            sheets = get_all_character_sheets_wrapper(session)
 
             # Update remove dropdown with current party members
-            party_member_names = list(party_characters.keys())
+            party_member_names = list(session.party_characters.keys())
 
             return (
                 result,  # party_status
                 summary,  # party_summary_display
                 sheets,  # party_sheets_display
-                gr.update(choices=party_member_names, value=None)  # remove_char_selector
+                gr.update(choices=party_member_names, value=None),  # remove_char_selector
+                session
             )
 
         party_components['add_party_btn'].click(
             add_and_update,
-            inputs=[party_components['party_char_selector']],
+            inputs=[party_components['party_char_selector'], session_state],
             outputs=[
                 party_components['party_status'],
                 party_components['party_summary_display'],
                 party_components['party_sheets_display'],
-                party_components['remove_char_selector']
+                party_components['remove_char_selector'],
+                session_state
             ]
         )
 
         party_components['remove_party_btn'].click(
             remove_and_update,
-            inputs=[party_components['remove_char_selector']],
+            inputs=[party_components['remove_char_selector'], session_state],
             outputs=[
                 party_components['party_status'],
                 party_components['party_summary_display'],
                 party_components['party_sheets_display'],
-                party_components['remove_char_selector']
+                party_components['remove_char_selector'],
+                session_state
             ]
         )
 
@@ -753,27 +770,29 @@ except TypeError:
         # Load character button
         play_components['load_btn'].click(
             load_character_with_debug_wrapper,
-            inputs=[play_components['character_dropdown'], play_components['debug_scenario_dropdown']],
+            inputs=[play_components['character_dropdown'], play_components['debug_scenario_dropdown'], session_state],
             outputs=[
                 play_components['char_col1'],
                 play_components['char_col2'],
                 play_components['char_col3'],
                 play_components['msg_input'],
                 play_components['chatbot'],
-                play_components['char_image']
+                play_components['char_image'],
+                session_state
             ]
         )
 
         # Load party button
         play_components['load_party_btn'].click(
             load_party_mode_wrapper,
-            inputs=[],
+            inputs=[session_state],
             outputs=[
                 play_components['char_col1'],
                 play_components['char_col2'],
                 play_components['char_col3'],
                 play_components['msg_input'],
-                play_components['chatbot']
+                play_components['chatbot'],
+                session_state
             ]
         )
 
@@ -790,21 +809,22 @@ except TypeError:
         # RAG Lookup button
         play_components['rag_lookup_btn'].click(
             handle_rag_lookup_wrapper,
-            inputs=[play_components['rag_lookup_input']],
+            inputs=[play_components['rag_lookup_input'], session_state],
             outputs=[play_components['rag_lookup_output']]
         )
 
         # Chat submit button
         play_components['submit_btn'].click(
             chat_wrapper,
-            inputs=[play_components['msg_input'], play_components['chatbot']],
+            inputs=[play_components['msg_input'], play_components['chatbot'], session_state],
             outputs=[
                 play_components['chatbot'],
                 play_components['initiative_display'],
                 play_components['combat_accordion'],
                 play_components['char_col1'],
                 play_components['char_col2'],
-                play_components['char_col3']
+                play_components['char_col3'],
+                session_state
             ]
         ).then(
             lambda: "",
@@ -814,14 +834,15 @@ except TypeError:
         # Chat message input (Enter key)
         play_components['msg_input'].submit(
             chat_wrapper,
-            inputs=[play_components['msg_input'], play_components['chatbot']],
+            inputs=[play_components['msg_input'], play_components['chatbot'], session_state],
             outputs=[
                 play_components['chatbot'],
                 play_components['initiative_display'],
                 play_components['combat_accordion'],
                 play_components['char_col1'],
                 play_components['char_col2'],
-                play_components['char_col3']
+                play_components['char_col3'],
+                session_state
             ]
         ).then(
             lambda: "",
@@ -831,34 +852,37 @@ except TypeError:
         # Combat control buttons
         play_components['next_turn_btn'].click(
             handle_next_turn_wrapper,
-            inputs=[play_components['chatbot']],
+            inputs=[play_components['chatbot'], session_state],
             outputs=[
                 play_components['chatbot'],
                 play_components['initiative_display'],
                 play_components['combat_accordion'],
                 play_components['char_col1'],
                 play_components['char_col2'],
-                play_components['char_col3']
+                play_components['char_col3'],
+                session_state
             ]
         )
 
         play_components['end_combat_btn'].click(
             handle_end_combat_wrapper,
-            inputs=[play_components['chatbot']],
+            inputs=[play_components['chatbot'], session_state],
             outputs=[
                 play_components['chatbot'],
                 play_components['initiative_display'],
                 play_components['combat_accordion'],
                 play_components['char_col1'],
                 play_components['char_col2'],
-                play_components['char_col3']
+                play_components['char_col3'],
+                session_state
             ]
         )
 
         # Clear history button
         play_components['clear_btn'].click(
             clear_history_wrapper,
-            outputs=[play_components['chatbot']]
+            inputs=[session_state],
+            outputs=[play_components['chatbot'], session_state]
         )
 
         # Quick action buttons
@@ -868,15 +892,16 @@ except TypeError:
         )
 
         play_components['cast_btn'].click(
-            lambda history: chat_wrapper("/spells", history),
-            inputs=[play_components['chatbot']],
+            lambda history, session: chat_wrapper("/spells", history, session),
+            inputs=[play_components['chatbot'], session_state],
             outputs=[
                 play_components['chatbot'],
                 play_components['initiative_display'],
                 play_components['combat_accordion'],
                 play_components['char_col1'],
                 play_components['char_col2'],
-                play_components['char_col3']
+                play_components['char_col3'],
+                session_state
             ]
         )
 
@@ -886,15 +911,16 @@ except TypeError:
         )
 
         play_components['help_btn'].click(
-            lambda history: chat_wrapper("/help", history),
-            inputs=[play_components['chatbot']],
+            lambda history, session: chat_wrapper("/help", history, session),
+            inputs=[play_components['chatbot'], session_state],
             outputs=[
                 play_components['chatbot'],
                 play_components['initiative_display'],
                 play_components['combat_accordion'],
                 play_components['char_col1'],
                 play_components['char_col2'],
-                play_components['char_col3']
+                play_components['char_col3'],
+                session_state
             ]
         )
 
@@ -942,65 +968,72 @@ except TypeError:
         # EVENT HANDLERS - PARTY MANAGEMENT TAB
         # ========================================================================
 
-        def add_and_update(character_choices):
+        def add_and_update(character_choices, session):
             """Add characters to party and update all displays."""
-            result = add_to_party_wrapper(character_choices)
-            summary = get_party_summary_wrapper()
-            sheets = get_all_character_sheets_wrapper()
+            result, session = add_to_party_wrapper(character_choices, session)
+            summary = get_party_summary_wrapper(session)
+            sheets = get_all_character_sheets_wrapper(session)
 
             # Update remove dropdown with current party members
-            party_member_names = list(party_characters.keys())
+            session = ensure_session(session)
+            party_member_names = list(session.party_characters.keys())
 
             return (
                 result,  # party_status
                 summary,  # party_summary_display
                 sheets,  # party_sheets_display
-                gr.update(choices=party_member_names)  # remove_char_selector
+                gr.update(choices=party_member_names),  # remove_char_selector
+                session
             )
 
-        def remove_and_update(character_name):
+        def remove_and_update(character_name, session):
             """Remove character from party and update all displays."""
+            session = ensure_session(session)
             if not character_name:
                 return (
                     "⚠️ Please select a character to remove",
-                    get_party_summary_wrapper(),
-                    get_all_character_sheets_wrapper(),
-                    gr.update()
+                    get_party_summary_wrapper(session),
+                    get_all_character_sheets_wrapper(session),
+                    gr.update(),
+                    session
                 )
 
-            result = remove_from_party_wrapper(character_name)
-            summary = get_party_summary_wrapper()
-            sheets = get_all_character_sheets_wrapper()
+            result, session = remove_from_party_wrapper(character_name, session)
+            summary = get_party_summary_wrapper(session)
+            sheets = get_all_character_sheets_wrapper(session)
 
             # Update remove dropdown with current party members
-            party_member_names = list(party_characters.keys())
+            party_member_names = list(session.party_characters.keys())
 
             return (
                 result,  # party_status
                 summary,  # party_summary_display
                 sheets,  # party_sheets_display
-                gr.update(choices=party_member_names, value=None)  # remove_char_selector
+                gr.update(choices=party_member_names, value=None),  # remove_char_selector
+                session
             )
 
         party_components['add_party_btn'].click(
             add_and_update,
-            inputs=[party_components['party_char_selector']],
+            inputs=[party_components['party_char_selector'], session_state],
             outputs=[
                 party_components['party_status'],
                 party_components['party_summary_display'],
                 party_components['party_sheets_display'],
-                party_components['remove_char_selector']
+                party_components['remove_char_selector'],
+                session_state
             ]
         )
 
         party_components['remove_party_btn'].click(
             remove_and_update,
-            inputs=[party_components['remove_char_selector']],
+            inputs=[party_components['remove_char_selector'], session_state],
             outputs=[
                 party_components['party_status'],
                 party_components['party_summary_display'],
                 party_components['party_sheets_display'],
-                party_components['remove_char_selector']
+                party_components['remove_char_selector'],
+                session_state
             ]
         )
 
