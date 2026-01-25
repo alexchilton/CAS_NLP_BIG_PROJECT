@@ -23,17 +23,17 @@ class UseItemCommand(GameCommand):
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Use an item from inventory."""
         if not context.session.character_state:
-            return CommandResult.error("No character loaded!")
+            return CommandResult.failure("No character loaded!")
 
         # Extract item name
         item_name = user_input.split(' ', 1)[1].strip() if ' ' in user_input else ""
         if not item_name:
-            return CommandResult.error("Specify an item to use! Example: /use Healing Potion")
+            return CommandResult.failure("Specify an item to use! Example: /use Healing Potion")
 
         # Check if character has the item
         if item_name not in context.session.character_state.inventory:
-            inventory_preview = ", ".join(context.session.character_state.inventory[:5])
-            return CommandResult.error(
+            inventory_preview = ", ".join(list(context.session.character_state.inventory.keys())[:5])
+            return CommandResult.failure(
                 f"You don't have '{item_name}'!\n\nInventory: {inventory_preview}"
             )
 
@@ -56,22 +56,22 @@ class PickupItemCommand(GameCommand):
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Pick up an item from current location."""
         if not context.session.character_state:
-            return CommandResult.error("No character loaded!")
+            return CommandResult.failure("No character loaded!")
 
         # Extract item name
         item_name = user_input.split(' ', 1)[1].strip() if ' ' in user_input else ""
         if not item_name:
-            return CommandResult.error("Specify an item to pick up! Example: /pickup Rope")
+            return CommandResult.failure("Specify an item to pick up! Example: /pickup Rope")
 
         # Get current location
         current_loc = context.session.get_current_location_obj()
         if not current_loc:
-            return CommandResult.error("No location information available.")
+            return CommandResult.failure("No location information available.")
 
         # Check if item exists at location
         if not current_loc.has_item(item_name):
             available = ", ".join(current_loc.available_items[:5]) if current_loc.available_items else "nothing"
-            return CommandResult.error(
+            return CommandResult.failure(
                 f"'{item_name}' is not here.\n\nYou see: {available}"
             )
 
@@ -91,10 +91,10 @@ class DeathSaveCommand(GameCommand):
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Make a death saving throw."""
         if not context.session.character_state:
-            return CommandResult.error("No character state loaded!")
+            return CommandResult.failure("No character state loaded!")
 
         if context.session.character_state.is_conscious():
-            return CommandResult.error(
+            return CommandResult.failure(
                 "You are not unconscious! Death saving throws are only for unconscious characters (0 HP)."
             )
 
@@ -157,7 +157,7 @@ class ShortRestCommand(GameCommand):
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Take a short rest to spend hit dice and heal."""
         if not context.session.character_state:
-            return CommandResult.error("No character state loaded!")
+            return CommandResult.failure("No character state loaded!")
 
         char_state = context.session.character_state
 
@@ -166,12 +166,12 @@ class ShortRestCommand(GameCommand):
             feedback = f"⚠️ You have no hit dice remaining!\n\n"
             feedback += f"Hit Dice: {char_state.hit_dice_current}/{char_state.hit_dice_max}\n\n"
             feedback += f"You need a long rest to recover hit dice."
-            return CommandResult.error(feedback)
+            return CommandResult.failure(feedback)
 
         if char_state.current_hp >= char_state.max_hp:
             feedback = f"⚠️ You're already at full HP ({char_state.current_hp}/{char_state.max_hp})!\n\n"
             feedback += f"Short rests are primarily for healing. You don't need one right now."
-            return CommandResult.error(feedback)
+            return CommandResult.failure(feedback)
 
         # Spend 1 hit die to heal
         rest_result = char_state.short_rest(hit_dice_spent=1)
@@ -195,7 +195,7 @@ class LongRestCommand(GameCommand):
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Take a long rest to fully restore HP, hit dice, and spell slots."""
         if not context.session.character_state:
-            return CommandResult.error("No character state loaded!")
+            return CommandResult.failure("No character state loaded!")
 
         char_state = context.session.character_state
 
@@ -222,7 +222,7 @@ class LevelUpCommand(GameCommand):
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Level up the character."""
         if not context.session.character_state:
-            return CommandResult.error("No character state loaded!")
+            return CommandResult.failure("No character state loaded!")
 
         char_state = context.session.character_state
 
@@ -233,7 +233,7 @@ class LevelUpCommand(GameCommand):
             feedback += f"Current XP: {char_state.experience_points}\n"
             feedback += f"Required for Level {char_state.level + 1}: {required_xp}\n"
             feedback += f"XP Needed: {required_xp - char_state.experience_points}"
-            return CommandResult.error(feedback)
+            return CommandResult.failure(feedback)
 
         # Level up
         level_up_result = char_state.level_up()

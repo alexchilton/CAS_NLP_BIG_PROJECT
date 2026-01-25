@@ -17,7 +17,7 @@ class StartCombatCommand(GameCommand):
     """Handle /start_combat [NPCs] command."""
 
     def get_patterns(self) -> List[str]:
-        return [Commands.START_COMBAT]  # '/start_combat'
+        return [Commands.START_COMBAT, '/start_combat ']  # Exact + with arguments
 
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Start combat with specified or existing NPCs."""
@@ -32,7 +32,7 @@ class StartCombatCommand(GameCommand):
             npc_list = context.session.npcs_present
 
         if not npc_list:
-            return CommandResult.error("No NPCs specified and none present in scene!")
+            return CommandResult.failure("No NPCs specified and none present in scene!")
 
         # Start combat with party or single character
         if context.session.party and len(context.session.party.characters) > 0:
@@ -46,7 +46,7 @@ class StartCombatCommand(GameCommand):
                 npc_list
             )
         else:
-            return CommandResult.error("No character or party loaded!")
+            return CommandResult.failure("No character or party loaded!")
 
         # Add NPCs to session for targeting
         for npc in npc_list:
@@ -82,7 +82,7 @@ class NextTurnCommand(GameCommand):
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Advance to next turn in combat."""
         if not context.session.combat or not context.session.combat.active:
-            return CommandResult.error("No active combat!")
+            return CommandResult.failure("No active combat!")
 
         feedback = context.combat_manager.next_turn()
 
@@ -111,7 +111,7 @@ class FleeCommand(GameCommand):
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Attempt to flee from combat."""
         if not context.session.combat or not context.session.combat.active:
-            return CommandResult.error("No active combat to flee from!")
+            return CommandResult.failure("No active combat to flee from!")
 
         feedback = context.combat_manager.flee_combat()
         return CommandResult.success(feedback)
@@ -126,7 +126,7 @@ class EndCombatCommand(GameCommand):
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """End combat and award XP."""
         if not context.session.combat or not context.session.combat.active:
-            return CommandResult.error("No active combat!")
+            return CommandResult.failure("No active combat!")
 
         feedback = context.combat_manager.end_combat()
         return CommandResult.success(feedback)
@@ -141,7 +141,7 @@ class InitiativeCommand(GameCommand):
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Show current initiative order."""
         if not context.session.combat or not context.session.combat.active:
-            return CommandResult.error("No active combat!")
+            return CommandResult.failure("No active combat!")
 
         feedback = context.combat_manager.show_initiative()
         return CommandResult.success(feedback)

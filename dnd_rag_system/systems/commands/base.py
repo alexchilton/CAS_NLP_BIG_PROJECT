@@ -54,7 +54,7 @@ class CommandResult:
         return cls(handled=True, feedback=feedback)
 
     @classmethod
-    def error(cls, error_message: str) -> 'CommandResult':
+    def failure(cls, error_message: str) -> 'CommandResult':
         """Factory method for failed command."""
         return cls(handled=True, error=error_message, feedback=f"⚠️ {error_message}")
 
