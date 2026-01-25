@@ -11,9 +11,9 @@ import sys
 from pathlib import Path
 
 # Add project to path
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from dnd_rag_system.systems.gm_dialogue import main
+from dnd_rag_system.systems.gm_dialogue_cli import main
 
 if __name__ == '__main__':
     sys.exit(main())

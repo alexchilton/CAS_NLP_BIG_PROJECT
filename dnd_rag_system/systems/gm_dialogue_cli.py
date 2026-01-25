@@ -1,8 +1,23 @@
 """
-D&D Game Master Dialogue System
+D&D Game Master CLI Tool - Simple Command-Line Interface
 
-RAG-enhanced AI Dungeon Master powered by Ollama LLM.
-Uses ChromaDB to retrieve D&D rules, spells, monsters, and classes in real-time.
+RAG-enhanced AI Dungeon Master for CLI testing and demos.
+This is a SIMPLIFIED version for command-line use only.
+
+**Purpose:**
+- Quick testing of dialogue generation without full game state
+- Demo/experimentation with RAG and LLM responses
+- CLI-based D&D sessions (no web UI required)
+
+**Limitations:**
+- Ollama only (no HuggingFace support)
+- No combat system, shop system, or game mechanics
+- Basic conversation tracking (no full GameSession state)
+
+**For production use:** See gm_dialogue_unified.py (used by web app)
+
+This tool uses ChromaDB to retrieve D&D rules, spells, monsters, and classes
+in real-time, then generates GM responses via Ollama.
 """
 
 import sys
