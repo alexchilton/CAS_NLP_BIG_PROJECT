@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
-from dnd_rag_system.config import settings, HuggingFaceConfig
+from dnd_rag_system.config import settings, HuggingFaceConfig, is_huggingface_space
 from dnd_rag_system.systems.game_state import GameSession, CombatState, PartyState
 from dnd_rag_system.systems.action_validator import (
     ActionValidator, ValidationResult, ActionType, create_context_aware_prompt
@@ -48,14 +48,8 @@ if DEBUG_PROMPTS:
     logger.info("   Set GM_DEBUG=false or update settings.DEBUG_MODE to disable")
 
 
-def is_huggingface_space() -> bool:
-    """Check if running on Hugging Face Spaces."""
-    return (
-        os.getenv("SPACE_ID") is not None or
-        os.getenv("SPACE_AUTHOR_NAME") is not None or
-        os.getenv("HF_SPACE") is not None or
-        os.getenv("USE_HF_API", "false").lower() == "true"  # Manual override
-    )
+# Environment detection moved to dnd_rag_system.config.environment
+# Imported above for backward compatibility
 
 
 @dataclass

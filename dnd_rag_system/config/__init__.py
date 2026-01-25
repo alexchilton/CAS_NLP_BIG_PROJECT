@@ -3,6 +3,7 @@ Configuration package for D&D RAG System.
 """
 
 from .settings import *
+from .environment import is_huggingface_space, get_environment_name
 
 # Import configuration classes from config.py
 import sys
