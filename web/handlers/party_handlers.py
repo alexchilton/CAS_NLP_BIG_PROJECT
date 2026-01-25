@@ -9,22 +9,13 @@ import gradio as gr
 
 from dnd_rag_system.systems.game_state import CharacterState, PartyState
 from dnd_rag_system.constants import CharacterClasses
+from dnd_rag_system.config import settings
 from .character_handlers import load_character_from_json
 from web.formatters.party_formatter import format_party_sheet
 
 
 # Constants for party handlers
-STARTING_LOCATIONS = [
-    # Peaceful locations (for shopping/rest)
-    ("The Prancing Pony Inn", "A cozy tavern bustling with travelers and merchants. The smell of roasted meat and ale fills the air. A shopkeeper behind the bar sells basic supplies."),
-    ("The Market Square", "A busy marketplace with stalls selling adventuring gear, potions, and supplies. Merchants call out their wares. Perfect for shopping before an adventure!"),
-    ("The Town Gates", "The entrance to town, where the road stretches out toward adventure. Guards keep watch. A general store sits just inside the gates."),
-    # Combat-ready locations (for immediate action!)
-    ("Goblin Cave Entrance", "You stand at the mouth of a dark cave. The stench of unwashed goblins wafts out from the darkness. Crude wooden stakes mark goblin territory. You hear chittering and the clang of crude weapons echoing from within."),
-    ("Ancient Ruins", "Crumbling stone pillars rise from overgrown weeds. This was once a great temple, now fallen to ruin. Skeletons and undead are known to haunt these grounds, guarding forgotten treasures."),
-    ("Dark Forest Clearing", "You emerge into a small clearing surrounded by ancient, gnarled trees. The forest floor is littered with bones. Fresh wolf tracks circle the area. This is dangerous territory."),
-]
-
+STARTING_LOCATIONS = settings.STARTING_LOCATIONS
 CHARACTERS_DIR = Path(__file__).parent.parent.parent / "characters"
 
 
