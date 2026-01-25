@@ -12,9 +12,8 @@ from dnd_rag_system.systems.game_state import GameSession
 
 def add_chat_messages(history: list, user_msg: str, assistant_msg: str) -> list:
     """
-    Add user and assistant messages to chat history in the appropriate format.
+    Add user and assistant messages to chat history.
 
-    Gradio 4.x uses tuple format: [(user_msg, bot_msg), ...]
     Gradio 6.x uses dict format: [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}, ...]
 
     Args:
@@ -25,18 +24,10 @@ def add_chat_messages(history: list, user_msg: str, assistant_msg: str) -> list:
     Returns:
         Updated history with new messages appended
     """
-    gradio_version = gr.__version__
-    major_version = int(gradio_version.split('.')[0])
-
-    if major_version >= 5:
-        # Gradio 5.x and 6.x use message dict format
-        return history + [
-            {"role": "user", "content": user_msg},
-            {"role": "assistant", "content": assistant_msg}
-        ]
-    else:
-        # Gradio 4.x and earlier use tuple format
-        return history + [(user_msg, assistant_msg)]
+    return history + [
+        {"role": "user", "content": user_msg},
+        {"role": "assistant", "content": assistant_msg}
+    ]
 
 
 def handle_rag_lookup(query: str, gm, db) -> str:
