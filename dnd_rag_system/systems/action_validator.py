@@ -24,16 +24,11 @@ from dnd_rag_system.constants import ActionKeywords, SpellKeywords
 
 logger = logging.getLogger(__name__)
 
-# Import config for default classifier type and HuggingFace settings
-try:
-    from dnd_rag_system.config import IntentClassifierConfig, HuggingFaceConfig, is_huggingface_space
-    DEFAULT_CLASSIFIER = IntentClassifierConfig.DEFAULT_CLASSIFIER
-except ImportError:
-    # Fallback if config not available
-    DEFAULT_CLASSIFIER = "llm"
-    # Define fallback for environment detection
-    def is_huggingface_space():
-        return os.getenv("USE_HF_API", "false").lower() == "true"
+# Import config for default classifier type and LLM client factory
+from dnd_rag_system.config import IntentClassifierConfig
+from dnd_rag_system.core.llm_client import LLMClientFactory
+
+DEFAULT_CLASSIFIER = IntentClassifierConfig.DEFAULT_CLASSIFIER
 
 
 class ActionType(Enum):
@@ -117,39 +112,15 @@ class ActionValidator:
         self.classifier_type = classifier_type if classifier_type is not None else DEFAULT_CLASSIFIER
         self.compare_classifiers = compare_classifiers
 
-        # Auto-detect environment (same logic as GameMaster)
-        self.use_hf_api = self._is_huggingface_space()
-
-        if self.use_hf_api:
-            # HuggingFace Inference API mode
-            logger.info("🤗 ActionValidator using Hugging Face Inference API mode")
-            try:
-                from huggingface_hub import InferenceClient
-            except ImportError:
-                raise ImportError("huggingface_hub is required for HF Spaces. Install with: pip install huggingface_hub")
-
-            self.hf_token = hf_token or os.getenv("HF_TOKEN")
-            # Use centralized model configuration
-            self.llm_model = HuggingFaceConfig.INFERENCE_MODEL
-            # Use centralized endpoint configuration
-            self.client = InferenceClient(
-                token=self.hf_token,
-                base_url=HuggingFaceConfig.ROUTER_ENDPOINT
-            )
-            logger.info(f"   Model: {self.llm_model}")
-            logger.info(f"   Endpoint: {HuggingFaceConfig.ROUTER_ENDPOINT}")
-        else:
-            # Local Ollama mode
-            logger.info("🦙 ActionValidator using local Ollama mode")
-            self.llm_model = "qwen2.5:3b"
-            self.client = None
+        # Use factory to create client with automatic environment detection
+        # For ActionValidator, use qwen2.5:3b for local (fast intent classification)
+        self.client, self.llm_model, self.use_hf_api = LLMClientFactory.create_client(
+            model_name="qwen2.5:3b",  # Fast model for intent classification
+            hf_token=hf_token,
+            debug=debug
+        )
 
         self.llm_timeout = 10
-
-    def _is_huggingface_space(self) -> bool:
-        """Check if running on Hugging Face Spaces."""
-        # Use centralized environment detection from config
-        return is_huggingface_space()
 
     def set_party_characters(self, character_names: List[str]):
         """

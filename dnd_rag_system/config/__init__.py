@@ -1,25 +1,43 @@
 """
 Configuration package for D&D RAG System.
+
+Centralizes all configuration settings:
+- settings: General settings, Ollama models, collection names
+- environment: Environment detection (HF Spaces vs local)
+- models: LLM model configurations (HuggingFace, Ollama)
+- game: Game system configurations (intent classifier, mechanics, etc.)
 """
 
+# Core settings
 from .settings import *
+
+# Environment detection
 from .environment import is_huggingface_space, get_environment_name
 
-# Import configuration classes from config.py
-import sys
-from pathlib import Path
+# Model configurations
+from .models import HuggingFaceConfig
 
-# Add parent directory to path to import config.py
-config_module_path = Path(__file__).parent.parent / "config.py"
-if config_module_path.exists():
-    # Import classes from config.py sibling module
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("config_classes", config_module_path)
-    config_classes = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(config_classes)
+# Game system configurations
+from .game import (
+    IntentClassifierConfig,
+    MechanicsExtractorConfig,
+    GameConfig
+)
 
-    # Export the configuration classes
-    HuggingFaceConfig = config_classes.HuggingFaceConfig
-    IntentClassifierConfig = config_classes.IntentClassifierConfig
-    MechanicsExtractorConfig = config_classes.MechanicsExtractorConfig
-    GameConfig = config_classes.GameConfig
+# Export all for convenience
+__all__ = [
+    # From settings
+    'settings',
+
+    # Environment
+    'is_huggingface_space',
+    'get_environment_name',
+
+    # Models
+    'HuggingFaceConfig',
+
+    # Game
+    'IntentClassifierConfig',
+    'MechanicsExtractorConfig',
+    'GameConfig',
+]

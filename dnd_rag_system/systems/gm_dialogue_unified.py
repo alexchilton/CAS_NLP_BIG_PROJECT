@@ -21,7 +21,8 @@ from dataclasses import dataclass, field
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
-from dnd_rag_system.config import settings, HuggingFaceConfig, is_huggingface_space
+from dnd_rag_system.core.llm_client import LLMClientFactory
+from dnd_rag_system.config import settings
 from dnd_rag_system.systems.game_state import GameSession, CombatState, PartyState
 from dnd_rag_system.systems.action_validator import (
     ActionValidator, ValidationResult, ActionType, create_context_aware_prompt
@@ -99,58 +100,12 @@ class GameMaster:
         from dnd_rag_system.systems.world_builder import initialize_world
         initialize_world(self.session)
 
-        # Auto-detect environment
-        self.use_hf_api = is_huggingface_space()
-
-        if self.use_hf_api:
-            print("🤗 Using Hugging Face Inference API mode")
-            try:
-                from huggingface_hub import InferenceClient
-            except ImportError:
-                raise ImportError("huggingface_hub is required for HF Spaces. Install with: pip install huggingface_hub")
-
-            self.hf_token = hf_token or os.getenv("HF_TOKEN")
-            # Use centralized model configuration
-            self.model_name = model_name or HuggingFaceConfig.INFERENCE_MODEL
-            # Use centralized endpoint configuration
-            self.client = InferenceClient(
-                token=self.hf_token,
-                base_url=HuggingFaceConfig.ROUTER_ENDPOINT
-            )
-            print(f"   Model: {self.model_name}")
-            print(f"   Endpoint: {HuggingFaceConfig.ROUTER_ENDPOINT}")
-            print(f"   Note: Using Inference API compatible model (local uses RPG-specific model)")
-        else:
-            print("🦙 Using local Ollama mode")
-            # Local Ollama model
-            self.model_name = model_name or settings.OLLAMA_MODEL_NAME
-            self.client = None
-            self._verify_ollama()
-            print(f"   Model: {self.model_name}")
-
-    def _verify_ollama(self):
-        """Check if Ollama is installed and model is available (local mode only)."""
-        try:
-            result = subprocess.run(
-                ['ollama', 'list'],
-                capture_output=True,
-                text=True,
-                timeout=5
-            )
-            if result.returncode != 0:
-                raise Exception("Ollama not responding")
-
-            # Check if model exists
-            if self.model_name not in result.stdout:
-                print(f"⚠️  Model '{self.model_name}' not found in Ollama")
-                print(f"   Available models:\n{result.stdout}")
-                print(f"\n   To download: ollama pull {self.model_name}")
-                raise Exception(f"Model {self.model_name} not available")
-
-        except FileNotFoundError:
-            raise Exception("Ollama not found. Please install from https://ollama.ai")
-        except subprocess.TimeoutExpired:
-            raise Exception("Ollama not responding (timeout)")
+        # Use factory to create client with automatic environment detection
+        self.client, self.model_name, self.use_hf_api = LLMClientFactory.create_client(
+            model_name=model_name,
+            hf_token=hf_token,
+            debug=DEBUG_PROMPTS
+        )
 
     def search_rag(self, query: str, n_results: int = 3) -> Dict[str, Any]:
         """
