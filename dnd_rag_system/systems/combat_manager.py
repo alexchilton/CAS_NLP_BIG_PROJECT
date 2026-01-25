@@ -117,28 +117,28 @@ class CombatManager:
 
         return initiative
 
-    def start_combat_with_party(
+    def start_combat(
         self,
-        party: PartyState,
+        participants: List[CharacterState],
         npcs: List[str],
-        party_dex_modifiers: Optional[Dict[str, int]] = None,
+        participant_dex_modifiers: Optional[Dict[str, int]] = None,
         npc_dex_modifiers: Optional[Dict[str, int]] = None
     ) -> str:
         """
-        Start combat with initiative rolls for all party members and NPCs.
+        Start combat with initiative rolls for all participants and NPCs.
         Auto-loads monster stats for NPCs from database.
 
         Args:
-            party: The party state with all characters
+            participants: List of CharacterState objects (party members or single character)
             npcs: List of NPC/enemy names
-            party_dex_modifiers: {character_name: dex_mod} for party members (optional)
+            participant_dex_modifiers: {name: dex_mod} for participants (optional)
             npc_dex_modifiers: {npc_name: dex_mod} for NPCs/enemies (optional, auto-calculated from stats)
 
         Returns:
             String describing initiative order
         """
-        if party_dex_modifiers is None:
-            party_dex_modifiers = {}
+        if participant_dex_modifiers is None:
+            participant_dex_modifiers = {}
 
         # Auto-load NPC stats if modifiers not provided
         if npc_dex_modifiers is None:
@@ -146,11 +146,11 @@ class CombatManager:
 
         initiatives = {}
 
-        # Roll initiative for all party members
-        for char_name, char_state in party.characters.items():
-            dex_mod = party_dex_modifiers.get(char_name, 0)
-            initiative = self.roll_initiative(char_name, dex_mod)
-            initiatives[char_name] = initiative
+        # Roll initiative for all participants
+        for character in participants:
+            dex_mod = participant_dex_modifiers.get(character.character_name, 0)
+            initiative = self.roll_initiative(character.character_name, dex_mod)
+            initiatives[character.character_name] = initiative
 
         # Roll initiative for all NPCs/enemies
         for npc_name in npcs:
@@ -161,8 +161,34 @@ class CombatManager:
         # Start combat with rolled initiatives
         self.combat.start_combat(initiatives)
 
-        # Generate summary
+        # DEBUG: Confirm combat started
+        if self.debug:
+            print(f"🔍 Combat started: in_combat={self.combat.in_combat}")
+            print(f"   Initiative order: {self.combat.initiative_order}")
+
         return self.get_combat_start_message()
+
+    def start_combat_with_party(
+        self,
+        party: PartyState,
+        npcs: List[str],
+        party_dex_modifiers: Optional[Dict[str, int]] = None,
+        npc_dex_modifiers: Optional[Dict[str, int]] = None
+    ) -> str:
+        """
+        Start combat with a party (convenience wrapper).
+
+        Args:
+            party: The party state with all characters
+            npcs: List of NPC/enemy names
+            party_dex_modifiers: {character_name: dex_mod} for party members (optional)
+            npc_dex_modifiers: {npc_name: dex_mod} for NPCs/enemies (optional, auto-calculated from stats)
+
+        Returns:
+            String describing initiative order
+        """
+        participants = list(party.characters.values())
+        return self.start_combat(participants, npcs, party_dex_modifiers, npc_dex_modifiers)
 
     def start_combat_with_character(
         self,
@@ -172,8 +198,7 @@ class CombatManager:
         npc_dex_modifiers: Optional[Dict[str, int]] = None
     ) -> str:
         """
-        Start combat with a single character (non-party mode).
-        Auto-loads monster stats for NPCs from database.
+        Start combat with a single character (convenience wrapper).
 
         Args:
             character: The character state
@@ -184,30 +209,9 @@ class CombatManager:
         Returns:
             String describing initiative order
         """
-        # Auto-load NPC stats if modifiers not provided
-        if npc_dex_modifiers is None:
-            npc_dex_modifiers = self._load_npc_stats(npcs)
-
-        initiatives = {}
-
-        # Roll initiative for character
-        char_initiative = self.roll_initiative(character.character_name, character_dex_mod)
-        initiatives[character.character_name] = char_initiative
-
-        # Roll initiative for NPCs
-        for npc_name in npcs:
-            dex_mod = npc_dex_modifiers.get(npc_name, 0)
-            initiative = self.roll_initiative(npc_name, dex_mod)
-            initiatives[npc_name] = initiative
-
-        # Start combat
-        self.combat.start_combat(initiatives)
-
-        # DEBUG: Confirm combat started
-        print(f"🔍 Combat started: in_combat={self.combat.in_combat}")
-        print(f"   Initiative order: {self.combat.initiative_order}")
-
-        return self.get_combat_start_message()
+        participants = [character]
+        participant_mods = {character.character_name: character_dex_mod}
+        return self.start_combat(participants, npcs, participant_mods, npc_dex_modifiers)
 
     def get_combat_start_message(self) -> str:
         """Generate a message announcing combat start and initiative order."""
