@@ -4,6 +4,8 @@ D&D Mechanics Extraction System
 Uses a small LLM to extract game mechanics from GM narrative responses.
 Automatically parses damage, healing, conditions, spell usage, etc. from natural language.
 
+Supports both local Ollama and HuggingFace Inference API.
+
 Example:
     Narrative: "The goblin's rusty axe strikes Thorin's shoulder, dealing 8 slashing damage!"
     Extracted: {"damage": [{"target": "Thorin", "amount": 8, "type": "slashing"}]}
@@ -12,6 +14,7 @@ Example:
 import json
 import subprocess
 import logging
+import os
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
 from enum import Enum
@@ -133,19 +136,47 @@ class MechanicsExtractor:
         self,
         model_name: str = DEFAULT_MECHANICS_MODEL,
         debug: bool = False,
-        timeout: int = 30
+        timeout: int = 30,
+        hf_token: str = None
     ):
         """
         Initialize mechanics extractor.
 
         Args:
-            model_name: Ollama model to use (default: DEFAULT_MECHANICS_MODEL)
+            model_name: Ollama model to use locally (default: DEFAULT_MECHANICS_MODEL)
             debug: Enable debug logging
             timeout: Query timeout in seconds
+            hf_token: HuggingFace API token (optional, will use env var)
         """
-        self.model_name = model_name
         self.debug = debug
         self.timeout = timeout
+
+        # Auto-detect environment
+        self.use_hf_api = self._is_huggingface_space()
+
+        if self.use_hf_api:
+            # HuggingFace Inference API mode
+            logger.info("🤗 MechanicsExtractor using Hugging Face Inference API mode")
+            try:
+                from huggingface_hub import InferenceClient
+            except ImportError:
+                raise ImportError("huggingface_hub is required for HF Spaces. Install with: pip install huggingface_hub")
+
+            self.hf_token = hf_token or os.getenv("HF_TOKEN")
+            # Use a smaller, faster model for mechanics extraction
+            self.model_name = "Qwen/Qwen2.5-3B-Instruct"
+            self.client = InferenceClient(
+                token=self.hf_token,
+                base_url="https://router.huggingface.co"
+            )
+            logger.info(f"   Model: {self.model_name}")
+            logger.info(f"   Endpoint: https://router.huggingface.co")
+        else:
+            # Local Ollama mode
+            logger.info("🦙 MechanicsExtractor using local Ollama mode")
+            self.model_name = model_name
+            self.client = None
+            logger.info(f"   Model: {self.model_name}")
 
         if self.debug:
             logger.setLevel(logging.DEBUG)
@@ -156,6 +187,15 @@ class MechanicsExtractor:
                 formatter = logging.Formatter('%(levelname)s - %(name)s - %(message)s')
                 console_handler.setFormatter(formatter)
                 logger.addHandler(console_handler)
+
+    def _is_huggingface_space(self) -> bool:
+        """Check if running on Hugging Face Spaces."""
+        return (
+            os.getenv("SPACE_ID") is not None or
+            os.getenv("SPACE_AUTHOR_NAME") is not None or
+            os.getenv("HF_SPACE") is not None or
+            os.getenv("USE_HF_API", "false").lower() == "true"  # Manual override
+        )
 
     def extract(
         self,
@@ -189,7 +229,11 @@ class MechanicsExtractor:
 
         # Query LLM
         try:
-            raw_response = self._query_ollama(prompt)
+            # Choose query method based on environment
+            if self.use_hf_api:
+                raw_response = self._query_hf_api(prompt)
+            else:
+                raw_response = self._query_ollama(prompt)
 
             if self.debug:
                 logger.debug("RAW LLM RESPONSE:")
@@ -332,7 +376,7 @@ JSON:"""
         return prompt
 
     def _query_ollama(self, prompt: str) -> str:
-        """Query Ollama with the extraction prompt."""
+        """Query Ollama with the extraction prompt (local mode)."""
         try:
             result = subprocess.run(
                 ['ollama', 'run', self.model_name, prompt],
@@ -352,6 +396,64 @@ JSON:"""
             raise Exception("Ollama not found. Install from https://ollama.ai")
         except Exception as e:
             raise Exception(f"Ollama query failed: {e}")
+
+    def _query_hf_api(self, prompt: str) -> str:
+        """
+        Query HuggingFace Inference API with the extraction prompt (HF mode).
+
+        Args:
+            prompt: Complete prompt for mechanics extraction
+
+        Returns:
+            Model response (JSON string)
+        """
+        if self.debug:
+            logger.debug("=" * 80)
+            logger.debug("MECHANICS EXTRACTION PROMPT SENT TO HUGGING FACE API:")
+            logger.debug("-" * 80)
+            logger.debug(prompt)
+            logger.debug("=" * 80)
+
+        try:
+            # Try chat_completion first (huggingface-hub >= 0.22)
+            # Fall back to text_generation for older versions (0.20.3)
+            if hasattr(self.client, 'chat_completion'):
+                # Newer API (v0.22+)
+                messages = [{"role": "user", "content": prompt}]
+
+                response = self.client.chat_completion(
+                    messages=messages,
+                    model=self.model_name,
+                    max_tokens=500,  # Mechanics extraction needs more tokens for complete JSON
+                    temperature=0.1,  # Very low temperature for precise JSON extraction
+                    top_p=0.9,
+                )
+
+                # Extract the response text
+                response_text = response.choices[0].message.content.strip()
+            else:
+                # Older API (v0.20.3) - use text_generation
+                logger.info("Using text_generation API (huggingface-hub < 0.22)")
+                response_text = self.client.text_generation(
+                    prompt=prompt,
+                    model=self.model_name,
+                    max_new_tokens=500,
+                    temperature=0.1,
+                    top_p=0.9,
+                    return_full_text=False,  # Only return generated text, not prompt
+                )
+
+            # Log response if debug mode is enabled
+            if self.debug:
+                logger.debug("-" * 80)
+                logger.debug("MECHANICS EXTRACTION RESPONSE FROM HUGGING FACE API:")
+                logger.debug(response_text)
+                logger.debug("=" * 80)
+
+            return response_text if response_text else "{}"
+
+        except Exception as e:
+            raise Exception(f"HF Inference API query failed: {e}")
 
     def _parse_response(self, raw_response: str) -> ExtractedMechanics:
         """
