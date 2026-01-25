@@ -126,8 +126,8 @@ class ActionValidator:
                 raise ImportError("huggingface_hub is required for HF Spaces. Install with: pip install huggingface_hub")
 
             self.hf_token = hf_token or os.getenv("HF_TOKEN")
-            # Use a smaller, faster model for intent classification
-            self.llm_model = "Qwen/Qwen2.5-3B-Instruct"
+            # Use Meta-Llama model for intent classification (same as GameMaster for consistency)
+            self.llm_model = "meta-llama/Meta-Llama-3.1-8B-Instruct"
             # Use new router endpoint (api-inference.huggingface.co is deprecated)
             self.client = InferenceClient(
                 token=self.hf_token,
