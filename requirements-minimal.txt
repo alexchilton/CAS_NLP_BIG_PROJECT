@@ -4,14 +4,14 @@ huggingface-hub  # Use latest version for modern Inference API support
 
 # Vector database and embeddings
 chromadb>=1.0.0  # Upgraded for NumPy 2.0 compatibility (0.4.x has deprecated NumPy types)
-sentence-transformers==2.3.1
+sentence-transformers>=5.0.0  # Upgraded for compatibility with modern packages
 
 # PDF processing
 pdfplumber==0.10.3
 PyPDF2==3.0.1
 
-# Ollama client (for local dev)
-ollama==0.1.6
+# Ollama client (for local dev - not used on HuggingFace)
+ollama>=0.1.6
 
 # Console output
 rich==13.7.0
