@@ -22,7 +22,7 @@ sys.path.insert(0, str(project_root))
 
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.systems.character_creator import CharacterCreator, Character
-from dnd_rag_system.systems.gm_dialogue import GameMaster, InteractiveGM
+from dnd_rag_system.systems.gm_dialogue_cli import GameMaster, InteractiveGM
 
 
 class CharacterAwareGM(InteractiveGM):
