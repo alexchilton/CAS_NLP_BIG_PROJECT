@@ -1,7 +1,6 @@
 # Incremental testing - Step 3: Add all production dependencies
-# Use HuggingFace Hub with router.huggingface.co support (base_url parameter added in 0.22+)
 gradio==4.16.0
-huggingface-hub>=0.22.0
+huggingface-hub  # Use latest version for modern Inference API support
 
 # Vector database and embeddings
 chromadb==0.4.22
