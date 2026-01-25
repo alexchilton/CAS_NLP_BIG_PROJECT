@@ -22,20 +22,15 @@ def format_chat_message(message: str) -> list:
     """
     Format initial chat message for Gradio Chatbot component.
 
-    Gradio 4.x uses tuple format: [(user_msg, bot_msg)]
     Gradio 6.x uses dict format: [{"role": "...", "content": "..."}]
 
-    This function detects the version and returns the appropriate format.
-    """
-    gradio_version = gr.__version__
-    major_version = int(gradio_version.split('.')[0])
+    Args:
+        message: Message to display
 
-    if major_version >= 5:
-        # Gradio 5.x and 6.x use message dict format
-        return [{"role": "assistant", "content": message}]
-    else:
-        # Gradio 4.x and earlier use tuple format
-        return [(None, message)]
+    Returns:
+        Formatted chat history list
+    """
+    return [{"role": "assistant", "content": message}]
 
 
 def load_character_from_json(filepath: Path) -> Optional[Character]:
