@@ -9,7 +9,7 @@ Implements hybrid entity tracking:
 
 Supports two intent classification modes:
 - Keyword-based: Fast, reliable, limited to predefined patterns
-- LLM-based (default): Handles creative phrasings, uses Qwen2.5-3B with automatic fallback
+- LLM-based (default): Handles creative phrasings, uses Qwen2.5-3B locally or HF Inference API on HuggingFace Spaces
 """
 
 from dataclasses import dataclass
@@ -19,6 +19,7 @@ from enum import Enum
 import logging
 import json
 import subprocess
+import os
 from dnd_rag_system.constants import ActionKeywords, SpellKeywords
 
 logger = logging.getLogger(__name__)
@@ -95,7 +96,8 @@ class ActionValidator:
         self,
         debug: bool = False,
         classifier_type: str = None,  # "keyword" or "llm" (defaults to config)
-        compare_classifiers: bool = False   # Run both and log differences
+        compare_classifiers: bool = False,   # Run both and log differences
+        hf_token: str = None  # HuggingFace API token (optional, will use env var)
     ):
         """
         Initialize action validator.
@@ -105,15 +107,45 @@ class ActionValidator:
             classifier_type: Intent classifier to use ("keyword" or "llm").
                            If None, uses DEFAULT_CLASSIFIER from config (currently "llm")
             compare_classifiers: If True, runs both classifiers and logs differences
+            hf_token: Hugging Face API token (optional, will use env var)
         """
         self.debug = debug
         self.party_character_names = []  # List of party member names for parsing
         self.classifier_type = classifier_type if classifier_type is not None else DEFAULT_CLASSIFIER
         self.compare_classifiers = compare_classifiers
 
-        # LLM settings (reuse from mechanics_extractor)
-        self.llm_model = "qwen2.5:3b"
+        # Auto-detect environment (same logic as GameMaster)
+        self.use_hf_api = self._is_huggingface_space()
+
+        if self.use_hf_api:
+            # HuggingFace Inference API mode
+            logger.info("🤗 ActionValidator using Hugging Face Inference API mode")
+            try:
+                from huggingface_hub import InferenceClient
+            except ImportError:
+                raise ImportError("huggingface_hub is required for HF Spaces. Install with: pip install huggingface_hub")
+
+            self.hf_token = hf_token or os.getenv("HF_TOKEN")
+            # Use a smaller, faster model for intent classification
+            self.llm_model = "Qwen/Qwen2.5-3B-Instruct"
+            self.client = InferenceClient(token=self.hf_token)
+            logger.info(f"   Model: {self.llm_model}")
+        else:
+            # Local Ollama mode
+            logger.info("🦙 ActionValidator using local Ollama mode")
+            self.llm_model = "qwen2.5:3b"
+            self.client = None
+
         self.llm_timeout = 10
+
+    def _is_huggingface_space(self) -> bool:
+        """Check if running on Hugging Face Spaces."""
+        return (
+            os.getenv("SPACE_ID") is not None or
+            os.getenv("SPACE_AUTHOR_NAME") is not None or
+            os.getenv("HF_SPACE") is not None or
+            os.getenv("USE_HF_API", "false").lower() == "true"  # Manual override
+        )
 
     def set_party_characters(self, character_names: List[str]):
         """
@@ -923,7 +955,7 @@ class ActionValidator:
 
     def _analyze_intent_llm(self, user_input: str) -> ActionIntent:
         """
-        LLM-based intent classification using Qwen2.5-3B.
+        LLM-based intent classification using Qwen2.5-3B (local) or HF Inference API (HuggingFace Spaces).
 
         Uses natural language understanding to classify intent
         and extract entities. More flexible than keyword matching.
@@ -937,7 +969,11 @@ class ActionValidator:
         prompt = self._build_intent_prompt(user_input)
 
         try:
-            raw_response = self._query_ollama_intent(prompt)
+            # Choose query method based on environment
+            if self.use_hf_api:
+                raw_response = self._query_hf_api_intent(prompt)
+            else:
+                raw_response = self._query_ollama_intent(prompt)
 
             if self.debug:
                 logger.debug(f"🤖 LLM Intent Response: {raw_response[:200]}...")
@@ -1065,7 +1101,7 @@ JSON:"""
         return prompt
 
     def _query_ollama_intent(self, prompt: str) -> str:
-        """Query Ollama with the intent classification prompt."""
+        """Query Ollama with the intent classification prompt (local mode)."""
         try:
             result = subprocess.run(
                 ['ollama', 'run', self.llm_model, prompt],
@@ -1085,6 +1121,50 @@ JSON:"""
             raise Exception("Ollama not found. Install from https://ollama.ai")
         except Exception as e:
             raise Exception(f"Ollama query failed: {e}")
+
+    def _query_hf_api_intent(self, prompt: str) -> str:
+        """
+        Query HuggingFace Inference API with the intent classification prompt (HF mode).
+
+        Args:
+            prompt: Complete prompt for intent classification
+
+        Returns:
+            Model response (JSON string)
+        """
+        if self.debug:
+            logger.debug("=" * 80)
+            logger.debug("INTENT PROMPT SENT TO HUGGING FACE API:")
+            logger.debug("-" * 80)
+            logger.debug(prompt)
+            logger.debug("=" * 80)
+
+        try:
+            # Use chat completion API for conversational models
+            messages = [{"role": "user", "content": prompt}]
+
+            response = self.client.chat_completion(
+                messages=messages,
+                model=self.llm_model,
+                max_tokens=150,  # Intent classification needs less tokens than full GM responses
+                temperature=0.3,  # Lower temperature for more deterministic classification
+                top_p=0.9,
+            )
+
+            # Extract the response text
+            response_text = response.choices[0].message.content.strip()
+
+            # Log response if debug mode is enabled
+            if self.debug:
+                logger.debug("-" * 80)
+                logger.debug("INTENT RESPONSE FROM HUGGING FACE API:")
+                logger.debug(response_text)
+                logger.debug("=" * 80)
+
+            return response_text if response_text else "{}"
+
+        except Exception as e:
+            raise Exception(f"HF Inference API query failed: {e}")
 
     def _parse_intent_response(self, raw_response: str) -> Dict[str, Any]:
         """Parse LLM response into intent dictionary."""
