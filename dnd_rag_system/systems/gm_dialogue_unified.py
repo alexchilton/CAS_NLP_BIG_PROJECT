@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
-from dnd_rag_system.config import settings
+from dnd_rag_system.config import settings, HuggingFaceConfig
 from dnd_rag_system.systems.game_state import GameSession, CombatState, PartyState
 from dnd_rag_system.systems.action_validator import (
     ActionValidator, ValidationResult, ActionType, create_context_aware_prompt
@@ -116,16 +116,15 @@ class GameMaster:
                 raise ImportError("huggingface_hub is required for HF Spaces. Install with: pip install huggingface_hub")
 
             self.hf_token = hf_token or os.getenv("HF_TOKEN")
-            # Use a model that's available via Inference API
-            # Llama-3.1-8B-Instruct is well-supported and excellent for roleplay
-            self.model_name = model_name or "meta-llama/Llama-3.1-8B-Instruct"
-            # Use new router endpoint (api-inference.huggingface.co is deprecated)
+            # Use centralized model configuration
+            self.model_name = model_name or HuggingFaceConfig.INFERENCE_MODEL
+            # Use centralized endpoint configuration
             self.client = InferenceClient(
                 token=self.hf_token,
-                base_url="https://router.huggingface.co"
+                base_url=HuggingFaceConfig.ROUTER_ENDPOINT
             )
             print(f"   Model: {self.model_name}")
-            print(f"   Endpoint: https://router.huggingface.co")
+            print(f"   Endpoint: {HuggingFaceConfig.ROUTER_ENDPOINT}")
             print(f"   Note: Using Inference API compatible model (local uses RPG-specific model)")
         else:
             print("🦙 Using local Ollama mode")
