@@ -127,7 +127,7 @@ class ActionValidator:
 
             self.hf_token = hf_token or os.getenv("HF_TOKEN")
             # Use Meta-Llama model for intent classification (same as GameMaster for consistency)
-            self.llm_model = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+            self.llm_model = "meta-llama/Llama-3.1-8B-Instruct"
             # Use new router endpoint (api-inference.huggingface.co is deprecated)
             self.client = InferenceClient(
                 token=self.hf_token,
