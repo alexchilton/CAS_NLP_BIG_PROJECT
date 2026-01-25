@@ -60,6 +60,9 @@ from web.handlers.party_handlers import (
 from web.formatters.character_formatter import format_character_sheet
 from web.formatters.party_formatter import format_party_sheet, get_all_character_sheets
 
+# Session state import
+from web.session_state import SessionState, create_session_state
+
 # ============================================================================
 # INITIALIZATION
 # ============================================================================
@@ -91,23 +94,20 @@ DEBUG_SCENARIOS = settings.DEBUG_SCENARIOS
 # HELPER FUNCTIONS & WRAPPERS
 # ============================================================================
 
-def get_current_sheet() -> tuple:
+def get_current_sheet(session: 'SessionState') -> tuple:
     """Get character sheet based on current mode."""
-    global current_character, party_characters, party, gameplay_mode
-
-    if gameplay_mode == "party":
-        return (format_party_sheet(party_characters, party), "", "")
+    if session.gameplay_mode == "party":
+        return (format_party_sheet(session.party_characters, session.party), "", "")
     else:
-        if current_character and gm.session.character_state:
-            return format_character_sheet(current_character, gm.session.character_state, db)
+        if session.current_character and session.gm.session.character_state:
+            return format_character_sheet(session.current_character, session.gm.session.character_state, db)
         else:
             return ("No character loaded", "", "")
 
 
-def get_initiative_tracker_wrapper() -> Tuple[str, gr.update]:
-    """Wrapper for get_initiative_tracker handler."""
-    global gameplay_mode, party_characters, party
-    return get_initiative_tracker(gm, gameplay_mode, party_characters, party)
+def get_initiative_tracker_wrapper(session: 'SessionState') -> Tuple[str, gr.update]:
+    """Wrapper for get_initiative_tracker handler with session state."""
+    return get_initiative_tracker(session.gm, session.gameplay_mode, session.party_characters, session.party)
 
 
 def get_available_characters_wrapper() -> list:
@@ -115,54 +115,48 @@ def get_available_characters_wrapper() -> list:
     return get_available_characters(CHARACTERS_DIR)
 
 
-def get_party_summary_wrapper() -> str:
-    """Wrapper for get_party_summary handler."""
-    global party_characters, party
-    return get_party_summary(party_characters, party)
+def get_party_summary_wrapper(session: 'SessionState') -> str:
+    """Wrapper for get_party_summary handler with session state."""
+    return get_party_summary(session.party_characters, session.party)
 
 
-def get_all_character_sheets_wrapper() -> str:
-    """Wrapper for get_all_character_sheets handler."""
-    global party_characters, party
-    return get_all_character_sheets(party_characters, party)
+def get_all_character_sheets_wrapper(session: 'SessionState') -> str:
+    """Wrapper for get_all_character_sheets handler with session state."""
+    return get_all_character_sheets(session.party_characters, session.party)
 
 
 # ============================================================================
 # EVENT HANDLER WRAPPERS (for global state management)
 # ============================================================================
 
-def load_character_wrapper(character_choice: str) -> Tuple[str, str, str, str, list, Optional[str]]:
-    """Wrapper for load_character handler with global state."""
-    global current_character, conversation_history, gameplay_mode
-
-    conversation_history = []
-    gameplay_mode = "character"
+def load_character_wrapper(character_choice: str, session: 'SessionState') -> Tuple[str, str, str, str, list, Optional[str], 'SessionState']:
+    """Wrapper for load_character handler with session state."""
+    session.conversation_history = []
+    session.gameplay_mode = "character"
 
     result = load_character(
         character_choice,
         CHARACTERS_DIR,
         STARTING_LOCATIONS,
         COMBAT_LOCATIONS,
-        gm,
+        session.gm,
         db,
         format_character_sheet
     )
 
-    # Update global current_character
-    if gm.session.character_state:
-        char_name = gm.session.character_state.character_name
-        if char_name in gm.session.base_character_stats:
-            current_character = gm.session.base_character_stats[char_name]
+    # Update session current_character
+    if session.gm.session.character_state:
+        char_name = session.gm.session.character_state.character_name
+        if char_name in session.gm.session.base_character_stats:
+            session.current_character = session.gm.session.base_character_stats[char_name]
 
-    return result
+    return (*result, session)
 
 
-def load_character_with_debug_wrapper(character_choice: str, scenario_choice: Optional[str]) -> Tuple[str, str, str, str, list, Optional[str]]:
-    """Wrapper for load_character_with_debug handler with global state."""
-    global current_character, conversation_history, gameplay_mode
-
-    conversation_history = []
-    gameplay_mode = "character"
+def load_character_with_debug_wrapper(character_choice: str, scenario_choice: Optional[str], session: 'SessionState') -> Tuple[str, str, str, str, list, Optional[str], 'SessionState']:
+    """Wrapper for load_character_with_debug handler with session state."""
+    session.conversation_history = []
+    session.gameplay_mode = "character"
 
     result = load_character_with_debug(
         character_choice,
@@ -171,19 +165,19 @@ def load_character_with_debug_wrapper(character_choice: str, scenario_choice: Op
         STARTING_LOCATIONS,
         COMBAT_LOCATIONS,
         DEBUG_SCENARIOS,
-        gm,
+        session.gm,
         db,
         format_character_sheet,
-        load_character_wrapper
+        lambda char_choice: load_character_wrapper(char_choice, session)
     )
 
-    # Update global current_character
-    if gm.session.character_state:
-        char_name = gm.session.character_state.character_name
-        if char_name in gm.session.base_character_stats:
-            current_character = gm.session.base_character_stats[char_name]
+    # Update session current_character
+    if session.gm.session.character_state:
+        char_name = session.gm.session.character_state.character_name
+        if char_name in session.gm.session.base_character_stats:
+            session.current_character = session.gm.session.base_character_stats[char_name]
 
-    return result
+    return (*result, session)
 
 
 def load_character_with_location(character_choice: str, location_name: Optional[str] = None) -> Tuple[str, str, str]:
@@ -230,92 +224,98 @@ def handle_rag_lookup_wrapper(query: str) -> str:
     return handle_rag_lookup(query, gm, db)
 
 
-def chat_wrapper(message: str, history: list) -> Tuple[list, str, gr.update, str, str, str]:
-    """Wrapper for chat handler with global state."""
-    global gameplay_mode, current_character, party_characters, conversation_history
-
-    return chat(
+def chat_wrapper(message: str, history: list, session: 'SessionState') -> Tuple[list, str, gr.update, str, str, str, 'SessionState']:
+    """Wrapper for chat handler with session state."""
+    result = chat(
         message,
         history,
-        gameplay_mode,
-        current_character,
-        party_characters,
-        conversation_history,
-        gm,
-        get_initiative_tracker_wrapper,
-        get_current_sheet
+        session.gameplay_mode,
+        session.current_character,
+        session.party_characters,
+        session.conversation_history,
+        session.gm,
+        lambda: get_initiative_tracker_wrapper(session),
+        lambda: get_current_sheet(session)
     )
 
-
-def clear_history_wrapper() -> list:
-    """Wrapper for clear_history handler."""
-    global conversation_history
-    return clear_history(conversation_history)
+    return (*result, session)
 
 
-def handle_next_turn_wrapper(history: list) -> Tuple[list, str, gr.update, str, str, str]:
-    """Wrapper for handle_next_turn handler."""
-    return handle_next_turn(history, gm, get_initiative_tracker_wrapper, get_current_sheet)
+def clear_history_wrapper(session: 'SessionState') -> Tuple[list, 'SessionState']:
+    """Wrapper for clear_history handler with session state."""
+    result = clear_history(session.conversation_history)
+    return (result, session)
 
 
-def handle_end_combat_wrapper(history: list) -> Tuple[list, str, gr.update, str, str, str]:
-    """Wrapper for handle_end_combat handler."""
-    return handle_end_combat(history, gm, get_initiative_tracker_wrapper, get_current_sheet)
+def handle_next_turn_wrapper(history: list, session: 'SessionState') -> Tuple[list, str, gr.update, str, str, str, 'SessionState']:
+    """Wrapper for handle_next_turn handler with session state."""
+    result = handle_next_turn(
+        history,
+        session.gm,
+        lambda: get_initiative_tracker_wrapper(session),
+        lambda: get_current_sheet(session)
+    )
+    return (*result, session)
 
 
-def load_party_mode_wrapper() -> Tuple[str, str, str, gr.update, list]:
-    """Wrapper for load_party_mode handler with global state."""
-    global party_characters, party, gameplay_mode, conversation_history
+def handle_end_combat_wrapper(history: list, session: 'SessionState') -> Tuple[list, str, gr.update, str, str, str, 'SessionState']:
+    """Wrapper for handle_end_combat handler with session state."""
+    result = handle_end_combat(
+        history,
+        session.gm,
+        lambda: get_initiative_tracker_wrapper(session),
+        lambda: get_current_sheet(session)
+    )
+    return (*result, session)
 
+
+def load_party_mode_wrapper(session: 'SessionState') -> Tuple[str, str, str, gr.update, list, 'SessionState']:
+    """Wrapper for load_party_mode handler with session state."""
     def set_gameplay_mode(mode: str):
-        global gameplay_mode
-        gameplay_mode = mode
+        session.gameplay_mode = mode
 
     def set_conversation_history(history: list):
-        global conversation_history
-        conversation_history = history
+        session.conversation_history = history
 
-    return load_party_mode(
-        party_characters,
-        party,
-        gm,
+    result = load_party_mode(
+        session.party_characters,
+        session.party,
+        session.gm,
         set_gameplay_mode,
         set_conversation_history
     )
 
+    return (*result, session)
 
-def add_to_party_wrapper(character_choices: list) -> Tuple[str, dict, dict]:
-    """Wrapper for add_to_party handler with global state."""
-    global party_characters, party
 
+def add_to_party_wrapper(character_choices: list, session: 'SessionState') -> Tuple[str, 'SessionState']:
+    """Wrapper for add_to_party handler with session state."""
     result, updated_party_chars, updated_party = add_to_party(
         character_choices,
-        party_characters,
-        party
+        session.party_characters,
+        session.party
     )
 
-    # Update global state
-    party_characters = updated_party_chars
-    party = updated_party
+    # Update session state
+    session.party_characters = updated_party_chars
+    session.party = updated_party
 
-    return result
+    return (result, session)
 
 
-def remove_from_party_wrapper(character_name: str) -> Tuple[str, dict, dict]:
-    """Wrapper for remove_from_party handler with global state."""
-    global party_characters, party
-
+def remove_from_party_wrapper(character_name: str, session: 'SessionState') -> Tuple[str, 'SessionState']:
+    """Wrapper for remove_from_party handler with session state."""
     result, updated_party_chars, updated_party = remove_from_party(
         character_name,
-        party_characters,
-        party
+        session.party_characters,
+        session.party
     )
 
-    # Update global state
-    party_characters = updated_party_chars
-    party = updated_party
+    # Update session state
+    session.party_characters = updated_party_chars
+    session.party = updated_party
 
-    return result
+    return (result, session)
 
 
 def create_character_wrapper(
@@ -354,6 +354,11 @@ try:
         - **Party Mode**: Adventure with multiple characters
         - **RAG-Enhanced**: Real D&D 5e SRD rules and content
         """)
+
+        # ========================================================================
+        # SESSION STATE (per-user isolation)
+        # ========================================================================
+        session_state = gr.State(create_session_state())
 
         # ========================================================================
         # CREATE TABS
@@ -673,6 +678,11 @@ except TypeError:
         - **Party Mode**: Adventure with multiple characters
         - **RAG-Enhanced**: Real D&D 5e SRD rules and content
         """)
+
+        # ========================================================================
+        # SESSION STATE (per-user isolation)
+        # ========================================================================
+        session_state = gr.State(create_session_state())
 
         # ========================================================================
         # CREATE TABS
