@@ -2429,19 +2429,33 @@ GM RESPONSE:"""
             logger.debug("=" * 80)
 
         try:
-            # Use chat completion API for conversational models
-            messages = [{"role": "user", "content": prompt}]
+            # Try chat_completion first (huggingface-hub >= 0.22)
+            # Fall back to text_generation for older versions (0.20.3)
+            if hasattr(self.client, 'chat_completion'):
+                # Newer API (v0.22+)
+                messages = [{"role": "user", "content": prompt}]
 
-            response = self.client.chat_completion(
-                messages=messages,
-                model=self.model_name,
-                max_tokens=300,
-                temperature=0.7,
-                top_p=0.9,
-            )
+                response = self.client.chat_completion(
+                    messages=messages,
+                    model=self.model_name,
+                    max_tokens=300,
+                    temperature=0.7,
+                    top_p=0.9,
+                )
 
-            # Extract the response text
-            response_text = response.choices[0].message.content.strip()
+                # Extract the response text
+                response_text = response.choices[0].message.content.strip()
+            else:
+                # Older API (v0.20.3) - use text_generation
+                logger.info("Using text_generation API (huggingface-hub < 0.22)")
+                response_text = self.client.text_generation(
+                    prompt=prompt,
+                    model=self.model_name,
+                    max_new_tokens=300,
+                    temperature=0.7,
+                    top_p=0.9,
+                    return_full_text=False,  # Only return generated text, not prompt
+                )
 
             # Remove prompt echo if present
             if "GM RESPONSE:" in response_text:
