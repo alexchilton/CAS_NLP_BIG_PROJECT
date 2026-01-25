@@ -26,11 +26,14 @@ logger = logging.getLogger(__name__)
 
 # Import config for default classifier type and HuggingFace settings
 try:
-    from dnd_rag_system.config import IntentClassifierConfig, HuggingFaceConfig
+    from dnd_rag_system.config import IntentClassifierConfig, HuggingFaceConfig, is_huggingface_space
     DEFAULT_CLASSIFIER = IntentClassifierConfig.DEFAULT_CLASSIFIER
 except ImportError:
     # Fallback if config not available
     DEFAULT_CLASSIFIER = "llm"
+    # Define fallback for environment detection
+    def is_huggingface_space():
+        return os.getenv("USE_HF_API", "false").lower() == "true"
 
 
 class ActionType(Enum):
@@ -145,12 +148,8 @@ class ActionValidator:
 
     def _is_huggingface_space(self) -> bool:
         """Check if running on Hugging Face Spaces."""
-        return (
-            os.getenv("SPACE_ID") is not None or
-            os.getenv("SPACE_AUTHOR_NAME") is not None or
-            os.getenv("HF_SPACE") is not None or
-            os.getenv("USE_HF_API", "false").lower() == "true"  # Manual override
-        )
+        # Use centralized environment detection from config
+        return is_huggingface_space()
 
     def set_party_characters(self, character_names: List[str]):
         """

@@ -21,12 +21,15 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-# Import config for HuggingFace settings
+# Import config for HuggingFace settings and environment detection
 try:
-    from dnd_rag_system.config import HuggingFaceConfig
+    from dnd_rag_system.config import HuggingFaceConfig, is_huggingface_space
 except ImportError:
     # Fallback if config not available
     HuggingFaceConfig = None
+    import os
+    def is_huggingface_space():
+        return os.getenv("USE_HF_API", "false").lower() == "true"
 
 # Default model for mechanics extraction
 # Change this in one place to switch models across the entire system
@@ -198,12 +201,8 @@ class MechanicsExtractor:
 
     def _is_huggingface_space(self) -> bool:
         """Check if running on Hugging Face Spaces."""
-        return (
-            os.getenv("SPACE_ID") is not None or
-            os.getenv("SPACE_AUTHOR_NAME") is not None or
-            os.getenv("HF_SPACE") is not None or
-            os.getenv("USE_HF_API", "false").lower() == "true"  # Manual override
-        )
+        # Use centralized environment detection from config
+        return is_huggingface_space()
 
     def extract(
         self,
