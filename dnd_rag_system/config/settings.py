@@ -237,6 +237,47 @@ MIN_CHUNKS = {
 }
 
 # ============================================================================
+# WEB UI CONFIGURATION
+# ============================================================================
+
+# Starting locations for new games - mix of peaceful and combat-ready locations
+STARTING_LOCATIONS = [
+    # Peaceful locations (for shopping/rest)
+    ("The Prancing Pony Inn", "A cozy tavern bustling with travelers and merchants. The smell of roasted meat and ale fills the air. A shopkeeper behind the bar sells basic supplies."),
+    ("The Market Square", "A busy marketplace with stalls selling adventuring gear, potions, and supplies. Merchants call out their wares. Perfect for shopping before an adventure!"),
+    ("The Town Gates", "The entrance to town, where the road stretches out toward adventure. Guards keep watch. A general store sits just inside the gates."),
+    # Combat-ready locations (for immediate action)
+    ("Goblin Cave Entrance", "You stand at the mouth of a dark cave. The stench of unwashed goblins wafts out from the darkness. Crude wooden stakes mark goblin territory. You hear chittering and the clang of crude weapons echoing from within."),
+    ("Ancient Ruins", "Crumbling stone pillars rise from overgrown weeds. This was once a great temple, now fallen to ruin. Skeletons and undead are known to haunt these grounds, guarding forgotten treasures."),
+    ("Dark Forest Clearing", "You emerge into a small clearing surrounded by ancient, gnarled trees. The forest floor is littered with bones. Fresh wolf tracks circle the area. This is dangerous territory."),
+]
+
+# Combat-appropriate locations where monsters would naturally appear
+COMBAT_LOCATIONS = [
+    ("Goblin Cave Entrance", "You stand at the mouth of a dark cave. The stench of unwashed goblins wafts out from the darkness. Crude wooden stakes mark goblin territory. You hear chittering and the clang of crude weapons echoing from within."),
+    ("Ancient Ruins", "Crumbling stone pillars rise from overgrown weeds. This was once a great temple, now fallen to ruin. Skeletons and undead are known to haunt these grounds, guarding forgotten treasures."),
+    ("Dark Forest Clearing", "You emerge into a small clearing surrounded by ancient, gnarled trees. The forest floor is littered with bones. Fresh wolf tracks circle the area. This is dangerous territory."),
+    ("Abandoned Mine Shaft", "The entrance to an old mining tunnel, long since abandoned. Support beams creak ominously. Miners' tools lie scattered about. Something moves in the shadows - perhaps giant rats, or worse."),
+    ("Rocky Mountain Pass", "A narrow path winds between towering cliffs. Loose rocks make footing treacherous. Ogres and trolls are known to ambush travelers here, and you can see crude cave entrances dotting the cliff faces."),
+    ("Sunken Graveyard", "An old cemetery, half-swallowed by swamp. Weathered tombstones lean at odd angles. The ground shifts underfoot. On nights like this, the dead sometimes rise from their graves."),
+    ("Dragon's Lair Approach", "You stand before a massive cavern carved into the mountainside. Scorch marks blacken the rocks. A pile of charred bones lies near the entrance. The air shimmers with heat, and you hear the deep, rhythmic breathing of something massive within."),
+]
+
+# Debug test scenarios for manual testing combat/features
+# Format: (scenario_name, location_name, npcs_to_spawn, items_to_add)
+DEBUG_SCENARIOS = [
+    ("Random Start", None, [], []),  # Default - random location
+    ("Goblin Fight", "Goblin Cave Entrance", ["Goblin"], []),
+    ("Goblin with Treasure", "Goblin Cave Entrance", ["Goblin"], ["Hidden Chest"]),
+    ("Goblin Wolf Rider", "Forest Ambush Site", ["Goblin", "Wolf"], ["Rope", "Torch"]),  # Multi-enemy test
+    ("Wolf Pack", "Dark Forest Clearing", ["Wolf", "Wolf"], []),
+    ("Skeleton Guardian", "Ancient Ruins", ["Skeleton"], ["Ancient Sword"]),
+    ("Dragon Encounter", "Dragon's Lair Approach", ["Young Red Dragon"], ["Dragon Hoard"]),
+    ("Safe Inn", "The Prancing Pony Inn", ["Innkeeper Butterbur"], ["Healing Potion"]),
+    ("Shopping District", "The Market Square", ["Merchant", "Blacksmith"], []),
+]
+
+# ============================================================================
 # HELPER FUNCTIONS
 # ============================================================================
 
