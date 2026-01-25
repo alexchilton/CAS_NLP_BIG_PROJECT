@@ -105,7 +105,7 @@ class CommandDispatcher:
                     logger.error(f"❌ Command {command.__class__.__name__} failed: {e}")
                     import traceback
                     traceback.print_exc()
-                    return CommandResult.error(f"Command failed: {e}")
+                    return CommandResult.failure(f"Command failed: {e}")
 
         # No handler matched
         if self.debug:

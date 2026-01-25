@@ -21,13 +21,13 @@ class CastSpellCommand(GameCommand):
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Cast a spell."""
         if not context.session.character_state:
-            return CommandResult.error("No character loaded!")
+            return CommandResult.failure("No character loaded!")
 
         # Extract spell name and target from command
         # Examples: "/cast Fireball at goblin", "/cast Cure Wounds", "/cast Magic Missile"
         command_text = user_input.split(' ', 1)[1].strip() if ' ' in user_input else ""
         if not command_text:
-            return CommandResult.error("Specify a spell to cast! Example: /cast Fireball")
+            return CommandResult.failure("Specify a spell to cast! Example: /cast Fireball")
 
         # Parse spell name and target
         spell_name = command_text
@@ -59,4 +59,4 @@ class CastSpellCommand(GameCommand):
 
             return CommandResult.success(feedback)
         else:
-            return CommandResult.error(result.get('message', 'Failed to cast spell'))
+            return CommandResult.failure(result.get('message', 'Failed to cast spell'))
