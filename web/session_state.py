@@ -41,18 +41,12 @@ class SessionState:
         """Initialize session-specific resources."""
         # Import here to avoid circular dependencies
         from dnd_rag_system.systems.game_state import PartyState
-        from dnd_rag_system.systems.gm_dialogue_unified import GameMaster
-        from dnd_rag_system.core.chroma_manager import ChromaDBManager
 
         # Initialize party if not provided
         if self.party is None:
             self.party = PartyState(party_name="Adventuring Party")
 
-        # Initialize GameMaster for this session
-        # Note: ChromaDB is shared (read-only), but GameSession is per-user
-        if self.gm is None:
-            db = ChromaDBManager()  # Shared DB (thread-safe for reads)
-            self.gm = GameMaster(db)
+        # GameMaster will be initialized lazily in get_gm() to avoid pickling issues
 
     def reset(self):
         """Reset session state (for testing or manual reset)."""
@@ -94,6 +88,22 @@ class SessionState:
             f"history_len={len(self.conversation_history)})"
         )
 
+    def __getstate__(self):
+        """Custom pickling to exclude unpicklable objects."""
+        state = self.__dict__.copy()
+        # Don't pickle GM (will be recreated on unpickle)
+        state['gm'] = None
+        return state
+
+    def __setstate__(self, state):
+        """Custom unpickling to recreate GM."""
+        self.__dict__.update(state)
+        # Recreate GM on unpickle
+        from dnd_rag_system.systems.gm_dialogue_unified import GameMaster
+        from dnd_rag_system.core.chroma_manager import ChromaDBManager
+        db = ChromaDBManager()
+        self.gm = GameMaster(db)
+
 
 def create_session_state() -> SessionState:
     """
@@ -101,7 +111,15 @@ def create_session_state() -> SessionState:
 
     Use this in Gradio: session = gr.State(create_session_state())
     """
-    return SessionState()
+    from dnd_rag_system.systems.gm_dialogue_unified import GameMaster
+    from dnd_rag_system.core.chroma_manager import ChromaDBManager
+
+    state = SessionState()
+    # Initialize GameMaster for this session
+    # Note: ChromaDB is shared (read-only), but GameSession is per-user
+    db = ChromaDBManager()
+    state.gm = GameMaster(db)
+    return state
 
 
 # Backward compatibility helper (for gradual migration)

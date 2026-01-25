@@ -68,19 +68,11 @@ from web.session_state import SessionState, create_session_state
 # ============================================================================
 
 print("🎲 Initializing D&D RAG System...")
-db = ChromaDBManager()
-gm = GameMaster(db)
+db = ChromaDBManager()  # Shared ChromaDB (thread-safe for reads)
 
 # Paths
 CHARACTERS_DIR = Path(__file__).parent.parent / "characters"
 CHARACTERS_DIR.mkdir(exist_ok=True)
-
-# Global state
-current_character = None
-conversation_history = []
-party = PartyState(party_name="Adventuring Party")
-party_characters = {}  # {char_name: Character} for display
-gameplay_mode = "character"  # "character" or "party"
 
 # ============================================================================
 # CONSTANTS (imported from centralized config)
@@ -94,8 +86,16 @@ DEBUG_SCENARIOS = settings.DEBUG_SCENARIOS
 # HELPER FUNCTIONS & WRAPPERS
 # ============================================================================
 
-def get_current_sheet(session: 'SessionState') -> tuple:
+def ensure_session(session: Optional['SessionState']) -> 'SessionState':
+    """Ensure session is initialized (lazy initialization to avoid Gradio pickling issues)."""
+    if session is None:
+        return create_session_state()
+    return session
+
+
+def get_current_sheet(session: Optional['SessionState']) -> tuple:
     """Get character sheet based on current mode."""
+    session = ensure_session(session)
     if session.gameplay_mode == "party":
         return (format_party_sheet(session.party_characters, session.party), "", "")
     else:
@@ -105,8 +105,9 @@ def get_current_sheet(session: 'SessionState') -> tuple:
             return ("No character loaded", "", "")
 
 
-def get_initiative_tracker_wrapper(session: 'SessionState') -> Tuple[str, gr.update]:
+def get_initiative_tracker_wrapper(session: Optional['SessionState']) -> Tuple[str, gr.update]:
     """Wrapper for get_initiative_tracker handler with session state."""
+    session = ensure_session(session)
     return get_initiative_tracker(session.gm, session.gameplay_mode, session.party_characters, session.party)
 
 
@@ -115,13 +116,15 @@ def get_available_characters_wrapper() -> list:
     return get_available_characters(CHARACTERS_DIR)
 
 
-def get_party_summary_wrapper(session: 'SessionState') -> str:
+def get_party_summary_wrapper(session: Optional['SessionState']) -> str:
     """Wrapper for get_party_summary handler with session state."""
+    session = ensure_session(session)
     return get_party_summary(session.party_characters, session.party)
 
 
-def get_all_character_sheets_wrapper(session: 'SessionState') -> str:
+def get_all_character_sheets_wrapper(session: Optional['SessionState']) -> str:
     """Wrapper for get_all_character_sheets handler with session state."""
+    session = ensure_session(session)
     return get_all_character_sheets(session.party_characters, session.party)
 
 
@@ -129,8 +132,9 @@ def get_all_character_sheets_wrapper(session: 'SessionState') -> str:
 # EVENT HANDLER WRAPPERS (for global state management)
 # ============================================================================
 
-def load_character_wrapper(character_choice: str, session: 'SessionState') -> Tuple[str, str, str, str, list, Optional[str], 'SessionState']:
+def load_character_wrapper(character_choice: str, session: Optional['SessionState']) -> Tuple[str, str, str, str, list, Optional[str], 'SessionState']:
     """Wrapper for load_character handler with session state."""
+    session = ensure_session(session)
     session.conversation_history = []
     session.gameplay_mode = "character"
 
@@ -153,8 +157,9 @@ def load_character_wrapper(character_choice: str, session: 'SessionState') -> Tu
     return (*result, session)
 
 
-def load_character_with_debug_wrapper(character_choice: str, scenario_choice: Optional[str], session: 'SessionState') -> Tuple[str, str, str, str, list, Optional[str], 'SessionState']:
+def load_character_with_debug_wrapper(character_choice: str, scenario_choice: Optional[str], session: Optional['SessionState']) -> Tuple[str, str, str, str, list, Optional[str], 'SessionState']:
     """Wrapper for load_character_with_debug handler with session state."""
+    session = ensure_session(session)
     session.conversation_history = []
     session.gameplay_mode = "character"
 
@@ -224,8 +229,9 @@ def handle_rag_lookup_wrapper(query: str) -> str:
     return handle_rag_lookup(query, gm, db)
 
 
-def chat_wrapper(message: str, history: list, session: 'SessionState') -> Tuple[list, str, gr.update, str, str, str, 'SessionState']:
+def chat_wrapper(message: str, history: list, session: Optional['SessionState']) -> Tuple[list, str, gr.update, str, str, str, 'SessionState']:
     """Wrapper for chat handler with session state."""
+    session = ensure_session(session)
     result = chat(
         message,
         history,
@@ -241,14 +247,16 @@ def chat_wrapper(message: str, history: list, session: 'SessionState') -> Tuple[
     return (*result, session)
 
 
-def clear_history_wrapper(session: 'SessionState') -> Tuple[list, 'SessionState']:
+def clear_history_wrapper(session: Optional['SessionState']) -> Tuple[list, 'SessionState']:
     """Wrapper for clear_history handler with session state."""
+    session = ensure_session(session)
     result = clear_history(session.conversation_history)
     return (result, session)
 
 
-def handle_next_turn_wrapper(history: list, session: 'SessionState') -> Tuple[list, str, gr.update, str, str, str, 'SessionState']:
+def handle_next_turn_wrapper(history: list, session: Optional['SessionState']) -> Tuple[list, str, gr.update, str, str, str, 'SessionState']:
     """Wrapper for handle_next_turn handler with session state."""
+    session = ensure_session(session)
     result = handle_next_turn(
         history,
         session.gm,
@@ -258,8 +266,9 @@ def handle_next_turn_wrapper(history: list, session: 'SessionState') -> Tuple[li
     return (*result, session)
 
 
-def handle_end_combat_wrapper(history: list, session: 'SessionState') -> Tuple[list, str, gr.update, str, str, str, 'SessionState']:
+def handle_end_combat_wrapper(history: list, session: Optional['SessionState']) -> Tuple[list, str, gr.update, str, str, str, 'SessionState']:
     """Wrapper for handle_end_combat handler with session state."""
+    session = ensure_session(session)
     result = handle_end_combat(
         history,
         session.gm,
@@ -269,8 +278,9 @@ def handle_end_combat_wrapper(history: list, session: 'SessionState') -> Tuple[l
     return (*result, session)
 
 
-def load_party_mode_wrapper(session: 'SessionState') -> Tuple[str, str, str, gr.update, list, 'SessionState']:
+def load_party_mode_wrapper(session: Optional['SessionState']) -> Tuple[str, str, str, gr.update, list, 'SessionState']:
     """Wrapper for load_party_mode handler with session state."""
+    session = ensure_session(session)
     def set_gameplay_mode(mode: str):
         session.gameplay_mode = mode
 
@@ -288,8 +298,9 @@ def load_party_mode_wrapper(session: 'SessionState') -> Tuple[str, str, str, gr.
     return (*result, session)
 
 
-def add_to_party_wrapper(character_choices: list, session: 'SessionState') -> Tuple[str, 'SessionState']:
+def add_to_party_wrapper(character_choices: list, session: Optional['SessionState']) -> Tuple[str, 'SessionState']:
     """Wrapper for add_to_party handler with session state."""
+    session = ensure_session(session)
     result, updated_party_chars, updated_party = add_to_party(
         character_choices,
         session.party_characters,
@@ -303,8 +314,9 @@ def add_to_party_wrapper(character_choices: list, session: 'SessionState') -> Tu
     return (result, session)
 
 
-def remove_from_party_wrapper(character_name: str, session: 'SessionState') -> Tuple[str, 'SessionState']:
+def remove_from_party_wrapper(character_name: str, session: Optional['SessionState']) -> Tuple[str, 'SessionState']:
     """Wrapper for remove_from_party handler with session state."""
+    session = ensure_session(session)
     result, updated_party_chars, updated_party = remove_from_party(
         character_name,
         session.party_characters,
@@ -358,7 +370,9 @@ try:
         # ========================================================================
         # SESSION STATE (per-user isolation)
         # ========================================================================
-        session_state = gr.State(create_session_state())
+        # Initialize with None to avoid Gradio pickling issues during UI creation
+        # Session will be lazily initialized via ensure_session() on first use
+        session_state = gr.State(None)
 
         # ========================================================================
         # CREATE TABS
@@ -381,7 +395,7 @@ try:
             # Party Management Tab
             party_components = create_party_tab(
                 get_available_characters_wrapper,
-                get_party_summary_wrapper
+                lambda: "**No characters in party**\n\nAdd characters from the dropdown above."
             )
 
         # ========================================================================
@@ -682,7 +696,9 @@ except TypeError:
         # ========================================================================
         # SESSION STATE (per-user isolation)
         # ========================================================================
-        session_state = gr.State(create_session_state())
+        # Initialize with None to avoid Gradio pickling issues during UI creation
+        # Session will be lazily initialized via ensure_session() on first use
+        session_state = gr.State(None)
 
         # ========================================================================
         # CREATE TABS
@@ -705,7 +721,7 @@ except TypeError:
             # Party Management Tab
             party_components = create_party_tab(
                 get_available_characters_wrapper,
-                get_party_summary_wrapper
+                lambda: "**No characters in party**\n\nAdd characters from the dropdown above."
             )
 
         # ========================================================================
