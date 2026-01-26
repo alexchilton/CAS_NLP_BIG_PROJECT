@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 import time
 
-from config import BASE_URL, EXPLICIT_WAIT
+from e2e_config import BASE_URL, EXPLICIT_WAIT
 
 
 @pytest.mark.character

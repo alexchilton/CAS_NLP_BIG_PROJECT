@@ -106,12 +106,21 @@ def get_chat_messages(driver):
 def load_character_at_location(char_name="Thorin", location="Goblin Cave"):
     """Load a character directly at a specific location (bypasses UI)."""
     from web.app_gradio import load_character_with_location
+    from web.session_state import create_session_state
+    from dnd_rag_system.core.chroma_manager import ChromaDBManager
+    from dnd_rag_system.systems.gm_dialogue_unified import GameMaster
+
     print(f"\n📝 Loading {char_name} at {location}")
 
     try:
-        loc_name, loc_desc, loaded_name = load_character_with_location(char_name, location)
+        # Create a session state for this test context
+        db_test = ChromaDBManager()
+        gm_test = GameMaster(db_test)
+        session_test = create_session_state(db_test, gm_test)
+
+        loc_name, loc_desc, loaded_name, updated_session = load_character_with_location(char_name, session_test, location)
         print(f"✅ Loaded {loaded_name} at {loc_name}")
-        return loc_name, loc_desc
+        return loc_name, loc_desc, updated_session
     except Exception as e:
         print(f"❌ Error loading character: {e}")
         raise

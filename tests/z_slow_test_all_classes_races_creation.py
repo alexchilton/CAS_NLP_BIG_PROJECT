@@ -5,10 +5,19 @@ Tests that each class/race combination creates valid characters at various level
 with correct HP, spell slots, proficiencies, and racial bonuses.
 """
 
+import sys
+import os
+from pathlib import Path
+
+# Add project root to sys.path
+PROJECT_ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
 import pytest
 from dnd_rag_system.systems.character_creator import Character
 from dnd_rag_system.systems.rag_character_enhancer import enhance_character_with_rag
 from dnd_rag_system.constants import CharacterClasses, CharacterRaces
+
 
 
 # All D&D 5e classes
