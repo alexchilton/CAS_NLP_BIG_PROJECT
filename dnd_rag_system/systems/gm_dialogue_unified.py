@@ -164,7 +164,10 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             combat_manager=self.combat_manager,
             spell_manager=self.spell_manager,
             shop_system=self.shop,
-            debug=DEBUG_PROMPTS
+            debug=DEBUG_PROMPTS,
+            gm=self,  # Pass GameMaster for LLM access in explore command
+            llm_client=self.client,
+            use_hf_api=self.use_hf_api
         )
 
         command_result = self.command_dispatcher.dispatch(player_input, command_context)

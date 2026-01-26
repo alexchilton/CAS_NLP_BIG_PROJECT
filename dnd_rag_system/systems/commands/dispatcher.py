@@ -24,7 +24,7 @@ from .character import (
     LevelUpCommand
 )
 from .magic import CastSpellCommand
-from .travel import TravelCommand, MapCommand, LocationsCommand
+from .travel import TravelCommand, MapCommand, LocationsCommand, ExploreCommand
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +71,7 @@ class CommandDispatcher:
         self.commands.append(CastSpellCommand(debug=self.debug))
 
         # Travel commands
+        self.commands.append(ExploreCommand(debug=self.debug))  # Add BEFORE travel for priority
         self.commands.append(TravelCommand(debug=self.debug))
         self.commands.append(MapCommand(debug=self.debug))
         self.commands.append(LocationsCommand(debug=self.debug))

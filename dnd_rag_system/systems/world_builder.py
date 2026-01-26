@@ -272,6 +272,10 @@ def generate_random_location(from_location: Location, direction: str = None) -> 
     name = f"{prefix} {suffix}"
     
     # Generate description
+    # NOTE: These are kept as fallback only. The /explore command now uses
+    # generate_llm_enhanced_location() with rich, contextual LLM descriptions.
+    # These templates are only used for backward compatibility with older code
+    # that might still call generate_random_location() directly.
     descriptions = {
         LocationType.FOREST: [
             f"A dense forest where sunlight barely penetrates the canopy. Strange sounds echo through the trees.",
@@ -383,13 +387,36 @@ def generate_llm_enhanced_location(
     context_str = "\n".join(context_parts)
     
     # Step 3: LLM prompt for name and description
-    prompt = f"""You are exploring from {from_location.name}. Generate a NEW location discovery.
+    # Emphasize thematic consistency with source location
+    theme_hints = {
+        LocationType.DUNGEON: "dark, underground, ancient evil",
+        LocationType.CAVE: "underground, natural formations, creatures of the deep",
+        LocationType.RUINS: "crumbling architecture, forgotten history",
+        LocationType.FOREST: "trees, wildlife, natural dangers",
+        LocationType.WILDERNESS: "open terrain, harsh elements",
+        LocationType.MOUNTAIN: "rocky, high altitude, treacherous paths",
+        LocationType.CASTLE: "stone fortifications, military structures",
+        LocationType.TOWN: "civilization, safety, commerce",
+    }
+    
+    current_theme = theme_hints.get(from_location.location_type, "wilderness")
+    new_theme = theme_hints.get(location_type, "unknown")
+    
+    prompt = f"""You are exploring from {from_location.name} ({from_location.location_type.value}).
+Generate a NEW location that makes logical sense given where you're exploring from.
 
 CONTEXT:
 {context_str}
 
+CURRENT AREA THEME: {current_theme}
 NEW LOCATION TYPE: {location_type.value}
+NEW AREA THEME: {new_theme}
 SAFETY: {'SAFE area (town, temple, shop)' if is_safe else 'DANGEROUS wilderness/dungeon'}
+
+IMPORTANT: The new location MUST be thematically consistent with {from_location.location_type.value}.
+- If exploring from a dungeon/cave, you find deeper chambers, NOT an oasis
+- If in a forest, you find clearings/groves/caves, NOT desert sands
+- Keep the new location logically connected to where you're exploring from
 
 Generate EXACTLY in this format:
 NAME: [Unique, evocative name for this {location_type.value}]
@@ -400,6 +427,7 @@ Requirements:
 - Description should reference the context (e.g., mention recent battles, weather, time of day)
 - Keep it concise but evocative
 - Make it feel like D&D exploration
+- STAY THEMATICALLY CONSISTENT with exploring from a {from_location.location_type.value}
 
 Generate the location:"""
     
@@ -415,9 +443,9 @@ Generate the location:"""
             name = name_match.group(1).strip()
             description = desc_match.group(1).strip()
             
-            # Clean up any quotes or extra whitespace
-            name = name.strip('"\'')
-            description = description.strip()
+            # Clean up any quotes, backticks, or extra whitespace
+            name = name.strip('"\'`')
+            description = description.strip('`')
             
         else:
             # Fallback to template if parsing fails

@@ -27,6 +27,10 @@ class CommandContext:
     spell_manager: 'SpellManager'
     shop_system: 'ShopSystem'
     debug: bool = False
+    # LLM access for explore command
+    gm: Optional[object] = None  # GameMaster instance for LLM access
+    llm_client: Optional[object] = None
+    use_hf_api: bool = False
 
 
 @dataclass
