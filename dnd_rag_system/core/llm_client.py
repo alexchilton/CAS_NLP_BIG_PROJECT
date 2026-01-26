@@ -197,3 +197,226 @@ class OllamaClient:
             raise Exception("Response timed out (LLM took too long)")
         except Exception as e:
             raise Exception(f"Ollama query failed: {e}")
+
+
+class LLMClient:
+    """
+    Unified LLM client that works with both Ollama and HuggingFace Inference API.
+    
+    Centralizes all LLM query logic with consistent interface, error handling,
+    debug logging, and response cleaning.
+    """
+
+    def __init__(
+        self,
+        model_name: Optional[str] = None,
+        hf_token: Optional[str] = None,
+        debug: bool = False
+    ):
+        """
+        Initialize unified LLM client.
+
+        Args:
+            model_name: Override model name (optional)
+            hf_token: HuggingFace API token (optional)
+            debug: Enable debug logging
+        """
+        self.debug = debug
+        self.client, self.model_name, self.use_hf_api = LLMClientFactory.create_client(
+            model_name=model_name,
+            hf_token=hf_token,
+            debug=debug
+        )
+
+    def query(
+        self,
+        prompt: str,
+        max_tokens: int = 300,
+        temperature: float = 0.7,
+        timeout: int = 120,
+        clean_response: bool = True
+    ) -> str:
+        """
+        Query the LLM with a prompt.
+
+        Args:
+            prompt: Input prompt
+            max_tokens: Maximum tokens to generate
+            temperature: Sampling temperature (0.0-1.0)
+            timeout: Response timeout in seconds
+            clean_response: Whether to clean/sanitize the response
+
+        Returns:
+            Model response
+
+        Raises:
+            Exception: If query fails
+        """
+        if self.use_hf_api:
+            return self._query_hf(prompt, max_tokens, temperature, timeout, clean_response)
+        else:
+            return self._query_ollama(prompt, timeout, clean_response)
+
+    def _query_ollama(
+        self,
+        prompt: str,
+        timeout: int = 120,
+        clean_response: bool = True
+    ) -> str:
+        """Query Ollama (local mode)."""
+        import re
+        import logging
+        logger = logging.getLogger(__name__)
+
+        # Log prompt if debug mode
+        if self.debug:
+            logger.debug("=" * 80)
+            logger.debug("PROMPT SENT TO OLLAMA:")
+            logger.debug("-" * 80)
+            logger.debug(prompt)
+            logger.debug("=" * 80)
+
+        try:
+            result = subprocess.run(
+                ['ollama', 'run', self.model_name, prompt],
+                capture_output=True,
+                text=True,
+                timeout=timeout
+            )
+
+            if result.returncode != 0:
+                raise Exception(f"Ollama error: {result.stderr}")
+
+            response = result.stdout.strip()
+
+            if clean_response:
+                response = self._clean_ollama_response(response)
+
+            # Log response if debug mode
+            if self.debug:
+                logger.debug("-" * 80)
+                logger.debug("RESPONSE FROM OLLAMA:")
+                logger.debug(response)
+                logger.debug("=" * 80)
+
+            return response if response else "..."
+
+        except subprocess.TimeoutExpired:
+            raise Exception("Response timed out (LLM took too long)")
+        except Exception as e:
+            raise Exception(f"Ollama query failed: {e}")
+
+    def _query_hf(
+        self,
+        prompt: str,
+        max_tokens: int = 300,
+        temperature: float = 0.7,
+        timeout: int = 60,
+        clean_response: bool = True
+    ) -> str:
+        """Query HuggingFace Inference API."""
+        import logging
+        logger = logging.getLogger(__name__)
+
+        # Log prompt if debug mode
+        if self.debug:
+            logger.debug("=" * 80)
+            logger.debug("PROMPT SENT TO HUGGING FACE API:")
+            logger.debug("-" * 80)
+            logger.debug(prompt)
+            logger.debug("=" * 80)
+
+        try:
+            # Try chat_completion first (huggingface-hub >= 0.22)
+            # Fall back to text_generation for older versions
+            if hasattr(self.client, 'chat_completion'):
+                # Newer API (v0.22+)
+                messages = [{"role": "user", "content": prompt}]
+
+                response = self.client.chat_completion(
+                    messages=messages,
+                    model=self.model_name,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                    top_p=0.9,
+                )
+
+                response_text = response.choices[0].message.content.strip()
+            else:
+                # Older API (v0.20.3)
+                logger.info("Using text_generation API (huggingface-hub < 0.22)")
+                response_text = self.client.text_generation(
+                    prompt=prompt,
+                    model=self.model_name,
+                    max_new_tokens=max_tokens,
+                    temperature=temperature,
+                    top_p=0.9,
+                    return_full_text=False,
+                )
+
+            if clean_response:
+                # Remove prompt echo if present
+                if "GM RESPONSE:" in response_text:
+                    response_text = response_text.split("GM RESPONSE:")[-1].strip()
+
+            # Log response if debug mode
+            if self.debug:
+                logger.debug("-" * 80)
+                logger.debug("RESPONSE FROM HUGGING FACE API:")
+                logger.debug(response_text)
+                logger.debug("=" * 80)
+
+            return response_text if response_text else "..."
+
+        except Exception as e:
+            raise Exception(f"HF Inference API query failed: {e}")
+
+    def _clean_ollama_response(self, response: str) -> str:
+        """
+        Clean up Ollama responses to remove hallucinated system prompts.
+
+        Ollama models sometimes leak training data and system prompts.
+        This removes common hallucination patterns.
+        """
+        import re
+
+        # Remove prompt echo if present
+        if "GM RESPONSE:" in response:
+            response = response.split("GM RESPONSE:")[-1].strip()
+
+        # Remove {{user}} template markers
+        if "{{user}}" in response:
+            response = response.split("{{user}}")[0].strip()
+
+        # Remove "Take the role of" instruction blocks
+        if "Take the role of" in response:
+            response = response.split("Take the role of")[0].strip()
+
+        # Remove "You must engage in roleplay" blocks
+        if "you must roleplay" in response.lower():
+            parts = re.split(r'you must (?:engage in )?roleplay', response, flags=re.IGNORECASE)
+            response = parts[0].strip()
+
+        # Remove "Never write for" instruction blocks
+        if "Never write for" in response:
+            response = response.split("Never write for")[0].strip()
+
+        # Remove "Scenario:" metadata blocks
+        if "Scenario:" in response:
+            response = response.split("Scenario:")[0].strip()
+
+        # Remove markdown code fences
+        response = re.sub(r'```[\w]*\n.*?```', '', response, flags=re.DOTALL)
+
+        # Remove duplicate paragraphs (hallucination symptom)
+        paragraphs = response.split('\n\n')
+        seen = set()
+        cleaned_paragraphs = []
+        for para in paragraphs:
+            para_clean = para.strip()
+            if para_clean and para_clean not in seen:
+                seen.add(para_clean)
+                cleaned_paragraphs.append(para)
+        response = '\n\n'.join(cleaned_paragraphs)
+
+        return response.strip()

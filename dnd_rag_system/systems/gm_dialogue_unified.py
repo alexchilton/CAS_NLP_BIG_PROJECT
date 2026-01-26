@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
-from dnd_rag_system.core.llm_client import LLMClientFactory
+from dnd_rag_system.core.llm_client import LLMClient
 from dnd_rag_system.config import settings
 from dnd_rag_system.systems.game_state import GameSession, CombatState, PartyState
 from dnd_rag_system.systems.action_validator import (
@@ -105,12 +105,16 @@ class GameMaster:
         from dnd_rag_system.systems.world_builder import initialize_world
         initialize_world(self.session)
 
-        # Use factory to create client with automatic environment detection
-        self.client, self.model_name, self.use_hf_api = LLMClientFactory.create_client(
+        # Unified LLM Client (Phase 7 refactoring: centralize all LLM query logic)
+        self.llm_client = LLMClient(
             model_name=model_name,
             hf_token=hf_token,
             debug=DEBUG_PROMPTS
         )
+        # Keep these for backward compatibility with code that checks them
+        self.client = self.llm_client.client
+        self.model_name = self.llm_client.model_name
+        self.use_hf_api = self.llm_client.use_hf_api
 
     # NOTE: Phase 1, 2, & 3 Refactoring - Methods moved to extracted classes:
     # - search_rag() and format_rag_context() → RAGRetriever class
@@ -943,158 +947,20 @@ This is D&D 5e rules - initiative determines who goes first!"""
     def _query_ollama(self, prompt: str, timeout: int = 120) -> str:
         """
         Send prompt to Ollama and get response (local mode).
-
-        Args:
-            prompt: Complete prompt
-            timeout: Response timeout in seconds
-
-        Returns:
-            Model response
+        
+        DEPRECATED: Use self.llm_client.query() instead.
+        Kept for backward compatibility.
         """
-        # Log prompt if debug mode is enabled
-        if DEBUG_PROMPTS:
-            logger.debug("=" * 80)
-            logger.debug("PROMPT SENT TO OLLAMA:")
-            logger.debug("-" * 80)
-            logger.debug(prompt)
-            logger.debug("=" * 80)
-
-        try:
-            result = subprocess.run(
-                ['ollama', 'run', self.model_name, prompt],
-                capture_output=True,
-                text=True,
-                timeout=timeout
-            )
-
-            if result.returncode != 0:
-                raise Exception(f"Ollama error: {result.stderr}")
-
-            response = result.stdout.strip()
-
-            # Clean up response (remove prompt echo if present)
-            if "GM RESPONSE:" in response:
-                response = response.split("GM RESPONSE:")[-1].strip()
-            
-            # CRITICAL: Remove leaked system prompts from model training data
-            # The model sometimes hallucinates roleplay card formats
-            import re
-            
-            # Remove {{user}} template markers and everything after
-            if "{{user}}" in response:
-                response = response.split("{{user}}")[0].strip()
-            
-            # Remove "Take the role of" instruction blocks
-            if "Take the role of" in response:
-                response = response.split("Take the role of")[0].strip()
-            
-            # Remove "You must engage in roleplay" blocks
-            if "you must roleplay" in response.lower():
-                parts = re.split(r'you must (?:engage in )?roleplay', response, flags=re.IGNORECASE)
-                response = parts[0].strip()
-            
-            # Remove "Never write for" instruction blocks
-            if "Never write for" in response:
-                response = response.split("Never write for")[0].strip()
-            
-            # Remove "Scenario:" metadata blocks
-            if "Scenario:" in response:
-                response = response.split("Scenario:")[0].strip()
-            
-            # Remove markdown code fences that sometimes appear
-            response = re.sub(r'```[\w]*\n.*?```', '', response, flags=re.DOTALL)
-            
-            # Remove duplicate paragraphs (hallucination symptom)
-            paragraphs = response.split('\n\n')
-            seen = set()
-            cleaned_paragraphs = []
-            for para in paragraphs:
-                para_clean = para.strip()
-                if para_clean and para_clean not in seen:
-                    seen.add(para_clean)
-                    cleaned_paragraphs.append(para)
-            response = '\n\n'.join(cleaned_paragraphs)
-            
-            # Final trim
-            response = response.strip()
-
-            # Log response if debug mode is enabled
-            if DEBUG_PROMPTS:
-                logger.debug("-" * 80)
-                logger.debug("RESPONSE FROM OLLAMA:")
-                logger.debug(response)
-                logger.debug("=" * 80)
-
-            return response if response else "..."
-
-        except subprocess.TimeoutExpired:
-            raise Exception("Response timed out (LLM took too long)")
-        except Exception as e:
-            raise Exception(f"Ollama query failed: {e}")
+        return self.llm_client.query(prompt, timeout=timeout, clean_response=True)
 
     def _query_hf(self, prompt: str, timeout: int = 60) -> str:
         """
         Send prompt to Hugging Face Inference API and get response (HF mode).
-
-        Args:
-            prompt: Complete prompt
-            timeout: Response timeout in seconds
-
-        Returns:
-            Model response
+        
+        DEPRECATED: Use self.llm_client.query() instead.
+        Kept for backward compatibility.
         """
-        # Log prompt if debug mode is enabled
-        if DEBUG_PROMPTS:
-            logger.debug("=" * 80)
-            logger.debug("PROMPT SENT TO HUGGING FACE API:")
-            logger.debug("-" * 80)
-            logger.debug(prompt)
-            logger.debug("=" * 80)
-
-        try:
-            # Try chat_completion first (huggingface-hub >= 0.22)
-            # Fall back to text_generation for older versions (0.20.3)
-            if hasattr(self.client, 'chat_completion'):
-                # Newer API (v0.22+)
-                messages = [{"role": "user", "content": prompt}]
-
-                response = self.client.chat_completion(
-                    messages=messages,
-                    model=self.model_name,
-                    max_tokens=300,
-                    temperature=0.7,
-                    top_p=0.9,
-                )
-
-                # Extract the response text
-                response_text = response.choices[0].message.content.strip()
-            else:
-                # Older API (v0.20.3) - use text_generation
-                logger.info("Using text_generation API (huggingface-hub < 0.22)")
-                response_text = self.client.text_generation(
-                    prompt=prompt,
-                    model=self.model_name,
-                    max_new_tokens=300,
-                    temperature=0.7,
-                    top_p=0.9,
-                    return_full_text=False,  # Only return generated text, not prompt
-                )
-
-            # Remove prompt echo if present
-            if "GM RESPONSE:" in response_text:
-                response_text = response_text.split("GM RESPONSE:")[-1].strip()
-
-            # Log response if debug mode is enabled
-            if DEBUG_PROMPTS:
-                logger.debug("-" * 80)
-                logger.debug("RESPONSE FROM HUGGING FACE API:")
-                logger.debug(response_text)
-                logger.debug("=" * 80)
-
-            return response_text if response_text else "..."
-
-        except Exception as e:
-            raise Exception(f"HF Inference API query failed: {e}")
+        return self.llm_client.query(prompt, timeout=timeout, clean_response=True)
 
     def set_context(self, context: str):
         """
