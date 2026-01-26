@@ -37,6 +37,7 @@ from dnd_rag_system.systems.commands import CommandDispatcher, CommandContext
 from dnd_rag_system.constants import Commands, ActionKeywords
 from dnd_rag_system.dialogue.rag_retriever import RAGRetriever
 from dnd_rag_system.dialogue.conversation_history_manager import ConversationHistoryManager, Message
+from dnd_rag_system.dialogue.prompt_builder import PromptBuilder
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -99,6 +100,9 @@ class GameMaster:
         # RAG Retrieval System (Phase 1 refactoring: extracted from GameMaster)
         self.rag_retriever = RAGRetriever(db_manager)
 
+        # Prompt Builder (Phase 3 refactoring: extracted from GameMaster)
+        self.prompt_builder = PromptBuilder()
+
         # Initialize world map with starting locations
         from dnd_rag_system.systems.world_builder import initialize_world
         initialize_world(self.session)
@@ -110,11 +114,13 @@ class GameMaster:
             debug=DEBUG_PROMPTS
         )
 
-    # NOTE: Phase 1 & 2 Refactoring - Methods moved to extracted classes:
+    # NOTE: Phase 1, 2, & 3 Refactoring - Methods moved to extracted classes:
     # - search_rag() and format_rag_context() → RAGRetriever class
     #   Access via: self.rag_retriever.search_rag() and self.rag_retriever.format_rag_context()
     # - _prune_message_history() and _create_message_summary() → ConversationHistoryManager class
     #   Access via: self.history_manager.prune_history() and other methods
+    # - _build_prompt() → PromptBuilder class
+    #   Access via: self.prompt_builder.build_prompt()
 
     def generate_response(self, player_input: str, use_rag: bool = True) -> str:
         """
@@ -449,9 +455,10 @@ This is D&D 5e rules - initiative determines who goes first!"""
                 target_name = validation.matched_entity if validation and validation.matched_entity else action_intent.target
 
                 # Calculate player's attack
-                attack_result = self._calculate_player_attack(
+                attack_result = self.combat_manager.calculate_player_attack(
                     target_name,
-                    self.session.character_state
+                    self.session.character_state,
+                    self.session.base_character_stats
                 )
 
                 if attack_result:
@@ -547,7 +554,21 @@ This is D&D 5e rules - initiative determines who goes first!"""
                 self.session.turns_since_last_encounter += 1
 
         # Step 3: Build prompt with history, RAG context, validation guidance, encounter, and player attack
-        prompt = self._build_prompt(player_input, rag_context, validation, encounter_instruction, player_attack_instruction, steal_instruction)
+        from dnd_rag_system.config.settings import RECENT_MESSAGES_FOR_PROMPT
+        history_text = self.history_manager.format_for_prompt(RECENT_MESSAGES_FOR_PROMPT)
+        conversation_summary = self.history_manager.get_summary(max_chars=500)
+
+        prompt = self.prompt_builder.build_prompt(
+            player_input=player_input,
+            game_session=self.session,
+            history_text=history_text,
+            conversation_summary=conversation_summary,
+            rag_context=rag_context,
+            validation=validation,
+            encounter_instruction=encounter_instruction,
+            player_attack_instruction=player_attack_instruction,
+            steal_instruction=steal_instruction
+        )
 
         # Step 4: Get LLM response (route based on mode)
         try:
@@ -756,298 +777,6 @@ This is D&D 5e rules - initiative determines who goes first!"""
 
         except Exception as e:
             return f"Error generating response: {e}"
-
-    def _calculate_player_attack(self, target_name: str, character_state) -> str:
-        """
-        Calculate player's attack roll and damage against a target.
-        Pre-calculates the mechanics so GM can narrate specific numbers.
-        
-        Args:
-            target_name: Name of the NPC being attacked
-            character_state: CharacterState object (has character name and equipped items)
-            
-        Returns:
-            Formatted instruction string for GM, or empty string if calculation fails
-        """
-        import random
-        
-        # Get base character stats from session (has ability scores, equipment, etc.)
-        if not character_state:
-            return ""
-        
-        character_name = character_state.character_name
-        if character_name not in self.session.base_character_stats:
-            return ""
-            
-        character = self.session.base_character_stats[character_name]
-        
-        # Simple weapon damage table (weapon_name: (damage_dice, damage_die_count, damage_die_size, damage_type))
-        # Format: "1d8" = (1, 8), "2d6" = (2, 6)
-        WEAPON_DAMAGE = {
-            "longsword": (1, 8, "slashing"),
-            "greatsword": (2, 6, "slashing"),
-            "shortsword": (1, 6, "piercing"),
-            "dagger": (1, 4, "piercing"),
-            "battleaxe": (1, 8, "slashing"),
-            "greataxe": (1, 12, "slashing"),
-            "mace": (1, 6, "bludgeoning"),
-            "warhammer": (1, 8, "bludgeoning"),
-            "rapier": (1, 8, "piercing"),
-            "scimitar": (1, 6, "slashing"),
-            "quarterstaff": (1, 6, "bludgeoning"),
-            "spear": (1, 6, "piercing"),
-            "bow": (1, 8, "piercing"),
-            "longbow": (1, 8, "piercing"),
-            "shortbow": (1, 6, "piercing"),
-            "crossbow": (1, 8, "piercing"),
-            "hand crossbow": (1, 6, "piercing"),
-            # Unarmed as fallback
-            "unarmed": (1, 4, "bludgeoning"),
-        }
-        
-        # Find equipped weapon in character's equipment
-        weapon_name = "unarmed"
-        weapon_found = False
-        
-        if hasattr(character, 'equipment') and character.equipment:
-            for item in character.equipment:
-                item_lower = item.lower()
-                for weapon_key in WEAPON_DAMAGE.keys():
-                    if weapon_key in item_lower:
-                        weapon_name = weapon_key
-                        weapon_found = True
-                        break
-                if weapon_found:
-                    break
-        
-        # Get weapon stats
-        dice_count, die_size, damage_type = WEAPON_DAMAGE.get(weapon_name, (1, 4, "bludgeoning"))
-        
-        # Calculate attack bonus (STR mod + proficiency for melee weapons)
-        str_mod = character.get_ability_modifier(character.strength)
-        attack_bonus = str_mod + character.proficiency_bonus
-        
-        # Get target AC (check if NPC exists in combat manager)
-        target_ac = 12  # Default AC
-        if target_name in self.combat_manager.npc_monsters:
-            target_ac = self.combat_manager.npc_monsters[target_name].ac
-        
-        # Roll attack (d20 + attack bonus)
-        attack_roll = random.randint(1, 20)
-        total_attack = attack_roll + attack_bonus
-        
-        # Check if hit
-        if attack_roll == 1:
-            # Critical miss
-            return (
-                f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} but CRITICALLY MISSES (rolled natural 1)! "
-                f"Attack roll: 1 + {attack_bonus} = {total_attack} vs AC {target_ac}. "
-                f"Narrate an embarrassing miss or fumble. NO DAMAGE."
-            )
-        elif total_attack < target_ac and attack_roll != 20:
-            # Normal miss
-            return (
-                f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} but MISSES. "
-                f"Attack roll: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}. "
-                f"Narrate the attack missing. NO DAMAGE."
-            )
-        else:
-            # Hit! Roll damage
-            damage = sum(random.randint(1, die_size) for _ in range(dice_count))
-            damage += str_mod  # Add STR modifier to damage
-            
-            if attack_roll == 20:
-                # Critical hit! Double damage
-                damage *= 2
-                return (
-                    f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} and scores a CRITICAL HIT (natural 20)! "
-                    f"Attack roll: 20 (critical!) + {attack_bonus} = {total_attack} vs AC {target_ac}. "
-                    f"💥 {damage} {damage_type} damage (CRITICAL DOUBLE DAMAGE!). "
-                    f"Narrate an epic, devastating strike that deals {damage} damage to {target_name}."
-                )
-            else:
-                return (
-                    f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} and HITS! "
-                    f"Attack roll: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}. "
-                    f"💥 {damage} {damage_type} damage. "
-                    f"Narrate the successful strike dealing {damage} damage to {target_name}."
-                )
-
-    def _build_prompt(self, player_input: str, rag_context: str, validation=None, encounter_instruction: str = "", player_attack_instruction: str = "", steal_instruction: str = "") -> str:
-        """
-        Build complete prompt for LLM with full game state context.
-
-        Args:
-            player_input: Player's action
-            rag_context: Retrieved RAG information
-            validation: ValidationReport from action validator (optional)
-            encounter_instruction: Hidden instruction for random encounter (optional)
-        """
-
-        # Get recent conversation history
-        from dnd_rag_system.config.settings import RECENT_MESSAGES_FOR_PROMPT
-
-        history_text = self.history_manager.format_for_prompt(RECENT_MESSAGES_FOR_PROMPT)
-
-        # Build game state context
-        prompt = f"""You are an experienced Dungeon Master running a D&D 5e game.
-
-CURRENT LOCATION: {self.session.current_location}
-SCENE: {self.session.scene_description if self.session.scene_description else "The adventure continues..."}
-TIME: Day {self.session.day}, {self.session.time_of_day}
-"""
-
-        # Add conversation summary if it exists (for context continuity)
-        summary = self.history_manager.get_summary(max_chars=500)
-        if summary:
-            prompt += f"\nPREVIOUS SESSION SUMMARY:\n{summary}\n"
-
-        # Add location context for better narrative consistency
-        current_loc = self.session.get_current_location_obj()
-        if current_loc:
-            # Don't explicitly mention visit count - just note it's a return
-            if current_loc.visit_count > 1:
-                prompt += f"NOTE: The party has been here before. Describe naturally without explicitly counting visits.\n"
-            
-            # Mention defeated enemies for atmosphere
-            if current_loc.defeated_enemies:
-                enemies = ", ".join(list(current_loc.defeated_enemies)[:3])
-                prompt += f"AFTERMATH: These enemies were defeated here previously: {enemies}. You may mention remains/corpses if appropriate.\n"
-        
-        # Add NPCs/Monsters if present
-        if self.session.npcs_present:
-            prompt += f"\nNPCs/CREATURES PRESENT: {', '.join(self.session.npcs_present)}\n"
-
-        # Add combat state if in combat
-        if self.session.combat.in_combat:
-            prompt += f"\nCOMBAT STATUS: Round {self.session.combat.round_number}, {self.session.combat.get_current_turn()}'s turn\n"
-            prompt += f"Initiative Order: {', '.join([f'{name} ({init})' for name, init in self.session.combat.initiative_order])}\n"
-
-        # Add active quests
-        if self.session.active_quests:
-            active = [q for q in self.session.active_quests if q.get('status') == 'active']
-            if active:
-                quest_names = [q['name'] for q in active[:2]]  # Show up to 2 active quests
-                prompt += f"\nACTIVE QUESTS: {', '.join(quest_names)}\n"
-
-        prompt += "\n"
-
-        if rag_context and rag_context != "No specific rules retrieved." and rag_context != "No highly relevant rules found.":
-            prompt += f"""RETRIEVED D&D RULES (Apply these rules accurately):
-{rag_context}
-
-"""
-
-        if history_text:
-            prompt += f"""RECENT CONVERSATION:
-{history_text}
-
-"""
-
-        prompt += f"""PLAYER ACTION: {player_input}
-
-"""
-        
-        # Add encounter instruction if present (hidden from player, only GM sees this)
-        if encounter_instruction:
-            prompt += f"""{encounter_instruction}
-
-"""
-        
-        # Add player attack instruction if present (hidden from player, only GM sees this)
-        if player_attack_instruction:
-            prompt += f"""{player_attack_instruction}
-
-"""
-
-        prompt += """INSTRUCTIONS:
-1. Apply D&D 5e rules accurately using the retrieved information
-2. Consider the current location, NPCs present, and combat state
-3. Ask for appropriate dice rolls (d20 for attacks/checks, damage dice, saves, etc.)
-4. Be concise and engaging (2-4 sentences max)
-5. Maintain narrative flow while being mechanically precise
-6. If rules are unclear, use standard D&D 5e mechanics
-7. Be concise, respond in 3-5 sentences unless more detail is explicitly required.
-
-"""
-
-        # Add steal instruction PROMINENTLY before GM response (like INVALID validation)
-        if steal_instruction:
-            prompt += f"""
-═══════════════════════════════════════════════════════════════════
-🎯 STEAL ATTEMPT MECHANICS 🎯
-═══════════════════════════════════════════════════════════════════
-
-{steal_instruction}
-
-DO NOT create random monsters or encounters. ONLY the NPCs listed above should react.
-═══════════════════════════════════════════════════════════════════
-
-GM RESPONSE:"""
-            return prompt
-
-        # Add validation guidance RIGHT BEFORE response - most prominent position
-        if validation:
-            if validation.result == ValidationResult.INVALID:
-                prompt += f"""
-═══════════════════════════════════════════════════════════════════
-🚫 CRITICAL RULE - THIS ACTION IS IMPOSSIBLE 🚫
-═══════════════════════════════════════════════════════════════════
-
-{validation.message}
-
-YOU MUST NARRATE FAILURE. DO NOT create the target/item/NPC.
-
-Examples of CORRECT responses:
-- "You swing your sword, but there's nothing there - the cavern is empty."
-- "You reach for your bow, but you're only carrying your longsword and shield."
-- "You try to recall the spell, but as a fighter, you have no magical training."
-
-DO NOT write: "The goblin appears" or "You pull out your bow"
-The target DOES NOT EXIST. Narrate the impossibility.
-═══════════════════════════════════════════════════════════════════
-
-GM RESPONSE:"""
-            elif validation.result == ValidationResult.NPC_INTRODUCTION:
-                prompt += f"""
-═══════════════════════════════════════════════════════════════════
-💬 NPC INTRODUCTION OPPORTUNITY 💬
-═══════════════════════════════════════════════════════════════════
-
-{validation.message}
-
-Player wants to interact with: "{validation.action.target}"
-
-If this makes sense in current location, introduce them naturally.
-If NOT logical, narrate that no such person is present.
-═══════════════════════════════════════════════════════════════════
-
-GM RESPONSE:"""
-            elif validation.matched_entity and validation.matched_entity != validation.action.target:
-                prompt += f"""
-═══════════════════════════════════════════════════════════════════
-ℹ️ TARGET CLARIFICATION ℹ️
-═══════════════════════════════════════════════════════════════════
-
-{validation.message}
-
-Player said: "{validation.action.target}"
-Likely means: "{validation.matched_entity}"
-
-Use "{validation.matched_entity}" in your response.
-═══════════════════════════════════════════════════════════════════
-
-GM RESPONSE:"""
-            else:
-                # Valid action
-                prompt += f"""{validation.message}
-
-GM RESPONSE:"""
-        else:
-            prompt += """
-GM RESPONSE:"""
-
-        return prompt
 
     def _generate_invalid_action_response(self, validation) -> str:
         """

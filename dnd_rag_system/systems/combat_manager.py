@@ -836,6 +836,128 @@ class CombatManager:
 
         return npc_actions
 
+    def calculate_player_attack(
+        self,
+        target_name: str,
+        character_state,
+        base_character_stats: Dict
+    ) -> str:
+        """
+        Calculate player's attack roll and damage against a target.
+        Pre-calculates the mechanics so GM can narrate specific numbers.
+        
+        Args:
+            target_name: Name of the NPC being attacked
+            character_state: CharacterState object (has character name and equipped items)
+            base_character_stats: Dictionary mapping character names to their base stats
+            
+        Returns:
+            Formatted instruction string for GM, or empty string if calculation fails
+        """
+        import random
+        
+        # Get base character stats from session (has ability scores, equipment, etc.)
+        if not character_state:
+            return ""
+        
+        character_name = character_state.character_name
+        if character_name not in base_character_stats:
+            return ""
+            
+        character = base_character_stats[character_name]
+        
+        # Simple weapon damage table (weapon_name: (damage_dice, damage_die_count, damage_die_size, damage_type))
+        # Format: "1d8" = (1, 8), "2d6" = (2, 6)
+        WEAPON_DAMAGE = {
+            "longsword": (1, 8, "slashing"),
+            "greatsword": (2, 6, "slashing"),
+            "shortsword": (1, 6, "piercing"),
+            "dagger": (1, 4, "piercing"),
+            "battleaxe": (1, 8, "slashing"),
+            "greataxe": (1, 12, "slashing"),
+            "mace": (1, 6, "bludgeoning"),
+            "warhammer": (1, 8, "bludgeoning"),
+            "rapier": (1, 8, "piercing"),
+            "scimitar": (1, 6, "slashing"),
+            "quarterstaff": (1, 6, "bludgeoning"),
+            "spear": (1, 6, "piercing"),
+            "bow": (1, 8, "piercing"),
+            "longbow": (1, 8, "piercing"),
+            "shortbow": (1, 6, "piercing"),
+            "crossbow": (1, 8, "piercing"),
+            "hand crossbow": (1, 6, "piercing"),
+            # Unarmed as fallback
+            "unarmed": (1, 4, "bludgeoning"),
+        }
+        
+        # Find equipped weapon in character's equipment
+        weapon_name = "unarmed"
+        weapon_found = False
+        
+        if hasattr(character, 'equipment') and character.equipment:
+            for item in character.equipment:
+                item_lower = item.lower()
+                for weapon_key in WEAPON_DAMAGE.keys():
+                    if weapon_key in item_lower:
+                        weapon_name = weapon_key
+                        weapon_found = True
+                        break
+                if weapon_found:
+                    break
+        
+        # Get weapon stats
+        dice_count, die_size, damage_type = WEAPON_DAMAGE.get(weapon_name, (1, 4, "bludgeoning"))
+        
+        # Calculate attack bonus (STR mod + proficiency for melee weapons)
+        str_mod = character.get_ability_modifier(character.strength)
+        attack_bonus = str_mod + character.proficiency_bonus
+        
+        # Get target AC (check if NPC exists in combat manager)
+        target_ac = 12  # Default AC
+        if target_name in self.npc_monsters:
+            target_ac = self.npc_monsters[target_name].ac
+        
+        # Roll attack (d20 + attack bonus)
+        attack_roll = random.randint(1, 20)
+        total_attack = attack_roll + attack_bonus
+        
+        # Check if hit
+        if attack_roll == 1:
+            # Critical miss
+            return (
+                f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} but CRITICALLY MISSES (rolled natural 1)! "
+                f"Attack roll: 1 + {attack_bonus} = {total_attack} vs AC {target_ac}. "
+                f"Narrate an embarrassing miss or fumble. NO DAMAGE."
+            )
+        elif total_attack < target_ac and attack_roll != 20:
+            # Normal miss
+            return (
+                f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} but MISSES. "
+                f"Attack roll: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}. "
+                f"Narrate the attack missing. NO DAMAGE."
+            )
+        else:
+            # Hit! Roll damage
+            damage = sum(random.randint(1, die_size) for _ in range(dice_count))
+            damage += str_mod  # Add STR modifier to damage
+            
+            if attack_roll == 20:
+                # Critical hit! Double damage
+                damage *= 2
+                return (
+                    f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} and scores a CRITICAL HIT (natural 20)! "
+                    f"Attack roll: 20 (critical!) + {attack_bonus} = {total_attack} vs AC {target_ac}. "
+                    f"💥 {damage} {damage_type} damage (CRITICAL DOUBLE DAMAGE!). "
+                    f"Narrate an epic, devastating strike that deals {damage} damage to {target_name}."
+                )
+            else:
+                return (
+                    f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} and HITS! "
+                    f"Attack roll: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}. "
+                    f"💥 {damage} {damage_type} damage. "
+                    f"Narrate the successful strike dealing {damage} damage to {target_name}."
+                )
+
 
 def format_combat_status(
     combat_manager: CombatManager,
