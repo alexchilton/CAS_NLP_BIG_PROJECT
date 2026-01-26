@@ -80,10 +80,30 @@ class GameMaster:
         from dnd_rag_system.config.settings import MAX_MESSAGE_HISTORY
         self.history_manager = ConversationHistoryManager(max_history=MAX_MESSAGE_HISTORY)
 
+        # Unified LLM Client (Phase 7 refactoring: centralize all LLM query logic)
+        self.llm_client = LLMClient(
+            model_name=model_name,
+            hf_token=hf_token,
+            debug=DEBUG_PROMPTS
+        )
+        # Keep these for backward compatibility with code that checks them
+        self.client = self.llm_client.client
+        self.model_name = self.llm_client.model_name
+        self.use_hf_api = self.llm_client.use_hf_api
+
+        # Monster Description Generator (RAG → LLM showcase)
+        from dnd_rag_system.systems.monster_description_generator import MonsterDescriptionGenerator
+        self.monster_desc_generator = MonsterDescriptionGenerator(db_manager, self.llm_client)
+
         self.action_validator = ActionValidator(debug=DEBUG_PROMPTS)  # Reality check system
         self.shop = ShopSystem(db_manager, debug=DEBUG_PROMPTS)  # Shop transaction system
         self.spell_manager = SpellManager(db_manager)  # Spell and resource management
-        self.combat_manager = CombatManager(self.session.combat, spell_manager=self.spell_manager, debug=DEBUG_PROMPTS)  # Combat system with XP tracking
+        self.combat_manager = CombatManager(
+            self.session.combat,
+            spell_manager=self.spell_manager,
+            monster_desc_generator=self.monster_desc_generator,
+            debug=DEBUG_PROMPTS
+        )  # Combat system with XP tracking and LLM descriptions
 
         # Unified Mechanics Service (Phase 6 refactoring: facade for extraction + application)
         from dnd_rag_system.systems.mechanics_service import MechanicsService
@@ -321,7 +341,8 @@ CRITICAL INSTRUCTIONS:
             if self.session.character_state:
                 combat_feedback = self.combat_manager.start_combat_with_character(
                     self.session.character_state,
-                    self.session.npcs_present
+                    self.session.npcs_present,
+                    session=self.session
                 )
                 auto_started_combat = True
 

@@ -17,6 +17,8 @@ from dnd_rag_system.systems.monster_stat_system import MonsterStatSystem, Monste
 
 if TYPE_CHECKING:
     from dnd_rag_system.systems.spell_manager import SpellManager
+    from dnd_rag_system.systems.monster_description_generator import MonsterDescriptionGenerator
+    from dnd_rag_system.systems.game_state import GameSession
 
 
 @dataclass
@@ -38,6 +40,7 @@ class CombatManager:
         self,
         combat_state: CombatState,
         spell_manager: Optional['SpellManager'] = None,
+        monster_desc_generator: Optional['MonsterDescriptionGenerator'] = None,
         debug: bool = False
     ):
         """
@@ -46,10 +49,12 @@ class CombatManager:
         Args:
             combat_state: The CombatState instance to manage
             spell_manager: Optional SpellManager for XP/CR lookups
+            monster_desc_generator: Optional generator for LLM-powered encounter descriptions
             debug: Enable debug output
         """
         self.combat = combat_state
         self.spell_manager = spell_manager
+        self.monster_desc_generator = monster_desc_generator
         self.debug = debug
 
         # Monster stat system for loading NPC stats
@@ -60,6 +65,9 @@ class CombatManager:
 
         # Track defeated enemies for XP awards {npc_name: (cr, xp_value)}
         self.defeated_enemies: Dict[str, tuple[float, int]] = {}
+        
+        # Track encounters for description variety
+        self.encounter_count: Dict[str, int] = {}
 
     def _load_npc_stats(self, npc_names: List[str]) -> Dict[str, int]:
         """
@@ -166,14 +174,16 @@ class CombatManager:
             print(f"🔍 Combat started: in_combat={self.combat.in_combat}")
             print(f"   Initiative order: {self.combat.initiative_order}")
 
-        return self.get_combat_start_message()
+        # Note: Session not available at this level, will use defaults
+        return self.get_combat_start_message(session=None)
 
     def start_combat_with_party(
         self,
         party: PartyState,
         npcs: List[str],
         party_dex_modifiers: Optional[Dict[str, int]] = None,
-        npc_dex_modifiers: Optional[Dict[str, int]] = None
+        npc_dex_modifiers: Optional[Dict[str, int]] = None,
+        session: Optional['GameSession'] = None
     ) -> str:
         """
         Start combat with a party (convenience wrapper).
@@ -183,19 +193,21 @@ class CombatManager:
             npcs: List of NPC/enemy names
             party_dex_modifiers: {character_name: dex_mod} for party members (optional)
             npc_dex_modifiers: {npc_name: dex_mod} for NPCs/enemies (optional, auto-calculated from stats)
+            session: Optional GameSession for context
 
         Returns:
             String describing initiative order
         """
         participants = list(party.characters.values())
-        return self.start_combat(participants, npcs, party_dex_modifiers, npc_dex_modifiers)
+        return self.start_combat(participants, npcs, party_dex_modifiers, npc_dex_modifiers, session)
 
     def start_combat_with_character(
         self,
         character: CharacterState,
         npcs: List[str],
         character_dex_mod: int = 0,
-        npc_dex_modifiers: Optional[Dict[str, int]] = None
+        npc_dex_modifiers: Optional[Dict[str, int]] = None,
+        session: Optional['GameSession'] = None
     ) -> str:
         """
         Start combat with a single character (convenience wrapper).
@@ -205,16 +217,28 @@ class CombatManager:
             npcs: List of NPC/enemy names
             character_dex_mod: Dexterity modifier for the character
             npc_dex_modifiers: {npc_name: dex_mod} for NPCs/enemies (optional, auto-calculated from stats)
+            session: Optional GameSession for context
 
         Returns:
             String describing initiative order
         """
         participants = [character]
         participant_mods = {character.character_name: character_dex_mod}
-        return self.start_combat(participants, npcs, participant_mods, npc_dex_modifiers)
+        return self.start_combat(participants, npcs, participant_mods, npc_dex_modifiers, session)
+        participants = [character]
+        participant_mods = {character.character_name: character_dex_mod}
+        return self.start_combat(participants, npcs, participant_mods, npc_dex_modifiers, session)
 
-    def get_combat_start_message(self) -> str:
-        """Generate a message announcing combat start and initiative order."""
+    def get_combat_start_message(self, session: Optional['GameSession'] = None) -> str:
+        """
+        Generate a message announcing combat start with dramatic monster descriptions.
+        
+        Args:
+            session: Optional GameSession for context (location, party level)
+            
+        Returns:
+            Combat start message with initiative order
+        """
         if not self.combat.in_combat:
             return "⚠️ Not in combat"
 
@@ -224,12 +248,10 @@ class CombatManager:
         npcs_in_combat = [name for name, init in self.combat.initiative_order
                           if name in self.npc_monsters]
 
+        # Generate encounter description
         if npcs_in_combat:
-            if len(npcs_in_combat) == 1:
-                lines.append(f"⚔️ **A {npcs_in_combat[0]} appears!**\n")
-            else:
-                npc_list = ", ".join(npcs_in_combat[:-1]) + f" and {npcs_in_combat[-1]}"
-                lines.append(f"⚔️ **{npc_list} appear!**\n")
+            encounter_desc = self._generate_encounter_description(npcs_in_combat, session)
+            lines.append(f"⚔️ **{encounter_desc}**\n")
         else:
             lines.append("⚔️ **COMBAT BEGINS!**\n")
 
@@ -246,6 +268,69 @@ class CombatManager:
             lines.append(f"🎯 **{current}'s turn!**")
 
         return "\n".join(lines)
+    
+    def _generate_encounter_description(
+        self,
+        npcs_in_combat: List[str],
+        session: Optional['GameSession'] = None
+    ) -> str:
+        """
+        Generate dramatic encounter description using MonsterDescriptionGenerator.
+        
+        Args:
+            npcs_in_combat: List of NPC/monster names in this encounter
+            session: Optional GameSession for context
+            
+        Returns:
+            Encounter description (LLM-generated if available, fallback otherwise)
+        """
+        # Extract context from session
+        location = session.location if session else "unknown location"
+        party_level = getattr(session, 'party_level', 1) if session else 1
+        
+        # Single monster encounter
+        if len(npcs_in_combat) == 1:
+            monster_name = npcs_in_combat[0]
+            
+            # Track encounter count for variety
+            self.encounter_count[monster_name] = self.encounter_count.get(monster_name, 0) + 1
+            is_repeat = self.encounter_count[monster_name] > 1
+            
+            # Get monster instance for stats
+            monster = self.npc_monsters.get(monster_name)
+            if monster and self.monster_desc_generator:
+                try:
+                    return self.monster_desc_generator.generate_encounter_description(
+                        monster_name=monster_name,
+                        monster_cr=monster.cr,
+                        location=location,
+                        is_repeat_encounter=is_repeat,
+                        party_level=party_level,
+                        fallback_description=f"A {monster_name} appears!"
+                    )
+                except Exception as e:
+                    if self.debug:
+                        print(f"Warning: Monster description generation failed: {e}")
+            
+            # Fallback
+            return f"A {monster_name} appears!"
+        
+        # Multiple monsters
+        else:
+            if self.monster_desc_generator:
+                try:
+                    return self.monster_desc_generator.generate_multi_monster_description(
+                        monster_names=npcs_in_combat,
+                        location=location,
+                        party_level=party_level
+                    )
+                except Exception as e:
+                    if self.debug:
+                        print(f"Warning: Multi-monster description generation failed: {e}")
+            
+            # Fallback
+            npc_list = ", ".join(npcs_in_combat[:-1]) + f" and {npcs_in_combat[-1]}"
+            return f"{npc_list} appear!"
 
     def all_enemies_defeated(self) -> bool:
         """

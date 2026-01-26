@@ -38,12 +38,14 @@ class StartCombatCommand(GameCommand):
         if context.session.party and len(context.session.party.characters) > 0:
             feedback = context.combat_manager.start_combat_with_party(
                 context.session.party,
-                npc_list
+                npc_list,
+                session=context.session
             )
         elif context.session.character_state:
             feedback = context.combat_manager.start_combat_with_character(
                 context.session.character_state,
-                npc_list
+                npc_list,
+                session=context.session
             )
         else:
             return CommandResult.failure("No character or party loaded!")
