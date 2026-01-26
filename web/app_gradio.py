@@ -185,21 +185,21 @@ def load_character_with_debug_wrapper(character_choice: str, scenario_choice: Op
     return (*result, session)
 
 
-def load_character_with_location(character_choice: str, location_name: Optional[str] = None) -> Tuple[str, str, str]:
+def load_character_with_location(character_choice: str, session: Optional['SessionState'], location_name: Optional[str] = None) -> Tuple[str, str, str, 'SessionState']:
     """
     Load character and set specific starting location (for testing).
     
     Args:
         character_choice: Character selection string
+        session: The current session state.
         location_name: Optional location name. If None, uses random.
     
     Returns:
-        Tuple of (location_name, location_desc, character_name)
+        Tuple of (location_name, location_desc, character_name, updated_session)
     """
-    global current_character, conversation_history, gameplay_mode
-    
-    conversation_history = []
-    gameplay_mode = "character"
+    session = ensure_session(session)
+    session.conversation_history = []
+    session.gameplay_mode = "character"
     
     from web.handlers.character_handlers import load_character_with_location as handler_load_char_loc
     
@@ -208,15 +208,15 @@ def load_character_with_location(character_choice: str, location_name: Optional[
         CHARACTERS_DIR,
         STARTING_LOCATIONS,
         COMBAT_LOCATIONS,
-        gm,
+        session.gm, # Use gm from session
         location_name
     )
     
-    # Update global current_character
-    if char_name in gm.session.base_character_stats:
-        current_character = gm.session.base_character_stats[char_name]
+    # Update session current_character
+    if char_name in session.gm.session.base_character_stats:
+        session.current_character = session.gm.session.base_character_stats[char_name]
     
-    return loc_name, loc_desc, char_name
+    return loc_name, loc_desc, char_name, session
 
 
 def delete_character_wrapper(character_choice: str) -> Tuple[str, gr.update]:

@@ -13,7 +13,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 from pathlib import Path
 import time
 
-from config import (
+from e2e_config import (
     BASE_URL,
     BROWSER,
     HEADLESS,
@@ -125,3 +125,26 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "chat: marks tests related to chat functionality"
     )
+
+def pytest_collection_modifyitems(items):
+    """
+    Called after test collection is complete.
+    Apply custom markers to tests based on their filenames.
+    """
+    for item in items:
+        # item.fspath is a legacy LocalPath object, use basename for filename
+        filename = item.fspath.basename
+        
+        # Apply markers based on filename patterns
+        if "playwright" in filename:
+            item.add_marker(pytest.mark.playwright)
+        elif "selenium" in filename:
+            item.add_marker(pytest.mark.selenium)
+        # Check if test is in e2e_tests directory
+        # We convert to string to safely check path components
+        elif "e2e_tests" in str(item.fspath):
+            # Ensure it's not already explicitly marked as playwright or selenium
+            existing_markers = [marker.name for marker in item.iter_markers()]
+            if not any(m in existing_markers for m in ["playwright", "selenium"]):
+                item.add_marker(pytest.mark.e2e_programmatic)
+

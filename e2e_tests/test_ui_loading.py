@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
-from config import BASE_URL, EXPLICIT_WAIT
+from e2e_config import BASE_URL, EXPLICIT_WAIT
 
 
 @pytest.mark.ui

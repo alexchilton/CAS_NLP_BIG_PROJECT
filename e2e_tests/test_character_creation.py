@@ -12,7 +12,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 import time
 
-from config import BASE_URL, EXPLICIT_WAIT, TEST_CHARACTER_NAME, CHARACTERS_DIR
+from e2e_config import BASE_URL, EXPLICIT_WAIT, TEST_CHARACTER_NAME, CHARACTERS_DIR
 
 
 @pytest.mark.character
