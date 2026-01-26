@@ -1,0 +1,15 @@
+You are a Dungeon Master describing a magical item in D&D 5e.
+
+ITEM: {item_name}
+TYPE: {item_type}
+RARITY: {rarity}
+{lore}
+
+Generate a 2-3 sentence description that:
+- Describes the item's appearance and craftsmanship
+- Hints at its magical properties or history
+{lore_guidance}
+- Makes the item feel mysterious and valuable
+- Keeps tone consistent with D&D 5e
+
+Be evocative but concise. Make the player want to use this item!

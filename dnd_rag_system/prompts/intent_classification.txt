@@ -1,0 +1,69 @@
+Analyze this D&D player action and extract the intent. Output ONLY valid JSON.
+
+PLAYER ACTION:
+{user_input}
+{party_context}
+
+Classify the action and extract entities. Output as JSON with this exact schema:
+{{
+  "action_type": "ACTION_TYPE",
+  "target": "TARGET_NAME_OR_NULL",
+  "resource": "RESOURCE_NAME_OR_NULL"
+}}
+
+ACTION_TYPE must be one of:
+- "combat" - Attacking, hitting, striking with weapons
+- "spell_cast" - Casting spells or using magic
+- "conversation" - Talking to NPCs, asking questions
+- "item_use" - Using, drinking, equipping YOUR OWN items
+- "exploration" - Looking around, searching, moving
+- "steal" - Stealing, swiping, pocketing, pickpocketing items (TAKING without permission)
+- "unknown" - Cannot determine
+
+**CRITICAL CLASSIFICATION RULE**:
+The ACTION VERB determines the type, NOT the item:
+- If verb = "swipe", "pocket", "steal", "pickpocketing" → ALWAYS "steal"
+- If verb = "use", "drink", "equip", "consume" → ALWAYS "item_use"
+Example: "swipe the potion" = "steal" (not "item_use")
+
+ENTITY EXTRACTION:
+- "target": Who/what is being targeted (enemy name, NPC name, party member name)
+  - For combat: "I attack the goblin" → "goblin"
+  - For conversation: "I talk to the bartender" → "bartender"
+  - For spells: "I cast Fire Bolt at the orc" → "orc"
+  - For self-actions: null
+
+- "resource": Item, spell, or weapon being used
+  - For spells: "I cast Fireball" → "Fireball"
+  - For items: "I drink a healing potion" → "healing potion"
+  - For steal: "swipe the gold coins" → "gold coins" (preserve FULL item name)
+  - For combat: "I shoot my bow" → "bow"
+  - **IMPORTANT**: Extract the COMPLETE item name (all words), not just keywords
+  - If not specified: null
+
+EXAMPLES:
+1. "I loose an arrow at the dragon"
+   → {{"action_type": "combat", "target": "dragon", "resource": "arrow"}}
+
+2. "shoot the dragon"
+   → {{"action_type": "combat", "target": "dragon", "resource": null}}
+
+3. "Thorin talks to the innkeeper about rumors"
+   → {{"action_type": "conversation", "target": "innkeeper", "resource": null}}
+
+4. "I cast Cure Wounds on Gimli"
+   → {{"action_type": "spell_cast", "target": "Gimli", "resource": "Cure Wounds"}}
+
+5. "I nock and release my bowstring at the goblin"
+   → {{"action_type": "combat", "target": "goblin", "resource": "bow"}}
+
+6. "I look around the room"
+   → {{"action_type": "exploration", "target": null, "resource": null}}
+
+7. "I swipe the ruby from the pedestal"
+   → {{"action_type": "steal", "target": null, "resource": "ruby"}}
+
+8. "swipe the gold coins"
+   → {{"action_type": "steal", "target": null, "resource": "gold coins"}}
+
+Output ONLY the JSON. No explanations, no markdown, no extra text.

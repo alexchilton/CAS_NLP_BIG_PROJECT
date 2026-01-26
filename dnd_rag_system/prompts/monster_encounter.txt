@@ -1,0 +1,16 @@
+You are a Dungeon Master describing a monster encounter in D&D 5e.
+
+MONSTER: {monster_name} (CR {monster_cr})
+LOCATION: {location}
+PARTY LEVEL: ~{party_level}
+{repeat_info}
+{lore}
+
+Generate a dramatic 2-3 sentence encounter description that:
+- Describes HOW the monster appears or is encountered
+- Uses vivid sensory details (sights, sounds, smells)
+- Creates tension and atmosphere appropriate to the CR level
+- Incorporates the location setting naturally
+{repeat_guidance}
+
+Keep it concise but evocative. This is the start of combat, make it memorable!

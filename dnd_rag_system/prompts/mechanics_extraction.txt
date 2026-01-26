@@ -1,0 +1,74 @@
+Extract D&D game mechanics from this narrative. Output ONLY valid JSON, no other text.
+
+NARRATIVE:
+{narrative}
+{char_context}{npc_context}
+Extract mechanics and output as JSON with this exact schema:
+{{
+  "damage": [
+    {{"target": "TARGET_NAME", "amount": NUMBER, "type": "DAMAGE_TYPE"}}
+  ],
+  "healing": [
+    {{"target": "TARGET_NAME", "amount": NUMBER, "source": "SOURCE"}}
+  ],
+  "conditions_added": [
+    {{"target": "TARGET_NAME", "condition": "CONDITION_NAME", "duration": NUMBER}}
+  ],
+  "conditions_removed": [
+    {{"target": "TARGET_NAME", "condition": "CONDITION_NAME"}}
+  ],
+  "spell_slots_used": [
+    {{"caster": "CASTER_NAME", "level": NUMBER, "spell": "SPELL_NAME"}}
+  ],
+  "items_consumed": [
+    {{"character": "CHARACTER_NAME", "item": "ITEM_NAME", "quantity": NUMBER}}
+  ],
+  "items_acquired": [
+    {{"character": "CHARACTER_NAME", "item": "ITEM_NAME", "quantity": NUMBER}}
+  ],
+  "deaths": [
+    {{"character": "CHARACTER_NAME"}}
+  ],
+  "unconscious": [
+    {{"character": "CHARACTER_NAME"}}
+  ],
+  "npcs_introduced": [
+    {{"name": "NPC_NAME", "type": "NPC_TYPE"}}
+  ]
+}}
+
+DAMAGE EXAMPLES (who receives damage):
+- "Thorin strikes the goblin" → {{"target": "goblin", "amount": X}}
+- "The goblin hits Thorin" → {{"target": "Thorin", "amount": X}}
+- "Your sword cuts the wolf" → {{"target": "wolf", "amount": X}}
+- "The wolf bites you" → {{"target": "you", "amount": X}}
+- "Arrow embeds into the orc" → {{"target": "orc", "amount": X}}
+
+RULES:
+- **MOST IMPORTANT**: Only extract mechanics that ACTUALLY HAPPENED in the narrative
+- **CRITICAL**: Only include damage if actual damage was dealt (amount > 0)
+  - "Dragon appears" → NO damage
+  - "Thorin readies sword" → NO damage  
+  - "Dragon ATTACKS and hits for 15" → YES, damage
+- **DO NOT** include damage entries with amount: 0 or negative values
+- **DO NOT** hallucinate or invent events not explicitly described
+- Empty arrays are OK for fields with no events
+- Use exact names from the narrative for target/character fields
+- **DAMAGE TARGET**: Who RECEIVES damage, not who deals it
+  - "Thorin strikes the goblin" → target: "Goblin" (goblin receives damage)
+  - "The goblin hits you" → target: "you" or player name (player receives damage)
+  - "Your sword cuts the wolf" → target: "Wolf" (wolf receives damage)
+- Damage types: slashing, piercing, bludgeoning, fire, cold, lightning, poison, acid, etc.
+- Conditions: poisoned, stunned, paralyzed, frightened, charmed, etc.
+- Items consumed: When character drinks potion, eats food, uses consumable
+- Items acquired: When character picks up, takes, finds, or receives items
+- NPCs: Extract ONLY NEW creatures/monsters/NPCs that PHYSICALLY APPEAR in THIS narrative
+  - CRITICAL: ONLY include if the NPC actually SHOWS UP and is PRESENT in this scene
+
+NPC APPEARANCE EXAMPLES:
+- "A goblin jumps out!" → {{"name": "Goblin", "type": "enemy"}} (goblin appears)
+- "The bartender tells you about goblins" → NO NPC (only mentioned, not present)
+- "You remember seeing a dragon" → NO NPC (memory, not present)
+- "A wizard materializes before you" → {{"name": "Wizard", "type": "neutral"}} (wizard appears)
+
+Output ONLY the JSON. No explanations, no markdown, no extra text.

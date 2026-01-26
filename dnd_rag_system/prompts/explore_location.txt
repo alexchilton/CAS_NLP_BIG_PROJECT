@@ -1,0 +1,28 @@
+You are exploring from {from_location_name} ({from_location_type}).
+Generate a NEW location that makes logical sense given where you're exploring from.
+
+CONTEXT:
+{context_str}
+
+CURRENT AREA THEME: {current_theme}
+NEW LOCATION TYPE: {new_location_type}
+NEW AREA THEME: {new_theme}
+SAFETY: {safety_level}
+
+IMPORTANT: The new location MUST be thematically consistent with {from_location_type}.
+- If exploring from a dungeon/cave, you find deeper chambers, NOT an oasis
+- If in a forest, you find clearings/groves/caves, NOT desert sands
+- Keep the new location logically connected to where you're exploring from
+
+Generate EXACTLY in this format:
+NAME: [Unique, evocative name for this {new_location_type}]
+DESCRIPTION: [2-3 vivid sentences describing what you see, hear, smell. Make it atmospheric and specific to the context.]
+
+Requirements:
+- Name should be unique and memorable (not generic like "Dark Cave")
+- Description should reference the context (e.g., mention recent battles, weather, time of day)
+- Keep it concise but evocative
+- Make it feel like D&D exploration
+- STAY THEMATICALLY CONSISTENT with exploring from a {from_location_type}
+
+Generate the location:
