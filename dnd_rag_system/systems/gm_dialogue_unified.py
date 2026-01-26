@@ -36,6 +36,7 @@ from dnd_rag_system.systems.spell_manager import SpellManager
 from dnd_rag_system.systems.commands import CommandDispatcher, CommandContext
 from dnd_rag_system.constants import Commands, ActionKeywords
 from dnd_rag_system.dialogue.rag_retriever import RAGRetriever
+from dnd_rag_system.dialogue.conversation_history_manager import ConversationHistoryManager, Message
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -53,15 +54,6 @@ if DEBUG_PROMPTS:
 
 # Environment detection moved to dnd_rag_system.config.environment
 # Imported above for backward compatibility
-
-
-@dataclass
-class Message:
-    """Conversation message for GM dialogue history."""
-    role: str  # 'player', 'gm', 'system'
-    content: str
-    rag_context: Optional[str] = None
-    timestamp: Optional[str] = None  # For tracking when message occurred
 
 
 class GameMaster:
@@ -84,8 +76,11 @@ class GameMaster:
         """
         self.db = db_manager
         self.session = GameSession(session_name="D&D Adventure")
-        self.message_history: List[Message] = []  # Active conversation history
-        self.conversation_summary: str = ""  # Compressed summary of older messages
+
+        # Conversation History System (Phase 2 refactoring: extracted from GameMaster)
+        from dnd_rag_system.config.settings import MAX_MESSAGE_HISTORY
+        self.history_manager = ConversationHistoryManager(max_history=MAX_MESSAGE_HISTORY)
+
         self.action_validator = ActionValidator(debug=DEBUG_PROMPTS)  # Reality check system
         self.shop = ShopSystem(db_manager, debug=DEBUG_PROMPTS)  # Shop transaction system
         self.spell_manager = SpellManager(db_manager)  # Spell and resource management
@@ -115,98 +110,11 @@ class GameMaster:
             debug=DEBUG_PROMPTS
         )
 
-    # NOTE: search_rag() and format_rag_context() methods have been removed
-    # They are now handled by the RAGRetriever class (Phase 1 refactoring)
-    # Access via: self.rag_retriever.search_rag() and self.rag_retriever.format_rag_context()
-
-    def _prune_message_history(self):
-        """
-        Prune message history to prevent context window overflow.
-        Keeps recent messages and creates summary of older ones.
-        Uses more aggressive pruning for party mode.
-        """
-        from dnd_rag_system.config.settings import MAX_MESSAGE_HISTORY, SUMMARIZE_EVERY_N_MESSAGES
-        
-        # More aggressive pruning for party mode (5 characters = larger prompts)
-        is_party_mode = self.session.party and len(self.session.party.characters) > 0
-        max_history = MAX_MESSAGE_HISTORY if not is_party_mode else max(12, MAX_MESSAGE_HISTORY // 2)
-        
-        # If history is within limits, no action needed
-        if len(self.message_history) <= max_history:
-            return
-        
-        # Calculate how many messages to summarize
-        messages_to_summarize = len(self.message_history) - max_history
-        
-        # Extract messages to summarize
-        old_messages = self.message_history[:messages_to_summarize]
-        
-        # Create summary of old messages
-        summary_text = self._create_message_summary(old_messages)
-        
-        # Update conversation summary
-        if self.conversation_summary:
-            self.conversation_summary += f"\n\n--- Session Continued ---\n{summary_text}"
-        else:
-            self.conversation_summary = summary_text
-        
-        # Keep only recent messages
-        self.message_history = self.message_history[messages_to_summarize:]
-        
-        # Log for debugging
-        mode_indicator = "party mode" if is_party_mode else "solo mode"
-        logger.info(f"📝 Pruned {messages_to_summarize} messages ({mode_indicator}). History now: {len(self.message_history)} messages")
-        self.session.add_note(f"Conversation history summarized ({messages_to_summarize} messages archived, {mode_indicator})")
-
-    def _create_message_summary(self, messages: List[Message]) -> str:
-        """
-        Create a concise summary of message exchanges.
-        Focuses on key events: combat, quests, important discoveries.
-        
-        Args:
-            messages: List of messages to summarize
-            
-        Returns:
-            Summary text
-        """
-        if not messages:
-            return ""
-        
-        # Build summary from key events
-        summary_lines = []
-        
-        for msg in messages:
-            # Extract important events (combat, quests, travel, shopping)
-            content_lower = msg.content.lower()
-            
-            # Combat events
-            if any(word in content_lower for word in ['combat', 'attack', 'damage', 'hp', 'defeated', 'killed']):
-                if msg.role == 'gm':
-                    # Condensed combat outcome
-                    if 'defeated' in content_lower or 'killed' in content_lower or 'fled' in content_lower:
-                        summary_lines.append(f"⚔️ Combat: {msg.content[:100]}")
-            
-            # Quest events
-            elif any(word in content_lower for word in ['quest', 'mission', 'task', 'objective']):
-                summary_lines.append(f"📜 Quest: {msg.content[:100]}")
-            
-            # Travel/exploration
-            elif any(word in content_lower for word in ['travel', 'arrive', 'enter', 'leave', 'journey']):
-                summary_lines.append(f"🗺️ Travel: {msg.content[:100]}")
-            
-            # Shopping/transactions
-            elif any(word in content_lower for word in ['buy', 'sell', 'purchase', 'gold', 'shop']):
-                summary_lines.append(f"💰 Trade: {msg.content[:100]}")
-            
-            # Important discoveries
-            elif any(word in content_lower for word in ['find', 'discover', 'treasure', 'loot', 'item']):
-                summary_lines.append(f"🔍 Discovery: {msg.content[:100]}")
-        
-        # If no key events found, create generic summary
-        if not summary_lines:
-            return f"The party had {len(messages)//2} exchanges covering general exploration and conversation."
-        
-        return "\n".join(summary_lines)
+    # NOTE: Phase 1 & 2 Refactoring - Methods moved to extracted classes:
+    # - search_rag() and format_rag_context() → RAGRetriever class
+    #   Access via: self.rag_retriever.search_rag() and self.rag_retriever.format_rag_context()
+    # - _prune_message_history() and _create_message_summary() → ConversationHistoryManager class
+    #   Access via: self.history_manager.prune_history() and other methods
 
     def generate_response(self, player_input: str, use_rag: bool = True) -> str:
         """
@@ -262,9 +170,10 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             combat_feedback = command_result.feedback if command_result.feedback else ""
 
             # Log to message history
-            self.message_history.append(Message('player', player_input))
-            self.message_history.append(Message('system', combat_feedback))
-            self._prune_message_history()  # Prevent context overflow
+            self.history_manager.add_message('player', player_input)
+            self.history_manager.add_message('system', combat_feedback)
+            is_party_mode = self.session.party and len(self.session.party.characters) > 0
+            self.history_manager.prune_history(is_party_mode)  # Prevent context overflow
 
             return combat_feedback
 
@@ -445,9 +354,10 @@ CRITICAL INSTRUCTIONS:
                 self.session.character_state = original_character_state
 
             # Save to history
-            self.message_history.append(Message('player', player_input))
-            self.message_history.append(Message('gm', response))
-            self._prune_message_history()  # Prevent context overflow
+            self.history_manager.add_message('player', player_input)
+            self.history_manager.add_message('gm', response)
+            is_party_mode = self.session.party and len(self.session.party.characters) > 0
+            self.history_manager.prune_history(is_party_mode)  # Prevent context overflow
             self.session.add_note(f"Invalid action rejected: {validation.action.action_type.value}")
 
             return response
@@ -836,9 +746,10 @@ This is D&D 5e rules - initiative determines who goes first!"""
                 response = response + combat_feedback
 
             # Save to history
-            self.message_history.append(Message('player', player_input, rag_context if use_rag else None))
-            self.message_history.append(Message('gm', response))
-            self._prune_message_history()  # Prevent context overflow
+            self.history_manager.add_message('player', player_input, rag_context if use_rag else None)
+            self.history_manager.add_message('gm', response)
+            is_party_mode = self.session.party and len(self.session.party.characters) > 0
+            self.history_manager.prune_history(is_party_mode)  # Prevent context overflow
             self.session.add_note(f"Player: {player_input[:50]}... | GM: {response[:50]}...")
 
             return response
@@ -975,12 +886,8 @@ This is D&D 5e rules - initiative determines who goes first!"""
 
         # Get recent conversation history
         from dnd_rag_system.config.settings import RECENT_MESSAGES_FOR_PROMPT
-        
-        recent_messages = self.message_history[-RECENT_MESSAGES_FOR_PROMPT:] if len(self.message_history) > RECENT_MESSAGES_FOR_PROMPT else self.message_history
-        history_text = "\n".join([
-            f"{'Player' if msg.role == 'player' else 'GM'}: {msg.content}"
-            for msg in recent_messages
-        ])
+
+        history_text = self.history_manager.format_for_prompt(RECENT_MESSAGES_FOR_PROMPT)
 
         # Build game state context
         prompt = f"""You are an experienced Dungeon Master running a D&D 5e game.
@@ -991,8 +898,9 @@ TIME: Day {self.session.day}, {self.session.time_of_day}
 """
 
         # Add conversation summary if it exists (for context continuity)
-        if self.conversation_summary:
-            prompt += f"\nPREVIOUS SESSION SUMMARY:\n{self.conversation_summary[-500:]}\n"  # Last 500 chars of summary
+        summary = self.history_manager.get_summary(max_chars=500)
+        if summary:
+            prompt += f"\nPREVIOUS SESSION SUMMARY:\n{summary}\n"
 
         # Add location context for better narrative consistency
         current_loc = self.session.get_current_location_obj()
