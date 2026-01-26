@@ -29,8 +29,6 @@ from dnd_rag_system.systems.action_validator import (
 )
 from dnd_rag_system.systems.shop_system import ShopSystem
 from dnd_rag_system.systems.combat_manager import CombatManager
-from dnd_rag_system.systems.mechanics_extractor import MechanicsExtractor
-from dnd_rag_system.systems.mechanics_applicator import MechanicsApplicator
 from dnd_rag_system.systems.encounter_system import EncounterSystem
 from dnd_rag_system.systems.spell_manager import SpellManager
 from dnd_rag_system.systems.commands import CommandDispatcher, CommandContext
@@ -87,9 +85,9 @@ class GameMaster:
         self.spell_manager = SpellManager(db_manager)  # Spell and resource management
         self.combat_manager = CombatManager(self.session.combat, spell_manager=self.spell_manager, debug=DEBUG_PROMPTS)  # Combat system with XP tracking
 
-        # Narrative to Mechanics Translation System
-        self.mechanics_extractor = MechanicsExtractor(debug=DEBUG_PROMPTS)
-        self.mechanics_applicator = MechanicsApplicator(debug=DEBUG_PROMPTS)
+        # Unified Mechanics Service (Phase 6 refactoring: facade for extraction + application)
+        from dnd_rag_system.systems.mechanics_service import MechanicsService
+        self.mechanics_service = MechanicsService(debug=DEBUG_PROMPTS)
 
         # Random Encounter System
         self.encounter_system = EncounterSystem(chromadb_manager=db_manager)
@@ -526,106 +524,26 @@ This is D&D 5e rules - initiative determines who goes first!"""
             # SKIP for shop transactions - already handled by shop system
             if not is_shop_transaction and (self.session.character_state or (self.session.party and len(self.session.party.characters) > 0)):
                 try:
-                    # Get character names for better extraction
-                    char_names = []
-                    if self.session.party and len(self.session.party.characters) > 0:
-                        char_names = list(self.session.party.characters.keys())
-                    elif self.session.character_state:
-                        char_names = [self.session.character_state.character_name]
-
-                    # Extract mechanics from GM response
-                    mechanics = self.mechanics_extractor.extract(
-                        response, 
-                        char_names,
-                        existing_npcs=self.session.npcs_present  # Pass existing NPCs to avoid re-adding them
+                    # Process narrative through mechanics service (extraction + application)
+                    encounter_name = encounter.monster_name if encounter else None
+                    feedback_messages = self.mechanics_service.process_narrative(
+                        response,
+                        self.session,
+                        combat_manager=self.combat_manager,
+                        encounter_monster_name=encounter_name
                     )
-
-                    # Apply to game state if any mechanics found
-                    if mechanics.has_mechanics():
-                        # Filter NPCs: Remove hallucinations and already-present NPCs
-                        if mechanics.npcs_introduced:
-                            original_count = len(mechanics.npcs_introduced)
-                            filtered_npcs = []
-                            existing_lower = [npc.lower() for npc in self.session.npcs_present]
-                            
-                            for npc in mechanics.npcs_introduced:
-                                npc_name = npc.get('name', '').strip()
-                                npc_name_lower = npc_name.lower()
-                                
-                                # Skip if already present
-                                if npc_name_lower in existing_lower:
-                                    if DEBUG_PROMPTS:
-                                        logger.debug(f"🔧 Filtered NPC '{npc_name}' - already present")
-                                    continue
-                                
-                                # If there's an encounter, only allow the encounter monster or non-enemy NPCs
-                                if encounter:
-                                    encounter_name = encounter.monster_name.strip().lower()
-                                    
-                                    # Allow the actual encounter monster
-                                    if npc_name_lower == encounter_name:
-                                        filtered_npcs.append(npc)
-                                    # Allow non-monster NPCs (merchants, guards, etc.) if type is not "enemy"
-                                    elif npc.get('type') != 'enemy':
-                                        filtered_npcs.append(npc)
-                                    else:
-                                        # This is a hallucinated enemy - skip it
-                                        if DEBUG_PROMPTS:
-                                            logger.debug(f"🔧 Filtered hallucinated enemy '{npc_name}' - actual encounter is '{encounter_name}'")
-                                else:
-                                    # No encounter - just add the NPC
-                                    filtered_npcs.append(npc)
-                            
-                            mechanics.npcs_introduced = filtered_npcs
-                            if DEBUG_PROMPTS and original_count != len(filtered_npcs):
-                                logger.debug(f"🔧 Filtered {original_count - len(filtered_npcs)} NPC(s) from mechanics extraction")
-                        
-                        npc_feedback = self.mechanics_applicator.apply_npcs_to_session(mechanics, self.session)
-
-                        # Apply damage/healing/conditions to characters
-                        if self.session.party and len(self.session.party.characters) > 0:
-                            # Apply to party
-                            feedback = self.mechanics_applicator.apply_to_party(mechanics, self.session.party)
-                        else:
-                            # Apply to single character (pass session for item tracking)
-                            feedback = self.mechanics_applicator.apply_to_character(
-                                mechanics, 
-                                self.session.character_state,
-                                game_session=self.session
-                            )
-                        
-                        # Apply damage to NPCs (enemies) - NEW!
-                        npc_damage_feedback = self.mechanics_applicator.apply_damage_to_npcs(
-                            mechanics,
-                            self.combat_manager,
-                            self.session
-                        )
-
-                        # Combine all feedbacks
-                        all_feedback = npc_feedback + feedback + npc_damage_feedback
-
-                        # Deduplicate feedback messages (fixes LLM prompt leakage causing duplicate extractions)
-                        if all_feedback:
-                            unique_feedback = []
-                            seen = set()
-                            for msg in all_feedback:
-                                # Normalize message for comparison (remove emojis/formatting)
-                                normalized = msg.strip().lower()
-                                if normalized not in seen:
-                                    seen.add(normalized)
-                                    unique_feedback.append(msg)
-
-                        # Add mechanics feedback to combat output
-                        if unique_feedback:
-                            mechanics_output = "\n\n**⚙️ MECHANICS:**\n" + "\n".join(unique_feedback)
-                            combat_feedback += mechanics_output
-
-                        if DEBUG_PROMPTS and all_feedback:
-                            logger.debug("=" * 80)
-                            logger.debug("MECHANICS AUTO-APPLIED TO GAME STATE:")
-                            for msg in all_feedback:
-                                logger.debug(f"  {msg}")
-                            logger.debug("=" * 80)
+                    
+                    # Add mechanics feedback to combat output
+                    if feedback_messages:
+                        mechanics_output = "\n\n**⚙️ MECHANICS:**\n" + "\n".join(feedback_messages)
+                        combat_feedback += mechanics_output
+                    
+                    if DEBUG_PROMPTS and feedback_messages:
+                        logger.debug("=" * 80)
+                        logger.debug("MECHANICS AUTO-APPLIED TO GAME STATE:")
+                        for msg in feedback_messages:
+                            logger.debug(f"  {msg}")
+                        logger.debug("=" * 80)
 
                 except Exception as e:
                     logger.error(f"Mechanics extraction/application failed: {e}")
