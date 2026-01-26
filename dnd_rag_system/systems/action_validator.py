@@ -24,9 +24,9 @@ from dnd_rag_system.constants import ActionKeywords, SpellKeywords
 
 logger = logging.getLogger(__name__)
 
-# Import config for default classifier type and LLM client factory
+# Import config for default classifier type and LLM client
 from dnd_rag_system.config import IntentClassifierConfig
-from dnd_rag_system.core.llm_client import LLMClientFactory
+from dnd_rag_system.core.llm_client import LLMClient
 
 DEFAULT_CLASSIFIER = IntentClassifierConfig.DEFAULT_CLASSIFIER
 
@@ -112,13 +112,16 @@ class ActionValidator:
         self.classifier_type = classifier_type if classifier_type is not None else DEFAULT_CLASSIFIER
         self.compare_classifiers = compare_classifiers
 
-        # Use factory to create client with automatic environment detection
-        # For ActionValidator, use qwen2.5:3b for local (fast intent classification)
-        self.client, self.llm_model, self.use_hf_api = LLMClientFactory.create_client(
+        # Initialize unified LLM client for intent classification
+        self.llm_client = LLMClient(
             model_name="qwen2.5:3b",  # Fast model for intent classification
             hf_token=hf_token,
             debug=debug
         )
+        # Keep these for backward compatibility
+        self.client = self.llm_client.client
+        self.llm_model = self.llm_client.model_name
+        self.use_hf_api = self.llm_client.use_hf_api
 
         self.llm_timeout = 10
 
@@ -944,11 +947,13 @@ class ActionValidator:
         prompt = self._build_intent_prompt(user_input)
 
         try:
-            # Choose query method based on environment
-            if self.use_hf_api:
-                raw_response = self._query_hf_api_intent(prompt)
-            else:
-                raw_response = self._query_ollama_intent(prompt)
+            # Use unified LLM client
+            raw_response = self.llm_client.query(
+                prompt=prompt,
+                system_message="You are an intent classifier for D&D actions. Respond only with valid JSON.",
+                temperature=0.1,  # Low temperature for consistent classification
+                max_tokens=150
+            )
 
             if self.debug:
                 logger.debug(f"🤖 LLM Intent Response: {raw_response[:200]}...")
@@ -1075,85 +1080,16 @@ JSON:"""
 
         return prompt
 
-    def _query_ollama_intent(self, prompt: str) -> str:
-        """Query Ollama with the intent classification prompt (local mode)."""
-        try:
-            result = subprocess.run(
-                ['ollama', 'run', self.llm_model, prompt],
-                capture_output=True,
-                text=True,
-                timeout=self.llm_timeout
-            )
-
-            if result.returncode != 0:
-                raise Exception(f"Ollama error: {result.stderr}")
-
-            return result.stdout.strip()
-
-        except subprocess.TimeoutExpired:
-            raise Exception(f"Ollama query timed out after {self.llm_timeout}s")
-        except FileNotFoundError:
-            raise Exception("Ollama not found. Install from https://ollama.ai")
-        except Exception as e:
-            raise Exception(f"Ollama query failed: {e}")
-
-    def _query_hf_api_intent(self, prompt: str) -> str:
-        """
-        Query HuggingFace Inference API with the intent classification prompt (HF mode).
-
-        Args:
-            prompt: Complete prompt for intent classification
-
-        Returns:
-            Model response (JSON string)
-        """
-        if self.debug:
-            logger.debug("=" * 80)
-            logger.debug("INTENT PROMPT SENT TO HUGGING FACE API:")
-            logger.debug("-" * 80)
-            logger.debug(prompt)
-            logger.debug("=" * 80)
-
-        try:
-            # Try chat_completion first (huggingface-hub >= 0.22)
-            # Fall back to text_generation for older versions (0.20.3)
-            if hasattr(self.client, 'chat_completion'):
-                # Newer API (v0.22+)
-                messages = [{"role": "user", "content": prompt}]
-
-                response = self.client.chat_completion(
-                    messages=messages,
-                    model=self.llm_model,
-                    max_tokens=150,  # Intent classification needs less tokens than full GM responses
-                    temperature=0.3,  # Lower temperature for more deterministic classification
-                    top_p=0.9,
-                )
-
-                # Extract the response text
-                response_text = response.choices[0].message.content.strip()
-            else:
-                # Older API (v0.20.3) - use text_generation
-                logger.info("Using text_generation API (huggingface-hub < 0.22)")
-                response_text = self.client.text_generation(
-                    prompt=prompt,
-                    model=self.llm_model,
-                    max_new_tokens=150,
-                    temperature=0.3,
-                    top_p=0.9,
-                    return_full_text=False,  # Only return generated text, not prompt
-                )
-
-            # Log response if debug mode is enabled
-            if self.debug:
-                logger.debug("-" * 80)
-                logger.debug("INTENT RESPONSE FROM HUGGING FACE API:")
-                logger.debug(response_text)
-                logger.debug("=" * 80)
-
-            return response_text if response_text else "{}"
-
-        except Exception as e:
-            raise Exception(f"HF Inference API query failed: {e}")
+    # DEPRECATED: These methods are no longer used. The unified LLMClient handles all queries.
+    # Kept for reference only. Remove in future refactoring.
+    
+    # def _query_ollama_intent(self, prompt: str) -> str:
+    #     """DEPRECATED: Use self.llm_client.query() instead."""
+    #     pass
+    
+    # def _query_hf_api_intent(self, prompt: str) -> str:
+    #     """DEPRECATED: Use self.llm_client.query() instead."""
+    #     pass
 
     def _parse_intent_response(self, raw_response: str) -> Dict[str, Any]:
         """Parse LLM response into intent dictionary."""

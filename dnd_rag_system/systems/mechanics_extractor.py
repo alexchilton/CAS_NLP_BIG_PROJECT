@@ -21,8 +21,8 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-# Import LLM client factory for unified client creation
-from dnd_rag_system.core.llm_client import LLMClientFactory
+# Import unified LLM client
+from dnd_rag_system.core.llm_client import LLMClient
 
 # Default model for mechanics extraction
 # Change this in one place to switch models across the entire system
@@ -154,12 +154,16 @@ class MechanicsExtractor:
         self.debug = debug
         self.timeout = timeout
 
-        # Use factory to create client with automatic environment detection
-        self.client, self.model_name, self.use_hf_api = LLMClientFactory.create_client(
+        # Initialize unified LLM client
+        self.llm_client = LLMClient(
             model_name=model_name,
             hf_token=hf_token,
             debug=debug
         )
+        # Keep these for backward compatibility
+        self.client = self.llm_client.client
+        self.model_name = self.llm_client.model_name
+        self.use_hf_api = self.llm_client.use_hf_api
 
         if self.debug:
             logger.setLevel(logging.DEBUG)
@@ -201,13 +205,14 @@ class MechanicsExtractor:
             logger.debug(prompt)
             logger.debug("=" * 80)
 
-        # Query LLM
+        # Query LLM using unified client
         try:
-            # Choose query method based on environment
-            if self.use_hf_api:
-                raw_response = self._query_hf_api(prompt)
-            else:
-                raw_response = self._query_ollama(prompt)
+            raw_response = self.llm_client.query(
+                prompt=prompt,
+                system_message="You are a D&D mechanics parser. Extract game mechanics from narrative text and respond with valid JSON only.",
+                temperature=0.1,  # Low temperature for consistent extraction
+                max_tokens=300
+            )
 
             if self.debug:
                 logger.debug("RAW LLM RESPONSE:")
@@ -349,85 +354,16 @@ JSON:"""
 
         return prompt
 
-    def _query_ollama(self, prompt: str) -> str:
-        """Query Ollama with the extraction prompt (local mode)."""
-        try:
-            result = subprocess.run(
-                ['ollama', 'run', self.model_name, prompt],
-                capture_output=True,
-                text=True,
-                timeout=self.timeout
-            )
-
-            if result.returncode != 0:
-                raise Exception(f"Ollama error: {result.stderr}")
-
-            return result.stdout.strip()
-
-        except subprocess.TimeoutExpired:
-            raise Exception(f"Ollama query timed out after {self.timeout}s")
-        except FileNotFoundError:
-            raise Exception("Ollama not found. Install from https://ollama.ai")
-        except Exception as e:
-            raise Exception(f"Ollama query failed: {e}")
-
-    def _query_hf_api(self, prompt: str) -> str:
-        """
-        Query HuggingFace Inference API with the extraction prompt (HF mode).
-
-        Args:
-            prompt: Complete prompt for mechanics extraction
-
-        Returns:
-            Model response (JSON string)
-        """
-        if self.debug:
-            logger.debug("=" * 80)
-            logger.debug("MECHANICS EXTRACTION PROMPT SENT TO HUGGING FACE API:")
-            logger.debug("-" * 80)
-            logger.debug(prompt)
-            logger.debug("=" * 80)
-
-        try:
-            # Try chat_completion first (huggingface-hub >= 0.22)
-            # Fall back to text_generation for older versions (0.20.3)
-            if hasattr(self.client, 'chat_completion'):
-                # Newer API (v0.22+)
-                messages = [{"role": "user", "content": prompt}]
-
-                response = self.client.chat_completion(
-                    messages=messages,
-                    model=self.model_name,
-                    max_tokens=500,  # Mechanics extraction needs more tokens for complete JSON
-                    temperature=0.1,  # Very low temperature for precise JSON extraction
-                    top_p=0.9,
-                )
-
-                # Extract the response text
-                response_text = response.choices[0].message.content.strip()
-            else:
-                # Older API (v0.20.3) - use text_generation
-                logger.info("Using text_generation API (huggingface-hub < 0.22)")
-                response_text = self.client.text_generation(
-                    prompt=prompt,
-                    model=self.model_name,
-                    max_new_tokens=500,
-                    temperature=0.1,
-                    top_p=0.9,
-                    return_full_text=False,  # Only return generated text, not prompt
-                )
-
-            # Log response if debug mode is enabled
-            if self.debug:
-                logger.debug("-" * 80)
-                logger.debug("MECHANICS EXTRACTION RESPONSE FROM HUGGING FACE API:")
-                logger.debug(response_text)
-                logger.debug("=" * 80)
-
-            return response_text if response_text else "{}"
-
-        except Exception as e:
-            raise Exception(f"HF Inference API query failed: {e}")
+    # DEPRECATED: These methods are no longer used. The unified LLMClient handles all queries.
+    # Kept for reference only. Remove in future refactoring.
+    
+    # def _query_ollama(self, prompt: str) -> str:
+    #     """DEPRECATED: Use self.llm_client.query() instead."""
+    #     pass
+    
+    # def _query_hf_api(self, prompt: str) -> str:
+    #     """DEPRECATED: Use self.llm_client.query() instead."""
+    #     pass
 
     def _parse_response(self, raw_response: str) -> ExtractedMechanics:
         """
