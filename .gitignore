@@ -37,3 +37,11 @@ dnd_rag_system.log
 # Environment
 .env
 e2e_tests/screenshots/
+
+# Ignore binary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.mp4
+*.mov
