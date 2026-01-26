@@ -3,7 +3,7 @@ D&D 5e Spell and Resource Management System
 
 Handles:
 - RAG-based spell level lookup
-- Spell slot progression by class/level
+- Spell slot progression by class/level (using centralized constants)
 - Potion effects and healing
 - Spell targeting (self, ally, enemy)
 - Cantrip detection
@@ -14,6 +14,13 @@ import random
 from typing import Dict, List, Optional, Tuple, Any
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.config import settings
+from dnd_rag_system.config.game_mechanics import (
+    SPELL_SLOTS_FULL_CASTER,
+    SPELL_SLOTS_HALF_CASTER,
+    SPELL_SLOTS_THIRD_CASTER,
+    SPELL_SLOTS_WARLOCK,
+    CR_TO_XP
+)
 
 
 class SpellManager:
@@ -49,91 +56,21 @@ class SpellManager:
     def _init_spell_slot_progression(self) -> Dict[str, Dict[int, Dict[int, int]]]:
         """
         Initialize D&D 5e spell slot progression tables.
-
+        
+        Now uses centralized constants from config.game_mechanics.
         Returns spell slots by: {class_name: {character_level: {spell_level: num_slots}}}
         """
-        # Full casters (Wizard, Sorcerer, Cleric, Druid, Bard)
-        full_caster = {
-            1: {1: 2},
-            2: {1: 3},
-            3: {1: 4, 2: 2},
-            4: {1: 4, 2: 3},
-            5: {1: 4, 2: 3, 3: 2},
-            6: {1: 4, 2: 3, 3: 3},
-            7: {1: 4, 2: 3, 3: 3, 4: 1},
-            8: {1: 4, 2: 3, 3: 3, 4: 2},
-            9: {1: 4, 2: 3, 3: 3, 4: 3, 5: 1},
-            10: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2},
-            11: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1},
-            12: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1},
-            13: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1},
-            14: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1},
-            15: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1},
-            16: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1},
-            17: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1},
-            18: {1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 1, 7: 1, 8: 1, 9: 1},
-            19: {1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 2, 7: 1, 8: 1, 9: 1},
-            20: {1: 4, 2: 3, 3: 3, 4: 3, 5: 3, 6: 2, 7: 2, 8: 1, 9: 1},
-        }
-
-        # Half casters (Paladin, Ranger)
-        half_caster = {
-            1: {},
-            2: {1: 2},
-            3: {1: 3},
-            4: {1: 3},
-            5: {1: 4, 2: 2},
-            6: {1: 4, 2: 2},
-            7: {1: 4, 2: 3},
-            8: {1: 4, 2: 3},
-            9: {1: 4, 2: 3, 3: 2},
-            10: {1: 4, 2: 3, 3: 2},
-            11: {1: 4, 2: 3, 3: 3},
-            12: {1: 4, 2: 3, 3: 3},
-            13: {1: 4, 2: 3, 3: 3, 4: 1},
-            14: {1: 4, 2: 3, 3: 3, 4: 1},
-            15: {1: 4, 2: 3, 3: 3, 4: 2},
-            16: {1: 4, 2: 3, 3: 3, 4: 2},
-            17: {1: 4, 2: 3, 3: 3, 4: 3, 5: 1},
-            18: {1: 4, 2: 3, 3: 3, 4: 3, 5: 1},
-            19: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2},
-            20: {1: 4, 2: 3, 3: 3, 4: 3, 5: 2},
-        }
-
-        # Warlock (Pact Magic - different system, but simplified here)
-        warlock = {
-            1: {1: 1},
-            2: {1: 2},
-            3: {2: 2},
-            4: {2: 2},
-            5: {3: 2},
-            6: {3: 2},
-            7: {4: 2},
-            8: {4: 2},
-            9: {5: 2},
-            10: {5: 2},
-            11: {5: 3},
-            12: {5: 3},
-            13: {5: 3},
-            14: {5: 3},
-            15: {5: 3},
-            16: {5: 3},
-            17: {5: 4},
-            18: {5: 4},
-            19: {5: 4},
-            20: {5: 4},
-        }
-
         return {
-            "Wizard": full_caster,
-            "Sorcerer": full_caster,
-            "Cleric": full_caster,
-            "Druid": full_caster,
-            "Bard": full_caster,
-            "Paladin": half_caster,
-            "Ranger": half_caster,
-            "Warlock": warlock,
-            # Non-casters
+            "Wizard": SPELL_SLOTS_FULL_CASTER,
+            "Sorcerer": SPELL_SLOTS_FULL_CASTER,
+            "Cleric": SPELL_SLOTS_FULL_CASTER,
+            "Druid": SPELL_SLOTS_FULL_CASTER,
+            "Bard": SPELL_SLOTS_FULL_CASTER,
+            "Paladin": SPELL_SLOTS_HALF_CASTER,
+            "Ranger": SPELL_SLOTS_HALF_CASTER,
+            "Warlock": SPELL_SLOTS_WARLOCK,
+            "Eldritch Knight": SPELL_SLOTS_THIRD_CASTER,
+            "Arcane Trickster": SPELL_SLOTS_THIRD_CASTER,
             "Fighter": {},
             "Barbarian": {},
             "Rogue": {},
@@ -347,43 +284,8 @@ class SpellManager:
         Returns:
             XP value
         """
-        # D&D 5e XP by CR (DMG p.274)
-        xp_table = {
-            0: 10,
-            0.125: 25,
-            0.25: 50,
-            0.5: 100,
-            1: 200,
-            2: 450,
-            3: 700,
-            4: 1100,
-            5: 1800,
-            6: 2300,
-            7: 2900,
-            8: 3900,
-            9: 5000,
-            10: 5900,
-            11: 7200,
-            12: 8400,
-            13: 10000,
-            14: 11500,
-            15: 13000,
-            16: 15000,
-            17: 18000,
-            18: 20000,
-            19: 22000,
-            20: 25000,
-            21: 33000,
-            22: 41000,
-            23: 50000,
-            24: 62000,
-            25: 75000,
-            26: 90000,
-            27: 105000,
-            28: 120000,
-            29: 135000,
-            30: 155000,
-        }
+        # D&D 5e XP by CR (DMG p.274) - now using centralized constants
+        xp_table = CR_TO_XP
 
         return xp_table.get(challenge_rating, 0)
 
