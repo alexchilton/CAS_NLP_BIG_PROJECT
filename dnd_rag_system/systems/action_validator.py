@@ -949,10 +949,12 @@ class ActionValidator:
         prompt = self._build_intent_prompt(user_input)
 
         try:
-            # Use unified LLM client
+            # Use unified LLM client (without system_message parameter)
+            # Prepend system message to prompt instead
+            full_prompt = "You are an intent classifier for D&D actions. Respond only with valid JSON.\n\n" + prompt
+            
             raw_response = self.llm_client.query(
-                prompt=prompt,
-                system_message="You are an intent classifier for D&D actions. Respond only with valid JSON.",
+                prompt=full_prompt,
                 temperature=0.1,  # Low temperature for consistent classification
                 max_tokens=150
             )

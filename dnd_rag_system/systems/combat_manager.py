@@ -224,10 +224,8 @@ class CombatManager:
         """
         participants = [character]
         participant_mods = {character.character_name: character_dex_mod}
-        return self.start_combat(participants, npcs, participant_mods, npc_dex_modifiers, session)
-        participants = [character]
-        participant_mods = {character.character_name: character_dex_mod}
-        return self.start_combat(participants, npcs, participant_mods, npc_dex_modifiers, session)
+        # Note: start_combat doesn't take session parameter, we use it in get_combat_start_message
+        return self.start_combat(participants, npcs, participant_mods, npc_dex_modifiers)
 
     def get_combat_start_message(self, session: Optional['GameSession'] = None) -> str:
         """
