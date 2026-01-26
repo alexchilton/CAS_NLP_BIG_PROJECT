@@ -192,7 +192,7 @@ class TestBasicAttackCalculation:
 
         # Force a good roll
         with patch('random.randint', return_value=14):
-            result = gm._calculate_player_attack("Goblin", char_state)
+            result = gm.combat_manager.calculate_player_attack("Goblin", char_state, gm.session.base_character_stats)
 
         # Verify: 14 + 3 (STR) + 2 (prof) = 19 vs AC 15 → HIT
         assert "HITS" in result
@@ -212,7 +212,7 @@ class TestBasicAttackCalculation:
 
         # Force a low roll
         with patch('random.randint', return_value=5):
-            result = gm._calculate_player_attack("Knight", char_state)
+            result = gm.combat_manager.calculate_player_attack("Knight", char_state, gm.session.base_character_stats)
 
         # Verify: 5 + 3 (STR) + 2 (prof) = 10 vs AC 20 → MISS
         assert "MISSES" in result
@@ -229,7 +229,7 @@ class TestBasicAttackCalculation:
 
         # Force roll that exactly meets AC: need 10 to hit (10 + 5 = 15 vs AC 15)
         with patch('random.randint', return_value=10):
-            result = gm._calculate_player_attack("Goblin", char_state)
+            result = gm.combat_manager.calculate_player_attack("Goblin", char_state, gm.session.base_character_stats)
 
         # Verify: Exactly meeting AC is a hit
         assert "HITS" in result
@@ -249,7 +249,7 @@ class TestCriticalHitsAndMisses:
 
         # Force natural 20
         with patch('random.randint', return_value=20):
-            result = gm._calculate_player_attack("Goblin", char_state)
+            result = gm.combat_manager.calculate_player_attack("Goblin", char_state, gm.session.base_character_stats)
 
         # Verify
         assert "CRITICAL HIT" in result
@@ -268,7 +268,7 @@ class TestCriticalHitsAndMisses:
 
         # Force natural 1
         with patch('random.randint', return_value=1):
-            result = gm._calculate_player_attack("Goblin", char_state)
+            result = gm.combat_manager.calculate_player_attack("Goblin", char_state, gm.session.base_character_stats)
 
         # Verify
         assert "CRITICALLY MISSES" in result or "CRITICAL MISS" in result
@@ -288,7 +288,7 @@ class TestWeaponDetection:
         gm.combat_manager.npc_monsters["Goblin"] = goblin_npc
 
         with patch('random.randint', return_value=15):
-            result = gm._calculate_player_attack("Goblin", char_state)
+            result = gm.combat_manager.calculate_player_attack("Goblin", char_state, gm.session.base_character_stats)
 
         assert "longsword" in result.lower()
         assert "slashing" in result.lower()
@@ -302,7 +302,7 @@ class TestWeaponDetection:
         gm.combat_manager.npc_monsters["Goblin"] = goblin_npc
 
         with patch('random.randint', return_value=15):
-            result = gm._calculate_player_attack("Goblin", char_state)
+            result = gm.combat_manager.calculate_player_attack("Goblin", char_state, gm.session.base_character_stats)
 
         assert "greataxe" in result.lower()
         assert "slashing" in result.lower()
@@ -316,7 +316,7 @@ class TestWeaponDetection:
         gm.combat_manager.npc_monsters["Goblin"] = goblin_npc
 
         with patch('random.randint', return_value=15):
-            result = gm._calculate_player_attack("Goblin", char_state)
+            result = gm.combat_manager.calculate_player_attack("Goblin", char_state, gm.session.base_character_stats)
 
         assert "dagger" in result.lower()
         assert "piercing" in result.lower()
@@ -330,7 +330,7 @@ class TestWeaponDetection:
         gm.combat_manager.npc_monsters["Goblin"] = goblin_npc
 
         with patch('random.randint', return_value=15):
-            result = gm._calculate_player_attack("Goblin", char_state)
+            result = gm.combat_manager.calculate_player_attack("Goblin", char_state, gm.session.base_character_stats)
 
         assert "unarmed" in result.lower()
         assert "bludgeoning" in result.lower()
@@ -349,7 +349,7 @@ class TestDamageCalculation:
 
         # Force hit with specific damage roll (1d8 = 5, +3 STR = 8 total)
         with patch('random.randint', side_effect=[15, 5]):  # [attack roll, damage roll]
-            result = gm._calculate_player_attack("Goblin", char_state)
+            result = gm.combat_manager.calculate_player_attack("Goblin", char_state, gm.session.base_character_stats)
 
         # Should have 8 damage (5 from d8, +3 from STR)
         assert "damage" in result.lower()
@@ -365,7 +365,7 @@ class TestDamageCalculation:
 
         # Elara: STR 8 (-1 mod), Dagger (1d4), so damage = 1d4 - 1 (min 0)
         with patch('random.randint', side_effect=[15, 3]):  # Hit, damage die = 3
-            result = gm._calculate_player_attack("Goblin", char_state)
+            result = gm.combat_manager.calculate_player_attack("Goblin", char_state, gm.session.base_character_stats)
 
         # Should hit but with low damage (3 - 1 = 2)
         assert "HITS" in result
@@ -381,7 +381,7 @@ class TestEdgeCases:
         gm.session.character_state = char_state
         gm.combat_manager.npc_monsters["Goblin"] = goblin_npc
 
-        result = gm._calculate_player_attack("Goblin", char_state)
+        result = gm.combat_manager.calculate_player_attack("Goblin", char_state, gm.session.base_character_stats)
 
         # Should return empty string, not crash
         assert result == ""
@@ -392,7 +392,7 @@ class TestEdgeCases:
         gm.session.base_character_stats[thorin_character.name] = thorin_character
         gm.combat_manager.npc_monsters["Goblin"] = goblin_npc
 
-        result = gm._calculate_player_attack("Goblin", None)
+        result = gm.combat_manager.calculate_player_attack("Goblin", None, gm.session.base_character_stats)
 
         # Should return empty string
         assert result == ""
@@ -406,7 +406,7 @@ class TestEdgeCases:
         # Don't add NPC to combat manager
 
         with patch('random.randint', return_value=15):
-            result = gm._calculate_player_attack("UnknownOrc", char_state)
+            result = gm.combat_manager.calculate_player_attack("UnknownOrc", char_state, gm.session.base_character_stats)
 
         # Should use default AC 12
         assert "vs AC 12" in result
@@ -428,7 +428,7 @@ class TestEdgeCases:
         gm.combat_manager.npc_monsters["Goblin"] = goblin_npc
 
         with patch('random.randint', return_value=15):
-            result = gm._calculate_player_attack("Goblin", char_state)
+            result = gm.combat_manager.calculate_player_attack("Goblin", char_state, gm.session.base_character_stats)
 
         assert "unarmed" in result.lower()
 
@@ -446,7 +446,7 @@ class TestPartyMode:
         # Test Thorin attacks
         thorin_state = CharacterState(character_name=thorin_character.name, max_hp=28, current_hp=28)
         with patch('random.randint', return_value=15):
-            thorin_result = gm._calculate_player_attack("Goblin", thorin_state)
+            thorin_result = gm.combat_manager.calculate_player_attack("Goblin", thorin_state, gm.session.base_character_stats)
 
         assert "Thorin Stormshield" in thorin_result
         assert "longsword" in thorin_result.lower()
@@ -454,7 +454,7 @@ class TestPartyMode:
         # Test Elara attacks
         elara_state = CharacterState(character_name=elara_character.name, max_hp=18, current_hp=18)
         with patch('random.randint', return_value=15):
-            elara_result = gm._calculate_player_attack("Goblin", elara_state)
+            elara_result = gm.combat_manager.calculate_player_attack("Goblin", elara_state, gm.session.base_character_stats)
 
         assert "Elara Moonwhisper" in elara_result
         assert "dagger" in elara_result.lower()
@@ -469,14 +469,14 @@ class TestPartyMode:
         # Thorin: STR 16 (+3), Prof +2 = +5 to hit
         thorin_state = CharacterState(character_name=thorin_character.name, max_hp=28, current_hp=28)
         with patch('random.randint', return_value=10):
-            thorin_result = gm._calculate_player_attack("Goblin", thorin_state)
+            thorin_result = gm.combat_manager.calculate_player_attack("Goblin", thorin_state, gm.session.base_character_stats)
         # 10 + 5 = 15
         assert "15 vs AC" in thorin_result
 
         # Elara: STR 8 (-1), Prof +2 = +1 to hit
         elara_state = CharacterState(character_name=elara_character.name, max_hp=18, current_hp=18)
         with patch('random.randint', return_value=10):
-            elara_result = gm._calculate_player_attack("Goblin", elara_state)
+            elara_result = gm.combat_manager.calculate_player_attack("Goblin", elara_state, gm.session.base_character_stats)
         # 10 + 1 = 11
         assert "11 vs AC" in elara_result
 
@@ -492,7 +492,7 @@ class TestInstructionFormat:
         gm.combat_manager.npc_monsters["Goblin"] = goblin_npc
 
         with patch('random.randint', return_value=15):
-            result = gm._calculate_player_attack("Goblin", char_state)
+            result = gm.combat_manager.calculate_player_attack("Goblin", char_state, gm.session.base_character_stats)
 
         # Check all required elements
         assert "COMBAT INSTRUCTION:" in result
@@ -511,7 +511,7 @@ class TestInstructionFormat:
         gm.combat_manager.npc_monsters["Knight"] = armored_knight_npc
 
         with patch('random.randint', return_value=5):
-            result = gm._calculate_player_attack("Knight", char_state)
+            result = gm.combat_manager.calculate_player_attack("Knight", char_state, gm.session.base_character_stats)
 
         assert "COMBAT INSTRUCTION:" in result
         assert "MISSES" in result

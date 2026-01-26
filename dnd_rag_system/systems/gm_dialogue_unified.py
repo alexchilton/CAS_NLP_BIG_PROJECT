@@ -29,12 +29,13 @@ from dnd_rag_system.systems.action_validator import (
 )
 from dnd_rag_system.systems.shop_system import ShopSystem
 from dnd_rag_system.systems.combat_manager import CombatManager
-from dnd_rag_system.systems.mechanics_extractor import MechanicsExtractor
-from dnd_rag_system.systems.mechanics_applicator import MechanicsApplicator
 from dnd_rag_system.systems.encounter_system import EncounterSystem
 from dnd_rag_system.systems.spell_manager import SpellManager
 from dnd_rag_system.systems.commands import CommandDispatcher, CommandContext
 from dnd_rag_system.constants import Commands, ActionKeywords
+from dnd_rag_system.dialogue.rag_retriever import RAGRetriever
+from dnd_rag_system.dialogue.conversation_history_manager import ConversationHistoryManager, Message
+from dnd_rag_system.dialogue.prompt_builder import PromptBuilder
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -52,15 +53,6 @@ if DEBUG_PROMPTS:
 
 # Environment detection moved to dnd_rag_system.config.environment
 # Imported above for backward compatibility
-
-
-@dataclass
-class Message:
-    """Conversation message for GM dialogue history."""
-    role: str  # 'player', 'gm', 'system'
-    content: str
-    rag_context: Optional[str] = None
-    timestamp: Optional[str] = None  # For tracking when message occurred
 
 
 class GameMaster:
@@ -83,22 +75,31 @@ class GameMaster:
         """
         self.db = db_manager
         self.session = GameSession(session_name="D&D Adventure")
-        self.message_history: List[Message] = []  # Active conversation history
-        self.conversation_summary: str = ""  # Compressed summary of older messages
+
+        # Conversation History System (Phase 2 refactoring: extracted from GameMaster)
+        from dnd_rag_system.config.settings import MAX_MESSAGE_HISTORY
+        self.history_manager = ConversationHistoryManager(max_history=MAX_MESSAGE_HISTORY)
+
         self.action_validator = ActionValidator(debug=DEBUG_PROMPTS)  # Reality check system
         self.shop = ShopSystem(db_manager, debug=DEBUG_PROMPTS)  # Shop transaction system
         self.spell_manager = SpellManager(db_manager)  # Spell and resource management
         self.combat_manager = CombatManager(self.session.combat, spell_manager=self.spell_manager, debug=DEBUG_PROMPTS)  # Combat system with XP tracking
 
-        # Narrative to Mechanics Translation System
-        self.mechanics_extractor = MechanicsExtractor(debug=DEBUG_PROMPTS)
-        self.mechanics_applicator = MechanicsApplicator(debug=DEBUG_PROMPTS)
+        # Unified Mechanics Service (Phase 6 refactoring: facade for extraction + application)
+        from dnd_rag_system.systems.mechanics_service import MechanicsService
+        self.mechanics_service = MechanicsService(debug=DEBUG_PROMPTS)
 
         # Random Encounter System
         self.encounter_system = EncounterSystem(chromadb_manager=db_manager)
 
         # Command Dispatcher (Command Pattern for slash commands)
         self.command_dispatcher = CommandDispatcher(debug=DEBUG_PROMPTS)
+
+        # RAG Retrieval System (Phase 1 refactoring: extracted from GameMaster)
+        self.rag_retriever = RAGRetriever(db_manager)
+
+        # Prompt Builder (Phase 3 refactoring: extracted from GameMaster)
+        self.prompt_builder = PromptBuilder()
 
         # Initialize world map with starting locations
         from dnd_rag_system.systems.world_builder import initialize_world
@@ -111,156 +112,13 @@ class GameMaster:
             debug=DEBUG_PROMPTS
         )
 
-    def search_rag(self, query: str, n_results: int = 3) -> Dict[str, Any]:
-        """
-        Search RAG database for relevant D&D content.
-
-        Args:
-            query: Search query
-            n_results: Number of results per collection
-
-        Returns:
-            Dictionary with results from all collections
-        """
-        results = {}
-
-        # Search each collection
-        for collection_type, collection_name in settings.COLLECTION_NAMES.items():
-            try:
-                search_results = self.db.search(
-                    collection_name,
-                    query,
-                    n_results=n_results
-                )
-
-                if search_results['documents'] and search_results['documents'][0]:
-                    results[collection_type] = {
-                        'documents': search_results['documents'][0],
-                        'metadatas': search_results['metadatas'][0],
-                        'distances': search_results['distances'][0]
-                    }
-            except Exception as e:
-                print(f"Warning: Could not search {collection_type}: {e}")
-                continue
-
-        return results
-
-    def format_rag_context(self, rag_results: Dict[str, Any]) -> str:
-        """
-        Format RAG search results into context for LLM prompt.
-
-        Args:
-            rag_results: Results from search_rag()
-
-        Returns:
-            Formatted context string
-        """
-        if not rag_results:
-            return "No specific rules retrieved."
-
-        context_parts = []
-
-        for collection_type, results in rag_results.items():
-            docs = results['documents']
-            metas = results['metadatas']
-            distances = results['distances']
-
-            for doc, meta, dist in zip(docs, metas, distances):
-                # Only include very relevant results (distance < 1.0)
-                if dist < 1.0:
-                    name = meta.get('name', 'Unknown')
-                    context_parts.append(f"[{collection_type.upper()}] {name}:\n{doc[:400]}")
-
-        return "\n\n".join(context_parts) if context_parts else "No highly relevant rules found."
-
-    def _prune_message_history(self):
-        """
-        Prune message history to prevent context window overflow.
-        Keeps recent messages and creates summary of older ones.
-        Uses more aggressive pruning for party mode.
-        """
-        from dnd_rag_system.config.settings import MAX_MESSAGE_HISTORY, SUMMARIZE_EVERY_N_MESSAGES
-        
-        # More aggressive pruning for party mode (5 characters = larger prompts)
-        is_party_mode = self.session.party and len(self.session.party.characters) > 0
-        max_history = MAX_MESSAGE_HISTORY if not is_party_mode else max(12, MAX_MESSAGE_HISTORY // 2)
-        
-        # If history is within limits, no action needed
-        if len(self.message_history) <= max_history:
-            return
-        
-        # Calculate how many messages to summarize
-        messages_to_summarize = len(self.message_history) - max_history
-        
-        # Extract messages to summarize
-        old_messages = self.message_history[:messages_to_summarize]
-        
-        # Create summary of old messages
-        summary_text = self._create_message_summary(old_messages)
-        
-        # Update conversation summary
-        if self.conversation_summary:
-            self.conversation_summary += f"\n\n--- Session Continued ---\n{summary_text}"
-        else:
-            self.conversation_summary = summary_text
-        
-        # Keep only recent messages
-        self.message_history = self.message_history[messages_to_summarize:]
-        
-        # Log for debugging
-        mode_indicator = "party mode" if is_party_mode else "solo mode"
-        logger.info(f"📝 Pruned {messages_to_summarize} messages ({mode_indicator}). History now: {len(self.message_history)} messages")
-        self.session.add_note(f"Conversation history summarized ({messages_to_summarize} messages archived, {mode_indicator})")
-
-    def _create_message_summary(self, messages: List[Message]) -> str:
-        """
-        Create a concise summary of message exchanges.
-        Focuses on key events: combat, quests, important discoveries.
-        
-        Args:
-            messages: List of messages to summarize
-            
-        Returns:
-            Summary text
-        """
-        if not messages:
-            return ""
-        
-        # Build summary from key events
-        summary_lines = []
-        
-        for msg in messages:
-            # Extract important events (combat, quests, travel, shopping)
-            content_lower = msg.content.lower()
-            
-            # Combat events
-            if any(word in content_lower for word in ['combat', 'attack', 'damage', 'hp', 'defeated', 'killed']):
-                if msg.role == 'gm':
-                    # Condensed combat outcome
-                    if 'defeated' in content_lower or 'killed' in content_lower or 'fled' in content_lower:
-                        summary_lines.append(f"⚔️ Combat: {msg.content[:100]}")
-            
-            # Quest events
-            elif any(word in content_lower for word in ['quest', 'mission', 'task', 'objective']):
-                summary_lines.append(f"📜 Quest: {msg.content[:100]}")
-            
-            # Travel/exploration
-            elif any(word in content_lower for word in ['travel', 'arrive', 'enter', 'leave', 'journey']):
-                summary_lines.append(f"🗺️ Travel: {msg.content[:100]}")
-            
-            # Shopping/transactions
-            elif any(word in content_lower for word in ['buy', 'sell', 'purchase', 'gold', 'shop']):
-                summary_lines.append(f"💰 Trade: {msg.content[:100]}")
-            
-            # Important discoveries
-            elif any(word in content_lower for word in ['find', 'discover', 'treasure', 'loot', 'item']):
-                summary_lines.append(f"🔍 Discovery: {msg.content[:100]}")
-        
-        # If no key events found, create generic summary
-        if not summary_lines:
-            return f"The party had {len(messages)//2} exchanges covering general exploration and conversation."
-        
-        return "\n".join(summary_lines)
+    # NOTE: Phase 1, 2, & 3 Refactoring - Methods moved to extracted classes:
+    # - search_rag() and format_rag_context() → RAGRetriever class
+    #   Access via: self.rag_retriever.search_rag() and self.rag_retriever.format_rag_context()
+    # - _prune_message_history() and _create_message_summary() → ConversationHistoryManager class
+    #   Access via: self.history_manager.prune_history() and other methods
+    # - _build_prompt() → PromptBuilder class
+    #   Access via: self.prompt_builder.build_prompt()
 
     def generate_response(self, player_input: str, use_rag: bool = True) -> str:
         """
@@ -316,9 +174,10 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
             combat_feedback = command_result.feedback if command_result.feedback else ""
 
             # Log to message history
-            self.message_history.append(Message('player', player_input))
-            self.message_history.append(Message('system', combat_feedback))
-            self._prune_message_history()  # Prevent context overflow
+            self.history_manager.add_message('player', player_input)
+            self.history_manager.add_message('system', combat_feedback)
+            is_party_mode = self.session.party and len(self.session.party.characters) > 0
+            self.history_manager.prune_history(is_party_mode)  # Prevent context overflow
 
             return combat_feedback
 
@@ -336,82 +195,13 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
         is_shop_transaction = False  # Flag to skip mechanics extraction for shop transactions
         is_steal_attempt = False  # Flag for steal attempts
         if self.session.character_state:
-            purchase_intent = self.shop.parse_purchase_intent(player_input)
-            sell_intent = self.shop.parse_sell_intent(player_input)
-
-            if purchase_intent:
-                is_shop_transaction = True
-                item_name, quantity = purchase_intent
-
-                # SHOP REALITY CHECK: Validate that we're actually in a shop location
-                current_loc = self.session.get_current_location_obj()
-                is_shop_available = False
-
-                # Check 1: Does the location have a shop?
-                if current_loc and getattr(current_loc, 'has_shop', False):
-                    is_shop_available = True
-
-                # Check 2: Is there a merchant/shopkeeper NPC present?
-                if not is_shop_available and self.session.npcs_present:
-                    merchant_keywords = ['merchant', 'shopkeeper', 'trader', 'vendor', 'seller']
-                    for npc in self.session.npcs_present:
-                        npc_name_lower = npc.lower()
-                        if any(keyword in npc_name_lower for keyword in merchant_keywords):
-                            is_shop_available = True
-                            break
-
-                if not is_shop_available:
-                    location_name = current_loc.name if current_loc else "this location"
-                    transaction_feedback = f"**❌ NO SHOP HERE**: There's no shop in {location_name}! You can't just buy things in the middle of nowhere. Find a marketplace, trading post, or merchant NPC first.\n\n"
-                    if DEBUG_PROMPTS:
-                        logger.debug(f"🚫 Shop Reality Check: Purchase blocked in {location_name}")
-                else:
-                    transaction = self.shop.attempt_purchase(
-                        self.session.character_state,
-                        item_name,
-                        quantity
-                    )
-                    transaction_feedback = f"**💰 SHOP TRANSACTION**: {transaction.message}\n\n"
-
-                    if DEBUG_PROMPTS:
-                        logger.debug(f"🛒 Purchase: {item_name} x{quantity} - {transaction.message}")
-
-            elif sell_intent:
-                is_shop_transaction = True
-                item_name, quantity = sell_intent
-
-                # SHOP REALITY CHECK: Validate that we're actually in a shop location
-                current_loc = self.session.get_current_location_obj()
-                is_shop_available = False
-
-                # Check 1: Does the location have a shop?
-                if current_loc and getattr(current_loc, 'has_shop', False):
-                    is_shop_available = True
-
-                # Check 2: Is there a merchant/shopkeeper NPC present?
-                if not is_shop_available and self.session.npcs_present:
-                    merchant_keywords = ['merchant', 'shopkeeper', 'trader', 'vendor', 'seller', 'buyer']
-                    for npc in self.session.npcs_present:
-                        npc_name_lower = npc.lower()
-                        if any(keyword in npc_name_lower for keyword in merchant_keywords):
-                            is_shop_available = True
-                            break
-
-                if not is_shop_available:
-                    location_name = current_loc.name if current_loc else "this location"
-                    transaction_feedback = f"**❌ NO SHOP HERE**: There's no merchant in {location_name}! You can't sell items without a buyer. Find a marketplace, trading post, or merchant NPC first.\n\n"
-                    if DEBUG_PROMPTS:
-                        logger.debug(f"🚫 Shop Reality Check: Sale blocked in {location_name}")
-                else:
-                    transaction = self.shop.attempt_sale(
-                        self.session.character_state,
-                        item_name,
-                        quantity
-                    )
-                    transaction_feedback = f"**💵 SHOP TRANSACTION**: {transaction.message}\n\n"
-
-                    if DEBUG_PROMPTS:
-                        logger.debug(f"💵 Sale: {item_name} x{quantity} - {transaction.message}")
+            is_shop_transaction, transaction_feedback = self.shop.handle_shop_transaction(
+                player_input,
+                self.session.character_state,
+                self.session.get_current_location_obj(),
+                self.session.npcs_present,
+                debug=DEBUG_PROMPTS
+            )
         
         # Step 0.5: Party Mode Character Parsing
         # If in party mode, extract which character is acting and temporarily set character_state
@@ -499,9 +289,10 @@ CRITICAL INSTRUCTIONS:
                 self.session.character_state = original_character_state
 
             # Save to history
-            self.message_history.append(Message('player', player_input))
-            self.message_history.append(Message('gm', response))
-            self._prune_message_history()  # Prevent context overflow
+            self.history_manager.add_message('player', player_input)
+            self.history_manager.add_message('gm', response)
+            is_party_mode = self.session.party and len(self.session.party.characters) > 0
+            self.history_manager.prune_history(is_party_mode)  # Prevent context overflow
             self.session.add_note(f"Invalid action rejected: {validation.action.action_type.value}")
 
             return response
@@ -593,9 +384,10 @@ This is D&D 5e rules - initiative determines who goes first!"""
                 target_name = validation.matched_entity if validation and validation.matched_entity else action_intent.target
 
                 # Calculate player's attack
-                attack_result = self._calculate_player_attack(
+                attack_result = self.combat_manager.calculate_player_attack(
                     target_name,
-                    self.session.character_state
+                    self.session.character_state,
+                    self.session.base_character_stats
                 )
 
                 if attack_result:
@@ -631,8 +423,8 @@ This is D&D 5e rules - initiative determines who goes first!"""
 
         # Step 2: Search RAG if enabled
         if use_rag:
-            rag_results = self.search_rag(player_input)
-            rag_context = self.format_rag_context(rag_results)
+            rag_results = self.rag_retriever.search_rag(player_input)
+            rag_context = self.rag_retriever.format_rag_context(rag_results)
 
         # Step 2.5: Random Encounter Check
         # Check if player is exploring/traveling and roll for random encounter
@@ -691,7 +483,21 @@ This is D&D 5e rules - initiative determines who goes first!"""
                 self.session.turns_since_last_encounter += 1
 
         # Step 3: Build prompt with history, RAG context, validation guidance, encounter, and player attack
-        prompt = self._build_prompt(player_input, rag_context, validation, encounter_instruction, player_attack_instruction, steal_instruction)
+        from dnd_rag_system.config.settings import RECENT_MESSAGES_FOR_PROMPT
+        history_text = self.history_manager.format_for_prompt(RECENT_MESSAGES_FOR_PROMPT)
+        conversation_summary = self.history_manager.get_summary(max_chars=500)
+
+        prompt = self.prompt_builder.build_prompt(
+            player_input=player_input,
+            game_session=self.session,
+            history_text=history_text,
+            conversation_summary=conversation_summary,
+            rag_context=rag_context,
+            validation=validation,
+            encounter_instruction=encounter_instruction,
+            player_attack_instruction=player_attack_instruction,
+            steal_instruction=steal_instruction
+        )
 
         # Step 4: Get LLM response (route based on mode)
         try:
@@ -718,106 +524,26 @@ This is D&D 5e rules - initiative determines who goes first!"""
             # SKIP for shop transactions - already handled by shop system
             if not is_shop_transaction and (self.session.character_state or (self.session.party and len(self.session.party.characters) > 0)):
                 try:
-                    # Get character names for better extraction
-                    char_names = []
-                    if self.session.party and len(self.session.party.characters) > 0:
-                        char_names = list(self.session.party.characters.keys())
-                    elif self.session.character_state:
-                        char_names = [self.session.character_state.character_name]
-
-                    # Extract mechanics from GM response
-                    mechanics = self.mechanics_extractor.extract(
-                        response, 
-                        char_names,
-                        existing_npcs=self.session.npcs_present  # Pass existing NPCs to avoid re-adding them
+                    # Process narrative through mechanics service (extraction + application)
+                    encounter_name = encounter.monster_name if encounter else None
+                    feedback_messages = self.mechanics_service.process_narrative(
+                        response,
+                        self.session,
+                        combat_manager=self.combat_manager,
+                        encounter_monster_name=encounter_name
                     )
-
-                    # Apply to game state if any mechanics found
-                    if mechanics.has_mechanics():
-                        # Filter NPCs: Remove hallucinations and already-present NPCs
-                        if mechanics.npcs_introduced:
-                            original_count = len(mechanics.npcs_introduced)
-                            filtered_npcs = []
-                            existing_lower = [npc.lower() for npc in self.session.npcs_present]
-                            
-                            for npc in mechanics.npcs_introduced:
-                                npc_name = npc.get('name', '').strip()
-                                npc_name_lower = npc_name.lower()
-                                
-                                # Skip if already present
-                                if npc_name_lower in existing_lower:
-                                    if DEBUG_PROMPTS:
-                                        logger.debug(f"🔧 Filtered NPC '{npc_name}' - already present")
-                                    continue
-                                
-                                # If there's an encounter, only allow the encounter monster or non-enemy NPCs
-                                if encounter:
-                                    encounter_name = encounter.monster_name.strip().lower()
-                                    
-                                    # Allow the actual encounter monster
-                                    if npc_name_lower == encounter_name:
-                                        filtered_npcs.append(npc)
-                                    # Allow non-monster NPCs (merchants, guards, etc.) if type is not "enemy"
-                                    elif npc.get('type') != 'enemy':
-                                        filtered_npcs.append(npc)
-                                    else:
-                                        # This is a hallucinated enemy - skip it
-                                        if DEBUG_PROMPTS:
-                                            logger.debug(f"🔧 Filtered hallucinated enemy '{npc_name}' - actual encounter is '{encounter_name}'")
-                                else:
-                                    # No encounter - just add the NPC
-                                    filtered_npcs.append(npc)
-                            
-                            mechanics.npcs_introduced = filtered_npcs
-                            if DEBUG_PROMPTS and original_count != len(filtered_npcs):
-                                logger.debug(f"🔧 Filtered {original_count - len(filtered_npcs)} NPC(s) from mechanics extraction")
-                        
-                        npc_feedback = self.mechanics_applicator.apply_npcs_to_session(mechanics, self.session)
-
-                        # Apply damage/healing/conditions to characters
-                        if self.session.party and len(self.session.party.characters) > 0:
-                            # Apply to party
-                            feedback = self.mechanics_applicator.apply_to_party(mechanics, self.session.party)
-                        else:
-                            # Apply to single character (pass session for item tracking)
-                            feedback = self.mechanics_applicator.apply_to_character(
-                                mechanics, 
-                                self.session.character_state,
-                                game_session=self.session
-                            )
-                        
-                        # Apply damage to NPCs (enemies) - NEW!
-                        npc_damage_feedback = self.mechanics_applicator.apply_damage_to_npcs(
-                            mechanics,
-                            self.combat_manager,
-                            self.session
-                        )
-
-                        # Combine all feedbacks
-                        all_feedback = npc_feedback + feedback + npc_damage_feedback
-
-                        # Deduplicate feedback messages (fixes LLM prompt leakage causing duplicate extractions)
-                        if all_feedback:
-                            unique_feedback = []
-                            seen = set()
-                            for msg in all_feedback:
-                                # Normalize message for comparison (remove emojis/formatting)
-                                normalized = msg.strip().lower()
-                                if normalized not in seen:
-                                    seen.add(normalized)
-                                    unique_feedback.append(msg)
-
-                        # Add mechanics feedback to combat output
-                        if unique_feedback:
-                            mechanics_output = "\n\n**⚙️ MECHANICS:**\n" + "\n".join(unique_feedback)
-                            combat_feedback += mechanics_output
-
-                        if DEBUG_PROMPTS and all_feedback:
-                            logger.debug("=" * 80)
-                            logger.debug("MECHANICS AUTO-APPLIED TO GAME STATE:")
-                            for msg in all_feedback:
-                                logger.debug(f"  {msg}")
-                            logger.debug("=" * 80)
+                    
+                    # Add mechanics feedback to combat output
+                    if feedback_messages:
+                        mechanics_output = "\n\n**⚙️ MECHANICS:**\n" + "\n".join(feedback_messages)
+                        combat_feedback += mechanics_output
+                    
+                    if DEBUG_PROMPTS and feedback_messages:
+                        logger.debug("=" * 80)
+                        logger.debug("MECHANICS AUTO-APPLIED TO GAME STATE:")
+                        for msg in feedback_messages:
+                            logger.debug(f"  {msg}")
+                        logger.debug("=" * 80)
 
                 except Exception as e:
                     logger.error(f"Mechanics extraction/application failed: {e}")
@@ -890,310 +616,16 @@ This is D&D 5e rules - initiative determines who goes first!"""
                 response = response + combat_feedback
 
             # Save to history
-            self.message_history.append(Message('player', player_input, rag_context if use_rag else None))
-            self.message_history.append(Message('gm', response))
-            self._prune_message_history()  # Prevent context overflow
+            self.history_manager.add_message('player', player_input, rag_context if use_rag else None)
+            self.history_manager.add_message('gm', response)
+            is_party_mode = self.session.party and len(self.session.party.characters) > 0
+            self.history_manager.prune_history(is_party_mode)  # Prevent context overflow
             self.session.add_note(f"Player: {player_input[:50]}... | GM: {response[:50]}...")
 
             return response
 
         except Exception as e:
             return f"Error generating response: {e}"
-
-    def _calculate_player_attack(self, target_name: str, character_state) -> str:
-        """
-        Calculate player's attack roll and damage against a target.
-        Pre-calculates the mechanics so GM can narrate specific numbers.
-        
-        Args:
-            target_name: Name of the NPC being attacked
-            character_state: CharacterState object (has character name and equipped items)
-            
-        Returns:
-            Formatted instruction string for GM, or empty string if calculation fails
-        """
-        import random
-        
-        # Get base character stats from session (has ability scores, equipment, etc.)
-        if not character_state:
-            return ""
-        
-        character_name = character_state.character_name
-        if character_name not in self.session.base_character_stats:
-            return ""
-            
-        character = self.session.base_character_stats[character_name]
-        
-        # Simple weapon damage table (weapon_name: (damage_dice, damage_die_count, damage_die_size, damage_type))
-        # Format: "1d8" = (1, 8), "2d6" = (2, 6)
-        WEAPON_DAMAGE = {
-            "longsword": (1, 8, "slashing"),
-            "greatsword": (2, 6, "slashing"),
-            "shortsword": (1, 6, "piercing"),
-            "dagger": (1, 4, "piercing"),
-            "battleaxe": (1, 8, "slashing"),
-            "greataxe": (1, 12, "slashing"),
-            "mace": (1, 6, "bludgeoning"),
-            "warhammer": (1, 8, "bludgeoning"),
-            "rapier": (1, 8, "piercing"),
-            "scimitar": (1, 6, "slashing"),
-            "quarterstaff": (1, 6, "bludgeoning"),
-            "spear": (1, 6, "piercing"),
-            "bow": (1, 8, "piercing"),
-            "longbow": (1, 8, "piercing"),
-            "shortbow": (1, 6, "piercing"),
-            "crossbow": (1, 8, "piercing"),
-            "hand crossbow": (1, 6, "piercing"),
-            # Unarmed as fallback
-            "unarmed": (1, 4, "bludgeoning"),
-        }
-        
-        # Find equipped weapon in character's equipment
-        weapon_name = "unarmed"
-        weapon_found = False
-        
-        if hasattr(character, 'equipment') and character.equipment:
-            for item in character.equipment:
-                item_lower = item.lower()
-                for weapon_key in WEAPON_DAMAGE.keys():
-                    if weapon_key in item_lower:
-                        weapon_name = weapon_key
-                        weapon_found = True
-                        break
-                if weapon_found:
-                    break
-        
-        # Get weapon stats
-        dice_count, die_size, damage_type = WEAPON_DAMAGE.get(weapon_name, (1, 4, "bludgeoning"))
-        
-        # Calculate attack bonus (STR mod + proficiency for melee weapons)
-        str_mod = character.get_ability_modifier(character.strength)
-        attack_bonus = str_mod + character.proficiency_bonus
-        
-        # Get target AC (check if NPC exists in combat manager)
-        target_ac = 12  # Default AC
-        if target_name in self.combat_manager.npc_monsters:
-            target_ac = self.combat_manager.npc_monsters[target_name].ac
-        
-        # Roll attack (d20 + attack bonus)
-        attack_roll = random.randint(1, 20)
-        total_attack = attack_roll + attack_bonus
-        
-        # Check if hit
-        if attack_roll == 1:
-            # Critical miss
-            return (
-                f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} but CRITICALLY MISSES (rolled natural 1)! "
-                f"Attack roll: 1 + {attack_bonus} = {total_attack} vs AC {target_ac}. "
-                f"Narrate an embarrassing miss or fumble. NO DAMAGE."
-            )
-        elif total_attack < target_ac and attack_roll != 20:
-            # Normal miss
-            return (
-                f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} but MISSES. "
-                f"Attack roll: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}. "
-                f"Narrate the attack missing. NO DAMAGE."
-            )
-        else:
-            # Hit! Roll damage
-            damage = sum(random.randint(1, die_size) for _ in range(dice_count))
-            damage += str_mod  # Add STR modifier to damage
-            
-            if attack_roll == 20:
-                # Critical hit! Double damage
-                damage *= 2
-                return (
-                    f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} and scores a CRITICAL HIT (natural 20)! "
-                    f"Attack roll: 20 (critical!) + {attack_bonus} = {total_attack} vs AC {target_ac}. "
-                    f"💥 {damage} {damage_type} damage (CRITICAL DOUBLE DAMAGE!). "
-                    f"Narrate an epic, devastating strike that deals {damage} damage to {target_name}."
-                )
-            else:
-                return (
-                    f"COMBAT INSTRUCTION: {character.name} attacks {target_name} with {weapon_name} and HITS! "
-                    f"Attack roll: {attack_roll} + {attack_bonus} = {total_attack} vs AC {target_ac}. "
-                    f"💥 {damage} {damage_type} damage. "
-                    f"Narrate the successful strike dealing {damage} damage to {target_name}."
-                )
-
-    def _build_prompt(self, player_input: str, rag_context: str, validation=None, encounter_instruction: str = "", player_attack_instruction: str = "", steal_instruction: str = "") -> str:
-        """
-        Build complete prompt for LLM with full game state context.
-
-        Args:
-            player_input: Player's action
-            rag_context: Retrieved RAG information
-            validation: ValidationReport from action validator (optional)
-            encounter_instruction: Hidden instruction for random encounter (optional)
-        """
-
-        # Get recent conversation history
-        from dnd_rag_system.config.settings import RECENT_MESSAGES_FOR_PROMPT
-        
-        recent_messages = self.message_history[-RECENT_MESSAGES_FOR_PROMPT:] if len(self.message_history) > RECENT_MESSAGES_FOR_PROMPT else self.message_history
-        history_text = "\n".join([
-            f"{'Player' if msg.role == 'player' else 'GM'}: {msg.content}"
-            for msg in recent_messages
-        ])
-
-        # Build game state context
-        prompt = f"""You are an experienced Dungeon Master running a D&D 5e game.
-
-CURRENT LOCATION: {self.session.current_location}
-SCENE: {self.session.scene_description if self.session.scene_description else "The adventure continues..."}
-TIME: Day {self.session.day}, {self.session.time_of_day}
-"""
-
-        # Add conversation summary if it exists (for context continuity)
-        if self.conversation_summary:
-            prompt += f"\nPREVIOUS SESSION SUMMARY:\n{self.conversation_summary[-500:]}\n"  # Last 500 chars of summary
-
-        # Add location context for better narrative consistency
-        current_loc = self.session.get_current_location_obj()
-        if current_loc:
-            # Don't explicitly mention visit count - just note it's a return
-            if current_loc.visit_count > 1:
-                prompt += f"NOTE: The party has been here before. Describe naturally without explicitly counting visits.\n"
-            
-            # Mention defeated enemies for atmosphere
-            if current_loc.defeated_enemies:
-                enemies = ", ".join(list(current_loc.defeated_enemies)[:3])
-                prompt += f"AFTERMATH: These enemies were defeated here previously: {enemies}. You may mention remains/corpses if appropriate.\n"
-        
-        # Add NPCs/Monsters if present
-        if self.session.npcs_present:
-            prompt += f"\nNPCs/CREATURES PRESENT: {', '.join(self.session.npcs_present)}\n"
-
-        # Add combat state if in combat
-        if self.session.combat.in_combat:
-            prompt += f"\nCOMBAT STATUS: Round {self.session.combat.round_number}, {self.session.combat.get_current_turn()}'s turn\n"
-            prompt += f"Initiative Order: {', '.join([f'{name} ({init})' for name, init in self.session.combat.initiative_order])}\n"
-
-        # Add active quests
-        if self.session.active_quests:
-            active = [q for q in self.session.active_quests if q.get('status') == 'active']
-            if active:
-                quest_names = [q['name'] for q in active[:2]]  # Show up to 2 active quests
-                prompt += f"\nACTIVE QUESTS: {', '.join(quest_names)}\n"
-
-        prompt += "\n"
-
-        if rag_context and rag_context != "No specific rules retrieved." and rag_context != "No highly relevant rules found.":
-            prompt += f"""RETRIEVED D&D RULES (Apply these rules accurately):
-{rag_context}
-
-"""
-
-        if history_text:
-            prompt += f"""RECENT CONVERSATION:
-{history_text}
-
-"""
-
-        prompt += f"""PLAYER ACTION: {player_input}
-
-"""
-        
-        # Add encounter instruction if present (hidden from player, only GM sees this)
-        if encounter_instruction:
-            prompt += f"""{encounter_instruction}
-
-"""
-        
-        # Add player attack instruction if present (hidden from player, only GM sees this)
-        if player_attack_instruction:
-            prompt += f"""{player_attack_instruction}
-
-"""
-
-        prompt += """INSTRUCTIONS:
-1. Apply D&D 5e rules accurately using the retrieved information
-2. Consider the current location, NPCs present, and combat state
-3. Ask for appropriate dice rolls (d20 for attacks/checks, damage dice, saves, etc.)
-4. Be concise and engaging (2-4 sentences max)
-5. Maintain narrative flow while being mechanically precise
-6. If rules are unclear, use standard D&D 5e mechanics
-7. Be concise, respond in 3-5 sentences unless more detail is explicitly required.
-
-"""
-
-        # Add steal instruction PROMINENTLY before GM response (like INVALID validation)
-        if steal_instruction:
-            prompt += f"""
-═══════════════════════════════════════════════════════════════════
-🎯 STEAL ATTEMPT MECHANICS 🎯
-═══════════════════════════════════════════════════════════════════
-
-{steal_instruction}
-
-DO NOT create random monsters or encounters. ONLY the NPCs listed above should react.
-═══════════════════════════════════════════════════════════════════
-
-GM RESPONSE:"""
-            return prompt
-
-        # Add validation guidance RIGHT BEFORE response - most prominent position
-        if validation:
-            if validation.result == ValidationResult.INVALID:
-                prompt += f"""
-═══════════════════════════════════════════════════════════════════
-🚫 CRITICAL RULE - THIS ACTION IS IMPOSSIBLE 🚫
-═══════════════════════════════════════════════════════════════════
-
-{validation.message}
-
-YOU MUST NARRATE FAILURE. DO NOT create the target/item/NPC.
-
-Examples of CORRECT responses:
-- "You swing your sword, but there's nothing there - the cavern is empty."
-- "You reach for your bow, but you're only carrying your longsword and shield."
-- "You try to recall the spell, but as a fighter, you have no magical training."
-
-DO NOT write: "The goblin appears" or "You pull out your bow"
-The target DOES NOT EXIST. Narrate the impossibility.
-═══════════════════════════════════════════════════════════════════
-
-GM RESPONSE:"""
-            elif validation.result == ValidationResult.NPC_INTRODUCTION:
-                prompt += f"""
-═══════════════════════════════════════════════════════════════════
-💬 NPC INTRODUCTION OPPORTUNITY 💬
-═══════════════════════════════════════════════════════════════════
-
-{validation.message}
-
-Player wants to interact with: "{validation.action.target}"
-
-If this makes sense in current location, introduce them naturally.
-If NOT logical, narrate that no such person is present.
-═══════════════════════════════════════════════════════════════════
-
-GM RESPONSE:"""
-            elif validation.matched_entity and validation.matched_entity != validation.action.target:
-                prompt += f"""
-═══════════════════════════════════════════════════════════════════
-ℹ️ TARGET CLARIFICATION ℹ️
-═══════════════════════════════════════════════════════════════════
-
-{validation.message}
-
-Player said: "{validation.action.target}"
-Likely means: "{validation.matched_entity}"
-
-Use "{validation.matched_entity}" in your response.
-═══════════════════════════════════════════════════════════════════
-
-GM RESPONSE:"""
-            else:
-                # Valid action
-                prompt += f"""{validation.message}
-
-GM RESPONSE:"""
-        else:
-            prompt += """
-GM RESPONSE:"""
-
-        return prompt
 
     def _generate_invalid_action_response(self, validation) -> str:
         """

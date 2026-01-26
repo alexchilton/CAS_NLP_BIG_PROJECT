@@ -59,7 +59,7 @@ print("TEST 1: Verify RAG retrieves spell information")
 print("=" * 80)
 
 spell_query = "magic missile spell"
-rag_results = gm.search_rag(spell_query, n_results=3)
+rag_results = gm.rag_retriever.search_rag(spell_query, n_results=3)
 
 print(f"\n🔍 RAG Search Query: '{spell_query}'")
 print(f"\nResults found:")
