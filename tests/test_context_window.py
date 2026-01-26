@@ -7,7 +7,8 @@ from pathlib import Path
 # Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from dnd_rag_system.systems.gm_dialogue_unified import GameMaster, Message
+from dnd_rag_system.systems.gm_dialogue_unified import GameMaster
+from dnd_rag_system.dialogue.conversation_history_manager import Message
 from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.config import settings
 
@@ -19,26 +20,26 @@ def test_message_pruning_basic():
     
     # Add messages up to the limit
     for i in range(settings.MAX_MESSAGE_HISTORY // 2):
-        gm.message_history.append(Message('player', f'Action {i}'))
-        gm.message_history.append(Message('gm', f'Response {i}'))
+        gm.history_manager.add_message('player', f'Action {i}')
+        gm.history_manager.add_message('gm', f'Response {i}')
     
     # Verify we're at the limit
-    assert len(gm.message_history) == settings.MAX_MESSAGE_HISTORY
-    assert gm.conversation_summary == ""  # No summary yet
+    assert len(gm.history_manager.message_history) == settings.MAX_MESSAGE_HISTORY
+    assert gm.history_manager.conversation_summary == ""  # No summary yet
     
     # Add more messages to trigger pruning
-    gm.message_history.append(Message('player', 'I attack the goblin'))
-    gm.message_history.append(Message('gm', 'You defeat the goblin!'))
-    gm._prune_message_history()
+    gm.history_manager.add_message('player', 'I attack the goblin')
+    gm.history_manager.add_message('gm', 'You defeat the goblin!')
+    gm.history_manager.prune_history(is_party_mode=False)
     
     # Should be back at the limit
-    assert len(gm.message_history) == settings.MAX_MESSAGE_HISTORY
+    assert len(gm.history_manager.message_history) == settings.MAX_MESSAGE_HISTORY
     # Should have created a summary
-    assert gm.conversation_summary != ""
+    assert gm.history_manager.conversation_summary != ""
     
     print(f"✅ Message history pruned successfully")
-    print(f"   Messages: {len(gm.message_history)}")
-    print(f"   Summary length: {len(gm.conversation_summary)} chars")
+    print(f"   Messages: {len(gm.history_manager.message_history)}")
+    print(f"   Summary length: {len(gm.history_manager.conversation_summary)} chars")
 
 
 def test_message_summarization_combat():
@@ -54,7 +55,7 @@ def test_message_summarization_combat():
         Message('gm', 'You find 10 gold pieces'),
     ]
     
-    summary = gm._create_message_summary(messages)
+    summary = gm.history_manager._create_message_summary(messages)
     
     # Should detect combat
     assert 'Combat' in summary or 'defeat' in summary.lower()
@@ -74,7 +75,7 @@ def test_message_summarization_travel():
         Message('gm', 'Inside, you see several patrons drinking.'),
     ]
     
-    summary = gm._create_message_summary(messages)
+    summary = gm.history_manager._create_message_summary(messages)
     
     # Should detect travel
     assert 'Travel' in summary or 'arrive' in summary.lower()
@@ -89,21 +90,21 @@ def test_long_session_performance():
     
     # Simulate 50 turns (100 messages)
     for turn in range(50):
-        gm.message_history.append(Message('player', f'Turn {turn}: I explore'))
-        gm.message_history.append(Message('gm', f'Turn {turn}: You find something interesting'))
-        gm._prune_message_history()
+        gm.history_manager.message_history.append(Message('player', f'Turn {turn}: I explore'))
+        gm.history_manager.message_history.append(Message('gm', f'Turn {turn}: You find something interesting'))
+        gm.history_manager.prune_history(is_party_mode=False)
     
     # Should never exceed the limit
-    assert len(gm.message_history) <= settings.MAX_MESSAGE_HISTORY
+    assert len(gm.history_manager.message_history) <= settings.MAX_MESSAGE_HISTORY
     # Should have accumulated summary
-    assert gm.conversation_summary != ""
-    assert len(gm.conversation_summary) > 100  # Should have substantial summary
+    assert gm.history_manager.conversation_summary != ""
+    assert len(gm.history_manager.conversation_summary) > 100  # Should have substantial summary
     
     print(f"✅ Long session handled successfully")
     print(f"   After 50 turns:")
-    print(f"   - Message history: {len(gm.message_history)} messages")
-    print(f"   - Summary: {len(gm.conversation_summary)} chars")
-    print(f"   - Last summary preview: {gm.conversation_summary[-200:]}")
+    print(f"   - Message history: {len(gm.history_manager.message_history)} messages")
+    print(f"   - Summary: {len(gm.history_manager.conversation_summary)} chars")
+    print(f"   - Last summary preview: {gm.history_manager.conversation_summary[-200:]}")
 
 
 def test_summary_continuity():
@@ -113,20 +114,20 @@ def test_summary_continuity():
     
     # First batch - combat
     for i in range(settings.MAX_MESSAGE_HISTORY // 2 + 5):
-        gm.message_history.append(Message('player', 'I attack the goblin'))
-        gm.message_history.append(Message('gm', 'The goblin is defeated!'))
-        gm._prune_message_history()
+        gm.history_manager.message_history.append(Message('player', 'I attack the goblin'))
+        gm.history_manager.message_history.append(Message('gm', 'The goblin is defeated!'))
+        gm.history_manager.prune_history(is_party_mode=False)
     
-    first_summary = gm.conversation_summary
+    first_summary = gm.history_manager.conversation_summary
     assert first_summary != ""
     
     # Second batch - travel
     for i in range(settings.MAX_MESSAGE_HISTORY // 2 + 5):
-        gm.message_history.append(Message('player', 'I travel to the town'))
-        gm.message_history.append(Message('gm', 'You arrive at the town'))
-        gm._prune_message_history()
+        gm.history_manager.message_history.append(Message('player', 'I travel to the town'))
+        gm.history_manager.message_history.append(Message('gm', 'You arrive at the town'))
+        gm.history_manager.prune_history(is_party_mode=False)
     
-    second_summary = gm.conversation_summary
+    second_summary = gm.history_manager.conversation_summary
     
     # Summary should have grown
     assert len(second_summary) > len(first_summary)
