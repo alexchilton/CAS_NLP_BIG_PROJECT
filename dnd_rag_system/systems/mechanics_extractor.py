@@ -24,11 +24,11 @@ logger = logging.getLogger(__name__)
 # Import unified LLM client
 from dnd_rag_system.core.llm_client import LLMClient
 
-# Default model for mechanics extraction
-# Change this in one place to switch models across the entire system
-# qwen2.5:3b is fast and reliable for structured extraction
-# Note: gemma3:4b was tested but is slower; qwen models are optimized for JSON output
-DEFAULT_MECHANICS_MODEL = "qwen2.5:3b"  # Fast, reliable JSON extraction (1.9GB)
+# Import model configuration from registry
+from dnd_rag_system.config.model_registry import ModelRegistry
+
+# Default model for mechanics extraction (from ModelRegistry)
+DEFAULT_MECHANICS_MODEL = ModelRegistry.MECHANICS.name
 
 
 class MechanicType(Enum):

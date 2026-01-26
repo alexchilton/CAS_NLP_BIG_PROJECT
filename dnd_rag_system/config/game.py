@@ -4,6 +4,8 @@ Game configuration for D&D RAG System.
 Contains settings for game systems, intent classification, and mechanics extraction.
 """
 
+from dnd_rag_system.config.model_registry import ModelRegistry
+
 
 class IntentClassifierConfig:
     """Configuration for action intent classification"""
@@ -16,8 +18,8 @@ class IntentClassifierConfig:
     # Falls back to keyword-based automatically if LLM fails
     DEFAULT_CLASSIFIER = LLM_BASED
 
-    # LLM settings (reuses same model as mechanics extractor)
-    LLM_MODEL = "qwen2.5:3b"  # Fast, reliable for structured extraction
+    # LLM settings (uses fast extraction model from registry)
+    LLM_MODEL = ModelRegistry.MECHANICS.name
     LLM_TIMEOUT = 10  # seconds - intent classification should be quick
 
     # Debug mode (enables verbose logging)
@@ -31,8 +33,8 @@ class IntentClassifierConfig:
 class MechanicsExtractorConfig:
     """Configuration for mechanics extraction from GM narrative"""
 
-    # Model for extracting game mechanics from narrative
-    MODEL = "qwen2.5:3b"  # Same model as intent classification
+    # Model for extracting game mechanics from narrative (uses fast extraction model)
+    MODEL = ModelRegistry.MECHANICS.name
     TIMEOUT = 30  # seconds - narrative extraction can be more complex
     DEBUG = False
 

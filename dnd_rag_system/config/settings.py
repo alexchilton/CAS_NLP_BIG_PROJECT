@@ -127,22 +127,18 @@ MONSTER_START_NAME = "ABOLETH"  # First monster to parse in Monster Manual
 SPELL_LEVELS = list(range(0, 10))  # Cantrips (0) through 9th level
 
 # ============================================================================
-# OLLAMA CONFIGURATION
+# MODEL CONFIGURATION  
 # ============================================================================
 
-# Ollama model for GM dialogue
-# Testing different models:
-# - Qwen3-4B-RPG-Roleplay-V2 (4B) - Good for roleplay, trained on RPG data
-# - qwen2.5:7b (7B) - Better instruction following but less roleplay
-# - Impish_QWEN_7B-1M (7B) - RPG-focused, 1M context
+# Import ModelRegistry for centralized model management
+from dnd_rag_system.config.model_registry import ModelRegistry, OLLAMA_MODEL_NAME
 
-# Reverting to RPG-optimized model
-OLLAMA_MODEL_NAME = "hf.co/Chun121/Qwen3-4B-RPG-Roleplay-V2:Q4_K_M"
+# Embedding model for ChromaDB (not an LLM, uses sentence transformers)
+EMBEDDING_MODEL = "all-MiniLM-L6-v2"  # Fast semantic search embeddings
 
-# To try the 7B RPG model, download it first:
-# ollama pull hf.co/SicariusSicariiStuff/Impish_QWEN_7B-1M:Q4_K_M
-# Then uncomment:
-# OLLAMA_MODEL_NAME = "hf.co/SicariusSicariiStuff/Impish_QWEN_7B-1M:Q4_K_M"
+# Primary LLM for dialogue/narrative (imported from ModelRegistry)
+# To change models system-wide, update ModelRegistry instead of here
+# OLLAMA_MODEL_NAME is imported above for backward compatibility
 
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")  # Default Ollama API endpoint
 OLLAMA_TIMEOUT = 30  # Timeout in seconds for model responses

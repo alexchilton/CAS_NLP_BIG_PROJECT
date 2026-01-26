@@ -113,8 +113,10 @@ class ActionValidator:
         self.compare_classifiers = compare_classifiers
 
         # Initialize unified LLM client for intent classification
+        # Uses fast extraction model from ModelRegistry
+        from dnd_rag_system.config.model_registry import ModelRegistry
         self.llm_client = LLMClient(
-            model_name="qwen2.5:3b",  # Fast model for intent classification
+            model_name=ModelRegistry.MECHANICS.name,
             hf_token=hf_token,
             debug=debug
         )
