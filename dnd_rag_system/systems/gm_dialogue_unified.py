@@ -35,6 +35,7 @@ from dnd_rag_system.systems.encounter_system import EncounterSystem
 from dnd_rag_system.systems.spell_manager import SpellManager
 from dnd_rag_system.systems.commands import CommandDispatcher, CommandContext
 from dnd_rag_system.constants import Commands, ActionKeywords
+from dnd_rag_system.dialogue.rag_retriever import RAGRetriever
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -100,6 +101,9 @@ class GameMaster:
         # Command Dispatcher (Command Pattern for slash commands)
         self.command_dispatcher = CommandDispatcher(debug=DEBUG_PROMPTS)
 
+        # RAG Retrieval System (Phase 1 refactoring: extracted from GameMaster)
+        self.rag_retriever = RAGRetriever(db_manager)
+
         # Initialize world map with starting locations
         from dnd_rag_system.systems.world_builder import initialize_world
         initialize_world(self.session)
@@ -111,67 +115,9 @@ class GameMaster:
             debug=DEBUG_PROMPTS
         )
 
-    def search_rag(self, query: str, n_results: int = 3) -> Dict[str, Any]:
-        """
-        Search RAG database for relevant D&D content.
-
-        Args:
-            query: Search query
-            n_results: Number of results per collection
-
-        Returns:
-            Dictionary with results from all collections
-        """
-        results = {}
-
-        # Search each collection
-        for collection_type, collection_name in settings.COLLECTION_NAMES.items():
-            try:
-                search_results = self.db.search(
-                    collection_name,
-                    query,
-                    n_results=n_results
-                )
-
-                if search_results['documents'] and search_results['documents'][0]:
-                    results[collection_type] = {
-                        'documents': search_results['documents'][0],
-                        'metadatas': search_results['metadatas'][0],
-                        'distances': search_results['distances'][0]
-                    }
-            except Exception as e:
-                print(f"Warning: Could not search {collection_type}: {e}")
-                continue
-
-        return results
-
-    def format_rag_context(self, rag_results: Dict[str, Any]) -> str:
-        """
-        Format RAG search results into context for LLM prompt.
-
-        Args:
-            rag_results: Results from search_rag()
-
-        Returns:
-            Formatted context string
-        """
-        if not rag_results:
-            return "No specific rules retrieved."
-
-        context_parts = []
-
-        for collection_type, results in rag_results.items():
-            docs = results['documents']
-            metas = results['metadatas']
-            distances = results['distances']
-
-            for doc, meta, dist in zip(docs, metas, distances):
-                # Only include very relevant results (distance < 1.0)
-                if dist < 1.0:
-                    name = meta.get('name', 'Unknown')
-                    context_parts.append(f"[{collection_type.upper()}] {name}:\n{doc[:400]}")
-
-        return "\n\n".join(context_parts) if context_parts else "No highly relevant rules found."
+    # NOTE: search_rag() and format_rag_context() methods have been removed
+    # They are now handled by the RAGRetriever class (Phase 1 refactoring)
+    # Access via: self.rag_retriever.search_rag() and self.rag_retriever.format_rag_context()
 
     def _prune_message_history(self):
         """
@@ -631,8 +577,8 @@ This is D&D 5e rules - initiative determines who goes first!"""
 
         # Step 2: Search RAG if enabled
         if use_rag:
-            rag_results = self.search_rag(player_input)
-            rag_context = self.format_rag_context(rag_results)
+            rag_results = self.rag_retriever.search_rag(player_input)
+            rag_context = self.rag_retriever.format_rag_context(rag_results)
 
         # Step 2.5: Random Encounter Check
         # Check if player is exploring/traveling and roll for random encounter
