@@ -335,6 +335,94 @@ class ShopSystem:
 
         return None
 
+    def handle_shop_transaction(
+        self,
+        player_input: str,
+        character_state,
+        current_location,
+        npcs_present: List[str],
+        debug: bool = False
+    ) -> Tuple[bool, str]:
+        """
+        Consolidated shop transaction handler with location validation.
+        
+        Handles both purchase and sell transactions with proper shop availability checks.
+        
+        Args:
+            player_input: Player's input message
+            character_state: CharacterState object
+            current_location: Current location object (or None)
+            npcs_present: List of NPC names currently present
+            debug: Enable debug logging
+            
+        Returns:
+            Tuple of (is_shop_transaction, feedback_message)
+        """
+        if not character_state:
+            return (False, "")
+            
+        purchase_intent = self.parse_purchase_intent(player_input)
+        sell_intent = self.parse_sell_intent(player_input)
+        
+        if not purchase_intent and not sell_intent:
+            return (False, "")
+        
+        # SHOP REALITY CHECK: Validate that we're actually in a shop location
+        is_shop_available = False
+        
+        # Check 1: Does the location have a shop?
+        if current_location and getattr(current_location, 'has_shop', False):
+            is_shop_available = True
+        
+        # Check 2: Is there a merchant/shopkeeper NPC present?
+        if not is_shop_available and npcs_present:
+            merchant_keywords = ['merchant', 'shopkeeper', 'trader', 'vendor', 'seller', 'buyer']
+            for npc in npcs_present:
+                npc_name_lower = npc.lower()
+                if any(keyword in npc_name_lower for keyword in merchant_keywords):
+                    is_shop_available = True
+                    break
+        
+        # Process purchase transaction
+        if purchase_intent:
+            item_name, quantity = purchase_intent
+            
+            if not is_shop_available:
+                location_name = current_location.name if current_location else "this location"
+                feedback = f"**❌ NO SHOP HERE**: There's no shop in {location_name}! You can't just buy things in the middle of nowhere. Find a marketplace, trading post, or merchant NPC first.\n\n"
+                if debug:
+                    print(f"🚫 Shop Reality Check: Purchase blocked in {location_name}")
+                return (True, feedback)
+            
+            transaction = self.attempt_purchase(character_state, item_name, quantity)
+            feedback = f"**💰 SHOP TRANSACTION**: {transaction.message}\n\n"
+            
+            if debug:
+                print(f"🛒 Purchase: {item_name} x{quantity} - {transaction.message}")
+            
+            return (True, feedback)
+        
+        # Process sell transaction
+        if sell_intent:
+            item_name, quantity = sell_intent
+            
+            if not is_shop_available:
+                location_name = current_location.name if current_location else "this location"
+                feedback = f"**❌ NO SHOP HERE**: There's no merchant in {location_name}! You can't sell items without a buyer. Find a marketplace, trading post, or merchant NPC first.\n\n"
+                if debug:
+                    print(f"🚫 Shop Reality Check: Sale blocked in {location_name}")
+                return (True, feedback)
+            
+            transaction = self.attempt_sale(character_state, item_name, quantity)
+            feedback = f"**💵 SHOP TRANSACTION**: {transaction.message}\n\n"
+            
+            if debug:
+                print(f"💵 Sale: {item_name} x{quantity} - {transaction.message}")
+            
+            return (True, feedback)
+        
+        return (False, "")
+
     def create_shopkeeper_context(
         self,
         shop_type: str = "general store",

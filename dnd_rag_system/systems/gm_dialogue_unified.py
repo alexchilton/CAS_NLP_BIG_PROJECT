@@ -197,82 +197,13 @@ You have fallen unconscious (0 HP). According to D&D 5e rules:
         is_shop_transaction = False  # Flag to skip mechanics extraction for shop transactions
         is_steal_attempt = False  # Flag for steal attempts
         if self.session.character_state:
-            purchase_intent = self.shop.parse_purchase_intent(player_input)
-            sell_intent = self.shop.parse_sell_intent(player_input)
-
-            if purchase_intent:
-                is_shop_transaction = True
-                item_name, quantity = purchase_intent
-
-                # SHOP REALITY CHECK: Validate that we're actually in a shop location
-                current_loc = self.session.get_current_location_obj()
-                is_shop_available = False
-
-                # Check 1: Does the location have a shop?
-                if current_loc and getattr(current_loc, 'has_shop', False):
-                    is_shop_available = True
-
-                # Check 2: Is there a merchant/shopkeeper NPC present?
-                if not is_shop_available and self.session.npcs_present:
-                    merchant_keywords = ['merchant', 'shopkeeper', 'trader', 'vendor', 'seller']
-                    for npc in self.session.npcs_present:
-                        npc_name_lower = npc.lower()
-                        if any(keyword in npc_name_lower for keyword in merchant_keywords):
-                            is_shop_available = True
-                            break
-
-                if not is_shop_available:
-                    location_name = current_loc.name if current_loc else "this location"
-                    transaction_feedback = f"**❌ NO SHOP HERE**: There's no shop in {location_name}! You can't just buy things in the middle of nowhere. Find a marketplace, trading post, or merchant NPC first.\n\n"
-                    if DEBUG_PROMPTS:
-                        logger.debug(f"🚫 Shop Reality Check: Purchase blocked in {location_name}")
-                else:
-                    transaction = self.shop.attempt_purchase(
-                        self.session.character_state,
-                        item_name,
-                        quantity
-                    )
-                    transaction_feedback = f"**💰 SHOP TRANSACTION**: {transaction.message}\n\n"
-
-                    if DEBUG_PROMPTS:
-                        logger.debug(f"🛒 Purchase: {item_name} x{quantity} - {transaction.message}")
-
-            elif sell_intent:
-                is_shop_transaction = True
-                item_name, quantity = sell_intent
-
-                # SHOP REALITY CHECK: Validate that we're actually in a shop location
-                current_loc = self.session.get_current_location_obj()
-                is_shop_available = False
-
-                # Check 1: Does the location have a shop?
-                if current_loc and getattr(current_loc, 'has_shop', False):
-                    is_shop_available = True
-
-                # Check 2: Is there a merchant/shopkeeper NPC present?
-                if not is_shop_available and self.session.npcs_present:
-                    merchant_keywords = ['merchant', 'shopkeeper', 'trader', 'vendor', 'seller', 'buyer']
-                    for npc in self.session.npcs_present:
-                        npc_name_lower = npc.lower()
-                        if any(keyword in npc_name_lower for keyword in merchant_keywords):
-                            is_shop_available = True
-                            break
-
-                if not is_shop_available:
-                    location_name = current_loc.name if current_loc else "this location"
-                    transaction_feedback = f"**❌ NO SHOP HERE**: There's no merchant in {location_name}! You can't sell items without a buyer. Find a marketplace, trading post, or merchant NPC first.\n\n"
-                    if DEBUG_PROMPTS:
-                        logger.debug(f"🚫 Shop Reality Check: Sale blocked in {location_name}")
-                else:
-                    transaction = self.shop.attempt_sale(
-                        self.session.character_state,
-                        item_name,
-                        quantity
-                    )
-                    transaction_feedback = f"**💵 SHOP TRANSACTION**: {transaction.message}\n\n"
-
-                    if DEBUG_PROMPTS:
-                        logger.debug(f"💵 Sale: {item_name} x{quantity} - {transaction.message}")
+            is_shop_transaction, transaction_feedback = self.shop.handle_shop_transaction(
+                player_input,
+                self.session.character_state,
+                self.session.get_current_location_obj(),
+                self.session.npcs_present,
+                debug=DEBUG_PROMPTS
+            )
         
         # Step 0.5: Party Mode Character Parsing
         # If in party mode, extract which character is acting and temporarily set character_state
