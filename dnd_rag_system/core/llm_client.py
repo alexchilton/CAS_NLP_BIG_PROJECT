@@ -69,7 +69,9 @@ class LLMClientFactory:
             )
 
         token = hf_token or os.getenv("HF_TOKEN")
-        model = model_name or HuggingFaceConfig.INFERENCE_MODEL
+        # Always use HuggingFaceConfig model on HF Spaces
+        # Ignore Ollama-format models like "qwen2.5:3b"
+        model = HuggingFaceConfig.INFERENCE_MODEL
 
         client = InferenceClient(
             token=token,
