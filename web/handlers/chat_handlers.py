@@ -71,9 +71,9 @@ def handle_rag_lookup(query: str, gm, db) -> str:
         return result
 
     # Fallback to general RAG search (items, rules, etc.)
-    results = gm.search_rag(query, n_results=2)
+    results = gm.rag_retriever.search_rag(query, n_results=2)
     if results and results.get('documents') and results['documents'][0]:
-        formatted = gm.format_rag_context(results)
+        formatted = gm.rag_retriever.format_rag_context(results)
         return f"## 📖 {query}\n\n{formatted}\n\n---\n*Source: D&D 5e SRD via RAG*"
 
     return f"❌ **'{query}' not found in D&D 5e SRD**\n\nTry searching for:\n- Spell names (e.g., 'Magic Missile', 'Fireball')\n- Item names (e.g., 'Longsword', 'Plate Armor')\n- Monster names (e.g., 'Goblin', 'Dragon')\n- Class features (e.g., 'Action Surge', 'Sneak Attack')"
@@ -227,8 +227,8 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
         elif cmd.startswith("/rag "):
             query = cmd[5:].strip()
             if query:
-                results = gm.search_rag(query, n_results=2)
-                formatted = gm.format_rag_context(results)
+                results = gm.rag_retriever.search_rag(query, n_results=2)
+                formatted = gm.rag_retriever.format_rag_context(results)
                 return (
                     add_chat_messages(history, message, f"**RAG Search Results:**\n\n{formatted}"),
                     *get_initiative_tracker_func(),
@@ -600,9 +600,9 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
 *Source: D&D 5e SRD via RAG*"""
                 else:
                     # Try general RAG search
-                    results = gm.search_rag(query, n_results=3)
+                    results = gm.rag_retriever.search_rag(query, n_results=3)
                     if results and results.get('documents') and results['documents'][0]:
-                        formatted = gm.format_rag_context(results)
+                        formatted = gm.rag_retriever.format_rag_context(results)
                         rag_response = f"## 📖 {query.title()}\n\n{formatted}\n\n---\n*Source: D&D 5e SRD via RAG*"
                     else:
                         rag_response = f"❌ **'{query}' not found in D&D 5e SRD**\n\nTry asking about:\n- Spells (e.g., 'What is Magic Missile?')\n- Items (e.g., 'Tell me about Longsword')\n- Monsters (e.g., 'What is a Goblin?')\n- Rules (e.g., 'How does Sneak Attack work?')"

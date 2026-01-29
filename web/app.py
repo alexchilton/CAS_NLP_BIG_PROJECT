@@ -239,8 +239,8 @@ Otherwise, just type your action and press Enter!"""
         elif cmd.startswith("/rag "):
             query = cmd[5:].strip()
             if query:
-                results = gm.search_rag(query, n_results=2)
-                formatted = gm.format_rag_context(results)
+                results = gm.rag_retriever.search_rag(query, n_results=2)
+                formatted = gm.rag_retriever.format_rag_context(results)
                 return history + [
                     {"role": "user", "content": message},
                     {"role": "assistant", "content": f"**RAG Search Results:**\n\n{formatted}"}
