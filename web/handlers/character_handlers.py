@@ -61,15 +61,18 @@ def get_available_characters(characters_dir: Path) -> list:
     # Load pre-made characters
     thorin_path = characters_dir / "thorin_stormshield.json"
     elara_path = characters_dir / "elara_moonwhisper.json"
+    gandalf_path = characters_dir / "gandalf_the_white.json"
 
     if thorin_path.exists():
         characters.append("Thorin Stormshield (Dwarf Fighter)")
     if elara_path.exists():
         characters.append("Elara Moonwhisper (Elf Wizard)")
+    if gandalf_path.exists():
+        characters.append("Gandalf the White (Human Wizard)")
 
     # Load custom characters
     for json_file in characters_dir.glob("*.json"):
-        if json_file.name not in ["thorin_stormshield.json", "elara_moonwhisper.json"]:
+        if json_file.name not in ["thorin_stormshield.json", "elara_moonwhisper.json", "gandalf_the_white.json"]:
             char = load_character_from_json(json_file)
             if char:
                 characters.append(f"{char.name} ({char.race} {char.character_class})")
@@ -147,6 +150,8 @@ def load_character_with_location(
         filepath = characters_dir / "thorin_stormshield.json"
     elif "Elara" in character_choice:
         filepath = characters_dir / "elara_moonwhisper.json"
+    elif "Gandalf" in character_choice:
+        filepath = characters_dir / "gandalf_the_white.json"
     else:
         name = character_choice.split("(")[0].strip()
         filepath = characters_dir / f"{name.lower().replace(' ', '_')}.json"
