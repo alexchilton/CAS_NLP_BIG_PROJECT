@@ -713,103 +713,568 @@ def _extract_pdf_range(pdf_path: Path, start_idx: int, end_idx: int) -> str:
 def _create_equipment_pdf_chunks(text: str) -> List[Chunk]:
 
 
+
+
+
     """Parse PDF text into chunks."""
+
+
+
 
 
     chunks = []
 
 
+
+
+
     
+
+
+
 
 
     # 1. Clean basic OCR junk
 
 
-    # Remove running headers like "PART I | EQUIPMENT"
+
 
 
     text = re.sub(r'PART I\s*[\|l]\s*EQUIPME[N\.]?T', '', text, flags=re.IGNORECASE)
 
 
+
+
+
+    text = _clean_ocr(text) # Apply specific OCR fixes
+
+
+
+
+
     
+
+
+
 
 
     # 2. Split by major headers
 
 
-    # Heuristic: headers often in all caps on their own line
 
-
-    # or specific known sections
-
-
-    
 
 
     known_sections = [
 
 
+
+
+
         "WEALTH", "COINAGE", "ARMOR AND SHIELDS", "WEAPONS", 
+
+
+
 
 
         "ADVENTURING GEAR", "TOOLS", "MOUNTS AND VEHICLES", 
 
 
+
+
+
         "TRADE GOODS", "EXPENSES", "TRINKETS"
+
+
+
 
 
     ]
 
 
+
+
+
     
 
 
-    # Create a regex to split by these headers
+
 
 
     pattern = r'\n(' + '|'.join([re.escape(s) for s in known_sections]) + r')\n'
 
 
-    
+
 
 
     parts = re.split(pattern, text, flags=re.IGNORECASE)
 
 
+
+
+
     
+
+
+
 
 
     current_header = "Equipment Introduction"
 
 
-    
+
 
 
     if parts and parts[0].strip():
 
 
+
+
+
         chunks.extend(_make_pdf_chunks(current_header, parts[0]))
 
 
+
+
+
         
+
+
+
 
 
     for i in range(1, len(parts), 2):
 
 
+
+
+
         header = parts[i].strip().title()
+
+
+
 
 
         content = parts[i+1]
 
 
-        chunks.extend(_make_pdf_chunks(header, content))
+
 
 
         
 
 
+
+
+
+        # Special handling for Item descriptions (Armor/Weapons/Gear)
+
+
+
+
+
+        if "Armor" in header or "Weapon" in header or "Gear" in header:
+
+
+
+
+
+            item_chunks = _extract_specific_items(header, content)
+
+
+
+
+
+            if item_chunks:
+
+
+
+
+
+                chunks.extend(item_chunks)
+
+
+
+
+
+                # Still add the general text as context, but maybe less priority?
+
+
+
+
+
+                # Actually, if we extract items, we might not need the huge blob if it's just the same text.
+
+
+
+
+
+                # But let's keep the general chunks for rules text (e.g. "Getting Into and Out of Armor")
+
+
+
+
+
+        
+
+
+
+
+
+        chunks.extend(_make_pdf_chunks(header, content))
+
+
+
+
+
+        
+
+
+
+
+
     return chunks
+
+
+
+
+
+
+
+
+
+
+
+def _clean_ocr(text: str) -> str:
+
+
+
+
+
+    """Fix common PHB PDF OCR errors."""
+
+
+
+
+
+    # Fix spacing issues
+
+
+
+
+
+    text = re.sub(r'tochain', 'to chain', text)
+
+
+
+
+
+    text = re.sub(r'it"susual1y', 'it usually', text)
+
+
+
+
+
+    text = re.sub(r'c10th', 'cloth', text)
+
+
+
+
+
+    text = re.sub(r'1tdoes', 'It does', text)
+
+
+
+
+
+    text = re.sub(r'Flcxible', 'Flexible', text)
+
+
+
+
+
+    text = re.sub(r'P/ate', 'Plate', text)
+
+
+
+
+
+    text = re.sub(r'5trength', 'Strength', text)
+
+
+
+
+
+    text = re.sub(r'1001', 'loot', text) # 'loot' often read as numbers
+
+
+
+
+
+    return text
+
+
+
+
+
+
+
+
+
+
+
+def _extract_specific_items(header: str, content: str) -> List[Chunk]:
+
+
+
+
+
+    """Identify and chunk specific items (Armor, Weapons) from text."""
+
+
+
+
+
+    chunks = []
+
+
+
+
+
+    
+
+
+
+
+
+    # Heuristic: Item Name followed by period at start of line
+
+
+
+
+
+    # e.g. "Chain Mail. Made of..."
+
+
+
+
+
+    # Also capture table rows if possible, but descriptions are key.
+
+
+
+
+
+    
+
+
+
+
+
+    # Regex for item definition: Start of line, Title Case words, Period, then text
+
+
+
+
+
+    # e.g. "^Chain Mail. " or "^Scale Mail. "
+
+
+
+
+
+    item_pattern = r'(?m)^([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\.\s+(.*)'
+
+
+
+
+
+    
+
+
+
+
+
+    matches = list(re.finditer(item_pattern, content))
+
+
+
+
+
+    
+
+
+
+
+
+    for match in matches:
+
+
+
+
+
+        item_name = match.group(1)
+
+
+
+
+
+        description = match.group(2)
+
+
+
+
+
+        
+
+
+
+
+
+        # Filter false positives (short common words)
+
+
+
+
+
+        if len(item_name) < 3 or item_name.lower() in ["the", "this", "when", "your", "variant"]:
+
+
+
+
+
+            continue
+
+
+
+
+
+            
+
+
+
+
+
+        full_content = f"ITEM: {item_name}\n**{item_name}** ({header})\n\n{description}"
+
+
+
+
+
+        
+
+
+
+
+
+        metadata = {
+
+
+
+
+
+            'name': item_name,
+
+
+
+
+
+            'section': header,
+
+
+
+
+
+            'content_type': 'equipment_item'
+
+
+
+
+
+        }
+
+
+
+
+
+        
+
+
+
+
+
+        tags = {'equipment', 'item', header.lower()}
+
+
+
+
+
+        if 'armor' in header.lower(): tags.add('armor')
+
+
+
+
+
+        if 'weapon' in header.lower(): tags.add('weapon')
+
+
+
+
+
+        
+
+
+
+
+
+        chunks.append(Chunk(
+
+
+
+
+
+            content=full_content,
+
+
+
+
+
+            chunk_type='equipment_item',
+
+
+
+
+
+            metadata=metadata,
+
+
+
+
+
+            tags=tags
+
+
+
+
+
+        ))
+
+
+
+
+
+        
+
+
+
+
+
+    return chunks
+
+
+
+
+
+
 
 
 
