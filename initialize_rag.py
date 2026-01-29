@@ -944,7 +944,19 @@ def _finalize_chunk(header: str, text: str) -> Chunk:
 # =============================================================================
 
 
-# PATH FIXER
+
+
+
+
+
+
+# DM GUIDE LOADER
+
+
+
+
+
+
 
 
 # =============================================================================
@@ -953,325 +965,499 @@ def _finalize_chunk(header: str, text: str) -> Chunk:
 
 
 
-def fix_paths():
 
 
-    """
 
 
-    Patches settings paths if files are not found in root but exist in data subdirectories.
 
 
-    This handles the discrepancy between local dev (extracted in data/) and HF (expected in root).
+
+
+
+
+
+
+def load_dm_guide(db_manager: ChromaDBManager, clear: bool = False):
+
+
+
+
+
+
+
+
+    """Load full Dungeon Master's Guide from PDF."""
+
+
+
+
+
+
+
+
+    print("\n" + "="*70)
+
+
+
+
+
+
+
+
+    print("🏰 LOADING DM GUIDE (PDF)")
+
+
+
+
+
+
+
+
+    print("="*70)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    collection_name = settings.COLLECTION_NAMES.get('dm_guide', 'dnd_dm_guide')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    if clear:
+
+
+
+
+
+
+
+
+        db_manager.clear_collection(collection_name)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # Resolve path (check settings or default location)
+
+
+
+
+
+
+
+
+    pdf_path = getattr(settings, 'DM_GUIDE_PDF', project_root / "dnd_rag_system" / "data" / "reference" / "dm_guide.pdf")
+
+
+
+
+
+
 
 
     
 
 
-    CRITICAL: This patches MULTIPLE settings instances because SpellParser uses a sys.path hack
 
 
-    that causes it to load a separate instance of the config module.
 
 
-    """
+
+
+    if not pdf_path.exists():
+
+
+
+
+
+
+
+
+         # Try finding it in reference dir manually if settings failed
+
+
+
+
+
+
+
+
+         alt_path = project_root / "dnd_rag_system" / "data" / "reference" / "dm_guide.pdf"
+
+
+
+
+
+
+
+
+         if alt_path.exists():
+
+
+
+
+
+
+
+
+             pdf_path = alt_path
+
+
+
+
+
+
+
+
+         else:
+
+
+
+
+
+
+
+
+            print(f"⚠️  DM Guide PDF not found at {pdf_path}")
+
+
+
+
+
+
+
+
+            return 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     try:
 
 
-        # 1. Gather all settings objects that need patching
 
 
-        settings_targets = []
+
+
+
+
+        import pdfplumber
+
+
+
+
+
+
+
+
+        print(f"📖 Extracting text from {pdf_path.name}...")
+
+
+
+
+
+
 
 
         
 
 
-        # Target A: The standard app settings
 
 
-        from dnd_rag_system.config import settings as app_settings
 
 
-        settings_targets.append(("App Settings", app_settings))
 
 
-        
+        pages_data = []
 
 
-        # Target B: The settings used by SpellParser (via sys.path hack)
 
 
-        try:
 
 
-            import dnd_rag_system.parsers.spell_parser as spell_parser_mod
 
 
-            if hasattr(spell_parser_mod, 'settings'):
+        with pdfplumber.open(pdf_path) as pdf:
 
 
-                settings_targets.append(("SpellParser Settings", spell_parser_mod.settings))
 
 
-        except ImportError:
 
 
-            print("  ⚠️ Could not import spell_parser module for patching")
 
 
+            total_pages = len(pdf.pages)
 
 
 
-        # Target C: The raw 'config' module if it exists in sys.modules
 
 
-        if 'config' in sys.modules and hasattr(sys.modules['config'], 'settings'):
 
 
-             settings_targets.append(("Sys.modules['config']", sys.modules['config'].settings))
 
+            # Skip first few pages (covers/TOC) if desired, but full scan is safer
 
-             
 
 
-        # Target D: The raw 'settings' module if it exists (some imports might be 'import settings')
 
 
-        if 'settings' in sys.modules:
 
 
-             settings_targets.append(("Sys.modules['settings']", sys.modules['settings']))
 
+            for i, page in enumerate(pdf.pages):
 
 
 
 
-        # Remove duplicates (by id)
 
 
-        unique_targets = {}
 
 
-        for name, obj in settings_targets:
+                text = page.extract_text()
 
 
-            if id(obj) not in unique_targets:
 
 
-                unique_targets[id(obj)] = (name, obj)
 
 
-        
 
 
-        print(f"🔍 Patching paths on {len(unique_targets)} settings object(s)...")
+                if text and len(text.strip()) > 50:
 
 
 
 
 
-        # 2. Define path corrections
 
 
-        data_dir = project_root / "dnd_rag_system" / "data"
 
+                    pages_data.append({'page_number': i + 1, 'text': text.strip()})
 
-        extracted_dir = data_dir / "extracted"
 
 
-        reference_dir = data_dir / "reference"
 
 
-        
 
-
-        # Map attribute names to (list of potential filenames, source directory)
-
-
-        path_mappings = [
-
-
-            ('SPELLS_TXT', ['spells.txt'], extracted_dir),
-
-
-            ('ALL_SPELLS_TXT', ['all_spells.txt'], extracted_dir),
-
-
-            ('EXTRACTED_MONSTERS_TXT', ['extracted_monsters.txt'], extracted_dir),
-
-
-            ('EXTRACTED_CLASSES_TXT', ['extracted_classes.txt'], extracted_dir),
-
-
-            ('EQUIPMENT_TXT', ['equipment.txt'], data_dir), # Added equipment
-
-
-        ]
-
-
-        
-
-
-        # 3. Apply patches
-
-
-        for _, (target_name, settings_obj) in unique_targets.items():
-
-
-            # print(f"  > Patching {target_name}...")
-
-
-            
-
-
-            # Patch text files
-
-
-            for attr, filenames, source_dir in path_mappings:
-
-
-                # Special case for EQUIPMENT_TXT which might not exist on settings yet
-
-
-                if attr == 'EQUIPMENT_TXT' and not hasattr(settings_obj, attr):
-
-
-                     # If it doesn't exist, we can inject it or just skip
-
-
-                     # The loader handles the default path manually, so this is just for consistency if added later
-
-
-                     pass 
-
-
-
-
-
-                if hasattr(settings_obj, attr):
-
-
-                    current_path = getattr(settings_obj, attr)
-
-
-                    if not current_path.exists():
-
-
-                        found = False
-
-
-                        for filename in filenames:
-
-
-                            candidate = source_dir / filename
-
-
-                            if candidate.exists():
-
-
-                                setattr(settings_obj, attr, candidate)
-
-
-                                print(f"    ✓ {target_name}: Fixed {attr} -> {candidate}")
-
-
-                                found = True
-
-
-                                break
-
-
-                        if not found:
-
-
-                             pass
 
 
                 
 
 
-                # Manual injection for EQUIPMENT_TXT if missing (for loader use)
-
-
-                if attr == 'EQUIPMENT_TXT' and not hasattr(settings_obj, attr):
-
-
-                     for filename in filenames:
-
-
-                        candidate = source_dir / filename
-
-
-                        if candidate.exists():
-
-
-                            setattr(settings_obj, attr, candidate)
-
-
-                            # print(f"    ✓ {target_name}: Injected {attr} -> {candidate}")
-
-
-                            break
 
 
 
 
 
-            # Patch PDF
+
+                if (i + 1) % 50 == 0:
 
 
-            if hasattr(settings_obj, 'PLAYERS_HANDBOOK_PDF'):
 
 
-                phb_path = getattr(settings_obj, 'PLAYERS_HANDBOOK_PDF')
 
 
-                if not phb_path.exists():
 
 
-                    # Try exact match
+                    print(f"  Processed {i + 1}/{total_pages} pages...")
 
 
-                    candidate = reference_dir / "players_handbook.pdf"
 
 
-                    if candidate.exists():
 
 
-                        setattr(settings_obj, 'PLAYERS_HANDBOOK_PDF', candidate)
 
 
-                        print(f"    ✓ {target_name}: Fixed PHB PDF -> {candidate}")
+                    
 
 
-                    else:
 
 
-                        # Try globbing
 
 
-                        pdfs = list(reference_dir.glob("*Player*Handbook*.pdf"))
 
 
-                        if not pdfs:
+        print(f"✓ Extracted text from {len(pages_data)} pages")
 
 
-                            pdfs = list(reference_dir.glob("*players*handbook*.pdf"))
 
 
-                        
 
 
-                        if pdfs:
 
 
-                            setattr(settings_obj, 'PLAYERS_HANDBOOK_PDF', pdfs[0])
+        
 
 
-                            print(f"    ✓ {target_name}: Fixed PHB PDF -> {pdfs[0].name}")
+
+
+
+
+
+
+        # Chunking strategy: 3 pages per chunk with overlap logic from ingest_dm_guide
+
+
+
+
+
+
+
+
+        chunks = _create_dm_guide_chunks(pages_data)
+
+
+
+
+
+
+
+
+        print(f"✓ Created {len(chunks)} DM Guide chunks")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        if chunks:
+
+
+
+
+
+
+
+
+            db_manager.add_chunks(collection_name, chunks)
+
+
+
+
+
+
+
+
+            print(f"✅ Loaded {len(chunks)} DM Guide chunks into ChromaDB")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        return len(chunks)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    except ImportError:
+
+
+
+
+
+
+
+
+        print("⚠️  pdfplumber not installed. Skipping DM Guide.")
+
+
+
+
+
+
+
+
+        return 0
+
+
+
 
 
 
@@ -1280,10 +1466,1531 @@ def fix_paths():
     except Exception as e:
 
 
+
+
+
+
+
+
+        print(f"❌ Error loading DM Guide: {e}")
+
+
+
+
+
+
+
+
+        return 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def _create_dm_guide_chunks(pages_data: List[Dict[str, Any]], pages_per_chunk: int = 3) -> List[Chunk]:
+
+
+
+
+
+
+
+
+    """Create chunks from DM Guide pages."""
+
+
+
+
+
+
+
+
+    chunks = []
+
+
+
+
+
+
+
+
+    current_section = "General Rules"
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+    i = 0
+
+
+
+
+
+
+
+
+    while i < len(pages_data):
+
+
+
+
+
+
+
+
+        chunk_pages = pages_data[i:i + pages_per_chunk]
+
+
+
+
+
+
+
+
+        if not chunk_pages: break
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        # Simple heuristic for section headers in first page of chunk
+
+
+
+
+
+
+
+
+        first_lines = chunk_pages[0]['text'].split('\n')[:5]
+
+
+
+
+
+
+
+
+        for line in first_lines:
+
+
+
+
+
+
+
+
+            if "CHAPTER" in line.upper() or (line.isupper() and len(line) < 50):
+
+
+
+
+
+
+
+
+                current_section = line.title()
+
+
+
+
+
+
+
+
+                break
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        combined_text = "\n\n".join([f"[Page {p['page_number']}]\n{p['text']}" for p in chunk_pages])
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        metadata = {
+
+
+
+
+
+
+
+
+            'source': 'DM Guide',
+
+
+
+
+
+
+
+
+            'section': current_section,
+
+
+
+
+
+
+
+
+            'page_start': chunk_pages[0]['page_number'],
+
+
+
+
+
+
+
+
+            'page_end': chunk_pages[-1]['page_number'],
+
+
+
+
+
+
+
+
+            'content_type': 'dm_guide'
+
+
+
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        tags = {'dm_guide', 'rules'}
+
+
+
+
+
+
+
+
+        if 'magic item' in combined_text.lower(): tags.add('magic_items')
+
+
+
+
+
+
+
+
+        if 'treasure' in combined_text.lower(): tags.add('treasure')
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        full_content = f"DM GUIDE: {current_section}\n\n{combined_text}"
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        chunks.append(Chunk(
+
+
+
+
+
+
+
+
+            content=full_content,
+
+
+
+
+
+
+
+
+            chunk_type='dm_guide_section',
+
+
+
+
+
+
+
+
+            metadata=metadata,
+
+
+
+
+
+
+
+
+            tags=tags
+
+
+
+
+
+
+
+
+        ))
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        i += pages_per_chunk
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+    return chunks
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# =============================================================================
+
+
+
+
+
+
+
+
+# PATH FIXER
+
+
+
+
+
+
+
+
+# =============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def fix_paths():
+
+
+
+
+
+
+
+
+    """
+
+
+
+
+
+
+
+
+    Patches settings paths if files are not found in root but exist in data subdirectories.
+
+
+
+
+
+
+
+
+    This handles the discrepancy between local dev (extracted in data/) and HF (expected in root).
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+    CRITICAL: This patches MULTIPLE settings instances because SpellParser uses a sys.path hack
+
+
+
+
+
+
+
+
+    that causes it to load a separate instance of the config module.
+
+
+
+
+
+
+
+
+    """
+
+
+
+
+
+
+
+
+    try:
+
+
+
+
+
+
+
+
+        # 1. Gather all settings objects that need patching
+
+
+
+
+
+
+
+
+        settings_targets = []
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        # Target A: The standard app settings
+
+
+
+
+
+
+
+
+        from dnd_rag_system.config import settings as app_settings
+
+
+
+
+
+
+
+
+        settings_targets.append(("App Settings", app_settings))
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        # Target B: The settings used by SpellParser (via sys.path hack)
+
+
+
+
+
+
+
+
+        try:
+
+
+
+
+
+
+
+
+            import dnd_rag_system.parsers.spell_parser as spell_parser_mod
+
+
+
+
+
+
+
+
+            if hasattr(spell_parser_mod, 'settings'):
+
+
+
+
+
+
+
+
+                settings_targets.append(("SpellParser Settings", spell_parser_mod.settings))
+
+
+
+
+
+
+
+
+        except ImportError:
+
+
+
+
+
+
+
+
+            print("  ⚠️ Could not import spell_parser module for patching")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # Target C: The raw 'config' module if it exists in sys.modules
+
+
+
+
+
+
+
+
+        if 'config' in sys.modules and hasattr(sys.modules['config'], 'settings'):
+
+
+
+
+
+
+
+
+             settings_targets.append(("Sys.modules['config']", sys.modules['config'].settings))
+
+
+
+
+
+
+
+
+             
+
+
+
+
+
+
+
+
+        # Target D: The raw 'settings' module if it exists (some imports might be 'import settings')
+
+
+
+
+
+
+
+
+        if 'settings' in sys.modules:
+
+
+
+
+
+
+
+
+             settings_targets.append(("Sys.modules['settings']", sys.modules['settings']))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # Remove duplicates (by id)
+
+
+
+
+
+
+
+
+        unique_targets = {}
+
+
+
+
+
+
+
+
+        for name, obj in settings_targets:
+
+
+
+
+
+
+
+
+            if id(obj) not in unique_targets:
+
+
+
+
+
+
+
+
+                unique_targets[id(obj)] = (name, obj)
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        print(f"🔍 Patching paths on {len(unique_targets)} settings object(s)...")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # 2. Define path corrections
+
+
+
+
+
+
+
+
+        data_dir = project_root / "dnd_rag_system" / "data"
+
+
+
+
+
+
+
+
+        extracted_dir = data_dir / "extracted"
+
+
+
+
+
+
+
+
+        reference_dir = data_dir / "reference"
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        # Map attribute names to (list of potential filenames, source directory)
+
+
+
+
+
+
+
+
+        path_mappings = [
+
+
+
+
+
+
+
+
+            ('SPELLS_TXT', ['spells.txt'], extracted_dir),
+
+
+
+
+
+
+
+
+            ('ALL_SPELLS_TXT', ['all_spells.txt'], extracted_dir),
+
+
+
+
+
+
+
+
+            ('EXTRACTED_MONSTERS_TXT', ['extracted_monsters.txt'], extracted_dir),
+
+
+
+
+
+
+
+
+            ('EXTRACTED_CLASSES_TXT', ['extracted_classes.txt'], extracted_dir),
+
+
+
+
+
+
+
+
+            ('EQUIPMENT_TXT', ['equipment.txt'], data_dir), 
+
+
+
+
+
+
+
+
+        ]
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        # 3. Apply patches
+
+
+
+
+
+
+
+
+        for _, (target_name, settings_obj) in unique_targets.items():
+
+
+
+
+
+
+
+
+            # print(f"  > Patching {target_name}...")
+
+
+
+
+
+
+
+
+            
+
+
+
+
+
+
+
+
+            # Patch text files
+
+
+
+
+
+
+
+
+            for attr, filenames, source_dir in path_mappings:
+
+
+
+
+
+
+
+
+                # Manual injection for EQUIPMENT_TXT/others if missing
+
+
+
+
+
+
+
+
+                if not hasattr(settings_obj, attr):
+
+
+
+
+
+
+
+
+                     for filename in filenames:
+
+
+
+
+
+
+
+
+                        candidate = source_dir / filename
+
+
+
+
+
+
+
+
+                        if candidate.exists():
+
+
+
+
+
+
+
+
+                            setattr(settings_obj, attr, candidate)
+
+
+
+
+
+
+
+
+                            break
+
+
+
+
+
+
+
+
+                            
+
+
+
+
+
+
+
+
+                if hasattr(settings_obj, attr):
+
+
+
+
+
+
+
+
+                    current_path = getattr(settings_obj, attr)
+
+
+
+
+
+
+
+
+                    if not current_path.exists():
+
+
+
+
+
+
+
+
+                        found = False
+
+
+
+
+
+
+
+
+                        for filename in filenames:
+
+
+
+
+
+
+
+
+                            candidate = source_dir / filename
+
+
+
+
+
+
+
+
+                            if candidate.exists():
+
+
+
+
+
+
+
+
+                                setattr(settings_obj, attr, candidate)
+
+
+
+
+
+
+
+
+                                print(f"    ✓ {target_name}: Fixed {attr} -> {candidate}")
+
+
+
+
+
+
+
+
+                                found = True
+
+
+
+
+
+
+
+
+                                break
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            # Patch PHB PDF
+
+
+
+
+
+
+
+
+            if hasattr(settings_obj, 'PLAYERS_HANDBOOK_PDF'):
+
+
+
+
+
+
+
+
+                phb_path = getattr(settings_obj, 'PLAYERS_HANDBOOK_PDF')
+
+
+
+
+
+
+
+
+                if not phb_path.exists():
+
+
+
+
+
+
+
+
+                    # Try exact match
+
+
+
+
+
+
+
+
+                    candidate = reference_dir / "players_handbook.pdf"
+
+
+
+
+
+
+
+
+                    if candidate.exists():
+
+
+
+
+
+
+
+
+                        setattr(settings_obj, 'PLAYERS_HANDBOOK_PDF', candidate)
+
+
+
+
+
+
+
+
+                        print(f"    ✓ {target_name}: Fixed PHB PDF -> {candidate}")
+
+
+
+
+
+
+
+
+                    else:
+
+
+
+
+
+
+
+
+                        # Try globbing
+
+
+
+
+
+
+
+
+                        pdfs = list(reference_dir.glob("*Player*Handbook*.pdf"))
+
+
+
+
+
+
+
+
+                        if not pdfs:
+
+
+
+
+
+
+
+
+                            pdfs = list(reference_dir.glob("*players*handbook*.pdf"))
+
+
+
+
+
+
+
+
+                        
+
+
+
+
+
+
+
+
+                        if pdfs:
+
+
+
+
+
+
+
+
+                            setattr(settings_obj, 'PLAYERS_HANDBOOK_PDF', pdfs[0])
+
+
+
+
+
+
+
+
+                            print(f"    ✓ {target_name}: Fixed PHB PDF -> {pdfs[0].name}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            # Patch DM Guide PDF (Inject if missing)
+
+
+
+
+
+
+
+
+            if not hasattr(settings_obj, 'DM_GUIDE_PDF'):
+
+
+
+
+
+
+
+
+                candidate = reference_dir / "dm_guide.pdf"
+
+
+
+
+
+
+
+
+                if candidate.exists():
+
+
+
+
+
+
+
+
+                     setattr(settings_obj, 'DM_GUIDE_PDF', candidate)
+
+
+
+
+
+
+
+
+                     print(f"    ✓ {target_name}: Injected DM_GUIDE_PDF -> {candidate}")
+
+
+
+
+
+
+
+
+                else:
+
+
+
+
+
+
+
+
+                    # Glob for DM guide
+
+
+
+
+
+
+
+
+                     pdfs = list(reference_dir.glob("*Dungeon*Master*Guide*.pdf"))
+
+
+
+
+
+
+
+
+                     if not pdfs:
+
+
+
+
+
+
+
+
+                         pdfs = list(reference_dir.glob("*dm*guide*.pdf"))
+
+
+
+
+
+
+
+
+                     if pdfs:
+
+
+
+
+
+
+
+
+                         setattr(settings_obj, 'DM_GUIDE_PDF', pdfs[0])
+
+
+
+
+
+
+
+
+                         print(f"    ✓ {target_name}: Injected DM_GUIDE_PDF -> {pdfs[0].name}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    except Exception as e:
+
+
+
+
+
+
+
+
         print(f"⚠️ Error patching paths: {e}")
 
 
+
+
+
+
+
+
         import traceback
+
+
+
+
+
+
 
 
         traceback.print_exc()
@@ -1295,13 +3002,55 @@ def fix_paths():
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # =============================================================================
+
+
+
+
+
+
 
 
 # MAIN
 
 
+
+
+
+
+
+
 # =============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1310,13 +3059,37 @@ def fix_paths():
 def main():
 
 
+
+
+
+
+
+
     parser = argparse.ArgumentParser(description='Initialize Comprehensive D&D RAG System')
+
+
+
+
+
+
 
 
     parser.add_argument('--clear', action='store_true', help='Clear existing data')
 
 
-    parser.add_argument('--only', type=str, help='Load only specific collections (spells,monsters,classes,races,magic_items,features,equipment)')
+
+
+
+
+
+
+    parser.add_argument('--only', type=str, help='Load only specific collections (spells,monsters,classes,races,magic_items,features,equipment,dm_guide)')
+
+
+
+
+
+
 
 
     args = parser.parse_args()
@@ -1325,19 +3098,61 @@ def main():
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     print("\n" + "="*70)
+
+
+
+
+
+
 
 
     print("🚀 D&D RAG SYSTEM INITIALIZATION (COMPREHENSIVE)")
 
 
+
+
+
+
+
+
     print("="*70)
+
+
+
+
+
+
 
 
     
 
 
+
+
+
+
+
+
     # Fix paths before initializing anything that uses settings
+
+
+
+
+
+
 
 
     fix_paths()
@@ -1346,13 +3161,43 @@ def main():
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     db_manager = ChromaDBManager()
+
+
+
+
+
+
 
 
     
 
 
-    to_load = args.only.split(',') if args.only else ['spells', 'monsters', 'classes', 'races', 'magic_items', 'features', 'equipment']
+
+
+
+
+
+
+    to_load = args.only.split(',') if args.only else ['spells', 'monsters', 'classes', 'races', 'magic_items', 'features', 'equipment', 'dm_guide']
+
+
+
+
+
+
 
 
     results = {}
@@ -1361,22 +3206,70 @@ def main():
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     if 'spells' in to_load: results['spells'] = load_spells(db_manager, args.clear)
+
+
+
+
+
+
 
 
     if 'monsters' in to_load: results['monsters'] = load_monsters(db_manager, args.clear)
 
 
+
+
+
+
+
+
     if 'classes' in to_load: results['classes'] = load_classes(db_manager, args.clear)
+
+
+
+
+
+
 
 
     if 'races' in to_load: results['races'] = load_races(db_manager, args.clear)
 
 
+
+
+
+
+
+
     if 'magic_items' in to_load: results['magic_items'] = load_magic_items(db_manager, args.clear)
 
 
+
+
+
+
+
+
     if 'features' in to_load: results['features'] = load_class_features_structured(db_manager, args.clear)
+
+
+
+
+
+
 
 
     if 'equipment' in to_load: results['equipment'] = load_equipment(db_manager, args.clear)
@@ -1385,31 +3278,109 @@ def main():
 
 
 
+
+
+
+    if 'dm_guide' in to_load: results['dm_guide'] = load_dm_guide(db_manager, args.clear)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     print("\n" + "="*70)
+
+
+
+
+
+
 
 
     print("📊 INITIALIZATION SUMMARY")
 
 
+
+
+
+
+
+
     print("="*70)
+
+
+
+
+
+
 
 
     for k, v in results.items():
 
 
+
+
+
+
+
+
         print(f"  {k.capitalize()}: {v} chunks")
+
+
+
+
+
+
 
 
     print(f"\n✅ Total Chunks: {sum(results.values())}")
 
 
+
+
+
+
+
+
     
+
+
+
+
+
+
 
 
     print("\n🎉 RAG system initialization completed successfully!")
 
 
+
+
+
+
+
+
     print("   ChromaDB is ready for use.")
+
+
+
+
+
+
+
+
+
 
 
 
