@@ -269,6 +269,7 @@ DEBUG_SCENARIOS = [
     ("Wolf Pack", "Dark Forest Clearing", ["Wolf", "Wolf"], []),
     ("Skeleton Guardian", "Ancient Ruins", ["Skeleton"], ["Ancient Sword"]),
     ("Dragon Encounter", "Dragon's Lair Approach", ["Young Red Dragon"], ["Dragon Hoard"]),
+    ("Archmage vs Dragon", "Dragon's Lair Approach", ["Adult Red Dragon"], []),  # Level 20 wizard test
     ("Safe Inn", "The Prancing Pony Inn", ["Innkeeper Butterbur"], ["Healing Potion"]),
     ("Shopping District", "The Market Square", ["Merchant", "Blacksmith"], []),
 ]
