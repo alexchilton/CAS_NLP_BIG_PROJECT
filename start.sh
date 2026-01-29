@@ -8,6 +8,14 @@ RAG_VERSION="v3"
 if [ -n "$SPACE_ID" ] || [ -n "$SPACE_AUTHOR_NAME" ] || [ -n "$HF_SPACE" ]; then
     echo "🤗 Running on Hugging Face Spaces - using HF Inference API"
     echo "Skipping Ollama setup..."
+    
+    # Use HF Spaces persistent storage for ChromaDB
+    # This prevents rebuilding the database on every deployment
+    if [ -d "/data" ]; then
+        echo "📦 Using HF Spaces persistent storage at /data"
+        export CHROMADB_DIR="/data/chromadb"
+        mkdir -p "$CHROMADB_DIR"
+    fi
 elif [ -n "$LOCAL_DEV" ]; then
     echo "🐳 Running in Docker Compose - using Ollama service"
     echo "Ollama endpoint: $OLLAMA_BASE_URL"
@@ -44,7 +52,9 @@ else
 fi
 
 # Initialize RAG database (Version Checked)
-VERSION_FILE="chromadb/version.txt"
+# Use persistent storage path if available, otherwise local
+CHROMADB_BASE="${CHROMADB_DIR:-chromadb}"
+VERSION_FILE="$CHROMADB_BASE/version.txt"
 CURRENT_VERSION=""
 
 if [ -f "$VERSION_FILE" ]; then
@@ -55,6 +65,7 @@ if [ "$CURRENT_VERSION" != "$RAG_VERSION" ]; then
     echo "📚 RAG database outdated ($CURRENT_VERSION vs $RAG_VERSION). Re-initializing..."
     # Run with --clear to wipe old data
     if python initialize_rag.py --clear; then
+        mkdir -p "$CHROMADB_BASE"
         echo "$RAG_VERSION" > "$VERSION_FILE"
         echo "✅ RAG database updated to version $RAG_VERSION"
     else

@@ -42,7 +42,13 @@ class ChromaDBManager:
             persist_dir: Directory for persistent storage (default from settings)
             embedding_model: Embedding model name (default from settings)
         """
-        self.persist_dir = persist_dir or settings.CHROMA_PERSIST_DIR
+        # Use HF Spaces persistent storage if available (env var set by start.sh)
+        import os
+        if os.getenv('CHROMADB_DIR'):
+            self.persist_dir = os.getenv('CHROMADB_DIR')
+        else:
+            self.persist_dir = persist_dir or settings.CHROMA_PERSIST_DIR
+            
         self.embedding_model = embedding_model or settings.EMBEDDING_MODEL_NAME
 
         # Ensure persist directory exists
