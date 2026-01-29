@@ -12,7 +12,8 @@ dist/
 build/
 
 # ChromaDB - vector database (regenerate with initialize_rag.py)
-chromadb/
+chromadb/*
+!chromadb/version.txt
 
 # IDE
 .idea/
