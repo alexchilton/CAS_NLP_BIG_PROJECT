@@ -51,8 +51,21 @@ def handle_rag_lookup(query: str, gm, db) -> str:
     from dnd_rag_system.systems.spell_manager import SpellManager
     spell_mgr = SpellManager(db)
 
-    # Check if it's a spell
-    spell_details = spell_mgr.lookup_spell_details(query)
+    # Try different capitalizations for better matching
+    # ChromaDB semantic search should handle this, but explicit casing helps
+    query_variations = [
+        query.title(),  # "Magic Missile"
+        query,          # Original case
+        query.lower(),  # "magic missile"
+        query.upper(),  # "MAGIC MISSILE"
+    ]
+
+    # Check if it's a spell - try different capitalizations
+    spell_details = None
+    for query_variant in query_variations:
+        spell_details = spell_mgr.lookup_spell_details(query_variant)
+        if spell_details:
+            break
 
     if spell_details:
         # Format spell details nicely
@@ -71,10 +84,13 @@ def handle_rag_lookup(query: str, gm, db) -> str:
         return result
 
     # Fallback to general RAG search (items, rules, etc.)
-    results = gm.rag_retriever.search_rag(query, n_results=2)
-    if results and results.get('documents') and results['documents'][0]:
-        formatted = gm.rag_retriever.format_rag_context(results)
-        return f"## 📖 {query}\n\n{formatted}\n\n---\n*Source: D&D 5e SRD via RAG*"
+    # Try different capitalizations
+    results = None
+    for query_variant in query_variations:
+        results = gm.rag_retriever.search_rag(query_variant, n_results=2)
+        if results and results.get('documents') and results['documents'][0]:
+            formatted = gm.rag_retriever.format_rag_context(results)
+            return f"## 📖 {query.title()}\n\n{formatted}\n\n---\n*Source: D&D 5e SRD via RAG*"
 
     return f"❌ **'{query}' not found in D&D 5e SRD**\n\nTry searching for:\n- Spell names (e.g., 'Magic Missile', 'Fireball')\n- Item names (e.g., 'Longsword', 'Plate Armor')\n- Monster names (e.g., 'Goblin', 'Dragon')\n- Class features (e.g., 'Action Surge', 'Sneak Attack')"
 
