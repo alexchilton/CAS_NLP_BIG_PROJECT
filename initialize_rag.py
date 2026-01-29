@@ -524,7 +524,7 @@ def _create_class_feature_chunk(class_name: str, level: int, feature: Dict[str, 
 # =============================================================================
 
 
-# EQUIPMENT LOADER
+# EQUIPMENT LOADER (PDF Based)
 
 
 # =============================================================================
@@ -536,13 +536,13 @@ def _create_class_feature_chunk(class_name: str, level: int, feature: Dict[str, 
 def load_equipment(db_manager: ChromaDBManager, clear: bool = False):
 
 
-    """Load equipment from equipment.txt into ChromaDB."""
+    """Load equipment from Player's Handbook PDF into ChromaDB."""
 
 
     print("\n" + "="*70)
 
 
-    print("🛡️  LOADING EQUIPMENT")
+    print("🛡️  LOADING EQUIPMENT (PDF)")
 
 
     print("="*70)
@@ -566,52 +566,13 @@ def load_equipment(db_manager: ChromaDBManager, clear: bool = False):
 
 
 
-    # Path to equipment.txt (handling potential patch locations)
+    if not settings.PLAYERS_HANDBOOK_PDF.exists():
 
 
-    # Based on file listing, it is in dnd_rag_system/data/equipment.txt
+        print(f"⚠️  Player's Handbook PDF not found: {settings.PLAYERS_HANDBOOK_PDF}")
 
 
-    # But we check settings or default locations
-
-
-    equipment_path = getattr(settings, 'EQUIPMENT_TXT', project_root / "dnd_rag_system" / "data" / "equipment.txt")
-
-
-
-
-
-    print(f"📖 Reading {equipment_path}")
-
-
-
-
-
-    if not equipment_path.exists():
-
-
-        print(f"⚠️  Equipment file not found at {equipment_path}, skipping")
-
-
-        # Try finding it in extracted just in case
-
-
-        alt_path = project_root / "dnd_rag_system" / "data" / "extracted" / "equipment.txt"
-
-
-        if alt_path.exists():
-
-
-            print(f"  ✓ Found at {alt_path}")
-
-
-            equipment_path = alt_path
-
-
-        else:
-
-
-            return 0
+        return 0
 
 
 
@@ -620,28 +581,49 @@ def load_equipment(db_manager: ChromaDBManager, clear: bool = False):
     try:
 
 
-        with open(equipment_path, 'r', encoding='utf-8') as f:
+        import pdfplumber
 
 
-            content = f.read()
-
-
-
-
-
-        # Split into logical sections based on headers
-
-
-        # The text seems to have headers like "PART I EQUIPMENT", "WEALTH", "ARMOR AND SHIELDS"
-
-
-        # We'll use a simple chunking strategy based on paragraphs/headers
-
-
-        chunks = _create_equipment_chunks(content)
+        print(f"📖 Extracting equipment from PDF (pages 143-163)...")
 
 
         
+
+
+        # Extract pages 143-163 (indices, so roughly 144-164 physically)
+
+
+        # Based on debug: Start ~143, End ~163
+
+
+        equipment_text = _extract_pdf_range(settings.PLAYERS_HANDBOOK_PDF, 143, 163)
+
+
+        
+
+
+        if not equipment_text:
+
+
+            print("❌ Failed to extract equipment text")
+
+
+            return 0
+
+
+            
+
+
+        print(f"✓ Extracted {len(equipment_text)} characters")
+
+
+        
+
+
+        # Create chunks based on headers
+
+
+        chunks = _create_equipment_pdf_chunks(equipment_text)
 
 
         print(f"✓ Created {len(chunks)} equipment chunks")
@@ -665,10 +647,22 @@ def load_equipment(db_manager: ChromaDBManager, clear: bool = False):
         return len(chunks)
 
 
+
+
+
+    except ImportError:
+
+
+        print("⚠️  pdfplumber not installed. Skipping equipment PDF load.")
+
+
+        return 0
+
+
     except Exception as e:
 
 
-        print(f"❌ Error loading equipment: {e}")
+        print(f"❌ Error loading equipment from PDF: {e}")
 
 
         return 0
@@ -677,10 +671,49 @@ def load_equipment(db_manager: ChromaDBManager, clear: bool = False):
 
 
 
-def _create_equipment_chunks(content: str) -> List[Chunk]:
+def _extract_pdf_range(pdf_path: Path, start_idx: int, end_idx: int) -> str:
 
 
-    """Parse equipment text into chunks."""
+    """Extract text from a range of pages (0-indexed)."""
+
+
+    import pdfplumber
+
+
+    text = ""
+
+
+    with pdfplumber.open(pdf_path) as pdf:
+
+
+        for i in range(start_idx, min(end_idx, len(pdf.pages))):
+
+
+            page = pdf.pages[i]
+
+
+            extracted = page.extract_text()
+
+
+            if extracted:
+
+
+                # Add page marker for context
+
+
+                text += f"\n\n[PHB Page {i+1}]\n{extracted}"
+
+
+    return text
+
+
+
+
+
+def _create_equipment_pdf_chunks(text: str) -> List[Chunk]:
+
+
+    """Parse PDF text into chunks."""
 
 
     chunks = []
@@ -689,76 +722,91 @@ def _create_equipment_chunks(content: str) -> List[Chunk]:
     
 
 
-    # Split by major headers (usually capitalized words on their own line)
+    # 1. Clean basic OCR junk
 
 
-    # or just simple paragraph chunking with overlap
+    # Remove running headers like "PART I | EQUIPMENT"
 
 
-    
-
-
-    # 1. Clean the text
-
-
-    # Fix common OCR/text issues
-
-
-    content = re.sub(r'PART I\s+EQUIPME[N\.]?T', '', content)
-
-
-    content = re.sub(r'\n\d+\n', '\n', content) # Remove page numbers
+    text = re.sub(r'PART I\s*[\|l]\s*EQUIPME[N\.]?T', '', text, flags=re.IGNORECASE)
 
 
     
 
 
-    # 2. Split into sections based on capitalization headers roughly
+    # 2. Split by major headers
 
 
-    sections = re.split(r'\n([A-Z\s]{4,})\n', content)
+    # Heuristic: headers often in all caps on their own line
 
 
-    
-
-
-    current_header = "General Equipment"
+    # or specific known sections
 
 
     
 
 
-    # If first element is content, process it
+    known_sections = [
 
 
-    if sections and sections[0].strip():
+        "WEALTH", "COINAGE", "ARMOR AND SHIELDS", "WEAPONS", 
 
 
-        chunks.extend(_chunk_text_section(current_header, sections[0]))
+        "ADVENTURING GEAR", "TOOLS", "MOUNTS AND VEHICLES", 
+
+
+        "TRADE GOODS", "EXPENSES", "TRINKETS"
+
+
+    ]
+
+
+    
+
+
+    # Create a regex to split by these headers
+
+
+    pattern = r'\n(' + '|'.join([re.escape(s) for s in known_sections]) + r')\n'
+
+
+    
+
+
+    parts = re.split(pattern, text, flags=re.IGNORECASE)
+
+
+    
+
+
+    current_header = "Equipment Introduction"
+
+
+    
+
+
+    if parts and parts[0].strip():
+
+
+        chunks.extend(_make_pdf_chunks(current_header, parts[0]))
 
 
         
 
 
-    # Process pairs of Header -> Content
+    for i in range(1, len(parts), 2):
 
 
-    for i in range(1, len(sections), 2):
+        header = parts[i].strip().title()
 
 
-        header = sections[i].strip()
+        content = parts[i+1]
 
 
-        if i + 1 < len(sections):
+        chunks.extend(_make_pdf_chunks(header, content))
 
 
-            section_content = sections[i+1]
-
-
-            chunks.extend(_chunk_text_section(header, section_content))
-
-
-            
+        
 
 
     return chunks
@@ -767,10 +815,10 @@ def _create_equipment_chunks(content: str) -> List[Chunk]:
 
 
 
-def _chunk_text_section(header: str, text: str) -> List[Chunk]:
+def _make_pdf_chunks(header: str, content: str) -> List[Chunk]:
 
 
-    """Split a section of text into chunks."""
+    """Create chunks from a section of text."""
 
 
     chunks = []
@@ -779,22 +827,16 @@ def _chunk_text_section(header: str, text: str) -> List[Chunk]:
     
 
 
-    # Split by double newlines to get paragraphs
+    # Split large sections into smaller overlap chunks
 
 
-    paragraphs = [p.strip() for p in text.split('\n\n') if p.strip()]
+    paragraphs = content.split('\n\n')
 
 
-    
+    current_text = ""
 
 
-    current_chunk_text = ""
-
-
-    current_size = 0
-
-
-    target_size = 1000  # Characters
+    target_size = 1200
 
 
     
@@ -803,46 +845,28 @@ def _chunk_text_section(header: str, text: str) -> List[Chunk]:
     for para in paragraphs:
 
 
-        if current_size + len(para) > target_size and current_chunk_text:
+        if len(current_text) + len(para) > target_size and current_text:
 
 
-            # Finalize current chunk
+            chunks.append(_finalize_chunk(header, current_text))
 
 
-            chunks.append(_make_equip_chunk(header, current_chunk_text))
-
-
-            current_chunk_text = para
-
-
-            current_size = len(para)
+            current_text = para
 
 
         else:
 
 
-            if current_chunk_text:
-
-
-                current_chunk_text += "\n\n" + para
-
-
-            else:
-
-
-                current_chunk_text = para
-
-
-            current_size += len(para)
+            current_text += "\n\n" + para
 
 
             
 
 
-    if current_chunk_text:
+    if current_text:
 
 
-        chunks.append(_make_equip_chunk(header, current_chunk_text))
+        chunks.append(_finalize_chunk(header, current_text))
 
 
         
@@ -854,13 +878,10 @@ def _chunk_text_section(header: str, text: str) -> List[Chunk]:
 
 
 
-def _make_equip_chunk(header: str, text: str) -> Chunk:
+def _finalize_chunk(header: str, text: str) -> Chunk:
 
 
-    """Helper to create a Chunk object."""
-
-
-    full_content = f"EQUIPMENT: {header.title()}\n**{header.title()}**\n\n{text}"
+    full_content = f"EQUIPMENT: {header}\n**{header}** (Player's Handbook)\n\n{text.strip()}"
 
 
     
@@ -872,6 +893,9 @@ def _make_equip_chunk(header: str, text: str) -> Chunk:
         'section': header,
 
 
+        'source': 'Players Handbook',
+
+
         'content_type': 'equipment'
 
 
@@ -881,25 +905,13 @@ def _make_equip_chunk(header: str, text: str) -> Chunk:
     
 
 
-    tags = {'equipment', 'rulebook'}
-
-
-    
-
-
-    # Add specific tags based on header
+    tags = {'equipment', 'rulebook', 'phb'}
 
 
     if 'armor' in header.lower(): tags.add('armor')
 
 
     if 'weapon' in header.lower(): tags.add('weapon')
-
-
-    if 'tool' in header.lower(): tags.add('tool')
-
-
-    if 'mount' in header.lower(): tags.add('mount')
 
 
     
