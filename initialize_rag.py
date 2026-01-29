@@ -82,119 +82,115 @@ def load_spells(db_manager: ChromaDBManager, clear: bool = False):
 
 
 # =============================================================================
-# MONSTER LOADER
+# MONSTER LOADER (Structured)
 # =============================================================================
 
 def load_monsters(db_manager: ChromaDBManager, clear: bool = False):
-    """Load monsters from extracted_monsters.txt into ChromaDB."""
+    """Load monsters from structured dictionary."""
     print("\n" + "="*70)
-    print("👹 LOADING MONSTERS")
+    print("👹 LOADING MONSTERS (STRUCTURED)")
     print("="*70)
 
+    collection_name = settings.COLLECTION_NAMES.get('monsters', 'dnd_monsters')
+
     if clear:
-        db_manager.clear_collection(settings.COLLECTION_NAMES['monsters'])
+        db_manager.clear_collection(collection_name)
 
-    # Read extracted monsters
-    print(f"📖 Reading {settings.EXTRACTED_MONSTERS_TXT}")
+    # Import structured monster data
+    from dnd_rag_system.data.monster_stats import MONSTER_STATS
 
-    if not settings.EXTRACTED_MONSTERS_TXT.exists():
-        print("⚠️  Monster file not found, skipping")
-        return 0
+    chunks = []
+    for monster_name, monster_data in MONSTER_STATS.items():
+        chunk_content = _create_monster_chunk(monster_name, monster_data)
+        
+        metadata = {
+            'name': monster_name,
+            'cr': monster_data.get('cr', 'unknown'),
+            'type': monster_data.get('type', 'unknown'),
+            'size': monster_data.get('size', 'unknown'),
+            'content_type': 'monster'
+        }
+        tags = {
+            'monster', 
+            f"cr_{str(monster_data.get('cr', 'unknown')).replace('.', '_')}", 
+            f"type_{monster_data.get('type', 'unknown')}",
+            f"size_{monster_data.get('size', 'unknown')}"
+        }
+        
+        chunks.append(Chunk(
+            content=chunk_content, 
+            chunk_type='monster_stats', 
+            metadata=metadata, 
+            tags=tags
+        ))
 
-    try:
-        with open(settings.EXTRACTED_MONSTERS_TXT, 'r', encoding='utf-8') as f:
-            monsters_content = f.read()
+    print(f"✓ Created {len(chunks)} monster chunks")
+    if chunks:
+        db_manager.add_chunks(collection_name, chunks)
+        print(f"✅ Loaded {len(chunks)} monsters")
+    return len(chunks)
 
-        # Simple monster parsing
-        monster_blocks = _split_monster_blocks(monsters_content)
-        print(f"✓ Found {len(monster_blocks)} monster blocks")
+def _create_monster_chunk(monster_name: str, monster_data: Dict[str, Any]) -> str:
+    """Create a comprehensive text chunk for a monster stat block."""
+    lines = []
 
-        # Create chunks
-        chunks = []
-        for i, block in enumerate(monster_blocks):
-            try:
-                monster_chunk = _parse_monster_to_chunk(block)
-                if monster_chunk:
-                    chunks.append(monster_chunk)
+    # Header with monster name (weighted for better retrieval)
+    lines.append(f"MONSTER: {monster_name}")
+    lines.append(f"{monster_name}")
+    lines.append("")
 
-                if (i + 1) % 100 == 0:
-                    print(f"  Processed {i + 1}/{len(monster_blocks)} monsters...")
-            except Exception as e:
-                # print(f"  Warning: Failed to parse monster {i+1}: {e}")
-                continue
+    lines.append(f"**{monster_name}**")
+    lines.append(f"*{monster_data.get('size', '').title()} {monster_data.get('type', '').title()}, CR {monster_data.get('cr', 'unknown')}*")
+    lines.append("")
 
-        print(f"✓ Created {len(chunks)} monster chunks")
+    lines.append(f"**Armor Class:** {monster_data.get('ac', 'N/A')}")
+    lines.append(f"**Hit Points:** {monster_data.get('hp', 'N/A')} ({monster_data.get('hp_dice', 'N/A')})")
+    lines.append(f"**Speed:** {monster_data.get('speed', 'N/A')} ft.")
+    lines.append("")
 
-        # Add to ChromaDB
-        if chunks:
-            db_manager.add_chunks(settings.COLLECTION_NAMES['monsters'], chunks)
-            print(f"✅ Loaded {len(chunks)} monsters into ChromaDB")
+    # Abilities
+    abilities = [
+        f"STR {monster_data.get('str', 'N/A')}",
+        f"DEX {monster_data.get('dex', 'N/A')}",
+        f"CON {monster_data.get('con', 'N/A')}",
+        f"INT {monster_data.get('int', 'N/A')}",
+        f"WIS {monster_data.get('wis', 'N/A')}",
+        f"CHA {monster_data.get('cha', 'N/A')}"
+    ]
+    lines.append(" ".join(abilities))
+    lines.append("")
 
-        return len(chunks)
-    except Exception as e:
-        print(f"❌ Error loading monsters: {e}")
-        return 0
+    # Traits
+    if monster_data.get('traits'):
+        lines.append("**Traits:**")
+        for trait in monster_data['traits']:
+            lines.append(f"- {trait}")
+        lines.append("")
+
+    # Attacks
+    if monster_data.get('attacks'):
+        lines.append("**Actions:**")
+        for attack in monster_data['attacks']:
+            attack_str = f"- {attack.get('name', 'Attack')}: "
+            attack_str += f"+{attack.get('to_hit', 'N/A')} to hit, "
+            attack_str += f"reach {attack.get('reach', 'N/A')} ft., "
+            attack_str += f"{attack.get('damage', 'N/A')} {attack.get('damage_type', '')} damage"
+            if attack.get('special'):
+                attack_str += f" ({attack['special']})"
+            lines.append(attack_str)
+        lines.append("")
+        
+    # Description
+    if monster_data.get('description'):
+        lines.append(f"**Description:** {monster_data['description']}")
+        lines.append("")
+
+    return "\n".join(lines)
 
 
-def _split_monster_blocks(content: str) -> List[str]:
-    """Split monster text into individual blocks."""
-    blocks = content.split('\n\n')
-    valid_blocks = [b.strip() for b in blocks if len(b.strip()) > 200]
-    return valid_blocks
-
-
-def _parse_monster_to_chunk(block: str) -> Chunk:
-    """Parse a monster block into a Chunk object with weighted name."""
-    lines = [l.strip() for l in block.split('\n') if l.strip()]
-
-    if not lines:
-        return None
-
-    # Extract name (usually first line)
-    name = lines[0].strip()
-    name = re.sub(r'\s+', ' ', name).strip()
-
-    # Try to extract CR
-    cr = "Unknown"
-    cr_match = re.search(r'Challenge(?:\s+Rating)?[:\s]+([^\s\(]+)', block, re.IGNORECASE)
-    if cr_match:
-        cr = cr_match.group(1).strip()
-
-    # Extract monster type
-    monster_type = ""
-    type_match = re.search(r'(Tiny|Small|Medium|Large|Huge|Gargantuan)\s+(aberration|beast|celestial|construct|dragon|elemental|fey|fiend|giant|humanoid|monstrosity|ooze|plant|undead)', block, re.IGNORECASE)
-    if type_match:
-        monster_type = f"{type_match.group(1)} {type_match.group(2)}"
-
-    # Weighted content
-    weighted_content = f"MONSTER: {name}\n{name}\n\n"
-    weighted_content += f"**{name}**"
-    if monster_type:
-        weighted_content += f" - {monster_type}"
-    if cr != "Unknown":
-        weighted_content += f" (CR {cr})"
-    weighted_content += "\n\n"
-    weighted_content += block
-
-    metadata = {
-        'name': name,
-        'challenge_rating': cr,
-        'monster_type': monster_type,
-        'content_type': 'monster'
-    }
-
-    tags = {'monster', f'cr_{cr.replace("/", "_")}'}
-    if monster_type:
-        type_only = monster_type.split()[-1] if monster_type else ''
-        if type_only:
-            tags.add(f'type_{type_only.lower()}')
-
-    return Chunk(
-        content=weighted_content,
-        chunk_type='monster_stats',
-        metadata=metadata,
-        tags=tags
-    )
+# =============================================================================
+# CLASS LOADER (Text Based)
+# =============================================================================
 
 
 # =============================================================================
@@ -2846,7 +2842,8 @@ def fix_paths():
 
 
 
-            ('EXTRACTED_MONSTERS_TXT', ['extracted_monsters.txt'], extracted_dir),
+            ('EXTRACTED_CLASSES_TXT', ['extracted_classes.txt'], extracted_dir),
+            # ('EXTRACTED_MONSTERS_TXT', ['extracted_monsters.txt'], extracted_dir), # Removed as it's not used for monster stats anymore
 
 
 
