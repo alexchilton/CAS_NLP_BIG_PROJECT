@@ -529,68 +529,102 @@ def fix_paths():
     """
     Patches settings paths if files are not found in root but exist in data subdirectories.
     This handles the discrepancy between local dev (extracted in data/) and HF (expected in root).
+    
+    CRITICAL: This patches MULTIPLE settings instances because SpellParser uses a sys.path hack
+    that causes it to load a separate instance of the config module.
     """
     try:
-        from dnd_rag_system.config import settings
+        # 1. Gather all settings objects that need patching
+        settings_targets = []
         
-        # Check if we need to look in subdirectories
+        # Target A: The standard app settings
+        from dnd_rag_system.config import settings as app_settings
+        settings_targets.append(("App Settings", app_settings))
+        
+        # Target B: The settings used by SpellParser (via sys.path hack)
+        try:
+            import dnd_rag_system.parsers.spell_parser as spell_parser_mod
+            if hasattr(spell_parser_mod, 'settings'):
+                settings_targets.append(("SpellParser Settings", spell_parser_mod.settings))
+        except ImportError:
+            print("  ⚠️ Could not import spell_parser module for patching")
+
+        # Target C: The raw 'config' module if it exists in sys.modules
+        if 'config' in sys.modules and hasattr(sys.modules['config'], 'settings'):
+             settings_targets.append(("Sys.modules['config']", sys.modules['config'].settings))
+             
+        # Target D: The raw 'settings' module if it exists (some imports might be 'import settings')
+        if 'settings' in sys.modules:
+             settings_targets.append(("Sys.modules['settings']", sys.modules['settings']))
+
+        # Remove duplicates (by id)
+        unique_targets = {}
+        for name, obj in settings_targets:
+            if id(obj) not in unique_targets:
+                unique_targets[id(obj)] = (name, obj)
+        
+        print(f"🔍 Patching paths on {len(unique_targets)} settings object(s)...")
+
+        # 2. Define path corrections
         data_dir = project_root / "dnd_rag_system" / "data"
         extracted_dir = data_dir / "extracted"
         reference_dir = data_dir / "reference"
         
-        print("🔍 Checking data paths...")
-        
-        # 1. Text files (Spells, Monsters, Classes)
-        # Map settings attribute to potential filename(s)
-        text_files = [
-            ('SPELLS_TXT', ['spells.txt']),
-            ('ALL_SPELLS_TXT', ['all_spells.txt']),
-            ('EXTRACTED_MONSTERS_TXT', ['extracted_monsters.txt']),
-            ('EXTRACTED_CLASSES_TXT', ['extracted_classes.txt'])
+        # Map attribute names to (list of potential filenames, source directory)
+        path_mappings = [
+            ('SPELLS_TXT', ['spells.txt'], extracted_dir),
+            ('ALL_SPELLS_TXT', ['all_spells.txt'], extracted_dir),
+            ('EXTRACTED_MONSTERS_TXT', ['extracted_monsters.txt'], extracted_dir),
+            ('EXTRACTED_CLASSES_TXT', ['extracted_classes.txt'], extracted_dir),
         ]
         
-        for attr, filenames in text_files:
-            if not hasattr(settings, attr):
-                continue
-                
-            current_path = getattr(settings, attr)
-            if not current_path.exists():
-                found = False
-                for filename in filenames:
-                    candidate = extracted_dir / filename
-                    if candidate.exists():
-                        print(f"  ✓ Found {filename} in {extracted_dir}")
-                        setattr(settings, attr, candidate)
-                        found = True
-                        break
-                if not found:
-                    print(f"  ⚠️ {filenames[0]} not found in root or {extracted_dir}")
-            else:
-                print(f"  ✓ Found {filenames[0]} at {current_path}")
+        # 3. Apply patches
+        for _, (target_name, settings_obj) in unique_targets.items():
+            # print(f"  > Patching {target_name}...")
+            
+            # Patch text files
+            for attr, filenames, source_dir in path_mappings:
+                if not hasattr(settings_obj, attr):
+                    continue
+                    
+                current_path = getattr(settings_obj, attr)
+                if not current_path.exists():
+                    found = False
+                    for filename in filenames:
+                        candidate = source_dir / filename
+                        if candidate.exists():
+                            setattr(settings_obj, attr, candidate)
+                            print(f"    ✓ {target_name}: Fixed {attr} -> {candidate}")
+                            found = True
+                            break
+                    if not found:
+                        pass # print(f"    ⚠️ {target_name}: Could not find {filenames[0]}")
 
-        # 2. PDFs (Races)
-        if not settings.PLAYERS_HANDBOOK_PDF.exists():
-            # Try exact match first
-            candidate = reference_dir / "players_handbook.pdf"
-            if candidate.exists():
-                 settings.PLAYERS_HANDBOOK_PDF = candidate
-                 print(f"  ✓ Found PHB PDF in reference dir")
-            else:
-                # Try globbing
-                pdfs = list(reference_dir.glob("*Player*Handbook*.pdf"))
-                if not pdfs:
-                    pdfs = list(reference_dir.glob("*players*handbook*.pdf"))
-                
-                if pdfs:
-                    print(f"  ✓ Found PHB PDF: {pdfs[0].name}")
-                    settings.PLAYERS_HANDBOOK_PDF = pdfs[0]
-                else:
-                    print(f"  ⚠️ Player's Handbook PDF not found")
-        else:
-             print(f"  ✓ Found PHB PDF at {settings.PLAYERS_HANDBOOK_PDF}")
-             
+            # Patch PDF
+            if hasattr(settings_obj, 'PLAYERS_HANDBOOK_PDF'):
+                phb_path = getattr(settings_obj, 'PLAYERS_HANDBOOK_PDF')
+                if not phb_path.exists():
+                    # Try exact match
+                    candidate = reference_dir / "players_handbook.pdf"
+                    if candidate.exists():
+                        setattr(settings_obj, 'PLAYERS_HANDBOOK_PDF', candidate)
+                        print(f"    ✓ {target_name}: Fixed PHB PDF -> {candidate}")
+                    else:
+                        # Try globbing
+                        pdfs = list(reference_dir.glob("*Player*Handbook*.pdf"))
+                        if not pdfs:
+                            pdfs = list(reference_dir.glob("*players*handbook*.pdf"))
+                        
+                        if pdfs:
+                            setattr(settings_obj, 'PLAYERS_HANDBOOK_PDF', pdfs[0])
+                            print(f"    ✓ {target_name}: Fixed PHB PDF -> {pdfs[0].name}")
+
     except Exception as e:
         print(f"⚠️ Error patching paths: {e}")
+        import traceback
+        traceback.print_exc()
+
+
 
 
 # =============================================================================
