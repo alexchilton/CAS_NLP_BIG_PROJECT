@@ -104,7 +104,7 @@ def handle_rag_lookup(query: str, gm, db) -> str:
     results = None
     for query_variant in query_variations:
         results = gm.rag_retriever.search_rag(query_variant, n_results=2)
-        if results and results.get('documents') and results['documents'][0]:
+        if results and any(coll.get('documents') and coll['documents'][0] for coll in results.values()):
             formatted = gm.rag_retriever.format_rag_context(results)
             return f"## 📖 {query.title()}\n\n{formatted}\n\n---\n*Source: D&D 5e SRD via RAG*"
 
@@ -665,12 +665,12 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
         # Aggressively prune context BEFORE generate_response to prevent timeouts
         # This ensures we never send a huge context to the LLM
         import time
-        msg_count = len(gm.message_history)
+        msg_count = len(gm.history_manager.message_history)
 
         if msg_count > 15:
             print(f"⚠️  Context preventive pruning: {msg_count} messages → pruning now")
-            gm._prune_message_history()
-            print(f"   ✅ After pruning: {len(gm.message_history)} messages")
+            gm.history_manager.prune_history()
+            print(f"   ✅ After pruning: {len(gm.history_manager.message_history)} messages")
 
         # Time the LLM call
         llm_start = time.time()
@@ -678,7 +678,7 @@ INVENTORY: {', '.join([f"{item} ({qty})" for item, qty in char_state.inventory.i
         llm_duration = time.time() - llm_start
         
         # Log timing
-        print(f"⏱️  LLM response time: {llm_duration:.1f}s (history size: {len(gm.message_history)} msgs)")
+        print(f"⏱️  LLM response time: {llm_duration:.1f}s (history size: {len(gm.history_manager.message_history)} msgs)")
         if llm_duration > 10:
             print(f"   ⚠️  SLOW RESPONSE! This may indicate context window issues.")
         
