@@ -51,14 +51,30 @@ def handle_rag_lookup(query: str, gm, db) -> str:
     from dnd_rag_system.systems.spell_manager import SpellManager
     spell_mgr = SpellManager(db)
 
-    # Try different capitalizations for better matching
+    # Try different capitalizations and word separations for better matching
     # ChromaDB semantic search should handle this, but explicit casing helps
+    # Also try with spaces for compound words (e.g., "chainmail" → "chain mail")
+
     query_variations = [
-        query.title(),  # "Magic Missile"
-        query,          # Original case
-        query.lower(),  # "magic missile"
-        query.upper(),  # "MAGIC MISSILE"
+        query.title(),       # "Magic Missile" or "Chainmail"
+        query,               # Original case
+        query.lower(),       # "magic missile"
     ]
+
+    # Try adding space for common compound words in D&D
+    # (chainmail → chain mail, platearmor → plate armor, etc.)
+    compound_patterns = [
+        ('mail', ' mail'),     # chainmail → chain mail
+        ('armor', ' armor'),   # platearmor → plate armor
+        ('sword', ' sword'),   # longsword → long sword, greatsword → great sword
+    ]
+
+    for pattern, replacement in compound_patterns:
+        if pattern in query.lower() and replacement not in query.lower():
+            # Add a variant with the space
+            spaced = query.lower().replace(pattern, replacement)
+            query_variations.append(spaced.title())
+            query_variations.append(spaced)
 
     # Check if it's a spell - try different capitalizations
     spell_details = None

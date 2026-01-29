@@ -162,6 +162,8 @@ class SpellManager:
             - school: school of magic
             - concentration: whether requires concentration
             - description: spell description
+
+            Returns None if no good match found (distance > 1.0)
         """
         results = self.db.search(
             settings.COLLECTION_NAMES['spells'],
@@ -170,6 +172,12 @@ class SpellManager:
         )
 
         if not results or not results.get('documents') or not results['documents'][0]:
+            return None
+
+        # Check distance - only return if it's a good match
+        distance = results['distances'][0][0] if results.get('distances') else 999
+        if distance > 1.0:
+            # Not a close match - probably not a spell
             return None
 
         doc = results['documents'][0][0]

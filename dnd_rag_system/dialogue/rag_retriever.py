@@ -85,8 +85,10 @@ class RAGRetriever:
             distances = results['distances']
 
             for doc, meta, dist in zip(docs, metas, distances):
-                # Only include very relevant results (distance < 1.0)
-                if dist < 1.0:
+                # Only include relevant results (distance < 1.2)
+                # Note: Lower distance = more relevant. Threshold increased from 1.0 to 1.2
+                # to catch more armor/equipment matches (e.g., "Chain Mail" at 1.03)
+                if dist < 1.2:
                     name = meta.get('name', 'Unknown')
                     context_parts.append(f"[{collection_type.upper()}] {name}:\n{doc[:400]}")
 
