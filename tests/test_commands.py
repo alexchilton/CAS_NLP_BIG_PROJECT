@@ -122,7 +122,7 @@ class TestCombatCommands:
     def test_next_turn_no_combat(self, context):
         """Test advancing turn with no active combat."""
         cmd = NextTurnCommand()
-        context.session.combat.active = False
+        context.session.combat.in_combat = False
 
         result = cmd.execute("/next", context)
 
@@ -132,7 +132,7 @@ class TestCombatCommands:
     def test_flee_command(self, context):
         """Test flee command."""
         cmd = FleeCommand()
-        context.session.combat.active = True
+        context.session.combat.in_combat = True
         context.combat_manager.flee_combat.return_value = "You flee!"
 
         result = cmd.execute("/flee", context)
@@ -143,7 +143,7 @@ class TestCombatCommands:
     def test_end_combat_command(self, context):
         """Test end combat command."""
         cmd = EndCombatCommand()
-        context.session.combat.active = True
+        context.session.combat.in_combat = True
         context.combat_manager.end_combat.return_value = "Combat ended! +50 XP"
 
         result = cmd.execute("/end_combat", context)
@@ -154,7 +154,7 @@ class TestCombatCommands:
     def test_initiative_command(self, context):
         """Test initiative command."""
         cmd = InitiativeCommand()
-        context.session.combat.active = True
+        context.session.combat.in_combat = True
         context.combat_manager.show_initiative.return_value = "Initiative: Hero (15), Goblin (10)"
 
         result = cmd.execute("/initiative", context)

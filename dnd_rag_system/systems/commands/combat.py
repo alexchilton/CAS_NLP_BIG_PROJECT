@@ -83,7 +83,7 @@ class NextTurnCommand(GameCommand):
 
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Advance to next turn in combat."""
-        if not context.session.combat or not context.session.combat.active:
+        if not context.session.combat or not context.session.combat.in_combat:
             return CommandResult.failure("No active combat!")
 
         feedback = context.combat_manager.next_turn()
@@ -112,7 +112,7 @@ class FleeCommand(GameCommand):
 
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Attempt to flee from combat."""
-        if not context.session.combat or not context.session.combat.active:
+        if not context.session.combat or not context.session.combat.in_combat:
             return CommandResult.failure("No active combat to flee from!")
 
         feedback = context.combat_manager.flee_combat()
@@ -127,7 +127,7 @@ class EndCombatCommand(GameCommand):
 
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """End combat and award XP."""
-        if not context.session.combat or not context.session.combat.active:
+        if not context.session.combat or not context.session.combat.in_combat:
             return CommandResult.failure("No active combat!")
 
         feedback = context.combat_manager.end_combat()
@@ -142,7 +142,7 @@ class InitiativeCommand(GameCommand):
 
     def execute(self, user_input: str, context: CommandContext) -> CommandResult:
         """Show current initiative order."""
-        if not context.session.combat or not context.session.combat.active:
+        if not context.session.combat or not context.session.combat.in_combat:
             return CommandResult.failure("No active combat!")
 
         feedback = context.combat_manager.show_initiative()
