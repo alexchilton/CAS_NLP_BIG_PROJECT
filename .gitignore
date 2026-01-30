@@ -46,3 +46,4 @@ e2e_tests/screenshots/
 *.gif
 *.mp4
 *.mov
+web/chromadb/
