@@ -13,10 +13,9 @@ from dnd_rag_system.core.chroma_manager import ChromaDBManager
 from dnd_rag_system.config import settings
 
 
-def test_message_pruning_basic():
+def test_message_pruning_basic(chromadb):
     """Test that message history is pruned when it exceeds MAX_MESSAGE_HISTORY."""
-    db = ChromaDBManager()
-    gm = GameMaster(db)
+    gm = GameMaster(chromadb)
     
     # Add messages up to the limit
     for i in range(settings.MAX_MESSAGE_HISTORY // 2):
@@ -42,10 +41,9 @@ def test_message_pruning_basic():
     print(f"   Summary length: {len(gm.history_manager.conversation_summary)} chars")
 
 
-def test_message_summarization_combat():
+def test_message_summarization_combat(chromadb):
     """Test that combat messages are properly summarized."""
-    db = ChromaDBManager()
-    gm = GameMaster(db)
+    gm = GameMaster(chromadb)
     
     # Add combat-related messages
     messages = [
@@ -63,10 +61,9 @@ def test_message_summarization_combat():
     print(f"   {summary}")
 
 
-def test_message_summarization_travel():
+def test_message_summarization_travel(chromadb):
     """Test that travel messages are properly summarized."""
-    db = ChromaDBManager()
-    gm = GameMaster(db)
+    gm = GameMaster(chromadb)
     
     messages = [
         Message('player', 'I travel to the nearby tavern'),
@@ -83,10 +80,9 @@ def test_message_summarization_travel():
     print(f"   {summary}")
 
 
-def test_long_session_performance():
+def test_long_session_performance(chromadb):
     """Test that a long session maintains stable performance."""
-    db = ChromaDBManager()
-    gm = GameMaster(db)
+    gm = GameMaster(chromadb)
     
     # Simulate 50 turns (100 messages)
     for turn in range(50):
@@ -107,9 +103,9 @@ def test_long_session_performance():
     print(f"   - Last summary preview: {gm.history_manager.conversation_summary[-200:]}")
 
 
-def test_summary_continuity():
+def test_summary_continuity(chromadb):
     """Test that summaries accumulate properly across multiple pruning cycles."""
-    db = ChromaDBManager()
+    gm = GameMaster(chromadb)
     gm = GameMaster(db)
     
     # First batch - combat
