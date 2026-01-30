@@ -62,15 +62,19 @@ class StartCombatCommand(GameCommand):
         if current_turn and current_turn in context.combat_manager.npc_monsters:
             # Get player AC for NPC targeting
             target_ac = 15  # Default
-            if context.session.party:
-                # Use first character's AC (TODO: Improve targeting logic)
-                if context.session.party.characters:
-                    target_ac = context.session.party.characters[0].armor_class
+            if context.session.party and context.session.party.characters:
+                first_char = list(context.session.party.characters.values())[0]
+                target_ac = first_char.armor_class
             elif context.session.character_state:
                 target_ac = context.session.character_state.armor_class
 
-            npc_feedback = context.combat_manager.process_npc_turn(target_ac=target_ac)
-            feedback += f"\n\n{npc_feedback}"
+            npc_actions = context.combat_manager.process_npc_turns(
+                target_ac=target_ac,
+                target_character=context.session.character_state,
+                target_party=context.session.party
+            )
+            if npc_actions:
+                feedback += "\n\n" + "\n\n".join(npc_actions)
 
         return CommandResult.success(feedback)
 
@@ -86,20 +90,24 @@ class NextTurnCommand(GameCommand):
         if not context.session.combat or not context.session.combat.in_combat:
             return CommandResult.failure("No active combat!")
 
-        feedback = context.combat_manager.next_turn()
+        feedback = context.combat_manager.advance_turn()
 
-        # If it's an NPC's turn, process it automatically
-        current_turn = context.combat_manager.get_current_turn_name()
-        if current_turn and current_turn in context.combat_manager.npc_monsters:
-            # Get player AC for NPC targeting
-            target_ac = 15  # Default
-            if context.session.party and context.session.party.characters:
-                target_ac = context.session.party.characters[0].armor_class
-            elif context.session.character_state:
-                target_ac = context.session.character_state.armor_class
+        # Process NPC turns automatically
+        target_ac = 15  # Default
+        if context.session.party and context.session.party.characters:
+            first_char = list(context.session.party.characters.values())[0]
+            target_ac = first_char.armor_class
+        elif context.session.character_state:
+            target_ac = context.session.character_state.armor_class
 
-            npc_feedback = context.combat_manager.process_npc_turn(target_ac=target_ac)
-            feedback += f"\n\n{npc_feedback}"
+        npc_actions = context.combat_manager.process_npc_turns(
+            target_ac=target_ac,
+            target_character=context.session.character_state,
+            target_party=context.session.party
+        )
+        
+        if npc_actions:
+            feedback += "\n\n" + "\n\n".join(npc_actions)
 
         return CommandResult.success(feedback)
 
