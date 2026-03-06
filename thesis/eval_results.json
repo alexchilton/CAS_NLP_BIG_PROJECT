@@ -1,0 +1,191 @@
+{
+  "collections": {
+    "dnd5e_srd": {
+      "count": 45,
+      "metadata_keys": [
+        "type",
+        "source",
+        "name",
+        "hit_die"
+      ]
+    },
+    "dnd_races": {
+      "count": 32,
+      "metadata_keys": [
+        "tags",
+        "token_estimate",
+        "content_type",
+        "chunk_type",
+        "ability_increases",
+        "name"
+      ]
+    },
+    "dnd_monsters_v2": {
+      "count": 147,
+      "metadata_keys": [
+        "type",
+        "alignment",
+        "monster_name",
+        "cr",
+        "size"
+      ]
+    },
+    "dnd_monsters": {
+      "count": 32,
+      "metadata_keys": [
+        "token_estimate",
+        "type",
+        "chunk_type",
+        "tags",
+        "content_type",
+        "name",
+        "cr",
+        "size"
+      ]
+    },
+    "dnd_equipment": {
+      "count": 178,
+      "metadata_keys": [
+        "content_type",
+        "source",
+        "chunk_type",
+        "token_estimate",
+        "section",
+        "tags"
+      ]
+    },
+    "magic_items": {
+      "count": 60,
+      "metadata_keys": [
+        "token_estimate",
+        "content_type",
+        "name",
+        "type",
+        "rarity",
+        "chunk_type",
+        "tags"
+      ]
+    },
+    "dnd_spells": {
+      "count": 1172,
+      "metadata_keys": [
+        "name",
+        "ritual",
+        "range",
+        "has_higher_levels",
+        "school",
+        "token_estimate",
+        "components",
+        "chunk_type",
+        "casting_time",
+        "concentration",
+        "classes",
+        "level",
+        "tags",
+        "duration"
+      ]
+    },
+    "class_features": {
+      "count": 76,
+      "metadata_keys": [
+        "level",
+        "tags",
+        "token_estimate",
+        "content_type",
+        "class_name",
+        "chunk_type",
+        "feature_name"
+      ]
+    },
+    "dm_guide": {
+      "count": 190,
+      "metadata_keys": [
+        "page_start",
+        "token_estimate",
+        "source",
+        "content_type",
+        "section",
+        "tags",
+        "chunk_type",
+        "page_end"
+      ]
+    },
+    "dnd_classes": {
+      "count": 22,
+      "metadata_keys": [
+        "token_estimate",
+        "chunk_type",
+        "content_type",
+        "name",
+        "tags"
+      ]
+    },
+    "_total": 1954
+  },
+  "retrieval": {
+    "per_collection": {
+      "spells": {
+        "total_queries": 20,
+        "precision_at_k": {
+          "1": 0.95,
+          "3": 0.95,
+          "5": 0.95
+        },
+        "mrr": 0.95
+      },
+      "monsters": {
+        "total_queries": 16,
+        "precision_at_k": {
+          "1": 1.0,
+          "3": 1.0,
+          "5": 1.0
+        },
+        "mrr": 1.0
+      }
+    },
+    "overall": {
+      "precision_at_k": {
+        "1": 0.975,
+        "3": 0.975,
+        "5": 0.975
+      },
+      "mrr": 0.975
+    }
+  },
+  "semantic": {
+    "semantic_precision_at_k": 0.8,
+    "k": 5,
+    "hits": 8,
+    "total": 10
+  },
+  "name_weighting": {
+    "accuracy": 1.0,
+    "correct": 10,
+    "total": 10,
+    "avg_rank1_distance": 0.8062160074710846,
+    "avg_rank2_distance": 0.8062160074710846,
+    "separation_ratio": 1.0
+  },
+  "reality_check": {
+    "scenarios": [],
+    "summary": {
+      "total_tested": 15,
+      "accuracy": 0.8,
+      "true_positives": 5,
+      "true_negatives": 7,
+      "false_positives": 0,
+      "false_negatives": 3,
+      "errors": 0
+    }
+  },
+  "test_suite": {
+    "tests": {
+      "collect_output": "======================== 856 tests collected in 27.58s =========================",
+      "grep_count": 871
+    },
+    "e2e_tests": {
+      "collect_output": "========================= 107 tests collected in 0.51s =========================",
+      "grep_count": 107
+    }
+  }
+}
