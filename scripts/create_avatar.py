@@ -326,9 +326,29 @@ def load_pipeline():
     return pipe
 
 
+def clip_trim(pipe, text: str, max_tokens: int = 75) -> str:
+    """
+    Trim a comma-separated prompt to fit within CLIP's 77-token limit.
+    Drops phrases from the end so character-specific parts are preserved.
+    max_tokens=75 leaves 2 slots for the BOS/EOS special tokens.
+    """
+    tokenizer = pipe.tokenizer
+    parts = [p.strip() for p in text.split(",") if p.strip()]
+    while parts:
+        candidate = ", ".join(parts)
+        n_tokens = len(tokenizer(candidate, truncation=False)["input_ids"])
+        if n_tokens <= max_tokens + 2:
+            return candidate
+        parts.pop()
+    return text  # fallback: return as-is if even a single phrase is too long
+
+
 def generate_image(pipe, prompt: str, negative_prompt: str, steps: int = 4) -> "PIL.Image.Image":
+    prompt = clip_trim(pipe, prompt)
+    negative_prompt = clip_trim(pipe, negative_prompt)
+
     print(f"\nGenerating portrait ({steps} steps)...")
-    print(f"Prompt: {prompt[:120]}{'...' if len(prompt) > 120 else ''}\n")
+    print(f"Prompt ({len(prompt)} chars): {prompt}\n")
 
     # SDXL-Turbo uses guidance_scale=0.0 and needs few steps
     result = pipe(
@@ -389,29 +409,7 @@ def main():
     char = load_character(char_path)
     print(f"\nLoaded: {char.get('name')} — {char.get('race')} {char.get('character_class')}")
 
-    # ── Generation mode ──────────────────────────────────────────────────────
-    mode = choose(
-        "How would you like to generate the portrait?",
-        [
-            "Auto-generate from character stats",
-            "Customize (interactive Q&A)",
-        ],
-    )
-
-    if "Auto" in mode:
-        prompt, negative_prompt = build_auto_prompt(char)
-    else:
-        prompt, negative_prompt = build_custom_prompt(char)
-
-    print(f"\nFinal prompt:\n  {prompt}")
-    print(f"\nNegative prompt:\n  {negative_prompt}")
-
-    confirm = input("\nProceed with generation? (y/n) [y]: ").strip().lower()
-    if confirm == "n":
-        print("Aborted.")
-        sys.exit(0)
-
-    # ── Output path ──────────────────────────────────────────────────────────
+    # ── Output path (fixed for the whole session) ────────────────────────────
     if args.output:
         output_path = Path(args.output)
     else:
@@ -419,19 +417,90 @@ def main():
         safe_name = char.get("name", "character").replace(" ", "_").lower()
         output_path = PORTRAITS_DIR / f"{safe_name}.png"
 
-    # ── Generate ─────────────────────────────────────────────────────────────
+    # ── Load pipeline once ───────────────────────────────────────────────────
     pipe = load_pipeline()
-    image = generate_image(pipe, prompt, negative_prompt, steps=args.steps)
 
-    image.save(output_path)
-    print(f"\nPortrait saved to: {output_path}")
+    # ── Generation loop ──────────────────────────────────────────────────────
+    attempt = 0
+    next_mode = None   # None = ask, "same" = reuse prompt, "auto" = rebuild auto, "custom" = rebuild custom
+    prompt = negative_prompt = None
+
+    while True:
+        attempt += 1
+        print(f"\n{'─' * 60}")
+        if attempt > 1:
+            print(f"  Attempt #{attempt}")
+
+        # Decide mode
+        if next_mode == "same":
+            pass  # reuse prompt and negative_prompt from previous iteration
+        elif next_mode == "auto":
+            prompt, negative_prompt = build_auto_prompt(char)
+        elif next_mode == "custom":
+            prompt, negative_prompt = build_custom_prompt(char)
+        else:
+            mode = choose(
+                "How would you like to generate the portrait?",
+                [
+                    "Auto-generate from character stats",
+                    "Customize (interactive Q&A)",
+                ],
+            )
+            if "Auto" in mode:
+                prompt, negative_prompt = build_auto_prompt(char)
+            else:
+                prompt, negative_prompt = build_custom_prompt(char)
+
+        print(f"\nPrompt: {prompt[:120]}{'...' if len(prompt) > 120 else ''}")
+
+        confirm = input("Generate with this prompt? (y/n) [y]: ").strip().lower()
+        if confirm == "n":
+            next_mode = None   # go back to mode selection
+            continue
+
+        # Generate
+        image = generate_image(pipe, prompt, negative_prompt, steps=args.steps)
+        image.save(output_path)
+        print(f"\nSaved to: {output_path}")
+
+        # Open for preview
+        try:
+            import os as _os
+            _os.startfile(str(output_path))
+            print("(opened in your default image viewer)")
+        except Exception:
+            print("(open the file manually to preview)")
+
+        # ── Post-generation menu ─────────────────────────────────────────────
+        action = choose(
+            "\nWhat would you like to do?",
+            [
+                "Keep this portrait",
+                "Regenerate (same settings / new seed)",
+                "Regenerate with auto-prompt",
+                "Regenerate with custom Q&A",
+                "Quit without saving",
+            ],
+            default_idx=0,
+        )
+
+        if "Keep" in action:
+            break
+        elif "same settings" in action:
+            next_mode = "same"
+        elif "auto-prompt" in action:
+            next_mode = "auto"
+        elif "custom Q&A" in action:
+            next_mode = "custom"
+        elif "Quit" in action:
+            print("\nQuitting — portrait not saved to character JSON.")
+            sys.exit(0)
 
     # ── Update character JSON ─────────────────────────────────────────────────
     char["image_path"] = str(output_path)
     save_character(char_path, char)
-    print(f"Updated {char_path.name} with image_path.")
-
-    print("\nDone! Load the character in the web UI to see the portrait.")
+    print(f"\nUpdated {char_path.name} with image_path.")
+    print("Done! Load the character in the web UI to see the portrait.")
     print("=" * 60)
 
 
