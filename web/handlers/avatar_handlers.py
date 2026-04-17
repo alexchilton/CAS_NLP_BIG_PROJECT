@@ -70,24 +70,20 @@ def _build_auto_prompt(race: str, char_class: str, alignment: str, background: s
 
 def _build_custom_prompt(
     race: str, char_class: str, alignment: str, background: str,
+    gender: str,
     hair: str, eyes: str, skin: str, mood: str,
     clothes: str, environment: str, art_style: str, extra: str,
 ) -> str:
     vibe_styles = {
-        "bright heroic (classic D&D art)":    "heroic fantasy portrait, D&D 5e art style, bright colors, digital painting, artstation",
-        "realistic painterly (dark fantasy)": "dark fantasy portrait, oil painting style, dramatic shadows, highly detailed",
-        "anime / manga inspired":             "anime fantasy portrait, manga style, cel shaded, detailed linework",
-        "gritty grimdark":                    "grimdark fantasy, gritty, dark atmosphere, battle-worn, realistic",
-        "watercolor storybook":               "watercolor painting, storybook illustration, soft colors, whimsical fantasy",
+        "bright heroic (classic D&D art)":    "D&D fantasy portrait, bright colors, digital painting",
+        "realistic painterly (dark fantasy)": "dark fantasy portrait, oil painting, dramatic shadows",
+        "anime / manga inspired":             "anime fantasy portrait, manga style, cel shaded",
+        "gritty grimdark":                    "grimdark fantasy portrait, gritty, battle-worn",
+        "watercolor storybook":               "watercolor fantasy portrait, soft colors, storybook",
     }
 
-    parts = [f"portrait of a {race} {char_class}"]
-    parts.append(RACE_KEYWORDS.get(race, race.lower()))
-    parts.append(CLASS_KEYWORDS.get(char_class, char_class.lower()))
-    if alignment in ALIGNMENT_KEYWORDS:
-        parts.append(ALIGNMENT_KEYWORDS[alignment])
-    if background in BACKGROUND_KEYWORDS:
-        parts.append(BACKGROUND_KEYWORDS[background])
+    # User's explicit choices come first so clip_trim keeps them over generic keywords
+    parts = [f"{gender} {race} {char_class} fantasy portrait"]
     if hair:
         parts.append(f"{hair} hair")
     if eyes:
@@ -102,7 +98,10 @@ def _build_custom_prompt(
         parts.append(environment)
     if extra:
         parts.append(extra)
-    parts.append(vibe_styles.get(art_style, STYLE_SUFFIX))
+    # Generic keyword expansions are lower priority — trimmed first if over limit
+    if alignment in ALIGNMENT_KEYWORDS:
+        parts.append(ALIGNMENT_KEYWORDS[alignment])
+    parts.append(vibe_styles.get(art_style, "fantasy portrait, digital painting"))
     return ", ".join(p for p in parts if p)
 
 
@@ -116,6 +115,7 @@ def generate_avatar(
     # Mode
     mode: str,
     # Custom fields
+    gender: str,
     hair: str,
     eyes: str,
     skin: str,
@@ -141,6 +141,7 @@ def generate_avatar(
         else:
             prompt = _build_custom_prompt(
                 race, char_class, alignment or "", background or "",
+                gender or "female",
                 hair or "", eyes or "", skin or "", mood or "determined",
                 clothes or "", environment or "dramatic fantasy backdrop",
                 art_style or "bright heroic (classic D&D art)", extra or "",

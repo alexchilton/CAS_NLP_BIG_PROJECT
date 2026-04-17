@@ -100,6 +100,11 @@ def create_character_tab(dnd_races: List[str], dnd_classes: List[str]) -> Dict[s
 
                 with gr.Column(visible=False) as custom_col:
                     gr.Markdown("#### Customize your portrait")
+                    components['avatar_gender'] = gr.Radio(
+                        choices=["male", "female", "androgynous"],
+                        value="female",
+                        label="Gender presentation",
+                    )
                     with gr.Row():
                         components['avatar_hair']  = gr.Textbox(label="Hair color & style", placeholder="e.g. long silver braids")
                         components['avatar_eyes']  = gr.Textbox(label="Eye color", placeholder="e.g. amber")
