@@ -1,0 +1,32 @@
+{
+  "name": "Meky the wanderer",
+  "race": "Human",
+  "character_class": "Fighter",
+  "level": 17,
+  "strength": 19,
+  "dexterity": 15,
+  "constitution": 19,
+  "intelligence": 15,
+  "wisdom": 9,
+  "charisma": 10,
+  "hit_points": 174,
+  "armor_class": 12,
+  "proficiency_bonus": 2,
+  "background": "Born in a rick family and undergoing daily torture as family tradition for training, he developed an absolute resistance to pain. He wanders the land, even if rich and take job if he finds them of his liking. Despite his stunning beauty his body is full of scars from the past years in the family. He is naturally careless, doesn't mind if his actions cause pain and have a sadistic smirky expression. ",
+  "alignment": "Chaotic Evil",
+  "race_traits": [],
+  "class_features": [
+    "Fighting Style",
+    "Second Wind",
+    "(SRD-enhanced)"
+  ],
+  "proficiencies": [
+    "Armor: All armor, shields",
+    "Weapons: Simple weapons, martial weapons",
+    "Saves: Strength, Constitution"
+  ],
+  "equipment": [],
+  "spells": [],
+  "gold": 100,
+  "image_path": "C:\\Users\\laran\\Home\\Documents\\Git\\CAS_NLP_BIG_PROJECT\\scripts\\characters\\portraits\\meky_the_wanderer.png"
+}

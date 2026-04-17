@@ -55,6 +55,7 @@ from web.handlers.party_handlers import (
     remove_from_party,
     get_party_summary
 )
+from web.handlers.avatar_handlers import generate_avatar, toggle_custom_fields
 
 # Formatter imports
 from web.formatters.character_formatter import format_character_sheet
@@ -622,6 +623,37 @@ try:
             ]
         )
 
+        # Avatar generator events
+        create_components['avatar_mode'].change(
+            toggle_custom_fields,
+            inputs=[create_components['avatar_mode']],
+            outputs=[create_components['custom_col']],
+        )
+
+        create_components['avatar_btn'].click(
+            generate_avatar,
+            inputs=[
+                create_components['char_name'],
+                create_components['char_race'],
+                create_components['char_class'],
+                create_components['char_alignment'],
+                create_components['char_background'],
+                create_components['avatar_mode'],
+                create_components['avatar_hair'],
+                create_components['avatar_eyes'],
+                create_components['avatar_skin'],
+                create_components['avatar_mood'],
+                create_components['avatar_clothes'],
+                create_components['avatar_env'],
+                create_components['avatar_style'],
+                create_components['avatar_extra'],
+            ],
+            outputs=[
+                create_components['avatar_image'],
+                create_components['avatar_status'],
+            ],
+        )
+
         # ========================================================================
         # EVENT HANDLERS - PARTY MANAGEMENT TAB
         # ========================================================================
@@ -962,6 +994,37 @@ except TypeError:
                 play_components['character_dropdown'],
                 party_components['party_char_selector']  # Update party selector too
             ]
+        )
+
+        # Avatar generator events
+        create_components['avatar_mode'].change(
+            toggle_custom_fields,
+            inputs=[create_components['avatar_mode']],
+            outputs=[create_components['custom_col']],
+        )
+
+        create_components['avatar_btn'].click(
+            generate_avatar,
+            inputs=[
+                create_components['char_name'],
+                create_components['char_race'],
+                create_components['char_class'],
+                create_components['char_alignment'],
+                create_components['char_background'],
+                create_components['avatar_mode'],
+                create_components['avatar_hair'],
+                create_components['avatar_eyes'],
+                create_components['avatar_skin'],
+                create_components['avatar_mood'],
+                create_components['avatar_clothes'],
+                create_components['avatar_env'],
+                create_components['avatar_style'],
+                create_components['avatar_extra'],
+            ],
+            outputs=[
+                create_components['avatar_image'],
+                create_components['avatar_status'],
+            ],
         )
 
         # ========================================================================

@@ -117,7 +117,6 @@ def create_play_tab(get_available_characters_func, debug_scenarios, debug_mode: 
                     interactive=False,
                     height=200
                 )
-                gr.Markdown("*Image will be generated via GAN in future update*")
 
             # Column 2: Equipment/Inventory + RAG Lookup
             with gr.Column(scale=1):

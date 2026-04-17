@@ -84,11 +84,54 @@ def create_character_tab(dnd_races: List[str], dnd_classes: List[str]) -> Dict[s
         components['create_btn'] = gr.Button("Create Character", variant="primary", size="lg")
         components['create_output'] = gr.Textbox(label="Status", interactive=False)
 
-        gr.Markdown("""
-        ---
+        gr.Markdown("---")
 
-        **Note:** Equipment and spells will be automatically assigned based on your class.
-        Character images can be added later via the GAN generation feature (coming soon).
-        """)
+        # ── Avatar Generator ──────────────────────────────────────────────────
+        gr.Markdown("## Character Portrait")
+        gr.Markdown("*Generate a portrait using Stable Diffusion (SDXL-Turbo). First run downloads ~6 GB; subsequent runs are fast.*")
+
+        with gr.Row():
+            with gr.Column(scale=1):
+                components['avatar_mode'] = gr.Radio(
+                    choices=["Auto (from character stats)", "Custom"],
+                    value="Auto (from character stats)",
+                    label="Generation mode",
+                )
+
+                with gr.Column(visible=False) as custom_col:
+                    gr.Markdown("#### Customize your portrait")
+                    with gr.Row():
+                        components['avatar_hair']  = gr.Textbox(label="Hair color & style", placeholder="e.g. long silver braids")
+                        components['avatar_eyes']  = gr.Textbox(label="Eye color", placeholder="e.g. amber")
+                    with gr.Row():
+                        components['avatar_skin']  = gr.Textbox(label="Skin / complexion", placeholder="e.g. tanned, scaled green")
+                        components['avatar_mood']  = gr.Textbox(label="Expression / mood", placeholder="e.g. fierce, serene", value="determined")
+                    components['avatar_clothes'] = gr.Textbox(label="Clothing details", placeholder="e.g. torn battle robes, ornate noble armor")
+                    components['avatar_env']     = gr.Textbox(label="Environment / background", placeholder="e.g. misty forest, torch-lit dungeon", value="dramatic fantasy backdrop")
+                    components['avatar_style']   = gr.Dropdown(
+                        choices=[
+                            "bright heroic (classic D&D art)",
+                            "realistic painterly (dark fantasy)",
+                            "anime / manga inspired",
+                            "gritty grimdark",
+                            "watercolor storybook",
+                        ],
+                        value="bright heroic (classic D&D art)",
+                        label="Art style",
+                    )
+                    components['avatar_extra'] = gr.Textbox(label="Anything else (optional)", placeholder="e.g. glowing runes on skin")
+
+                components['custom_col'] = custom_col
+
+                components['avatar_btn'] = gr.Button("Generate Portrait", variant="primary")
+                components['avatar_status'] = gr.Textbox(label="Generation status", interactive=False, lines=2)
+
+            with gr.Column(scale=1):
+                components['avatar_image'] = gr.Image(
+                    label="Generated Portrait",
+                    type="filepath",
+                    interactive=False,
+                    height=400,
+                )
 
     return components
