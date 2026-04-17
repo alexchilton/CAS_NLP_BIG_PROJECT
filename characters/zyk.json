@@ -1,0 +1,44 @@
+{
+  "name": "Zyk",
+  "race": "Dragonborn",
+  "character_class": "Druid",
+  "level": 1,
+  "strength": 13,
+  "dexterity": 10,
+  "constitution": 14,
+  "intelligence": 15,
+  "wisdom": 12,
+  "charisma": 8,
+  "hit_points": 10,
+  "armor_class": 10,
+  "proficiency_bonus": 2,
+  "background": "Noble",
+  "alignment": "Chaotic Neutral",
+  "race_traits": [
+    "Dragonborn racial traits"
+  ],
+  "class_features": [
+    "Spellcasting",
+    "Druidic",
+    "Spell Slots: 1st: 2",
+    "(SRD-enhanced)"
+  ],
+  "proficiencies": [
+    "Armor: Light armor, medium armor, shields (druids will not wear armor or use shields made of metal)",
+    "Weapons: Clubs, daggers, darts, javelins, maces, quarterstaffs, scimitars, sickles, slings, spears",
+    "Saves: Intelligence, Wisdom"
+  ],
+  "equipment": [
+    "Basic gear",
+    "50 GP"
+  ],
+  "spells": [
+    "Druidcraft (Transmutation 0)",
+    "Vicious Mockery (Enchantment 0)",
+    "DRUIDCRAFT",
+    "DRUIDCRAFT",
+    "DRUIDCRAFT"
+  ],
+  "gold": 50,
+  "image_path": "C:\\Users\\laran\\Home\\Documents\\Git\\CAS_NLP_BIG_PROJECT\\scripts\\characters\\portraits\\zyk.png"
+}
