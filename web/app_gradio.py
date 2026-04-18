@@ -347,8 +347,7 @@ def create_character_wrapper(
         CHARACTERS_DIR,
         db
     )
-    # Return same dropdown update for both play and party tabs
-    return (status_msg, char_dropdown_update, char_dropdown_update)
+    return (status_msg, char_dropdown_update, char_dropdown_update, char_dropdown_update)
 
 
 # ============================================================================
@@ -391,7 +390,8 @@ try:
             # Create Character Tab
             create_components = create_character_tab(
                 settings.DND_RACES,
-                settings.DND_CLASSES
+                settings.DND_CLASSES,
+                get_available_characters_wrapper
             )
 
             # Party Management Tab
@@ -619,7 +619,8 @@ try:
             outputs=[
                 create_components['create_output'],
                 play_components['character_dropdown'],
-                party_components['party_char_selector']  # Update party selector too
+                party_components['party_char_selector'],
+                create_components['avatar_char_selector'],
             ]
         )
 
@@ -633,6 +634,7 @@ try:
         create_components['avatar_btn'].click(
             generate_avatar,
             inputs=[
+                create_components['avatar_char_selector'],
                 create_components['char_name'],
                 create_components['char_race'],
                 create_components['char_class'],
@@ -765,7 +767,8 @@ except TypeError:
             # Create Character Tab
             create_components = create_character_tab(
                 settings.DND_RACES,
-                settings.DND_CLASSES
+                settings.DND_CLASSES,
+                get_available_characters_wrapper
             )
 
             # Party Management Tab
@@ -993,7 +996,8 @@ except TypeError:
             outputs=[
                 create_components['create_output'],
                 play_components['character_dropdown'],
-                party_components['party_char_selector']  # Update party selector too
+                party_components['party_char_selector'],
+                create_components['avatar_char_selector'],
             ]
         )
 
@@ -1007,6 +1011,7 @@ except TypeError:
         create_components['avatar_btn'].click(
             generate_avatar,
             inputs=[
+                create_components['avatar_char_selector'],
                 create_components['char_name'],
                 create_components['char_race'],
                 create_components['char_class'],

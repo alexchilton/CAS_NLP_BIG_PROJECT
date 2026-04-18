@@ -6,7 +6,7 @@ import gradio as gr
 from typing import Dict, Any, List
 
 
-def create_character_tab(dnd_races: List[str], dnd_classes: List[str]) -> Dict[str, Any]:
+def create_character_tab(dnd_races: List[str], dnd_classes: List[str], get_characters_fn=None) -> Dict[str, Any]:
     """
     Create the Create Character tab UI.
 
@@ -92,6 +92,19 @@ def create_character_tab(dnd_races: List[str], dnd_classes: List[str]) -> Dict[s
 
         with gr.Row():
             with gr.Column(scale=1):
+                char_choices = get_characters_fn() if get_characters_fn else []
+                components['avatar_char_selector'] = gr.Dropdown(
+                    choices=["— use form above —"] + char_choices,
+                    value="— use form above —",
+                    label="Generate portrait for saved character (optional)",
+                )
+
+                components['avatar_gender'] = gr.Radio(
+                    choices=["male", "female", "androgynous"],
+                    value="female",
+                    label="Gender presentation",
+                )
+
                 components['avatar_mode'] = gr.Radio(
                     choices=["Auto (from character stats)", "Custom"],
                     value="Auto (from character stats)",
@@ -100,11 +113,6 @@ def create_character_tab(dnd_races: List[str], dnd_classes: List[str]) -> Dict[s
 
                 with gr.Column(visible=False) as custom_col:
                     gr.Markdown("#### Customize your portrait")
-                    components['avatar_gender'] = gr.Radio(
-                        choices=["male", "female", "androgynous"],
-                        value="female",
-                        label="Gender presentation",
-                    )
                     with gr.Row():
                         components['avatar_hair']  = gr.Textbox(label="Hair color & style", placeholder="e.g. long silver braids")
                         components['avatar_eyes']  = gr.Textbox(label="Eye color", placeholder="e.g. amber")

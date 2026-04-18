@@ -27,6 +27,8 @@ from create_avatar import (
     clip_trim,
 )
 
+_CHARACTERS_DIR = _PROJECT_ROOT / "characters"
+
 # Lazy-loaded pipeline — loaded on first generation, then cached
 _pipe = None
 
@@ -105,7 +107,20 @@ def _build_custom_prompt(
     return ", ".join(p for p in parts if p)
 
 
+def _load_char_from_selector(char_selector: str) -> Optional[dict]:
+    """Load character data dict from a dropdown selection string like 'Name (Race Class)'."""
+    if not char_selector or char_selector.startswith("—"):
+        return None
+    name = char_selector.split("(")[0].strip()
+    filepath = _CHARACTERS_DIR / f"{name.lower().replace(' ', '_')}.json"
+    if filepath.exists():
+        return json.loads(filepath.read_text(encoding="utf-8"))
+    return None
+
+
 def generate_avatar(
+    # Saved-character selector (overrides form fields when set)
+    char_selector: str,
     # Character identity (from create-tab form fields)
     name: str,
     race: str,
@@ -114,7 +129,7 @@ def generate_avatar(
     background: str,
     # Mode
     mode: str,
-    # Custom fields
+    # Always-visible field
     gender: str,
     hair: str,
     eyes: str,
@@ -130,6 +145,14 @@ def generate_avatar(
 
     Called by the Gradio "Generate Portrait" button in the Create Character tab.
     """
+    char_data = _load_char_from_selector(char_selector)
+    if char_data:
+        name = char_data.get("name", name or "character")
+        race = char_data.get("race", race or "Human")
+        char_class = char_data.get("character_class", char_class or "Fighter")
+        alignment = char_data.get("alignment", alignment or "")
+        background = char_data.get("background", background or "")
+
     name = (name or "character").strip()
     race = (race or "Human").strip()
     char_class = (char_class or "Fighter").strip()
