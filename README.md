@@ -206,6 +206,36 @@ Sage | Neutral Good
 - Automatic spell selection for casters
 - Export to JSON for use in other tools
 
+#### Step 3b: Generate a Character Portrait (Optional)
+
+After creating your character, you can generate an AI portrait using Stable Diffusion (SDXL-Turbo):
+
+```bash
+# Auto-generate from character stats
+python scripts/create_avatar.py
+
+# Or specify a character file directly
+python scripts/create_avatar.py --character characters/my_character.json
+```
+
+**Prerequisites:**
+```bash
+pip install torch --index-url https://download.pytorch.org/whl/cu124
+pip install diffusers accelerate
+```
+
+> **Note:** CUDA GPU recommended — generation on CPU will be very slow.
+
+**What this does:**
+- Loads an existing character JSON
+- Auto-builds a portrait prompt from race, class, gender, and other stats
+- Or guides you through a short Q&A to customize the prompt
+- Saves the portrait as a PNG alongside your character file
+
+You can also generate portraits directly in the Gradio web UI (Step 4, Option A) from the Create Character tab.
+
+---
+
 #### Step 4: Play D&D with AI Game Master
 
 **Prerequisites:**
